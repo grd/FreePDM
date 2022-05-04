@@ -11,9 +11,12 @@ The list of things to do:
 
 ## Admin
 * Add a path to the location of the database
+* Allow to make different numbering scheme's
+* Allow to make different version types
 
 ## Skeleton
-
+* Reading the files for meta-data
+* Dealing with the three assembly types
 
 ## GUI
 * Show a list of files
