@@ -5,7 +5,7 @@ This is going to be my first attempt to make a PDM. And it is going to be in Pyt
 
 Yeah. It's a bit scary.
 
-The initial idea is to make a Skeleton (model), GUI, a MVC and an Admin module. The GUI is based on pyQT.
+The initial idea is to make a Skeleton (model), GUI, a MVC and an Admin module. The GUI is based on pyQT. I need to make a WB.
 
 Looking at previous attempts to make a PDM:
 * https://github.com/cadracks-project/openplm
