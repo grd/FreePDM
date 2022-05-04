@@ -1,7 +1,7 @@
 # FreePDM
 A PDM for FreeCAD
 
-This is going to be my first attempt to make a PDM for FreeCAD. And it is going to be in Python.
+This is going to be my first attempt to make a PDM. And it is going to be in Python.
 
 Yeah. It's a bit scary.
 
