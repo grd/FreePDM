@@ -15,13 +15,16 @@ This is the whish list:
 * Allow to make different version types
 
 ## Skeleton
-* Reading the files for meta-data
+* Reading the files for meta-data and storing the meta-data
 * Modifying the meta-data
 * Dealing with the three assembly types
 * Adding, Renaming and deleting files
+* Replacing files
+* Dealing with versions
 
 ## GUI
 * Show a list of files
+* Add buttons
 * Edit text strings
 * Show versions
 * Edit versions
@@ -31,3 +34,6 @@ This is the whish list:
 *
 
 ## Controller
+
+## Custom made scripts
+* For what you can do after releasing a file or files
