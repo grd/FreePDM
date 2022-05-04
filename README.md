@@ -16,6 +16,7 @@ The list of things to do:
 
 ## Skeleton
 * Reading the files for meta-data
+* Modifying the meta-data
 * Dealing with the three assembly types
 
 ## GUI
