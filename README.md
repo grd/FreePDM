@@ -7,9 +7,9 @@ Yeah. It's a bit scary.
 
 The initial idea is to make a Skeleton (model), GUI, a MVC and an Admin module.
 
-The list of things to do:
-
 ## Admin
+Based on pyQT
+
 * Add a path to the location of the database
 * Allow to make different numbering scheme's
 * Allow to make different version types
@@ -18,6 +18,7 @@ The list of things to do:
 * Reading the files for meta-data
 * Modifying the meta-data
 * Dealing with the three assembly types
+* Adding, Renaming and deleting files
 
 ## GUI
 * Show a list of files
