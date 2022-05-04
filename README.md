@@ -43,12 +43,8 @@ This is the whish list:
 * Add buttons
 * Dealing with projects (creating, modifying, closing, re-opening)
 * Add a search button
-* Edit text strings
-* Show versions
-* Edit versions
+* Add all the things done in the skeleton (such as edit text strings, show versions, edit versions etc.)
 * Releasing (by who?)
-* Rename components (so that the assy knows that the component has been renamed)
-* Replace components (so that the assy knows that the component has been renamed)
 *
 
 ## The Web?
