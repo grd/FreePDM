@@ -5,11 +5,11 @@ This is going to be my first attempt to make a PDM for FreeCAD. And it is going 
 
 Yeah. It's a bit scary.
 
-The initial idea is to make a Skeleton (model), GUI, a MVC and an Admin module.
+The initial idea is to make a Skeleton (model), GUI, a MVC and an Admin module. The GUI is based on pyQT.
+
+This is the whish list:
 
 ## Admin
-Based on pyQT
-
 * Add a path to the location of the database
 * Allow to make different numbering scheme's
 * Allow to make different version types
