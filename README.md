@@ -8,7 +8,7 @@ Yeah. It's a bit scary.
 The initial idea is to make a Skeleton (model), GUI, a MVC and an Admin module. The GUI is based on pySide. I need to make a WB.
 
 Looking at previous attempts to make a PDM:
-* https://github.com/cadracks-project/openplm
+* https://github.com/cadracks-project/openplm (but this is going to be a PDM. You can compare it with SolidWorks PDM)
 * 
 This is the whish list:
 
