@@ -24,6 +24,7 @@ This is the whish list:
 ## Skeleton
 * Reading the files for meta-data and storing the meta-data in the DB
 * Modifying the meta-data
+* Select material and surface finish and calculate the weight of the part
 * Dealing with users. Who did what? (this can be dealth with the meta-data DB)
 * Partnumbering
 * Adding an owner, checker, approver
