@@ -8,8 +8,12 @@ Yeah. It's a bit scary.
 The initial idea is to make a Skeleton (model), GUI, a MVC and an Admin module. The GUI is based on pySide. I need to make a WB.
 
 Looking at previous attempts to make a PDM:
-* https://github.com/cadracks-project/openplm (but this is going to be a "poor man's" PDM. You can compare it with SolidWorks PDM)
+* https://github.com/cadracks-project/openplm (but FreePDM is going to be a "poor man's" PDM. You can compare it with SolidWorks PDM. Nothing fancy. That all brokes down sooner or later)
 * 
+
+Also interesting:
+* https://github.com/furti/FreeCAD-Reporting
+* The fcinfo macro for measure weight of a model
 
 This is the whish list:
 
