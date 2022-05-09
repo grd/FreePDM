@@ -4,7 +4,7 @@
 ## Workflows
 
 ### Administrators
-
+                        
 ![Usecase Diagram users](FreePDM_CoD-Figures/UC_Admin.png)
 
 - Create new users
@@ -32,4 +32,4 @@
 Add link to files
 
 
-[<< Previous Chapter](FreePDM__01-RequestedInformation.md) | [Content Table](FreePDM_00-CoD.md) | [Next Chapter >>](FreePDM_03-DesignDecisions.md)
+[<< Previous Chapter](FreePDM_01-RequestedInformation.md) | [Content Table](FreePDM_00-CoD.md) | [Next Chapter >>](FreePDM_03-DesignDecisions.md)
