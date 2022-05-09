@@ -13,21 +13,21 @@
 
 ## Introduction
 
-## [Requested Information](FreePDM_RequestedInformation.md)
+## [Requested Information](FreePDM_01-RequestedInformation.md)
 
 
-## [Workflows](FreePDM_Workflows.md)
+## [Workflows](FreePDM_02-Workflows.md)
 
 
-## [Design decisions](FreePDM_DesignDecisions.md)
+## [Design decisions](FreePDM_03-DesignDecisions.md)
 
-### [Attributes](Attributes.md)
-
-
-## [Requirements](FreePDM_Requirements.md)
+### [Attributes](FreePDM-03-1-Attributes.md)
 
 
-## [Roadmap](FreePDM_Roadmap.md)
+## [Requirements](FreePDM_04-Requirements.md)
 
 
-[<< Previous Chapter]() | [Content Table](FreePDM_CoD.md) | [Next Chapter >>](FreePDM_RequestedInformation.md)
+## [Roadmap](FreePDM_05-Roadmap.md)
+
+
+[<< Previous Chapter]() | [Content Table](FreePDM_CoD.md) | [Next Chapter >>](FreePDM_01-RequestedInformation.md)

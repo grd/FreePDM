@@ -5,7 +5,7 @@
 
 ### Administrators
 
-![Usecase Diagram users](ConceptOfDesign/FreePDM_CoD-Figures/UC_Admin.png)
+![Usecase Diagram users](FreePDM_CoD-Figures/UC_Admin.png)
 
 - Create new users
   - Edit user permissions
@@ -16,7 +16,7 @@
 
 ### Users
 
-![Usecase Diagram users](ConceptOfDesign/FreePDM_CoD-Figures/UC_User.png)
+![Usecase Diagram users](FreePDM_CoD-Figures/UC_User.png)
 
 - Open File from pdm
 - Get write Access (Check-out)
@@ -32,4 +32,4 @@
 Add link to files
 
 
-[<< Previous Chapter](FreePDM_RequestedInformation.md) | [Content Table](FreePDM_CoD.md) | [Next Chapter >>](FreePDM_DesignDecisions.md)
+[<< Previous Chapter](FreePDM__01-RequestedInformation.md) | [Content Table](FreePDM_00-CoD.md) | [Next Chapter >>](FreePDM_03-DesignDecisions.md)

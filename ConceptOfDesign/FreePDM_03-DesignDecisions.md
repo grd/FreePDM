@@ -10,7 +10,7 @@
 - Attributes
 
 ### General setup
-![Block diagram FreePDM general](./FreePDM_CoD-Figures/BDD_FreePMD-design.png)
+![Block diagram FreePDM general](FreePDM_CoD-Figures/BDD_FreePMD-design.png)
 
 ### Version management
 
@@ -44,7 +44,7 @@ Why do we need such a database? That is the question. We need it because we can'
 
 
 ### User interface
-![Block diagram interface design](./FreePDM_CoD-Figures/BDD_UI-design.png)
+![Block diagram interface design](FreePDM_CoD-Figures/BDD_UI-design.png)
 
 For the user interface there are two main issues buth both are related. the issue about the programming language is described below.
 
@@ -56,4 +56,4 @@ For the user interface there are two main issues buth both are related. the issu
 ### [Attributes](Attributes.md)
 
 
-[<< Previous Chapter](FreePDM_Workflows.md) | [Content Table](FreePDM_CoD.md) | [Next Chapter >>](Attributes.md)
+[<< Previous Chapter](FreePDM_02-Workflows.md) | [Content Table](FreePDM_00-CoD.md) | [Next Chapter >>](FreePDM-03-1-Attributes.md)
