@@ -16,7 +16,8 @@ Also interesting:
 * The fcinfo macro for measure weight of a model
 
 
-This is the whish list:
+This is the whish list: 
+The concept list is also noted in here: [list](ConceptOfDesign/FreePDM_00-CoD.md)
 
 ## Admin
 * Add buttons
