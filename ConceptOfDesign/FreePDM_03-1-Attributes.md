@@ -16,6 +16,7 @@ See for set of example properties Part [Attributes pdf](PartAttributes.pdf) orig
 - Surface treathment
 - Weight(or volume and calculate weight)
 - Key words
+- Unit
 
 ### Stored Assembly properties
 
