@@ -11,7 +11,7 @@
 
 ### User Size
 
-(Small? to medium)Company size <#OfUsers
+(Small? to medium)Company size <#OfUsers --> Does that matter? It depends probably on the hw and sw.
 
 ### Development Environment(s)
 
