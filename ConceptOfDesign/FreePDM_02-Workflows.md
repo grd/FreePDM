@@ -5,7 +5,7 @@
 
 ### Administrators
 
-![Usecase Diagram users](./FreePDM_CoD-Figures/UC_Admin.png)
+![Usecase Diagram users](FreePDM_CoD-Figures/UC_Admin.png)
 
 - Create new users
   - Edit user permissions
