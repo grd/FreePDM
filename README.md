@@ -16,10 +16,10 @@ Also interesting:
 * The fcinfo macro for measure weight of a model
 
 
-This is the whish list: 
+## This is the whish list: 
 The concept list is also noted in here: [list](ConceptOfDesign/FreePDM_00-CoD.md)
 
-## Admin
+### Admin
 * Add buttons
 * Add roles for the type of use, such as Architecture, mechanical, etc) 
 * Add a path to the location of the files or VCS (SVN, Git, MS Azure, etc)
@@ -27,7 +27,7 @@ The concept list is also noted in here: [list](ConceptOfDesign/FreePDM_00-CoD.md
 * Allow to make different numbering scheme's
 * Allow to make different version types (this also depends on the data database)
 
-## Skeleton
+### Skeleton
 * Reading the files for meta-data and storing the meta-data in the DB
 * Modifying the meta-data
 * Select material and surface finish and calculate the weight of the part
@@ -48,7 +48,7 @@ The concept list is also noted in here: [list](ConceptOfDesign/FreePDM_00-CoD.md
 * Dealing with a database (PostgreSQL, MongoDB, trython, sqlite ?) I think about PostgreSQL since I now know about SQLAlchemy. But sqlite to start with.
 * Use SQLAlchemy https://en.wikipedia.org/wiki/SQLAlchemy
 
-## GUI
+### GUI
 * Add buttons
 * Show a list of files
 * Dealing with projects (creating, modifying, closing, re-opening)
@@ -57,16 +57,16 @@ The concept list is also noted in here: [list](ConceptOfDesign/FreePDM_00-CoD.md
 * Releasing (by who?)
 *
 
-## The Web?
+### The Web?
 * I think that it is inevitable at some time point but from now, I don't think that is is necessary ATM
 * qtwebkit ?
 * The big problem is that the web is a big pile of BS, and securing the web can become a nightmare.
 
 
-## Controller
+### Controller
 * The glue between the skeleton and the GUI
 
-## Custom made scripts
+### Custom made scripts
 * For what you can do after releasing a file or files
 * Probably a thousand more
 
