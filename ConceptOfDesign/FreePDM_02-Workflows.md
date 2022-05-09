@@ -16,7 +16,7 @@
 
 ### Users
 
-![Usecase Diagram users](./FreePDM_CoD-Figures/UC_User.png)
+![Usecase Diagram users](FreePDM_CoD-Figures/UC_User.png)
 
 - Open File from pdm
 - Get write Access (Check-out)
