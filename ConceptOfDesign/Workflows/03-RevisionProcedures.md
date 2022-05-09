@@ -20,8 +20,11 @@ Now can start a procedure(Can be self defined) that check the item(s) etc if it 
 ### questions / Comments 1
 
 - in [this FC forum thread](https://forum.freecadweb.org/viewtopic.php?f=8&t=68350) there is spoken about the usage of svn. Is this possible with this
+  - grd: To be honest, I don't know but I think that is possible. I looked at some videos that showed that it is possible. But I also talked to Yorik and he said that he liked GIT too. So database should be independent of which kind of database you use.
 - If this procedure is start within FC it should be possible to directly open the created part. This could also be two feature(_Create new item_ AND _Create & Open new item_).
+  - grd: I don't know. We are gonna find out.
 - There should be a method added that there are one or more people who can check the 
+   - grd: I don't think so. Check out yes. But when the file is checked out the file is locked for everyone else. And checking in, that should be done with the guy who checked it out.  
 
 ### Workflow 2
 
