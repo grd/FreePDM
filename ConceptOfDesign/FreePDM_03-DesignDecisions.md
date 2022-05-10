@@ -48,10 +48,52 @@ _Note Grd: Why do we need such a database? That is the question. We need it beca
 ![Block diagram interface design](FreePDM_CoD-Figures/BDD_UI-design.png)
 
 For the user interface there are two main issues buth both are related. the issue about the programming language is described below.
+What i mean with the figure<!--(report me(==Jee-Bee) when i'm wrong also explain why)--> above is that there are two main options of interfaces.
 
+1. Web interface
+2. Local stored interface
+
+Looking at the web interface has some pro's and cons
+
+Pro's                      | Con's
+-------------------------- | --------------------------
+Centralized updates        | Security is more difficult
+More easy to add other SW  | More data transport
+                           | 
+(Mainanability?)           | (Mainanability?)
+
+Looking at the local storage there are two tastes available(for now).
+
+- A independed tool
+- insite FreeCAD (for example [Addon manager](https://wiki.freecadweb.org/Std_AddonMgr))
+
+Specially the Add-on manager can help for at least (semi-)centaralized updates. 
+
+_Note: How does the Gui interact with the user?_
 
 ### Used programming language
 
+In case of the web interface can be programmed with for example Javascript or python (there are more but these are most well known).
+
+In case of a local program Python can be a good option too.
+This is also because it works good together with FreeCAD and so the FreeCAD [Addon Manager](https://wiki.freecadweb.org/Std_AddonMgr). 
+What are pro's cons of the Addon manager: 
+
+Pro's                          | Con's
+------------------------------ | --------------------------
+Semi Centralized updates       | Not direct integration
+Fast(er) update speed⁰ | python only
+Translation to other lagauages | More difficult usern handeling
+ Mainanability             | 
+
+⁰ Faster is compared to FreeCAD when every chance goes through checks(Except when WMayer fix it). <!-- unicode superscript see: https://stackoverflow.com/questions/15155778/superscript-in-markdown-github-flavored -->
+ 
+_What i meant with user handeling see story later on_
+
+By using the addon manager it is possible to change quickly when a change / update is needed.
+_Note: We have to decide to:
+- Make a FreeCAD Add-on
+- ?_
 
 
 ### [Attributes](Attributes.md)
