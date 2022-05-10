@@ -57,10 +57,12 @@ Looking at the web interface has some pro's and cons
 
 Pro's                      | Con's
 -------------------------- | --------------------------
-Centralized updates        | Security is more difficult
+Centralized updates        | Security is more difficult(specially .js)
 More easy to add other SW  | More data transport
                            | 
 (Mainanability?)           | (Mainanability?)
+
+See also Comment of user1234 in the related [topic](https://forum.freecadweb.org/viewtopic.php?f=8&t=68350&p=594331#p594252)
 
 Looking at the local storage there are two tastes available(for now).
 
