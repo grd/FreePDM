@@ -21,7 +21,7 @@
 
 ## [Design decisions](FreePDM_03-DesignDecisions.md)
 
-### [Attributes](FreePDM-03-1-Attributes.md)
+## [Attributes](FreePDM_03-1-Attributes.md)
 
 
 ## [Requirements](FreePDM_04-Requirements.md)
