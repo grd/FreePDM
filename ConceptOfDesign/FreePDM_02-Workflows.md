@@ -4,7 +4,7 @@
 ## Workflows
 
 ### Administrators
-![Usecase Diagram users](FreePDM_CoD-Figures/UC_Admin.PNG)
+![Usecase Diagram users](FreePDM_CoD-Figures/UC_Admin.png)
 
 
 - Create new users
@@ -16,7 +16,7 @@
 
 ### Users
 
-![Usecase Diagram users](FreePDM_CoD-Figures/UC_User.PNG)
+![Usecase Diagram users](FreePDM_CoD-Figures/UC_User.png)
 
 - Open File from pdm
 - Get write Access (Check-out)
