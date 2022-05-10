@@ -3,9 +3,9 @@
 
 ## Attributes
 
-### Stored general properties
+### Stored general attributes
 What database are the databases convertible?
-See for set of example properties Part [Attributes pdf](PartAttributes.pdf) original see [Windchill Attributes](https://support.ptc.com/help/windchill/wc110_hc/whc_en/index.html#page/Windchill_Help_Center%2FPMPartAttributesRef.html)
+See for set of example attributes Part [Attributes pdf](PartAttributes.pdf) original see [Windchill Attributes](https://support.ptc.com/help/windchill/wc110_hc/whc_en/index.html#page/Windchill_Help_Center%2FPMPartAttributesRef.html)
 
 The properties of a FreeCAD file: 
 - [FreeCAD file Data](https://wiki.freecadweb.org/Std_Part#Data)
@@ -14,7 +14,7 @@ The properties of a FreeCAD file:
 - Assembly A3 and A4 uses Std LinkMate for their data.
 [Std LinkMate Data](https://wiki.freecadweb.org/Std_LinkMake#Data)
 
-### Stored part properties
+### Stored part attributes
 
 - Name / Number (is this the unique identifier?)
 - Description
@@ -25,7 +25,7 @@ The properties of a FreeCAD file:
 - Key words
 - Unit
 
-### Stored Assembly properties
+### Stored Assembly Attributes
 
 - Name / Number (is this the unique identifier?)
 - Description
@@ -34,14 +34,14 @@ The properties of a FreeCAD file:
 - Weight
 - keywords
 
-### Stored Drawing? properties
+### Stored Drawing? Attributes
 
 - Name / Number (is this the unique identifier?)
 - Description
 - Drawing standards
 - keywords
 
-### User properties
+### User Attributes
 - Name / Number (is this the unique identifier?)
 - Access to projects / top level Systems
 - Role(s)
