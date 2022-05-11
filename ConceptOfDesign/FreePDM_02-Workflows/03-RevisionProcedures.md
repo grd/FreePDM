@@ -13,8 +13,8 @@
 ### Workflow 1
 
 When a new item is needed it is possible / required to create this from the pdm system.
-This can / have to be done by go to the pdm system, than _Create new item_.  
-From now on the model can be _CheckedOut_, edited and _CheckedIn_ until the model is ready for release.  
+This can / have to be done by go to the pdm system, than _Create new item_.
+From now on the model can be _CheckedOut_, edited and _CheckedIn_ until the model is ready for release. 
 Now can start a procedure(Can be self defined) that check the item(s) etc if it is release ready. If all checks are good than the item go to the release state.
 
 ### questions / Comments 1
@@ -24,7 +24,7 @@ Now can start a procedure(Can be self defined) that check the item(s) etc if it 
 - If this procedure is start within FC it should be possible to directly open the created part. This could also be two feature(_Create new item_ AND _Create & Open new item_).
   - grd: I don't know. We are gonna find out.
 - There should be a method added that there are one or more people who can check the 
-   - grd: I don't think so. Check out yes. But when the file is checked out the file is locked for everyone else. And checking in, that should be done with the guy who checked it out.  
+   - grd: I don't think so. Check out yes. But when the file is checked out the file is locked for everyone else. And checking in, that should be done with the guy who checked it out. 
 
 ### Workflow 2
 
