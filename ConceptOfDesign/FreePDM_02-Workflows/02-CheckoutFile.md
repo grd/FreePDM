@@ -25,3 +25,5 @@ The user want to open AND edit a CAD file from the pdm(see: file storing during 
 #### questions / Comments
 
 - We have to decide how to do it also Right Mouse Button, Via Menu or both
+
+  grd: I think more about adding a button [button](../FreePDM_CoD-Figures/check-in-out.png) with the name "Check Out", "Check In" and at the left of each item a selection button. The procedure is that you first select which items you want to check out. Then you press the Check Out button and the items are checked out and you can do your work. An indicator will show which user has checked out an item. When you are ready with your work then you can select those files again and press Check In.
