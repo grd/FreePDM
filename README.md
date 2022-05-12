@@ -17,7 +17,7 @@ Also interesting:
 
 
 ## This is the whish list: 
-The concept list is also noted in here (more detailed): [Concept of Design](ConceptOfDesign/FreePDM_00-CoD.md)
+The concept list is also noted in here (more detailed): [Concept of Design](ConceptOfDesign/README.md)
 
 ### Admin
 * Add buttons
