@@ -72,9 +72,7 @@ Critical factors:
 - Direct from server
 - Local Copy
 
-<!-- TODO: I have also create a workflow for this see: -->
-
-[<< Previous Chapter](FreePDM_00-CoD.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_02-Workflows.md)
+[<< Previous Chapter](README.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_02-Workflows.md)
 
 
 

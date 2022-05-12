@@ -10,8 +10,9 @@
 
 ## Introduction
 
-## [File Storage During Editing](01-FileStorageDuringEditing.md)
+## [File Storage During Editing](01-FileStoringDuringEditing.md)
 
-## [Checking out a file](02-checkoutFile.md)
+## [Checking out a file](02-CheckoutFile.md)
 
 ## [Revision Procedures](03-RevisionProcedures.md)
+
