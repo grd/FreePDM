@@ -46,4 +46,4 @@ The properties of a FreeCAD file:
 - Access to projects / top level Systems
 - Role(s)
 
-[<< Previous Chapter](FreePDM_03-DesignDecisions.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_04-Requirements.md)
+[<< Previous Chapter](FreePDM_03-DesignDecisions.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_03-2-SVNProjectStructure.md)
