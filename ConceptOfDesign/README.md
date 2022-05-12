@@ -10,6 +10,7 @@
 3. [Design decisions](#designdecisions)
 4. [Requirements](#requirements)
 5. [Roadmap](#roadmap)
+6. [Workflows](#Workflows)
 
 ## Introduction
 
@@ -29,5 +30,6 @@
 
 ## [Roadmap](FreePDM_05-Roadmap.md)
 
+## [Workflows](FreePDM_02-Workflows/README.md)
 
-[<< Previous Chapter]() | [Content Table](FreePDM_CoD.md) | [Next Chapter >>](FreePDM_01-RequestedInformation.md)
+[<< Previous Chapter]() | [Content Table](README.md) | [Next Chapter >>](FreePDM_01-RequestedInformation.md)

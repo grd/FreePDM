@@ -101,4 +101,4 @@ _Note: We have to decide to:
 ### [Attributes](Attributes.md)
 
 
-[<< Previous Chapter](FreePDM_02-Workflows.md) | [Content Table](FreePDM_00-CoD.md) | [Next Chapter >>](FreePDM_03-1-Attributes.md)
+[<< Previous Chapter](FreePDM_02-Workflows.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_03-1-Attributes.md)

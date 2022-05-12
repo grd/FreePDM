@@ -17,15 +17,15 @@ To define a user group there are some paramers how to define it:
 - expected company size
 - Complexity
 
-**expected company size**  
+**expected company size** 
 The (expected )company size probably small to medium sized companies. There are a few paramers how to difine it.
 
 - Head count of staff([see europe](https://en.wikipedia.org/wiki/Small_and_medium-sized_enterprises))
 - The number of users
 - The number of simultanious users
 
-micro Company size <#Of Users  
-Small Company size <#Of Users  
+micro Company size <#Of Users 
+Small Company size <#Of Users 
 Medium)Company size <#Of Users
 
 _old:(Small? to medium)Company size <#OfUsers --> Does that matter? It depends probably on the hw and sw._
@@ -38,7 +38,7 @@ What are the available environments that are available and what are the critical
 - Server
 - Raspberry Pi
 - Virtual Machine
-- Local  
+- Local 
 
 #### Server
 
@@ -57,12 +57,12 @@ Two catagories of Virtual machines.
 
 The type of virtualization 
 
-Critical factors:  
+Critical factors: 
 
 
 #### Local working
-Ideal for a single user.  
-Critical factors:  
+Ideal for a single user. 
+Critical factors: 
 
 - Difficult to set-up for multi user evironment
 
@@ -74,7 +74,7 @@ Critical factors:
 
 <!-- TODO: I have also create a workflow for this see: -->
 
-[<< Previous Chapter](FreePDM_00-CoD.md) | [Content Table](FreePDM_00-CoD.md) | [Next Chapter >>](FreePDM_02-Workflows.md)
+[<< Previous Chapter](FreePDM_00-CoD.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_02-Workflows.md)
 
 
 
