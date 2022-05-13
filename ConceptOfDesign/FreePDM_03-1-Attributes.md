@@ -14,21 +14,28 @@ The properties of a FreeCAD file:
 - Assembly A3 and A4 uses Std LinkMate for their data.
 [Std LinkMate Data](https://wiki.freecadweb.org/Std_LinkMake#Data)
 
-### Stored part attributes
+### Parts vs Bodies
+A Part is a container and it can contain multiple bodies and as so it can become an assembly (of Bodies). A Body is a 3D geometry that can either be a solid or a mesh object.
+
+### Stored body attributes
 
 - Name / Number (is this the unique identifier?)
 - Description
+- Date of creation
+- User Name
 - Material
 - surface finish
 - Surface treathment
 - Weight(or volume and calculate weight)
 - Key words
-- Unit
+- Unit? (FreeCAD only allows the Metric System)
 
 ### Stored Assembly Attributes
 
 - Name / Number (is this the unique identifier?)
 - Description
+- Date of creation
+- User Name
 - BOM (Read out file?)
 - Surface treathment (for example for weldings)
 - Weight
@@ -38,8 +45,11 @@ The properties of a FreeCAD file:
 
 - Name / Number (is this the unique identifier?)
 - Description
+- Date of creation
+- User Name
 - Drawing standards
 - keywords
+- Revision data? Revision Text, Name, Date, Revision
 
 ### User Attributes
 - Name / Number (is this the unique identifier?)
