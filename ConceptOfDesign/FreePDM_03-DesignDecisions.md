@@ -25,7 +25,6 @@ Currently the most promissing implementation is the svn version system (a Client
 The most wel known Distributed version systems are [git](https://git-scm.com/) and [mercurial](https://www.mercurial-scm.org/).
 _Note Grd:Why does it need to be tackled? You can also allow them all. But in that case we need to hav an admin page in where we can select which one we use. They all work roughly the same, but we need to make all work of course. But we are gonna start with SVN._
 
-
 _Note: We have to decide if the model(part / assembly) get's an update,  the drawing get also an update. The same issue applied in revers order._
 Note grd: This is never gonna work. When a part is changed you aso need to update the drawing of that part, the assy (or assy's) in where it belongs and the drawings of those too.
 
@@ -98,7 +97,9 @@ _Note: We have to decide to:
 - ?_
 
 
-### [Attributes](Attributes.md)
+### [Attributes](FreePDM_03-1-Attributes.md)
+
+### [SVN extention](FreePDM_03-2-SVNProjectStructure.md)
 
 
 [<< Previous Chapter](FreePDM_02-Workflows.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_03-1-Attributes.md)
