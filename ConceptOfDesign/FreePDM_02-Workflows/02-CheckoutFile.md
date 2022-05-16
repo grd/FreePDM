@@ -7,8 +7,6 @@
 ### Assumptions
 
 - Part already exist
-- 
-
 
 ### Workflow 1
 
@@ -34,3 +32,5 @@ _Note Jee-Bee: What you describe is workflow 2. The Symbol that that it is check
 
 ### Extra
 There is a [sequence diagram](../FreePDM_CoD-Figures/SEQ_CheckIn-CheckOut.png) added with a more graphical representation of the process.
+
+[<< Previous Chapter](FreePDM_01-RequestedInformation.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_03-DesignDecisions.md)

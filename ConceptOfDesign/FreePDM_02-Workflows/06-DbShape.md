@@ -75,3 +75,5 @@ Partly there is still the problem of locking (a part) of the database.
 Even if this is probably less difficult since it locks a tab and not a few lines..
 
 #### questions / Comments 3
+
+[<< Previous Chapter](05-UIInteractionFC.md) | [Content Table](README.md) | [Next Chapter >>](07-DbInteraction.md)

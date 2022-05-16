@@ -22,7 +22,7 @@ When finished editing the file(s) can be checked in and then all the data is upl
 
 ### questions / Comments 1
 
-- What do we do with local work? are multiple branches / workspaces an idea to implememnt? If yes what state?(Probably state >4)...
+- What do we do with local work? are multiple branches / workspaces an idea to implemement? If yes what state?(Probably state >4)...
 
 ### Workflow 2
 
@@ -40,3 +40,5 @@ When saving this is done directly to the server.
 #### questions / Comments 3
 
 How can you check wheter a file is open or closed?
+
+[<< Previous Chapter](../FreePDM_02-Workflows.md) | [Content Table](README.md) | [Next Chapter >>](02-CheckoutFile.md)

@@ -27,9 +27,16 @@
   - Add (new) Metadata
 - Create new part.
 
-### Stories
+### Workflow Stories
 
-Add link to files
+- [File storing during editing](FreePDM_02-Workflows/01-FileStoringDuringEditing.md)
+- [Check-Out File](FreePDM_02-Workflows/02-CheckoutFile.md)
+- [Revision Procedures](FreePDM_02-Workflows/03-RevisionProcedures.md)
+- [User Interface Functions](FreePDM_02-Workflows/04-UIFunctions.md)
+- [User Interface Interaction FC](FreePDM_02-Workflows/05-UIInteractionFC.md)
+- [Database Shape](FreePDM_02-Workflows/06-DbShape.md)
+- [Database Interaction](FreePDM_02-Workflows/07-DbInteraction.md)
+- [Development Builds](FreePDM_02-Workflows/08-DevelopementBuilds.md)
 
 
-[<< Previous Chapter](FreePDM_01-RequestedInformation.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_03-DesignDecisions.md)
+[<< Previous Chapter](FreePDM_01-RequestedInformation.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_02-Workflows/01-FileStoringDuringEditing.md)

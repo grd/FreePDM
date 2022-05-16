@@ -81,3 +81,5 @@ Basically this feature is partly duplicate with workflow 4 but for some users th
 #### questions / Comments 5
 
 - Is for this feature a dedicated add-on module required?
+
+[<< Previous Chapter](04-UIFunctions.md) | [Content Table](README.md) | [Next Chapter >>](06-DbShape.md)
