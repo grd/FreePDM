@@ -110,5 +110,4 @@ This window can be accessed from the search view AND from the workspace view.
 - ![dir](../FreePDM_CoD-Figures/dir.png)
 - ![dir](../FreePDM_CoD-Figures/properties.png)
 
-
-
+[<< Previous Chapter](03-RevisionProcedures.md) | [Content Table](README.md) | [Next Chapter >>](05-UIInteractionFC.md)

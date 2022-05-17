@@ -44,3 +44,5 @@ An item that have a revision state needs an update. This can be done through cha
 - Let's say a part and the coresponding drawing are in the revision state. But later on there is noticed that something is changed that has no influence on the model. Is it valid that the drawing get's a new revision but the part holds the existing one? See example [forum post](https://forum.freecadweb.org/viewtopic.php?f=8&t=68350&start=60#p594331) 
 <!--I wrote it the wrong way around. Of course this change if the drawing is inside the related part / assembly. 
 Let's assume i created a assembly and a drawing. everything is released and there has to be a change for example i described in the notes a type of glue that is not strong enough. is it valid to change the drawing without releasing the model. (So the drawing get release version 2, but the assembly hold release state 1)-->
+
+[<< Previous Chapter](02-CheckoutFile.md) | [Content Table](README.md) | [Next Chapter >>](04-UIFunctions.md)

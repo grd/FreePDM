@@ -92,3 +92,5 @@ An user want to change a earlier released Item. For example a CAD file.
 #### questions / Comments 4
 
 - This stap should also work for a whole module / assembly structure.
+
+[<< Previous Chapter](06-DbShape.md) | [Content Table](README.md) | [Next Chapter >>](08-DevelopementBuilds.md)
