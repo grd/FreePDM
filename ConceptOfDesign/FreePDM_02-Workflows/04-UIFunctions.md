@@ -22,8 +22,7 @@ Also how to different activities / workflows interact.
 
 ![Projectview-small](../FreePDM_CoD-Figures/ProjectView_Small.png)
 
-![Projectview-wide](../FreePDM_CoD-Figures/ProjectView_wide.png)
-
+![Projectview-wide](../FreePDM_CoD-Figures/ProjectView_Wide.png)
 In the Project it is possible to select current working project (Specially when workspaces are not implemented).
 Another feature about this is that you can see to what projects you have reading acces.
 The project bar is hide-able.
