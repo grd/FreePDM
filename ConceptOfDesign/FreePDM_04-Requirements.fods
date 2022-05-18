@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<office:document xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" xmlns:css3t="http://www.w3.org/TR/css3-text/" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xforms="http://www.w3.org/2002/xforms" xmlns:dom="http://www.w3.org/2001/xml-events" xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:formx="urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:tableooo="http://openoffice.org/2009/table" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:rpt="http://openoffice.org/2005/report" xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" xmlns:oooc="http://openoffice.org/2004/calc" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0" xmlns:ooo="http://openoffice.org/2004/office" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:drawooo="http://openoffice.org/2010/draw" xmlns:ooow="http://openoffice.org/2004/writer" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" office:version="1.3" office:mimetype="application/vnd.oasis.opendocument.spreadsheet">
- <office:meta><meta:initial-creator>jb tw</meta:initial-creator><meta:creation-date>2022-05-08T16:12:16.262375674</meta:creation-date><meta:generator>LibreOffice_Vanilla/7.2.5.2$MacOSX_X86_64 LibreOffice_project/499f9727c189e6ef3471021d6132d4c694f357e5</meta:generator><dc:date>2022-05-17T22:03:40.308157756</dc:date><dc:creator>jb tw</dc:creator><meta:editing-duration>PT4H14M1S</meta:editing-duration><meta:editing-cycles>37</meta:editing-cycles><meta:document-statistic meta:table-count="4" meta:cell-count="295" meta:object-count="0"/></office:meta>
+<office:document xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" xmlns:css3t="http://www.w3.org/TR/css3-text/" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:rpt="http://openoffice.org/2005/report" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:ooo="http://openoffice.org/2004/office" xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:formx="urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" xmlns:drawooo="http://openoffice.org/2010/draw" xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:ooow="http://openoffice.org/2004/writer" xmlns:oooc="http://openoffice.org/2004/calc" xmlns:tableooo="http://openoffice.org/2009/table" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:dom="http://www.w3.org/2001/xml-events" xmlns:xforms="http://www.w3.org/2002/xforms" office:version="1.2" office:mimetype="application/vnd.oasis.opendocument.spreadsheet">
+ <office:meta><meta:initial-creator>jb tw</meta:initial-creator><meta:creation-date>2022-05-08T16:12:16.262375674</meta:creation-date><meta:generator>LibreOffice/6.4.7.2$Linux_X86_64 LibreOffice_project/40$Build-2</meta:generator><dc:date>2022-05-18T13:37:30.568298039</dc:date><meta:editing-duration>PT4H23M11S</meta:editing-duration><meta:editing-cycles>39</meta:editing-cycles><meta:document-statistic meta:table-count="4" meta:cell-count="299" meta:object-count="0"/></office:meta>
  <office:settings>
   <config:config-item-set config:name="ooo:view-settings">
    <config:config-item config:name="VisibleAreaTop" config:type="int">0</config:config-item>
    <config:config-item config:name="VisibleAreaLeft" config:type="int">0</config:config-item>
-   <config:config-item config:name="VisibleAreaWidth" config:type="int">2257</config:config-item>
-   <config:config-item config:name="VisibleAreaHeight" config:type="int">451</config:config-item>
+   <config:config-item config:name="VisibleAreaWidth" config:type="int">20185</config:config-item>
+   <config:config-item config:name="VisibleAreaHeight" config:type="int">52768</config:config-item>
    <config:config-item-map-indexed config:name="Views">
     <config:config-item-map-entry>
      <config:config-item config:name="ViewId" config:type="string">view1</config:config-item>
      <config:config-item-map-named config:name="Tables">
       <config:config-item-map-entry config:name="Assumptions (Only if needed)">
-       <config:config-item config:name="CursorPositionX" config:type="int">0</config:config-item>
-       <config:config-item config:name="CursorPositionY" config:type="int">0</config:config-item>
+       <config:config-item config:name="CursorPositionX" config:type="int">2</config:config-item>
+       <config:config-item config:name="CursorPositionY" config:type="int">2</config:config-item>
        <config:config-item config:name="HorizontalSplitMode" config:type="short">0</config:config-item>
        <config:config-item config:name="VerticalSplitMode" config:type="short">0</config:config-item>
        <config:config-item config:name="HorizontalSplitPosition" config:type="int">0</config:config-item>
@@ -32,7 +32,7 @@
       </config:config-item-map-entry>
       <config:config-item-map-entry config:name="Definitions">
        <config:config-item config:name="CursorPositionX" config:type="int">2</config:config-item>
-       <config:config-item config:name="CursorPositionY" config:type="int">14</config:config-item>
+       <config:config-item config:name="CursorPositionY" config:type="int">4</config:config-item>
        <config:config-item config:name="HorizontalSplitMode" config:type="short">0</config:config-item>
        <config:config-item config:name="VerticalSplitMode" config:type="short">0</config:config-item>
        <config:config-item config:name="HorizontalSplitPosition" config:type="int">0</config:config-item>
@@ -50,7 +50,7 @@
       </config:config-item-map-entry>
       <config:config-item-map-entry config:name="Requirements">
        <config:config-item config:name="CursorPositionX" config:type="int">3</config:config-item>
-       <config:config-item config:name="CursorPositionY" config:type="int">36</config:config-item>
+       <config:config-item config:name="CursorPositionY" config:type="int">15</config:config-item>
        <config:config-item config:name="HorizontalSplitMode" config:type="short">0</config:config-item>
        <config:config-item config:name="VerticalSplitMode" config:type="short">0</config:config-item>
        <config:config-item config:name="HorizontalSplitPosition" config:type="int">0</config:config-item>
@@ -59,7 +59,7 @@
        <config:config-item config:name="PositionLeft" config:type="int">0</config:config-item>
        <config:config-item config:name="PositionRight" config:type="int">0</config:config-item>
        <config:config-item config:name="PositionTop" config:type="int">0</config:config-item>
-       <config:config-item config:name="PositionBottom" config:type="int">0</config:config-item>
+       <config:config-item config:name="PositionBottom" config:type="int">4</config:config-item>
        <config:config-item config:name="ZoomType" config:type="short">0</config:config-item>
        <config:config-item config:name="ZoomValue" config:type="int">80</config:config-item>
        <config:config-item config:name="PageViewZoomValue" config:type="int">60</config:config-item>
@@ -85,8 +85,8 @@
        <config:config-item config:name="AnchoredTextOverflowLegacy" config:type="boolean">false</config:config-item>
       </config:config-item-map-entry>
      </config:config-item-map-named>
-     <config:config-item config:name="ActiveTable" config:type="string">Requirements_writing</config:config-item>
-     <config:config-item config:name="HorizontalScrollbarWidth" config:type="int">1381</config:config-item>
+     <config:config-item config:name="ActiveTable" config:type="string">Requirements</config:config-item>
+     <config:config-item config:name="HorizontalScrollbarWidth" config:type="int">1292</config:config-item>
      <config:config-item config:name="ZoomType" config:type="short">0</config:config-item>
      <config:config-item config:name="ZoomValue" config:type="int">80</config:config-item>
      <config:config-item config:name="PageViewZoomValue" config:type="int">60</config:config-item>
@@ -112,15 +112,25 @@
    </config:config-item-map-indexed>
   </config:config-item-set>
   <config:config-item-set config:name="ooo:configuration-settings">
-   <config:config-item config:name="AllowPrintJobCancel" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="ApplyUserData" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="AutoCalculate" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="CharacterCompressionType" config:type="short">0</config:config-item>
-   <config:config-item config:name="EmbedAsianScriptFonts" config:type="boolean">true</config:config-item>
    <config:config-item config:name="EmbedComplexScriptFonts" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="EmbedFonts" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="EmbedAsianScriptFonts" config:type="boolean">true</config:config-item>
    <config:config-item config:name="EmbedLatinScriptFonts" config:type="boolean">true</config:config-item>
    <config:config-item config:name="EmbedOnlyUsedFonts" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="RasterResolutionY" config:type="int">1000</config:config-item>
+   <config:config-item config:name="IsOutlineSymbolsSet" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="RasterSubdivisionY" config:type="int">1</config:config-item>
+   <config:config-item config:name="GridColor" config:type="int">12632256</config:config-item>
+   <config:config-item config:name="HasColumnRowHeaders" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="ShowNotes" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="HasSheetTabs" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="PrinterSetup" config:type="base64Binary">kwH+/0dlbmVyaWMgUHJpbnRlcgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU0dFTlBSVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWAAMAtAAAAAAAAAAEAAhSAAAEdAAASm9iRGF0YSAxCnByaW50ZXI9R2VuZXJpYyBQcmludGVyCm9yaWVudGF0aW9uPVBvcnRyYWl0CmNvcGllcz0xCmNvbGxhdGU9ZmFsc2UKbWFyZ2luZGFqdXN0bWVudD0wLDAsMCwwCmNvbG9yZGVwdGg9MjQKcHNsZXZlbD0wCnBkZmRldmljZT0xCmNvbG9yZGV2aWNlPTAKUFBEQ29udGV4RGF0YQpQYWdlU2l6ZTpBNAAAEgBDT01QQVRfRFVQTEVYX01PREUPAER1cGxleE1vZGU6Ok9mZg==</config:config-item>
+   <config:config-item config:name="RasterResolutionX" config:type="int">1000</config:config-item>
+   <config:config-item config:name="SyntaxStringRef" config:type="short">7</config:config-item>
+   <config:config-item config:name="RasterIsVisible" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="ShowZeroValues" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="ApplyUserData" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="RasterSubdivisionX" config:type="int">1</config:config-item>
+   <config:config-item config:name="IsRasterAxisSynchronized" config:type="boolean">true</config:config-item>
    <config:config-item-map-indexed config:name="ForbiddenCharacters">
     <config:config-item-map-entry>
      <config:config-item config:name="Language" config:type="string">en</config:config-item>
@@ -137,46 +147,22 @@
      <config:config-item config:name="EndLine" config:type="string"/>
     </config:config-item-map-entry>
    </config:config-item-map-indexed>
-   <config:config-item config:name="GridColor" config:type="int">12632256</config:config-item>
-   <config:config-item config:name="HasColumnRowHeaders" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="HasSheetTabs" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="IsDocumentShared" config:type="boolean">false</config:config-item>
-   <config:config-item config:name="IsKernAsianPunctuation" config:type="boolean">false</config:config-item>
-   <config:config-item config:name="IsOutlineSymbolsSet" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="IsRasterAxisSynchronized" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="IsSnapToRaster" config:type="boolean">false</config:config-item>
-   <config:config-item config:name="LinkUpdateMode" config:type="short">3</config:config-item>
    <config:config-item config:name="LoadReadonly" config:type="boolean">false</config:config-item>
-   <config:config-item config:name="PrinterName" config:type="string"/>
-   <config:config-item config:name="PrinterPaperFromSetup" config:type="boolean">false</config:config-item>
-   <config:config-item config:name="PrinterSetup" config:type="base64Binary">AAA=</config:config-item>
-   <config:config-item config:name="RasterIsVisible" config:type="boolean">false</config:config-item>
-   <config:config-item config:name="RasterResolutionX" config:type="int">1000</config:config-item>
-   <config:config-item config:name="RasterResolutionY" config:type="int">1000</config:config-item>
-   <config:config-item config:name="RasterSubdivisionX" config:type="int">1</config:config-item>
-   <config:config-item config:name="RasterSubdivisionY" config:type="int">1</config:config-item>
+   <config:config-item config:name="AutoCalculate" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="EmbedFonts" config:type="boolean">false</config:config-item>
    <config:config-item config:name="SaveThumbnail" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="SaveVersionOnClose" config:type="boolean">false</config:config-item>
    <config:config-item config:name="ShowGrid" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="ShowNotes" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="PrinterName" config:type="string">Generic Printer</config:config-item>
+   <config:config-item config:name="PrinterPaperFromSetup" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="CharacterCompressionType" config:type="short">0</config:config-item>
+   <config:config-item config:name="LinkUpdateMode" config:type="short">3</config:config-item>
    <config:config-item config:name="ShowPageBreaks" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="ShowZeroValues" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="SyntaxStringRef" config:type="short">7</config:config-item>
+   <config:config-item config:name="SaveVersionOnClose" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="IsSnapToRaster" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="IsKernAsianPunctuation" config:type="boolean">false</config:config-item>
    <config:config-item config:name="UpdateFromTemplate" config:type="boolean">true</config:config-item>
-   <config:config-item-map-named config:name="ScriptConfiguration">
-    <config:config-item-map-entry config:name="Requirements">
-     <config:config-item config:name="CodeName" config:type="string">Sheet1</config:config-item>
-    </config:config-item-map-entry>
-    <config:config-item-map-entry config:name="Definitions">
-     <config:config-item config:name="CodeName" config:type="string">Sheet4</config:config-item>
-    </config:config-item-map-entry>
-    <config:config-item-map-entry config:name="Assumptions (Only if needed)">
-     <config:config-item config:name="CodeName" config:type="string">Assumptions (Only if needed)</config:config-item>
-    </config:config-item-map-entry>
-    <config:config-item-map-entry config:name="Requirements_writing">
-     <config:config-item config:name="CodeName" config:type="string">Requirements_writing</config:config-item>
-    </config:config-item-map-entry>
-   </config:config-item-map-named>
+   <config:config-item config:name="IsDocumentShared" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="AllowPrintJobCancel" config:type="boolean">true</config:config-item>
   </config:config-item-set>
  </office:settings>
  <office:scripts>
@@ -187,14 +173,14 @@
   </office:script>
  </office:scripts>
  <office:font-face-decls>
-  <style:font-face style:name="Arial Unicode MS" svg:font-family="&apos;Arial Unicode MS&apos;" style:font-family-generic="system" style:font-pitch="variable"/>
   <style:font-face style:name="Liberation Sans" svg:font-family="&apos;Liberation Sans&apos;" style:font-family-generic="swiss" style:font-pitch="variable"/>
+  <style:font-face style:name="Arial Unicode MS" svg:font-family="&apos;Arial Unicode MS&apos;" style:font-family-generic="system" style:font-pitch="variable"/>
   <style:font-face style:name="PingFang SC" svg:font-family="&apos;PingFang SC&apos;" style:font-family-generic="system" style:font-pitch="variable"/>
  </office:font-face-decls>
  <office:styles>
   <style:default-style style:family="table-cell">
    <style:paragraph-properties style:tab-stop-distance="1.25cm"/>
-   <style:text-properties style:font-name="Liberation Sans" fo:font-size="10pt" fo:language="en" fo:country="US" style:font-name-asian="PingFang SC" style:font-size-asian="10pt" style:language-asian="zh" style:country-asian="CN" style:font-name-complex="Arial Unicode MS" style:font-size-complex="10pt" style:language-complex="hi" style:country-complex="IN"/>
+   <style:text-properties style:font-name="Liberation Sans" fo:language="en" fo:country="US" style:font-name-asian="PingFang SC" style:language-asian="zh" style:country-asian="CN" style:font-name-complex="Arial Unicode MS" style:language-complex="hi" style:country-complex="IN"/>
   </style:default-style>
   <number:number-style style:name="N0">
    <number:number number:min-integer-digits="1"/>
@@ -260,117 +246,114 @@
  </office:styles>
  <office:automatic-styles>
   <style:style style:name="co1" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="0.884cm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="1.321cm"/>
   </style:style>
   <style:style style:name="co2" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="1.154cm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="2.002cm"/>
   </style:style>
   <style:style style:name="co3" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="2.233cm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="3.399cm"/>
   </style:style>
   <style:style style:name="co4" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="12.545cm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="13.884cm"/>
   </style:style>
   <style:style style:name="co5" style:family="table-column">
    <style:table-column-properties fo:break-before="auto" style:column-width="2.258cm"/>
   </style:style>
   <style:style style:name="co6" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="11.471cm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="0.884cm"/>
   </style:style>
   <style:style style:name="co7" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="3.429cm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="14.258cm"/>
   </style:style>
   <style:style style:name="co8" style:family="table-column">
+   <style:table-column-properties fo:break-before="auto" style:column-width="4.526cm"/>
+  </style:style>
+  <style:style style:name="co9" style:family="table-column">
    <style:table-column-properties fo:break-before="auto" style:column-width="13.402cm"/>
   </style:style>
   <style:style style:name="ro1" style:family="table-row">
-   <style:table-row-properties style:row-height="0.452cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
+   <style:table-row-properties style:row-height="0.529cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
   </style:style>
   <style:style style:name="ro2" style:family="table-row">
-   <style:table-row-properties style:row-height="0.455cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
+   <style:table-row-properties style:row-height="0.559cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
   </style:style>
   <style:style style:name="ro3" style:family="table-row">
-   <style:table-row-properties style:row-height="1.187cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
+   <style:table-row-properties style:row-height="2.039cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
   </style:style>
   <style:style style:name="ro4" style:family="table-row">
-   <style:table-row-properties style:row-height="0.804cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
+   <style:table-row-properties style:row-height="1.545cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
   </style:style>
   <style:style style:name="ro5" style:family="table-row">
-   <style:table-row-properties style:row-height="3.307cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
+   <style:table-row-properties style:row-height="5.001cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
   </style:style>
   <style:style style:name="ro6" style:family="table-row">
-   <style:table-row-properties style:row-height="0.57cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
+   <style:table-row-properties style:row-height="3.027cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
   </style:style>
   <style:style style:name="ro7" style:family="table-row">
-   <style:table-row-properties style:row-height="2.085cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
+   <style:table-row-properties style:row-height="2.533cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
   </style:style>
   <style:style style:name="ro8" style:family="table-row">
-   <style:table-row-properties style:row-height="1.677cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
+   <style:table-row-properties style:row-height="1.053cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
   </style:style>
   <style:style style:name="ta1" style:family="table" style:master-page-name="Default">
    <style:table-properties table:display="true" style:writing-mode="lr-tb"/>
   </style:style>
-  <number:number-style style:name="N2">
-   <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1"/>
-  </number:number-style>
-  <style:style style:name="ce4" style:family="table-cell" style:parent-style-name="Default">
-   <style:text-properties fo:font-weight="bold" style:font-weight-asian="bold" style:font-weight-complex="bold"/>
-  </style:style>
   <style:style style:name="ce1" style:family="table-cell" style:parent-style-name="Default">
-   <style:text-properties fo:font-weight="bold" style:font-weight-asian="bold" style:font-weight-complex="bold"/>
+   <style:text-properties fo:font-size="12pt" fo:font-weight="bold" style:font-size-asian="12pt" style:font-weight-asian="bold" style:font-size-complex="12pt" style:font-weight-complex="bold"/>
   </style:style>
-  <style:style style:name="ce5" style:family="table-cell" style:parent-style-name="Default">
-   <style:text-properties fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
+  <style:style style:name="ce14" style:family="table-cell" style:parent-style-name="Default">
+   <style:text-properties fo:font-size="12pt" style:font-size-asian="12pt" style:font-size-complex="12pt"/>
   </style:style>
-  <style:style style:name="ce2" style:family="table-cell" style:parent-style-name="Default">
+  <style:style style:name="ce15" style:family="table-cell" style:parent-style-name="Default">
+   <style:text-properties fo:font-size="12pt" fo:font-weight="normal" style:font-size-asian="12pt" style:font-weight-asian="normal" style:font-size-complex="12pt" style:font-weight-complex="normal"/>
+  </style:style>
+  <style:style style:name="ce16" style:family="table-cell" style:parent-style-name="Default">
    <style:table-cell-properties fo:wrap-option="no-wrap"/>
-   <style:text-properties fo:font-size="13pt" fo:font-weight="bold" style:font-size-asian="13pt" style:font-weight-asian="bold" style:font-size-complex="13pt" style:font-weight-complex="bold"/>
+   <style:text-properties fo:font-size="12pt" fo:font-weight="bold" style:font-size-asian="12pt" style:font-weight-asian="bold" style:font-size-complex="12pt" style:font-weight-complex="bold"/>
   </style:style>
-  <style:style style:name="ce3" style:family="table-cell" style:parent-style-name="Default">
-   <style:text-properties fo:font-size="13pt" fo:font-weight="bold" style:font-size-asian="13pt" style:font-weight-asian="bold" style:font-size-complex="13pt" style:font-weight-complex="bold"/>
-  </style:style>
-  <style:style style:name="ce18" style:family="table-cell" style:parent-style-name="Default">
+  <style:style style:name="ce17" style:family="table-cell" style:parent-style-name="Default">
    <style:table-cell-properties style:text-align-source="value-type" style:repeat-content="false" fo:wrap-option="wrap" style:vertical-align="middle"/>
    <style:paragraph-properties fo:margin-left="0cm"/>
+   <style:text-properties fo:font-size="12pt" style:font-size-asian="12pt" style:font-size-complex="12pt"/>
+  </style:style>
+  <style:style style:name="ce18" style:family="table-cell" style:parent-style-name="Default">
+   <style:table-cell-properties style:text-align-source="value-type" style:repeat-content="false" style:vertical-align="middle"/>
+   <style:paragraph-properties fo:margin-left="0cm"/>
+   <style:text-properties fo:font-size="12pt" style:font-size-asian="12pt" style:font-size-complex="12pt"/>
   </style:style>
   <style:style style:name="ce19" style:family="table-cell" style:parent-style-name="Default">
    <style:table-cell-properties style:text-align-source="value-type" style:repeat-content="false" style:vertical-align="middle"/>
    <style:paragraph-properties fo:margin-left="0cm"/>
+   <style:text-properties fo:font-size="12pt" fo:font-weight="bold" style:font-size-asian="12pt" style:font-weight-asian="bold" style:font-size-complex="12pt" style:font-weight-complex="bold"/>
   </style:style>
-  <style:style style:name="ce6" style:family="table-cell" style:parent-style-name="Default">
-   <style:table-cell-properties style:text-align-source="value-type" style:repeat-content="false" style:vertical-align="middle"/>
-   <style:paragraph-properties fo:margin-left="0cm"/>
-   <style:text-properties fo:font-size="13pt" fo:font-weight="bold" style:font-size-asian="13pt" style:font-weight-asian="bold" style:font-size-complex="13pt" style:font-weight-complex="bold"/>
-  </style:style>
-  <style:style style:name="ce7" style:family="table-cell" style:parent-style-name="Default">
-   <style:table-cell-properties style:text-align-source="value-type" style:repeat-content="false" style:vertical-align="middle"/>
-   <style:paragraph-properties fo:margin-left="0cm"/>
-   <style:text-properties fo:font-weight="bold" style:font-weight-asian="bold" style:font-weight-complex="bold"/>
-  </style:style>
-  <style:style style:name="ce8" style:family="table-cell" style:parent-style-name="Default">
+  <style:style style:name="ce20" style:family="table-cell" style:parent-style-name="Default">
    <style:table-cell-properties style:text-align-source="value-type" style:repeat-content="false" fo:wrap-option="wrap" style:vertical-align="middle"/>
    <style:paragraph-properties fo:margin-left="0cm"/>
-   <style:text-properties fo:font-weight="bold" style:font-weight-asian="bold" style:font-weight-complex="bold"/>
+   <style:text-properties fo:font-size="12pt" fo:font-weight="bold" style:font-size-asian="12pt" style:font-weight-asian="bold" style:font-size-complex="12pt" style:font-weight-complex="bold"/>
   </style:style>
-  <style:style style:name="ce9" style:family="table-cell" style:parent-style-name="Default">
+  <style:style style:name="ce21" style:family="table-cell" style:parent-style-name="Default">
    <style:table-cell-properties style:text-align-source="value-type" style:repeat-content="false" fo:wrap-option="no-wrap" style:vertical-align="middle"/>
    <style:paragraph-properties fo:margin-left="0cm"/>
-   <style:text-properties fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
+   <style:text-properties fo:font-size="12pt" fo:font-weight="normal" style:font-size-asian="12pt" style:font-weight-asian="normal" style:font-size-complex="12pt" style:font-weight-complex="normal"/>
   </style:style>
-  <style:style style:name="ce10" style:family="table-cell" style:parent-style-name="Default">
+  <style:style style:name="ce22" style:family="table-cell" style:parent-style-name="Default">
    <style:table-cell-properties fo:wrap-option="no-wrap"/>
+   <style:text-properties fo:font-size="12pt" style:font-size-asian="12pt" style:font-size-complex="12pt"/>
   </style:style>
-  <style:style style:name="ce11" style:family="table-cell" style:parent-style-name="Default">
+  <style:style style:name="ce23" style:family="table-cell" style:parent-style-name="Default">
    <style:table-cell-properties fo:wrap-option="wrap"/>
+   <style:text-properties fo:font-size="12pt" style:font-size-asian="12pt" style:font-size-complex="12pt"/>
   </style:style>
-  <style:style style:name="ce12" style:family="table-cell" style:parent-style-name="Default">
+  <style:style style:name="ce24" style:family="table-cell" style:parent-style-name="Default">
    <style:table-cell-properties style:text-align-source="value-type" style:repeat-content="false" fo:wrap-option="no-wrap"/>
    <style:paragraph-properties fo:margin-left="0cm"/>
-   <style:text-properties fo:font-weight="normal" style:font-weight-asian="normal" style:font-weight-complex="normal"/>
+   <style:text-properties fo:font-size="12pt" fo:font-weight="normal" style:font-size-asian="12pt" style:font-weight-asian="normal" style:font-size-complex="12pt" style:font-weight-complex="normal"/>
   </style:style>
-  <style:style style:name="ce13" style:family="table-cell" style:parent-style-name="Default">
+  <style:style style:name="ce25" style:family="table-cell" style:parent-style-name="Default">
    <style:table-cell-properties style:text-align-source="value-type" style:repeat-content="false" fo:wrap-option="no-wrap" style:vertical-align="middle"/>
    <style:paragraph-properties fo:margin-left="0cm"/>
+   <style:text-properties fo:font-size="12pt" style:font-size-asian="12pt" style:font-size-complex="12pt"/>
   </style:style>
   <style:page-layout style:name="pm1">
    <style:page-layout-properties style:writing-mode="lr-tb"/>
@@ -403,60 +386,44 @@
  </office:automatic-styles>
  <office:master-styles>
   <style:master-page style:name="Default" style:page-layout-name="pm1">
-   <style:header>
-    <text:p><text:sheet-name>???</text:sheet-name></text:p>
-   </style:header>
+   <style:header style:display="false"/>
    <style:header-left style:display="false"/>
-   <style:header-first style:display="false"/>
-   <style:footer>
-    <text:p>Page <text:page-number>1</text:page-number></text:p>
-   </style:footer>
+   <style:footer style:display="false"/>
    <style:footer-left style:display="false"/>
-   <style:footer-first style:display="false"/>
   </style:master-page>
   <style:master-page style:name="Report" style:page-layout-name="pm2">
-   <style:header>
-    <style:region-left>
-     <text:p><text:sheet-name>???</text:sheet-name><text:s/>(<text:title>???</text:title>)</text:p>
-    </style:region-left>
-    <style:region-right>
-     <text:p><text:date style:data-style-name="N2" text:date-value="2022-05-17">00-00-0000</text:date>, <text:time style:data-style-name="N2" text:time-value="11:26:42.624887158">00:00:00</text:time></text:p>
-    </style:region-right>
-   </style:header>
+   <style:header style:display="false"/>
    <style:header-left style:display="false"/>
-   <style:header-first style:display="false"/>
-   <style:footer>
-    <text:p>Page <text:page-number>1</text:page-number><text:s/>/ <text:page-count>99</text:page-count></text:p>
-   </style:footer>
+   <style:footer style:display="false"/>
    <style:footer-left style:display="false"/>
-   <style:footer-first style:display="false"/>
   </style:master-page>
  </office:master-styles>
  <office:body>
   <office:spreadsheet>
    <table:calculation-settings table:automatic-find-labels="false" table:use-regular-expressions="false" table:use-wildcards="true"/>
    <table:table table:name="Requirements" table:style-name="ta1">
-    <table:table-column table:style-name="co1" table:default-cell-style-name="Default"/>
-    <table:table-column table:style-name="co2" table:default-cell-style-name="Default"/>
-    <table:table-column table:style-name="co3" table:default-cell-style-name="Default"/>
-    <table:table-column table:style-name="co4" table:default-cell-style-name="Default"/>
-    <table:table-column table:style-name="co5" table:default-cell-style-name="Default"/>
+    <table:table-column table:style-name="co1" table:default-cell-style-name="ce14"/>
+    <table:table-column table:style-name="co2" table:default-cell-style-name="ce14"/>
+    <table:table-column table:style-name="co3" table:default-cell-style-name="ce14"/>
+    <table:table-column table:style-name="co4" table:default-cell-style-name="ce14"/>
+    <table:table-column table:style-name="co5" table:number-columns-repeated="1020" table:default-cell-style-name="ce14"/>
     <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce4" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string">
       <text:p>ID</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce4" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string">
       <text:p>Level</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce4" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string">
       <text:p>Traced from</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce4" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string">
       <text:p>Requirement</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce4" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string">
       <text:p>Note</text:p>
      </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1019"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell table:number-columns-repeated="2" office:value-type="float" office:value="0" calcext:value-type="float">
@@ -466,7 +433,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>The System provide capability to store Data</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
@@ -479,7 +446,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>The System provide capability to trace Revision history</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
@@ -492,7 +459,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>The System provide capability for different Roles</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="3" calcext:value-type="float">
@@ -505,7 +472,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>The system provide capability to create New Projects</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="4" calcext:value-type="float">
@@ -518,7 +485,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>The system provide capability to Remove Projects</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="5" calcext:value-type="float">
@@ -531,7 +498,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>The system provide capability to Rename Projects</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="6" calcext:value-type="float">
@@ -544,7 +511,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>The system provide capability to Modify Projects</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="7" calcext:value-type="float">
@@ -557,7 +524,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>The system provide capability to generate “New” Items</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="8" calcext:value-type="float">
@@ -570,7 +537,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>The system provide capability to Remove Items</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="9" calcext:value-type="float">
@@ -583,7 +550,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>The system provide capability to Rename Items</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="10" calcext:value-type="float">
@@ -596,7 +563,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>The system should provide capability to generate New files</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="11" calcext:value-type="float">
@@ -609,7 +576,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>The system should provide capability to delete “New” files</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="12" calcext:value-type="float">
@@ -622,7 +589,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>The system should provide capability to Rename Files</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="13" calcext:value-type="float">
@@ -633,9 +600,9 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall provide capability to give write access on request</text:p>
+      <text:p>The System provide capability to copy items</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="14" calcext:value-type="float">
@@ -646,9 +613,9 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall provide capability to block request on Permissions</text:p>
+      <text:p>The System provide capability to copy assemblies (that means with parts too)</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="15" calcext:value-type="float">
@@ -659,9 +626,9 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall provide capability to block request on States</text:p>
+      <text:p>The System shall provide capability to give write access on request</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="16" calcext:value-type="float">
@@ -672,9 +639,9 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall provide capability to block request on Activity</text:p>
+      <text:p>The System shall provide capability to block request on Permissions</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="17" calcext:value-type="float">
@@ -685,9 +652,9 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall provide capability to changes States</text:p>
+      <text:p>The System shall provide capability to block request on States</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="18" calcext:value-type="float">
@@ -698,9 +665,9 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall lock items based on its State</text:p>
+      <text:p>The System shall provide capability to block request on Activity</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="19" calcext:value-type="float">
@@ -711,9 +678,9 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall lock files based on its State</text:p>
+      <text:p>The System shall provide capability to changes States</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="20" calcext:value-type="float">
@@ -724,9 +691,9 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall lock items based on its Activity</text:p>
+      <text:p>The System shall lock items based on its State</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="21" calcext:value-type="float">
@@ -737,9 +704,9 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall lock files based on its Activity</text:p>
+      <text:p>The System shall lock files based on its State</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="22" calcext:value-type="float">
@@ -750,9 +717,9 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall Interface with users</text:p>
+      <text:p>The System shall lock items based on its Activity</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="23" calcext:value-type="float">
@@ -763,9 +730,9 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall Interface with FreeCAD</text:p>
+      <text:p>The System shall lock files based on its Activity</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="24" calcext:value-type="float">
@@ -776,9 +743,9 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system provide capability to give users Permissions</text:p>
+      <text:p>The System shall Interface with users</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="25" calcext:value-type="float">
@@ -789,9 +756,9 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system provide capability to change users Permissions</text:p>
+      <text:p>The System shall Interface with FreeCAD</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="26" calcext:value-type="float">
@@ -802,9 +769,9 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The User Should interact with the System via FreeCAD</text:p>
+      <text:p>The system provide capability to give users Permissions</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="27" calcext:value-type="float">
@@ -815,9 +782,9 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System should be as secure as possible</text:p>
+      <text:p>The system provide capability to change users Permissions</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="28" calcext:value-type="float">
@@ -828,13 +795,39 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System should work without extra Resources(Hardware)</text:p>
+      <text:p>The User Should interact with the System via FreeCAD</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="29" calcext:value-type="float">
       <text:p>29</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="0" calcext:value-type="float">
+      <text:p>0</text:p>
+     </table:table-cell>
+     <table:table-cell/>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>The System should be as secure as possible</text:p>
+     </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1020"/>
+    </table:table-row>
+    <table:table-row table:style-name="ro1">
+     <table:table-cell office:value-type="float" office:value="30" calcext:value-type="float">
+      <text:p>30</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="0" calcext:value-type="float">
+      <text:p>0</text:p>
+     </table:table-cell>
+     <table:table-cell/>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>The System should work without extra Resources(Hardware)</text:p>
+     </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1020"/>
+    </table:table-row>
+    <table:table-row table:style-name="ro1">
+     <table:table-cell office:value-type="float" office:value="31" calcext:value-type="float">
+      <text:p>31</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
@@ -843,11 +836,11 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>The System should work on a RaspberryPi and bigger</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
-     <table:table-cell office:value-type="float" office:value="30" calcext:value-type="float">
-      <text:p>30</text:p>
+     <table:table-cell office:value-type="float" office:value="32" calcext:value-type="float">
+      <text:p>32</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
@@ -856,31 +849,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>The System should work with tree Assembly Types</text:p>
      </table:table-cell>
-     <table:table-cell/>
-    </table:table-row>
-    <table:table-row table:style-name="ro1">
-     <table:table-cell office:value-type="float" office:value="31" calcext:value-type="float">
-      <text:p>31</text:p>
-     </table:table-cell>
-     <table:table-cell table:number-columns-repeated="2" office:value-type="float" office:value="1" calcext:value-type="float">
-      <text:p>1</text:p>
-     </table:table-cell>
-     <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>Every Item Shall have a Revision</text:p>
-     </table:table-cell>
-     <table:table-cell/>
-    </table:table-row>
-    <table:table-row table:style-name="ro1">
-     <table:table-cell office:value-type="float" office:value="32" calcext:value-type="float">
-      <text:p>32</text:p>
-     </table:table-cell>
-     <table:table-cell table:number-columns-repeated="2" office:value-type="float" office:value="1" calcext:value-type="float">
-      <text:p>1</text:p>
-     </table:table-cell>
-     <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>Every Part Shall have a Revision</text:p>
-     </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="33" calcext:value-type="float">
@@ -890,417 +859,440 @@
       <text:p>1</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>Every File Shall have a Revision </text:p>
+      <text:p>Every Item Shall have a Revision</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="34" calcext:value-type="float">
       <text:p>34</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="2" office:value-type="float" office:value="1" calcext:value-type="float">
+      <text:p>1</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>Every Part Shall have a Revision</text:p>
+     </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="35" calcext:value-type="float">
       <text:p>35</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="2" office:value-type="float" office:value="1" calcext:value-type="float">
+      <text:p>1</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>Every File Shall have a Revision </text:p>
+     </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="36" calcext:value-type="float">
       <text:p>36</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="37" calcext:value-type="float">
       <text:p>37</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="38" calcext:value-type="float">
       <text:p>38</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="39" calcext:value-type="float">
       <text:p>39</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="40" calcext:value-type="float">
       <text:p>40</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="41" calcext:value-type="float">
       <text:p>41</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="42" calcext:value-type="float">
       <text:p>42</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="43" calcext:value-type="float">
       <text:p>43</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="44" calcext:value-type="float">
       <text:p>44</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="45" calcext:value-type="float">
       <text:p>45</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="46" calcext:value-type="float">
       <text:p>46</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="47" calcext:value-type="float">
       <text:p>47</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="48" calcext:value-type="float">
       <text:p>48</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="49" calcext:value-type="float">
       <text:p>49</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="50" calcext:value-type="float">
       <text:p>50</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="51" calcext:value-type="float">
       <text:p>51</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="52" calcext:value-type="float">
       <text:p>52</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="53" calcext:value-type="float">
       <text:p>53</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="54" calcext:value-type="float">
       <text:p>54</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="55" calcext:value-type="float">
       <text:p>55</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="56" calcext:value-type="float">
       <text:p>56</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="57" calcext:value-type="float">
       <text:p>57</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="58" calcext:value-type="float">
       <text:p>58</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="59" calcext:value-type="float">
       <text:p>59</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="60" calcext:value-type="float">
       <text:p>60</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="61" calcext:value-type="float">
       <text:p>61</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="62" calcext:value-type="float">
       <text:p>62</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="63" calcext:value-type="float">
       <text:p>63</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="64" calcext:value-type="float">
       <text:p>64</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="65" calcext:value-type="float">
       <text:p>65</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="66" calcext:value-type="float">
       <text:p>66</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="67" calcext:value-type="float">
       <text:p>67</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="68" calcext:value-type="float">
       <text:p>68</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="69" calcext:value-type="float">
       <text:p>69</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="70" calcext:value-type="float">
       <text:p>70</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="71" calcext:value-type="float">
       <text:p>71</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="72" calcext:value-type="float">
       <text:p>72</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="73" calcext:value-type="float">
       <text:p>73</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="74" calcext:value-type="float">
       <text:p>74</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="75" calcext:value-type="float">
       <text:p>75</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="76" calcext:value-type="float">
       <text:p>76</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="77" calcext:value-type="float">
       <text:p>77</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="78" calcext:value-type="float">
       <text:p>78</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="79" calcext:value-type="float">
       <text:p>79</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="80" calcext:value-type="float">
       <text:p>80</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="81" calcext:value-type="float">
       <text:p>81</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="82" calcext:value-type="float">
       <text:p>82</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="83" calcext:value-type="float">
       <text:p>83</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="84" calcext:value-type="float">
       <text:p>84</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="85" calcext:value-type="float">
       <text:p>85</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="86" calcext:value-type="float">
       <text:p>86</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="87" calcext:value-type="float">
       <text:p>87</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="88" calcext:value-type="float">
       <text:p>88</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="89" calcext:value-type="float">
       <text:p>89</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="90" calcext:value-type="float">
       <text:p>90</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="91" calcext:value-type="float">
       <text:p>91</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="92" calcext:value-type="float">
       <text:p>92</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="93" calcext:value-type="float">
       <text:p>93</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="94" calcext:value-type="float">
       <text:p>94</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="95" calcext:value-type="float">
       <text:p>95</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="96" calcext:value-type="float">
       <text:p>96</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="97" calcext:value-type="float">
       <text:p>97</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="98" calcext:value-type="float">
       <text:p>98</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="99" calcext:value-type="float">
       <text:p>99</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="100" calcext:value-type="float">
       <text:p>100</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="4"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
+    </table:table-row>
+    <table:table-row table:style-name="ro1" table:number-rows-repeated="2">
+     <table:table-cell table:style-name="Default"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
+    </table:table-row>
+    <table:table-row table:style-name="ro1" table:number-rows-repeated="1048471">
+     <table:table-cell table:number-columns-repeated="1024"/>
+    </table:table-row>
+    <table:table-row table:style-name="ro1">
+     <table:table-cell table:number-columns-repeated="1024"/>
     </table:table-row>
    </table:table>
    <table:table table:name="Definitions" table:style-name="ta1">
-    <table:table-column table:style-name="co1" table:default-cell-style-name="Default"/>
-    <table:table-column table:style-name="co5" table:default-cell-style-name="Default"/>
-    <table:table-column table:style-name="co6" table:default-cell-style-name="Default"/>
+    <table:table-column table:style-name="co6" table:default-cell-style-name="ce14"/>
+    <table:table-column table:style-name="co5" table:default-cell-style-name="ce14"/>
+    <table:table-column table:style-name="co7" table:default-cell-style-name="ce14"/>
+    <table:table-column table:style-name="co5" table:number-columns-repeated="1021" table:default-cell-style-name="ce14"/>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>Id</text:p>
@@ -1311,6 +1303,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>Definition</text:p>
      </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="0" calcext:value-type="float">
@@ -1322,6 +1315,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>State as Result of User Action</text:p>
      </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
@@ -1333,6 +1327,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>State of an object, document, File</text:p>
      </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
@@ -1344,6 +1339,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>FreePDM</text:p>
      </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="3" calcext:value-type="float">
@@ -1355,6 +1351,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>(Creating) Object, Document, File that don’t exist yet</text:p>
      </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="4" calcext:value-type="float">
@@ -1366,6 +1363,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>(Modification) Object, Document, File that Never seen a Release State</text:p>
      </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="5" calcext:value-type="float">
@@ -1377,6 +1375,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>State Where a Object, Part is alloud for production purposes</text:p>
      </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="6" calcext:value-type="float">
@@ -1388,6 +1387,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>A (Sub)System where a group of objects, Parts, Assemblies belong to</text:p>
      </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="7" calcext:value-type="float">
@@ -1396,7 +1396,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>Data</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="8" calcext:value-type="float">
@@ -1408,6 +1408,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>Point where two or more System interact with each other</text:p>
      </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="9" calcext:value-type="float">
@@ -1419,6 +1420,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>A group of objects, Files, Data, that are related</text:p>
      </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="10" calcext:value-type="float">
@@ -1430,6 +1432,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>(Hardware) Hardware like servers etc</text:p>
      </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="11" calcext:value-type="float">
@@ -1441,6 +1444,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>Small type of hardware</text:p>
      </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="12" calcext:value-type="float">
@@ -1452,61 +1456,71 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>A (set of )Functions a user can full-fill, A (set of )Characteristic a have</text:p>
      </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="13" calcext:value-type="float">
       <text:p>13</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="2"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="14" calcext:value-type="float">
       <text:p>14</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="2"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="15" calcext:value-type="float">
       <text:p>15</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="2"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="16" calcext:value-type="float">
       <text:p>16</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="2"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="17" calcext:value-type="float">
       <text:p>17</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="2"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="18" calcext:value-type="float">
       <text:p>18</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="2"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="float" office:value="19" calcext:value-type="float">
       <text:p>19</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="2"/>
+     <table:table-cell table:number-columns-repeated="1023"/>
+    </table:table-row>
+    <table:table-row table:style-name="ro1" table:number-rows-repeated="1048554">
+     <table:table-cell table:number-columns-repeated="1024"/>
+    </table:table-row>
+    <table:table-row table:style-name="ro1">
+     <table:table-cell table:number-columns-repeated="1024"/>
     </table:table-row>
    </table:table>
    <table:table table:name="Assumptions (Only if needed)" table:style-name="ta1">
-    <table:table-column table:style-name="co5" table:default-cell-style-name="Default"/>
+    <table:table-column table:style-name="co5" table:number-columns-repeated="1024" table:default-cell-style-name="ce14"/>
+    <table:table-row table:style-name="ro1" table:number-rows-repeated="1048575">
+     <table:table-cell table:number-columns-repeated="1024"/>
+    </table:table-row>
     <table:table-row table:style-name="ro1">
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="1024"/>
     </table:table-row>
    </table:table>
    <table:table table:name="Requirements_writing" table:style-name="ta1">
-    <table:table-column table:style-name="co7" table:default-cell-style-name="Default"/>
-    <table:table-column table:style-name="co8" table:default-cell-style-name="Default"/>
-    <table:table-column table:style-name="co5" table:number-columns-repeated="1022" table:default-cell-style-name="Default"/>
-    <table:table-row table:style-name="ro1">
+    <table:table-column table:style-name="co8" table:default-cell-style-name="ce14"/>
+    <table:table-column table:style-name="co9" table:default-cell-style-name="ce14"/>
+    <table:table-column table:style-name="co5" table:number-columns-repeated="1022" table:default-cell-style-name="ce14"/>
+    <table:table-row table:style-name="ro2">
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>Original Document</text:p>
      </table:table-cell>
@@ -1517,25 +1531,25 @@
     <table:table-row table:style-name="ro1">
      <table:table-cell table:number-columns-repeated="1024"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string">
       <text:p>Good Requirement:</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce10" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce22" office:value-type="string" calcext:value-type="string">
       <text:p>necessary,</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce1"/>
-     <table:table-cell table:style-name="ce10" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce22" office:value-type="string" calcext:value-type="string">
       <text:p>Verifiable,</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
-    <table:table-row table:style-name="ro2">
+    <table:table-row table:style-name="ro1">
      <table:table-cell table:style-name="ce1"/>
-     <table:table-cell table:style-name="ce10" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce22" office:value-type="string" calcext:value-type="string">
       <text:p>Attainable</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
@@ -1550,37 +1564,37 @@
      <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro3">
-     <table:table-cell table:style-name="ce5" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce15" office:value-type="string" calcext:value-type="string">
       <text:p>Need</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce11" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce23" office:value-type="string" calcext:value-type="string">
       <text:p>If there is a doubt about the necessity of a requirement, then ask: What is the worst thing that could happen if this requirement were not included? If you do not find an answer of any consequence, then you probably do not need the requirement.</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
     <table:table-row table:style-name="ro4">
-     <table:table-cell table:style-name="ce5" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce15" office:value-type="string" calcext:value-type="string">
       <text:p>Verification</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce11" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce23" office:value-type="string" calcext:value-type="string">
       <text:p>As you write a requirement, determine how you will verify it. Determine the criteria for acceptance. This step will help insure that the requirement is verifiable.</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
     <table:table-row table:style-name="ro5">
-     <table:table-cell table:style-name="ce5" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce15" office:value-type="string" calcext:value-type="string">
       <text:p>Attainable</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce11" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce23" office:value-type="string" calcext:value-type="string">
       <text:p>To be attainable, the requirement must be technically feasible and fit within budget, schedule, and other constraints. If you are uncertain about whether a requirement is technically feasible, then you will need to conduct the research or studies to determine its feasibility. If still uncertain, then you may need to state what you want as a goal, not as a requirement. Even is a requirement is technically feasible, it may not be attainable due to budget, schedule, or other, e.g., weight, constraints. There is no point in writing a requirement for something you cannot afford -- be reasonable.</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
     <table:table-row table:style-name="ro3">
-     <table:table-cell table:style-name="ce5" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce15" office:value-type="string" calcext:value-type="string">
       <text:p>Clarity</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce11" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce23" office:value-type="string" calcext:value-type="string">
       <text:p>Each requirement should express a single thought, be concise, and simple. It is important that the requirement not be misunderstood -- it must be unambiguous. Simple sentences will most often suffice for a good requirement.</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
@@ -1592,7 +1606,7 @@
      <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string">
       <text:p>Common Problems</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce10" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce22" office:value-type="string" calcext:value-type="string">
       <text:p>Making bad assumptions</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
@@ -1642,8 +1656,8 @@
     <table:table-row table:style-name="ro1">
      <table:table-cell table:number-columns-repeated="1024"/>
     </table:table-row>
-    <table:table-row table:style-name="ro6">
-     <table:table-cell table:style-name="ce2" office:value-type="string" calcext:value-type="string">
+    <table:table-row table:style-name="ro1">
+     <table:table-cell table:style-name="ce16" office:value-type="string" calcext:value-type="string">
       <text:p>Making bad assumptions</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1023"/>
@@ -1657,8 +1671,8 @@
     <table:table-row table:style-name="ro1">
      <table:table-cell table:number-columns-repeated="1024"/>
     </table:table-row>
-    <table:table-row table:style-name="ro6">
-     <table:table-cell table:style-name="ce3" office:value-type="string" calcext:value-type="string">
+    <table:table-row table:style-name="ro1">
+     <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string">
       <text:p>Writing implementation (HOW) instead of requirements (WHAT)</text:p>
      </table:table-cell>
      <table:table-cell/>
@@ -1667,15 +1681,15 @@
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
-    <table:table-row table:style-name="ro7">
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1">
+    <table:table-row table:style-name="ro6">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1">
       <text:p>There are two major dangers in stating implementation. The one most often cited is that of forcing a design when not intended. The second danger is more subtle and potentially much more detrimental. By stating implementation, the author may be lulled into believing that all requirements are covered. In fact, very important requirements may be missing, and the provider can deliver what as asked for and still not deliver what is wanted.</text:p>
      </table:table-cell>
      <table:covered-table-cell/>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
-    <table:table-row table:style-name="ro3">
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1"><text:p><text:span text:style-name="T1">The Implementation Trap.</text:span> If you have been doing design studies at a low level, you may begin to document these results as high level requirements -- this is the implementation trap. You will be defining implementation instead of requirements.</text:p>
+    <table:table-row table:style-name="ro4">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1"><text:p><text:span text:style-name="T1">The Implementation Trap.</text:span> If you have been doing design studies at a low level, you may begin to document these results as high level requirements -- this is the implementation trap. You will be defining implementation instead of requirements.</text:p>
      </table:table-cell>
      <table:covered-table-cell/>
      <table:table-cell table:number-columns-repeated="1022"/>
@@ -1683,8 +1697,8 @@
     <table:table-row table:style-name="ro1">
      <table:table-cell table:number-columns-repeated="1024"/>
     </table:table-row>
-    <table:table-row table:style-name="ro6">
-     <table:table-cell table:style-name="ce3" office:value-type="string" calcext:value-type="string">
+    <table:table-row table:style-name="ro1">
+     <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string">
       <text:p>Describing operations instead of writing requirements</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1023"/>
@@ -1692,14 +1706,14 @@
     <table:table-row table:style-name="ro1">
      <table:table-cell table:number-columns-repeated="1024"/>
     </table:table-row>
-    <table:table-row table:style-name="ro6">
-     <table:table-cell table:style-name="ce3" office:value-type="string" calcext:value-type="string">
+    <table:table-row table:style-name="ro1">
+     <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string">
       <text:p>Using incorrect terms</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro7">
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1"><text:p>In a specification, there are terms to be avoided and terms that must be used in a very specific manner. Authors need to understand the use of shall, will, and should: </text:p><text:p>- <text:span text:style-name="T1">Requirements</text:span> use shall.</text:p><text:p>- <text:span text:style-name="T1">Statements</text:span> of fact use will.</text:p><text:p>- <text:span text:style-name="T1">Goals</text:span> use should.</text:p>
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1"><text:p>In a specification, there are terms to be avoided and terms that must be used in a very specific manner. Authors need to understand the use of shall, will, and should: </text:p><text:p>- <text:span text:style-name="T1">Requirements</text:span> use shall.</text:p><text:p>- <text:span text:style-name="T1">Statements</text:span> of fact use will.</text:p><text:p>- <text:span text:style-name="T1">Goals</text:span> use should.</text:p>
      </table:table-cell>
      <table:covered-table-cell/>
      <table:table-cell table:number-columns-repeated="1022"/>
@@ -1707,96 +1721,96 @@
     <table:table-row table:style-name="ro1" table:number-rows-repeated="2">
      <table:table-cell table:number-columns-repeated="1024"/>
     </table:table-row>
-    <table:table-row table:style-name="ro6">
-     <table:table-cell table:style-name="ce3" office:value-type="string" calcext:value-type="string">
+    <table:table-row table:style-name="ro1">
+     <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string">
       <text:p>Using incorrect sentence structure or bad grammar</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
-    <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce19" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1"><text:p><text:span text:style-name="T1">Subject Trap</text:span>. </text:p>
+    <table:table-row table:style-name="ro2">
+     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1"><text:p><text:span text:style-name="T1">Subject Trap</text:span>. </text:p>
+     </table:table-cell>
+     <table:covered-table-cell/>
+     <table:table-cell table:number-columns-repeated="1022"/>
+    </table:table-row>
+    <table:table-row table:style-name="ro2">
+     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1"><text:p><text:span text:style-name="T1">Bad Grammar</text:span>. If you use bad grammar you risk that the reader will misinterpret what is stated.</text:p>
      </table:table-cell>
      <table:covered-table-cell/>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce19" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1"><text:p><text:span text:style-name="T1">Bad Grammar</text:span>. If you use bad grammar you risk that the reader will misinterpret what is stated.</text:p>
-     </table:table-cell>
-     <table:covered-table-cell/>
-     <table:table-cell table:number-columns-repeated="1022"/>
-    </table:table-row>
-    <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce19"/>
+     <table:table-cell table:style-name="ce18"/>
      <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
-    <table:table-row table:style-name="ro6">
-     <table:table-cell table:style-name="ce6" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1">
+    <table:table-row table:style-name="ro1">
+     <table:table-cell table:style-name="ce19" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1">
       <text:p>Unverifiable</text:p>
      </table:table-cell>
      <table:covered-table-cell/>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce7" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce19" office:value-type="string" calcext:value-type="string">
       <text:p>Every requirement must be verified.</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
-    <table:table-row table:style-name="ro8">
-     <table:table-cell table:style-name="ce8" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1"><text:p>Ambiguous <text:span text:style-name="T2">Term A major cause of unverifiable requirements is the use of ambiguous terms. The terms are ambiguous because they are subjective -- they mean something different to everyone who reads them. This can be avoided by giving people words to avoid. The following lists ambiguous words that we have encountered.</text:span></text:p>
+    <table:table-row table:style-name="ro7">
+     <table:table-cell table:style-name="ce20" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1"><text:p>Ambiguous <text:span text:style-name="T2">Term A major cause of unverifiable requirements is the use of ambiguous terms. The terms are ambiguous because they are subjective -- they mean something different to everyone who reads them. This can be avoided by giving people words to avoid. The following lists ambiguous words that we have encountered.</text:span></text:p>
      </table:table-cell>
      <table:covered-table-cell/>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce9" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce21" office:value-type="string" calcext:value-type="string">
       <text:p>- Minimize</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce9" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce21" office:value-type="string" calcext:value-type="string">
       <text:p>- Easy</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce9" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce21" office:value-type="string" calcext:value-type="string">
       <text:p>- Maximize</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce9" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce21" office:value-type="string" calcext:value-type="string">
       <text:p>- Sufficient</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce9" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce21" office:value-type="string" calcext:value-type="string">
       <text:p>- Rapid</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce9" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce21" office:value-type="string" calcext:value-type="string">
       <text:p>- Adequate</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce9" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce21" office:value-type="string" calcext:value-type="string">
       <text:p>- User-friendly</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce9" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce21" office:value-type="string" calcext:value-type="string">
       <text:p>- Quick</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
-     <table:table-cell table:style-name="ce12"/>
+     <table:table-cell table:style-name="ce24"/>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
-    <table:table-row table:style-name="ro6">
-     <table:table-cell table:style-name="ce3" office:value-type="string" calcext:value-type="string">
+    <table:table-row table:style-name="ro1">
+     <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string">
       <text:p>Missing requirements</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro4">
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1">
       <text:p>Missing items can be avoided by using a standard outline for your specification, such as those shown in Mil- Std-490 or IEEE P1233, and expanding the outline for your program.</text:p>
      </table:table-cell>
      <table:covered-table-cell/>
@@ -1808,116 +1822,122 @@
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
-    <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string">
+    <table:table-row table:style-name="ro2">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string">
       <text:p>- Functional</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string">
       <text:p>- Reliability</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
-    <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string">
+    <table:table-row table:style-name="ro2">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string">
       <text:p>- Performance</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string">
       <text:p>- Maintainability</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
-    <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string">
+    <table:table-row table:style-name="ro2">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string">
       <text:p>- Interface</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string">
       <text:p>- Operability</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
-    <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string">
+    <table:table-row table:style-name="ro2">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string">
       <text:p>- Environment</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string">
       <text:p>- Safety</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
-    <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string">
+    <table:table-row table:style-name="ro2">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string">
       <text:p>- Deployment</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string">
       <text:p>- Regulatory</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
-    <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string">
+    <table:table-row table:style-name="ro2">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string">
       <text:p>- Transportation</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string">
       <text:p>- Security</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
-    <table:table-row table:style-name="ro1">
+    <table:table-row table:style-name="ro2">
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>- Deployment</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string">
       <text:p>- Privacy</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
-    <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string">
+    <table:table-row table:style-name="ro2">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string">
       <text:p>- Training</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce13" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce25" office:value-type="string" calcext:value-type="string">
       <text:p>- Design constraints</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
-    <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string">
+    <table:table-row table:style-name="ro2">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string">
       <text:p>- Personnel</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce10" table:number-columns-repeated="1024"/>
+     <table:table-cell table:style-name="ce22" table:number-columns-repeated="1024"/>
     </table:table-row>
-    <table:table-row table:style-name="ro6">
-     <table:table-cell table:style-name="ce3" office:value-type="string" calcext:value-type="string">
+    <table:table-row table:style-name="ro1">
+     <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string">
       <text:p>Over-specifying</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1023"/>
     </table:table-row>
-    <table:table-row table:style-name="ro3">
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1">
+    <table:table-row table:style-name="ro4">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1">
       <text:p>The DoD has stated that over-specification is the primary cause of cost overruns on their programs. Over-specifying is most often from stating something that is unnecessary or from stating overly stringent requirements.</text:p>
      </table:table-cell>
      <table:covered-table-cell/>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
-    <table:table-row table:style-name="ro4">
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1"><text:p><text:span text:style-name="T1">Unnecessary Items</text:span>. Unnecessary requirements creep into a specification in a number of ways. The only cure is careful management review and control.</text:p>
+    <table:table-row table:style-name="ro8">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1"><text:p><text:span text:style-name="T1">Unnecessary Items</text:span>. Unnecessary requirements creep into a specification in a number of ways. The only cure is careful management review and control.</text:p>
      </table:table-cell>
      <table:covered-table-cell/>
      <table:table-cell table:number-columns-repeated="1022"/>
     </table:table-row>
-    <table:table-row table:style-name="ro3">
-     <table:table-cell table:style-name="ce18" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1"><text:p><text:span text:style-name="T1">Over Stringent</text:span>. Most requirements that are too stringent are that way accidentally, not intentionally. A common cause is when an author writes down a number but does not consider the tolerances that are allowable.</text:p>
+    <table:table-row table:style-name="ro4">
+     <table:table-cell table:style-name="ce17" office:value-type="string" calcext:value-type="string" table:number-columns-spanned="2" table:number-rows-spanned="1"><text:p><text:span text:style-name="T1">Over Stringent</text:span>. Most requirements that are too stringent are that way accidentally, not intentionally. A common cause is when an author writes down a number but does not consider the tolerances that are allowable.</text:p>
      </table:table-cell>
      <table:covered-table-cell/>
      <table:table-cell table:number-columns-repeated="1022"/>
+    </table:table-row>
+    <table:table-row table:style-name="ro1" table:number-rows-repeated="1048513">
+     <table:table-cell table:number-columns-repeated="1024"/>
+    </table:table-row>
+    <table:table-row table:style-name="ro1">
+     <table:table-cell table:number-columns-repeated="1024"/>
     </table:table-row>
    </table:table>
    <table:named-expressions/>
    <table:database-ranges>
-    <table:database-range table:name="__Anonymous_Sheet_DB__0" table:target-range-address="Requirements.A1:Requirements.E102" table:display-filter-buttons="true"/>
+    <table:database-range table:name="__Anonymous_Sheet_DB__0" table:target-range-address="Requirements.A1:Requirements.E104" table:display-filter-buttons="true" table:orientation="column"/>
     <table:database-range table:name="__Anonymous_Sheet_DB__1" table:target-range-address="Definitions.A1:Definitions.C102" table:display-filter-buttons="true">
      <table:sort>
       <table:sort-by table:field-number="0" table:data-type="automatic"/>
