@@ -15,15 +15,15 @@
 
 ## Introduction
 
-## [Requested Information](FreePDM_01-RequestedInformation.md)
+## [Requested%20Information](FreePDM_01-RequestedInformation.md)
 
 ## [Workflows](FreePDM_02-Workflows.md)
 
-## [Design decisions](FreePDM_03-DesignDecisions.md)
+## [Design%20decisions](FreePDM_03-DesignDecisions.md)
 
 ### [Attributes](FreePDM_03-1-Attributes.md)
 
-### [SVN Project Structure](FreePDM_03-2-SVNProjectStructure.md)
+### [SVN%20Project%20Structure](FreePDM_03-2-SVNProjectStructure.md)
 
 ## [Requirements](FreePDM_04-Requirements.md)
 
