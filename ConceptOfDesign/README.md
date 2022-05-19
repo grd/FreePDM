@@ -8,8 +8,8 @@
 1. [Requested Information](#Requested Information)
 2. [Workflows](#Workflows)
 3. [Design decisions](#Design decisions)
-3.1. [Attributes](#Attributes)
-3.2. [SVN Project Structure](#SVN Project Structure)
+	1. [Attributes](#Attributes)
+	2. [SVN Project Structure](#SVN Project Structure)
 4. [Requirements](#Requirements)
 5. [Roadmap](#Roadmap)
 
