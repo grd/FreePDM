@@ -12,6 +12,7 @@
 	2. [SVN Project Structure](#SVN%20Project%20Structure)
 4. [Requirements](#Requirements)
 5. [Roadmap](#Roadmap)
+6. [Test Files](#TestFiles)
 
 ## Introduction
 
@@ -28,5 +29,7 @@
 ## [Requirements](FreePDM_04-Requirements.md)
 
 ## [Roadmap](FreePDM_05-Roadmap.md)
+
+## [TestFiles](FreePDM_06-TestFiles.md)
 
 [<< Previous Chapter]() | [Content Table](README.md) | [Next Chapter >>](FreePDM_01-RequestedInformation.md)

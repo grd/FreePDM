@@ -8,7 +8,7 @@ For testing purposes there are a bunch of files created.
 - 0001.FCStd _Part 01_
 - 0002.FCStd _Part 02_
 - 0003.FCStd _Assembly 3 Model_
-- 0004.FCStd _A2P Model_
+- 0004.FCStd _Assembly 2Plus Model_
 - 0005.FCStd _Assembly 4 Model_
 - 0006.FCStd _Imported .stp file: SKF 6004 Bearing_
 - ISO4762_M8x16[lib].FCStd _Library Part_
