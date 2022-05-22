@@ -11,18 +11,18 @@
 
 ### User Group
 
-To define a user group there are some paramers how to define it:
+To define a user group there are some parameters how to define it:
 
-- Budget of compareble tool
+- Budget of comparable tool
 - expected company size
 - Complexity
 
 **expected company size** 
-The (expected )company size probably small to medium sized companies. There are a few paramers how to difine it.
+The (expected )company size probably small to medium sized companies. There are a few parameters how to divine it.
 
-- Head count of staff([see europe](https://en.wikipedia.org/wiki/Small_and_medium-sized_enterprises))
+- Head count of staff([see Europe](https://en.wikipedia.org/wiki/Small_and_medium-sized_enterprises))
 - The number of users
-- The number of simultanious users
+- The number of simultaneous users
 
 micro Company size <#Of Users 
 Small Company size <#Of Users 
@@ -43,19 +43,19 @@ What are the available environments that are available and what are the critical
 #### Server
 
 #### Raspberry Pi
-Raspberry Pi is a small size computer ideal for in a network evironment but is it powerfull enough?
+Raspberry Pi is a small size computer ideal for in a network environment but is it powerful enough?
 Critical factors:
 
 - Data through put(?)
 
 
 #### Virtual Machine
-Two catagories of Virtual machines.
+Two categories of Virtual machines.
 
 1. (example: Virtual Box)
 2. (example: )
 
-The type of virtualization 
+The type of virtualisation 
 
 Critical factors: 
 
@@ -64,7 +64,7 @@ Critical factors:
 Ideal for a single user. 
 Critical factors: 
 
-- Difficult to set-up for multi user evironment
+- Difficult to set-up for multi user environment
 
 ### How to access files
 
