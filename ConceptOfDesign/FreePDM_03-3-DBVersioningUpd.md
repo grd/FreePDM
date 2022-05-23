@@ -118,6 +118,7 @@ LDAP server in general
 - [LDAP wikipedia](https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol)
 - [What is LDAP](https://www.okta.com/identity-101/what-is-ldap/)
 - [Open source LDAP server](https://opensource.com/business/14/5/four-open-source-alternatives-LDAP)
+- [Difference between SQL and LDAP](https://stackoverflow.com/questions/5075394/difference-between-sql-and-ldap#5075461)
 
 It looks like That Windchill, Teamcenter AND SolidWorks PLM use a combination of SQL server && LDAP server.
 
