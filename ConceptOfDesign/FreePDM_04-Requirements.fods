@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <office:document xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" xmlns:css3t="http://www.w3.org/TR/css3-text/" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xforms="http://www.w3.org/2002/xforms" xmlns:dom="http://www.w3.org/2001/xml-events" xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:formx="urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:tableooo="http://openoffice.org/2009/table" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:rpt="http://openoffice.org/2005/report" xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" xmlns:oooc="http://openoffice.org/2004/calc" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0" xmlns:ooo="http://openoffice.org/2004/office" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:drawooo="http://openoffice.org/2010/draw" xmlns:ooow="http://openoffice.org/2004/writer" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" office:version="1.3" office:mimetype="application/vnd.oasis.opendocument.spreadsheet">
- <office:meta><meta:initial-creator>jb tw</meta:initial-creator><meta:creation-date>2022-05-08T16:12:16.262375674</meta:creation-date><meta:generator>LibreOffice_Vanilla/7.2.5.2$MacOSX_X86_64 LibreOffice_project/499f9727c189e6ef3471021d6132d4c694f357e5</meta:generator><dc:date>2022-05-18T17:47:18.695447356</dc:date><dc:creator>jb tw</dc:creator><meta:editing-duration>PT21H33M32S</meta:editing-duration><meta:editing-cycles>62</meta:editing-cycles><meta:document-statistic meta:table-count="3" meta:cell-count="349" meta:object-count="0"/></office:meta>
+ <office:meta><meta:initial-creator>jb tw</meta:initial-creator><meta:creation-date>2022-05-08T16:12:16.262375674</meta:creation-date><meta:generator>LibreOffice_Vanilla/7.2.5.2$MacOSX_X86_64 LibreOffice_project/499f9727c189e6ef3471021d6132d4c694f357e5</meta:generator><dc:date>2022-05-23T09:22:30.464535091</dc:date><dc:creator>jb tw</dc:creator><meta:editing-duration>PT21H40M</meta:editing-duration><meta:editing-cycles>64</meta:editing-cycles><meta:document-statistic meta:table-count="3" meta:cell-count="351" meta:object-count="0"/></office:meta>
  <office:settings>
   <config:config-item-set config:name="ooo:view-settings">
    <config:config-item config:name="VisibleAreaTop" config:type="int">0</config:config-item>
    <config:config-item config:name="VisibleAreaLeft" config:type="int">0</config:config-item>
-   <config:config-item config:name="VisibleAreaWidth" config:type="int">16861</config:config-item>
-   <config:config-item config:name="VisibleAreaHeight" config:type="int">13073</config:config-item>
+   <config:config-item config:name="VisibleAreaWidth" config:type="int">20053</config:config-item>
+   <config:config-item config:name="VisibleAreaHeight" config:type="int">54442</config:config-item>
    <config:config-item-map-indexed config:name="Views">
     <config:config-item-map-entry>
      <config:config-item config:name="ViewId" config:type="string">view1</config:config-item>
@@ -50,7 +50,7 @@
       </config:config-item-map-entry>
       <config:config-item-map-entry config:name="Requirements">
        <config:config-item config:name="CursorPositionX" config:type="int">3</config:config-item>
-       <config:config-item config:name="CursorPositionY" config:type="int">59</config:config-item>
+       <config:config-item config:name="CursorPositionY" config:type="int">5</config:config-item>
        <config:config-item config:name="HorizontalSplitMode" config:type="short">0</config:config-item>
        <config:config-item config:name="VerticalSplitMode" config:type="short">0</config:config-item>
        <config:config-item config:name="HorizontalSplitPosition" config:type="int">0</config:config-item>
@@ -59,7 +59,7 @@
        <config:config-item config:name="PositionLeft" config:type="int">0</config:config-item>
        <config:config-item config:name="PositionRight" config:type="int">0</config:config-item>
        <config:config-item config:name="PositionTop" config:type="int">0</config:config-item>
-       <config:config-item config:name="PositionBottom" config:type="int">23</config:config-item>
+       <config:config-item config:name="PositionBottom" config:type="int">3</config:config-item>
        <config:config-item config:name="ZoomType" config:type="short">0</config:config-item>
        <config:config-item config:name="ZoomValue" config:type="int">80</config:config-item>
        <config:config-item config:name="PageViewZoomValue" config:type="int">60</config:config-item>
@@ -68,7 +68,7 @@
       </config:config-item-map-entry>
      </config:config-item-map-named>
      <config:config-item config:name="ActiveTable" config:type="string">Requirements</config:config-item>
-     <config:config-item config:name="HorizontalScrollbarWidth" config:type="int">1430</config:config-item>
+     <config:config-item config:name="HorizontalScrollbarWidth" config:type="int">1719</config:config-item>
      <config:config-item config:name="ZoomType" config:type="short">0</config:config-item>
      <config:config-item config:name="ZoomValue" config:type="int">80</config:config-item>
      <config:config-item config:name="PageViewZoomValue" config:type="int">60</config:config-item>
@@ -150,7 +150,7 @@
      <config:config-item config:name="CodeName" config:type="string">Sheet1</config:config-item>
     </config:config-item-map-entry>
     <config:config-item-map-entry config:name="Definitions">
-     <config:config-item config:name="CodeName" config:type="string">Sheet4</config:config-item>
+     <config:config-item config:name="CodeName" config:type="string">Definitions</config:config-item>
     </config:config-item-map-entry>
     <config:config-item-map-entry config:name="Assumptions (Only if needed)">
      <config:config-item config:name="CodeName" config:type="string">Assumptions (Only if needed)</config:config-item>
@@ -266,13 +266,13 @@
    <style:table-column-properties fo:break-before="auto" style:column-width="2.11cm"/>
   </style:style>
   <style:style style:name="ro1" style:family="table-row">
-   <style:table-row-properties style:row-height="1.005cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
+   <style:table-row-properties style:row-height="0.997cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
   </style:style>
   <style:style style:name="ro2" style:family="table-row">
    <style:table-row-properties style:row-height="0.529cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
   </style:style>
   <style:style style:name="ro3" style:family="table-row">
-   <style:table-row-properties style:row-height="1.485cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
+   <style:table-row-properties style:row-height="1.475cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
   </style:style>
   <style:style style:name="ta1" style:family="table" style:master-page-name="Default">
    <style:table-properties table:display="true" style:writing-mode="lr-tb"/>
@@ -280,7 +280,7 @@
   <number:number-style style:name="N2">
    <number:number number:decimal-places="2" number:min-decimal-places="2" number:min-integer-digits="1"/>
   </number:number-style>
-  <style:style style:name="ce4" style:family="table-cell" style:parent-style-name="Default">
+  <style:style style:name="ce1" style:family="table-cell" style:parent-style-name="Default">
    <style:text-properties fo:font-size="12pt" fo:font-weight="bold" style:font-size-asian="12pt" style:font-weight-asian="bold" style:font-size-complex="12pt" style:font-weight-complex="bold"/>
   </style:style>
   <style:style style:name="ce14" style:family="table-cell" style:parent-style-name="Default">
@@ -335,7 +335,7 @@
      <text:p><text:sheet-name>???</text:sheet-name><text:s/>(<text:title>???</text:title>)</text:p>
     </style:region-left>
     <style:region-right>
-     <text:p><text:date style:data-style-name="N2" text:date-value="2022-05-18">00-00-0000</text:date>, <text:time style:data-style-name="N2" text:time-value="11:26:42.624887158">00:00:00</text:time></text:p>
+     <text:p><text:date style:data-style-name="N2" text:date-value="2022-05-23">00-00-0000</text:date>, <text:time style:data-style-name="N2" text:time-value="09:16:02.164574928">00:00:00</text:time></text:p>
     </style:region-right>
    </style:header>
    <style:header-left style:display="false"/>
@@ -357,18 +357,18 @@
     <table:table-column table:style-name="co4" table:default-cell-style-name="ce14"/>
     <table:table-column table:style-name="co5" table:number-columns-repeated="1020" table:default-cell-style-name="ce14"/>
     <table:table-row table:style-name="ro1">
-     <table:table-cell table:style-name="ce4" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string">
       <text:p>Id</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce4" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string">
       <text:p>Level</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce4" office:value-type="string" calcext:value-type="string"><text:p>Traced</text:p><text:p>From</text:p>
+     <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string"><text:p>Traced</text:p><text:p>From</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce4" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string">
       <text:p>Requirement</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce4" office:value-type="string" calcext:value-type="string">
+     <table:table-cell table:style-name="ce1" office:value-type="string" calcext:value-type="string">
       <text:p>Note</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1019"/>
@@ -429,9 +429,9 @@
      <table:table-cell office:value-type="float" office:value="0" calcext:value-type="float">
       <text:p>0</text:p>
      </table:table-cell>
-     <table:table-cell/>
+     <table:table-cell table:style-name="Default"/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System provide capability for handling different Projects</text:p>
+      <text:p>The System provide capability handling multiple users at the same time</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -444,7 +444,7 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System provide capability for handling different File types</text:p>
+      <text:p>The System provide capability for handling different Projects</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -457,7 +457,7 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System provide capability for handling different Files</text:p>
+      <text:p>The System provide capability for handling different File types</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -470,7 +470,7 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System provide capability for grouping related files</text:p>
+      <text:p>The System provide capability for handling different Files</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -483,7 +483,7 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System provide capability add Meta data to a set of files (Item)</text:p>
+      <text:p>The System provide capability for grouping related files</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -496,7 +496,7 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System provide capability add Meta data to an file (Item)</text:p>
+      <text:p>The System provide capability add Meta data to a set of files (Item)</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -509,7 +509,7 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall Interface with users</text:p>
+      <text:p>The System provide capability add Meta data to an file (Item)</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -522,7 +522,7 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall Interface with FreeCAD</text:p>
+      <text:p>The System shall Interface with users</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -535,7 +535,7 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System should be as secure as possible</text:p>
+      <text:p>The System shall Interface with FreeCAD</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -548,7 +548,7 @@
      </table:table-cell>
      <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System should also work without extra Resources(Hardware)</text:p>
+      <text:p>The System should be as secure as possible</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -556,14 +556,12 @@
      <table:table-cell office:value-type="float" office:value="14" calcext:value-type="float">
       <text:p>14</text:p>
      </table:table-cell>
-     <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
-      <text:p>1</text:p>
-     </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$2]" office:value-type="float" office:value="0" calcext:value-type="float">
+     <table:table-cell office:value-type="float" office:value="0" calcext:value-type="float">
       <text:p>0</text:p>
      </table:table-cell>
+     <table:table-cell/>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system provide capability get stored Data</text:p>
+      <text:p>The System should also work without extra Resources(Hardware)</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -578,13 +576,28 @@
       <text:p>0</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system provide capability to compare stored Data with Local data</text:p>
+      <text:p>The system provide capability get stored Data</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro2">
      <table:table-cell office:value-type="float" office:value="16" calcext:value-type="float">
       <text:p>16</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
+      <text:p>1</text:p>
+     </table:table-cell>
+     <table:table-cell table:formula="of:=[.A$2]" office:value-type="float" office:value="0" calcext:value-type="float">
+      <text:p>0</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>The system provide capability to compare stored Data with Local data</text:p>
+     </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1020"/>
+    </table:table-row>
+    <table:table-row table:style-name="ro2">
+     <table:table-cell office:value-type="float" office:value="17" calcext:value-type="float">
+      <text:p>17</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
@@ -598,18 +611,6 @@
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro2">
-     <table:table-cell office:value-type="float" office:value="17" calcext:value-type="float">
-      <text:p>17</text:p>
-     </table:table-cell>
-     <table:table-cell table:number-columns-repeated="2" office:value-type="float" office:value="1" calcext:value-type="float">
-      <text:p>1</text:p>
-     </table:table-cell>
-     <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>Every Item Shall have a Revision</text:p>
-     </table:table-cell>
-     <table:table-cell table:number-columns-repeated="1020"/>
-    </table:table-row>
-    <table:table-row table:style-name="ro2">
      <table:table-cell office:value-type="float" office:value="18" calcext:value-type="float">
       <text:p>18</text:p>
      </table:table-cell>
@@ -617,7 +618,7 @@
       <text:p>1</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>Every Part Shall have a Revision</text:p>
+      <text:p>Every Item Shall have a Revision</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -629,7 +630,7 @@
       <text:p>1</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>Every File Shall have a Revision </text:p>
+      <text:p>Every Part Shall have a Revision</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -637,14 +638,11 @@
      <table:table-cell office:value-type="float" office:value="20" calcext:value-type="float">
       <text:p>20</text:p>
      </table:table-cell>
-     <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
+     <table:table-cell table:number-columns-repeated="2" office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$4]" office:value-type="float" office:value="2" calcext:value-type="float">
-      <text:p>2</text:p>
-     </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall provide capability to give write access on request</text:p>
+      <text:p>Every File Shall have a Revision </text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -659,7 +657,7 @@
       <text:p>2</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall provide capability to block request on Permissions</text:p>
+      <text:p>The System shall provide capability to give write access on request</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -674,7 +672,7 @@
       <text:p>2</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall provide capability to block request on States</text:p>
+      <text:p>The System shall provide capability to block request on Permissions</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -689,7 +687,7 @@
       <text:p>2</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall provide capability to block request on Activity</text:p>
+      <text:p>The System shall provide capability to block request on States</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -700,11 +698,11 @@
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$6]" office:value-type="float" office:value="4" calcext:value-type="float">
-      <text:p>4</text:p>
+     <table:table-cell table:formula="of:=[.A$4]" office:value-type="float" office:value="2" calcext:value-type="float">
+      <text:p>2</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system provide capability to create New Projects</text:p>
+      <text:p>The System shall provide capability to block request on Activity</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -715,11 +713,11 @@
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$6]" office:value-type="float" office:value="4" calcext:value-type="float">
-      <text:p>4</text:p>
+     <table:table-cell table:formula="of:=[.A$7]" office:value-type="float" office:value="5" calcext:value-type="float">
+      <text:p>5</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system provide capability to Remove Projects</text:p>
+      <text:p>The system provide capability to create New Projects</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -730,11 +728,11 @@
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$6]" office:value-type="float" office:value="4" calcext:value-type="float">
-      <text:p>4</text:p>
+     <table:table-cell table:formula="of:=[.A$7]" office:value-type="float" office:value="5" calcext:value-type="float">
+      <text:p>5</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system provide capability to Rename Projects</text:p>
+      <text:p>The system provide capability to Remove Projects</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -745,11 +743,11 @@
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$6]" office:value-type="float" office:value="4" calcext:value-type="float">
-      <text:p>4</text:p>
+     <table:table-cell table:formula="of:=[.A$7]" office:value-type="float" office:value="5" calcext:value-type="float">
+      <text:p>5</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system provide capability to Modify Projects</text:p>
+      <text:p>The system provide capability to Rename Projects</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -760,11 +758,11 @@
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$8]" office:value-type="float" office:value="6" calcext:value-type="float">
-      <text:p>6</text:p>
+     <table:table-cell table:formula="of:=[.A$7]" office:value-type="float" office:value="5" calcext:value-type="float">
+      <text:p>5</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system should provide capability to generate New files</text:p>
+      <text:p>The system provide capability to Modify Projects</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -775,11 +773,11 @@
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$8]" office:value-type="float" office:value="6" calcext:value-type="float">
-      <text:p>6</text:p>
+     <table:table-cell table:formula="of:=[.A$9]" office:value-type="float" office:value="7" calcext:value-type="float">
+      <text:p>7</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system should provide capability to delete “New” files</text:p>
+      <text:p>The system should provide capability to generate New files</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -790,11 +788,11 @@
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$8]" office:value-type="float" office:value="6" calcext:value-type="float">
-      <text:p>6</text:p>
+     <table:table-cell table:formula="of:=[.A$9]" office:value-type="float" office:value="7" calcext:value-type="float">
+      <text:p>7</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system should provide capability to delete “Existing” files</text:p>
+      <text:p>The system should provide capability to delete “New” files</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -805,11 +803,11 @@
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$8]" office:value-type="float" office:value="6" calcext:value-type="float">
-      <text:p>6</text:p>
+     <table:table-cell table:formula="of:=[.A$9]" office:value-type="float" office:value="7" calcext:value-type="float">
+      <text:p>7</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system should provide capability to Rename Files</text:p>
+      <text:p>The system should provide capability to delete “Existing” files</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -820,11 +818,11 @@
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$8]" office:value-type="float" office:value="6" calcext:value-type="float">
-      <text:p>6</text:p>
+     <table:table-cell table:formula="of:=[.A$9]" office:value-type="float" office:value="7" calcext:value-type="float">
+      <text:p>7</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system should provide capability to Modify Files</text:p>
+      <text:p>The system should provide capability to Rename Files</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -835,11 +833,11 @@
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$10]" office:value-type="float" office:value="8" calcext:value-type="float">
-      <text:p>8</text:p>
+     <table:table-cell table:formula="of:=[.A$9]" office:value-type="float" office:value="7" calcext:value-type="float">
+      <text:p>7</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system provide capability to generate “New” Items</text:p>
+      <text:p>The system should provide capability to Modify Files</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -850,11 +848,11 @@
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$10]" office:value-type="float" office:value="8" calcext:value-type="float">
-      <text:p>8</text:p>
+     <table:table-cell table:formula="of:=[.A$11]" office:value-type="float" office:value="9" calcext:value-type="float">
+      <text:p>9</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system provide capability to Remove Items</text:p>
+      <text:p>The system provide capability to generate “New” Items</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -865,11 +863,11 @@
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$10]" office:value-type="float" office:value="8" calcext:value-type="float">
-      <text:p>8</text:p>
+     <table:table-cell table:formula="of:=[.A$11]" office:value-type="float" office:value="9" calcext:value-type="float">
+      <text:p>9</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system provide capability to Rename Items</text:p>
+      <text:p>The system provide capability to Remove Items</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -880,11 +878,11 @@
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$10]" office:value-type="float" office:value="8" calcext:value-type="float">
-      <text:p>8</text:p>
+     <table:table-cell table:formula="of:=[.A$11]" office:value-type="float" office:value="9" calcext:value-type="float">
+      <text:p>9</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system provide capability to Modify Items</text:p>
+      <text:p>The system provide capability to Rename Items</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -895,11 +893,11 @@
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$12]" office:value-type="float" office:value="10" calcext:value-type="float">
-      <text:p>10</text:p>
+     <table:table-cell table:formula="of:=[.A$11]" office:value-type="float" office:value="9" calcext:value-type="float">
+      <text:p>9</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system provide capability to give users Permissions</text:p>
+      <text:p>The system provide capability to Modify Items</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -910,11 +908,11 @@
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$12]" office:value-type="float" office:value="10" calcext:value-type="float">
-      <text:p>10</text:p>
+     <table:table-cell table:formula="of:=[.A$13]" office:value-type="float" office:value="11" calcext:value-type="float">
+      <text:p>11</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system provide capability to change users Permissions</text:p>
+      <text:p>The system provide capability to give users Permissions</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -929,7 +927,7 @@
       <text:p>11</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The User Should interact with the System via FreeCAD</text:p>
+      <text:p>The system provide capability to change users Permissions</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -940,11 +938,11 @@
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$13]" office:value-type="float" office:value="11" calcext:value-type="float">
-      <text:p>11</text:p>
+     <table:table-cell table:formula="of:=[.A$14]" office:value-type="float" office:value="12" calcext:value-type="float">
+      <text:p>12</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall work with three FC Assembly Types</text:p>
+      <text:p>The User Should interact with the System via FreeCAD</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -955,11 +953,11 @@
      <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
       <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$15]" office:value-type="float" office:value="13" calcext:value-type="float">
-      <text:p>13</text:p>
+     <table:table-cell table:formula="of:=[.A$14]" office:value-type="float" office:value="12" calcext:value-type="float">
+      <text:p>12</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System should work on a RaspberryPi and bigger</text:p>
+      <text:p>The System shall work with three FC Assembly Types</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -967,14 +965,14 @@
      <table:table-cell office:value-type="float" office:value="42" calcext:value-type="float">
       <text:p>42</text:p>
      </table:table-cell>
-     <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
-      <text:p>2</text:p>
+     <table:table-cell office:value-type="float" office:value="1" calcext:value-type="float">
+      <text:p>1</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$18]" office:value-type="float" office:value="16" calcext:value-type="float">
-      <text:p>16</text:p>
+     <table:table-cell table:formula="of:=[.A$16]" office:value-type="float" office:value="14" calcext:value-type="float">
+      <text:p>14</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall provide capability to lock items based on its State</text:p>
+      <text:p>The System should work on a RaspberryPi and bigger</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -989,7 +987,7 @@
       <text:p>17</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall <text:s/>provide capability to lock files based on its State</text:p>
+      <text:p>The System shall provide capability to lock items based on its State</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -1004,7 +1002,7 @@
       <text:p>18</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall <text:s/>provide capability to lock items based on its Activity</text:p>
+      <text:p>The System shall <text:s/>provide capability to lock files based on its State</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -1015,11 +1013,11 @@
      <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
       <text:p>2</text:p>
      </table:table-cell>
-     <table:table-cell office:value-type="float" office:value="21" calcext:value-type="float">
-      <text:p>21</text:p>
+     <table:table-cell table:formula="of:=[.A$21]" office:value-type="float" office:value="19" calcext:value-type="float">
+      <text:p>19</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System shall <text:s/>provide capability to lock files based on its Activity</text:p>
+      <text:p>The System shall <text:s/>provide capability to lock items based on its Activity</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -1030,11 +1028,11 @@
      <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
       <text:p>2</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$27]" office:value-type="float" office:value="25" calcext:value-type="float">
-      <text:p>25</text:p>
+     <table:table-cell table:formula="of:=[.A$24]" office:value-type="float" office:value="22" calcext:value-type="float">
+      <text:p>22</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>Removing Project is only possible with Admin Rights</text:p>
+      <text:p>The System shall <text:s/>provide capability to lock files based on its Activity</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -1045,11 +1043,11 @@
      <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
       <text:p>2</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$30]" office:value-type="float" office:value="28" calcext:value-type="float">
-      <text:p>28</text:p>
+     <table:table-cell table:formula="of:=[.A$28]" office:value-type="float" office:value="26" calcext:value-type="float">
+      <text:p>26</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System provide capability to copy assemblies (that means with parts too)</text:p>
+      <text:p>Removing Project is only possible with Admin Rights</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -1060,11 +1058,11 @@
      <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
       <text:p>2</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$32]" office:value-type="float" office:value="30" calcext:value-type="float">
-      <text:p>30</text:p>
+     <table:table-cell table:formula="of:=[.A$31]" office:value-type="float" office:value="29" calcext:value-type="float">
+      <text:p>29</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>Removing Existing Files is only possible with Admin Rights</text:p>
+      <text:p>The System provide capability to copy assemblies (that means with parts too)</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -1075,11 +1073,11 @@
      <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
       <text:p>2</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$34]" office:value-type="float" office:value="32" calcext:value-type="float">
-      <text:p>32</text:p>
+     <table:table-cell table:formula="of:=[.A$33]" office:value-type="float" office:value="31" calcext:value-type="float">
+      <text:p>31</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>Removing Items is only possible with Admin Rights</text:p>
+      <text:p>Removing Existing Files is only possible with Admin Rights</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -1090,11 +1088,11 @@
      <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
       <text:p>2</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$38]" office:value-type="float" office:value="36" calcext:value-type="float">
-      <text:p>36</text:p>
+     <table:table-cell table:formula="of:=[.A$35]" office:value-type="float" office:value="33" calcext:value-type="float">
+      <text:p>33</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System provide capability to copy items</text:p>
+      <text:p>Removing Items is only possible with Admin Rights</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -1105,11 +1103,11 @@
      <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
       <text:p>2</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$41]" office:value-type="float" office:value="39" calcext:value-type="float">
-      <text:p>39</text:p>
+     <table:table-cell table:formula="of:=[.A$39]" office:value-type="float" office:value="37" calcext:value-type="float">
+      <text:p>37</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>Upgrading FreeCAD interaction shall work via Add-on Manager</text:p>
+      <text:p>The System provide capability to copy items</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -1120,11 +1118,11 @@
      <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
       <text:p>2</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$41]" office:value-type="float" office:value="39" calcext:value-type="float">
-      <text:p>39</text:p>
+     <table:table-cell table:formula="of:=[.A$42]" office:value-type="float" office:value="40" calcext:value-type="float">
+      <text:p>40</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System should read-out the Weight Properties in FC Part types when available</text:p>
+      <text:p>Upgrading FreeCAD interaction shall work via Add-on Manager</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -1135,11 +1133,11 @@
      <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
       <text:p>2</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$41]" office:value-type="float" office:value="39" calcext:value-type="float">
-      <text:p>39</text:p>
+     <table:table-cell table:formula="of:=[.A$42]" office:value-type="float" office:value="40" calcext:value-type="float">
+      <text:p>40</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System should read-out the Material Properties in FC Part types when available</text:p>
+      <text:p>The System should read-out the Weight Properties in FC Part types when available</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -1150,11 +1148,11 @@
      <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
       <text:p>2</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$41]" office:value-type="float" office:value="39" calcext:value-type="float">
-      <text:p>39</text:p>
+     <table:table-cell table:formula="of:=[.A$42]" office:value-type="float" office:value="40" calcext:value-type="float">
+      <text:p>40</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The User Should be able to open CAD files from the System</text:p>
+      <text:p>The System should read-out the Material Properties in FC Part types when available</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -1165,11 +1163,11 @@
      <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
       <text:p>2</text:p>
      </table:table-cell>
-     <table:table-cell table:formula="of:=[.A$41]" office:value-type="float" office:value="39" calcext:value-type="float">
-      <text:p>39</text:p>
+     <table:table-cell table:formula="of:=[.A$42]" office:value-type="float" office:value="40" calcext:value-type="float">
+      <text:p>40</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The User Should be able to On the System stored CAD files in FreeCAD</text:p>
+      <text:p>The User Should be able to open CAD files from the System</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -1180,11 +1178,11 @@
      <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
       <text:p>2</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce15" table:formula="of:=[.A$42]" office:value-type="float" office:value="40" calcext:value-type="float">
+     <table:table-cell table:formula="of:=[.A$42]" office:value-type="float" office:value="40" calcext:value-type="float">
       <text:p>40</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The system should recognize the used Assembly WB automatically</text:p>
+      <text:p>The User Should be able to On the System stored CAD files in FreeCAD</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -1195,11 +1193,11 @@
      <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
       <text:p>2</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce15" table:formula="of:=[.A$42]" office:value-type="float" office:value="40" calcext:value-type="float">
-      <text:p>40</text:p>
+     <table:table-cell table:style-name="ce15" table:formula="of:=[.A$43]" office:value-type="float" office:value="41" calcext:value-type="float">
+      <text:p>41</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System should read-out the Hierarchy of the FC Assembly Types</text:p>
+      <text:p>The system should recognize the used Assembly WB automatically</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -1210,11 +1208,11 @@
      <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
       <text:p>2</text:p>
      </table:table-cell>
-     <table:table-cell table:style-name="ce15" table:formula="of:=[.A$42]" office:value-type="float" office:value="40" calcext:value-type="float">
-      <text:p>40</text:p>
+     <table:table-cell table:style-name="ce15" table:formula="of:=[.A$43]" office:value-type="float" office:value="41" calcext:value-type="float">
+      <text:p>41</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System should read-out the Weight Properties in FC Assembly types when available</text:p>
+      <text:p>The System should read-out the Hierarchy of the FC Assembly Types</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -1222,7 +1220,16 @@
      <table:table-cell office:value-type="float" office:value="59" calcext:value-type="float">
       <text:p>59</text:p>
      </table:table-cell>
-     <table:table-cell table:number-columns-repeated="1023"/>
+     <table:table-cell office:value-type="float" office:value="2" calcext:value-type="float">
+      <text:p>2</text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="ce15" table:formula="of:=[.A$43]" office:value-type="float" office:value="41" calcext:value-type="float">
+      <text:p>41</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>The System should read-out the Weight Properties in FC Assembly types when available</text:p>
+     </table:table-cell>
+     <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
     <table:table-row table:style-name="ro2">
      <table:table-cell office:value-type="float" office:value="60" calcext:value-type="float">
