@@ -56,4 +56,4 @@ A Part is a container and it can contain multiple bodies and as so it can become
 - Access to projects / top level Systems
 - Role(s)
 
-[<< Previous Chapter](FreePDM_03-DesignDecisions.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_04-Requirements.md)
+[<< Previous Chapter](FreePDM_03-DesignDecisions.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_03-2-SVNProjectStructure.md)

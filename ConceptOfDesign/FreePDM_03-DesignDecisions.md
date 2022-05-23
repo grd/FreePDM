@@ -101,5 +101,6 @@ _Note: We have to decide to:
 
 ### [SVN extension](FreePDM_03-2-SVNProjectStructure.md)
 
+### [DB Versioning Update](FreePDM_03-3-DBVersioningUpd.md)
 
 [<< Previous Chapter](FreePDM_02-Workflows.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_03-1-Attributes.md)
