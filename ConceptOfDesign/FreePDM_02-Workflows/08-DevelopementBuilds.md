@@ -2,17 +2,13 @@
 ***Concept Of Design***
 
 
-## Developments builds
-
-TODO:
-
-- Bash script for creating everything on a server / VM
-- Docker environment
+## Building the project
 
 ### Introduction
 
-During the developments(and maybe also during it's use) it would be great if there is one or more methods to setup a environment.  
-Be aware that in such case it would be an idea to create a [test database](06-DbShape.md) as well.
+During the developments(and maybe also during its use) it would be great if there is one or more methods to setup an environment.  
+Be aware that in such case it would be an idea to create a [test database](06-DbShape.md) as well.  
+**Edit:** building a server, Virtual machine or Docker container is not only necessary during build, but also during deployment.
 
 ### Assumptions
 
@@ -36,11 +32,19 @@ Other thing can be added later on.
 
 - If using a virtual machine be aware that you probably need port forwarding.
 
-### Workflow 2  <!-- Docker container script for setting up environment-->
+### Workflow 2  <!-- Cmd OR Powershell script for setting up environment-->
 
-Another option is to create a Docker container or a docker script to create a environment where everything is available. Since docker containers don't have history it has some advantages to test quickly.
-On the other hand if something needs to install every iteration has be done again. So it is more important to setup.
+For actions the same as [Workflow 1](#workflow-1), but now with _Power Shell_ or _cmd prompt_.
 
-#### questions / Comments 2
+### Workflow 3  <!-- Docker container script for setting up environment-->
+
+Another option is to create a Docker container or a docker script to create an environment where everything is available.
+Since docker containers don't have history it has some advantages to test quickly.
+On the other hand if something needs to install every iteration has be done again.
+So it is more important to setup.
+
+#### questions / Comments 3
+
+- [BeCFG makes actively use of docker containers](https://docs.becpg.fr/en/installation/server_installation.html#software-prerequisites)
 
 [<< Previous Chapter](07-DbInteraction.md) | [Content Table](README.md) | [Next Chapter >>](../FreePDM_03-DesignDecisions.md)
