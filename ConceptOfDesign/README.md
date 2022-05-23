@@ -10,6 +10,7 @@
 3. [Design decisions](#Design%20decisions)
 	1. [Attributes](#Attributes)
 	2. [SVN Project Structure](#SVN%20Project%20Structure)
+	3. [Database Version System Update](Database%20Version%20System%20Update)
 4. [Requirements](#Requirements)
 5. [Roadmap](#Roadmap)
 6. [Test Files](#TestFiles)
@@ -25,6 +26,8 @@
 ### [Attributes](FreePDM_03-1-Attributes.md)
 
 ### [SVN Project Structure](FreePDM_03-2-SVNProjectStructure.md)
+
+### [Database Version System Update](FreePDM_03-3-DBVersioningUpd.md)
 
 ## [Requirements](FreePDM_04-Requirements.md)
 

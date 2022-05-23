@@ -66,7 +66,9 @@ See also Comment of user1234 in the related [topic](https://forum.freecadweb.org
 Looking at the local storage there are two tastes available(for now).
 
 - A in-depended tool
-- inside FreeCAD (for example [Add-on manager](https://wiki.freecadweb.org/Std_AddonMgr))
+- inside FreeCAD (for example [_Add-on manager_](https://wiki.freecadweb.org/Std_AddonMgr))
+  - If Using the _Add-on Manager_ see: the [Workebench start kit](https://github.com/FreeCAD/freecad.workbench_starterkit)
+  - Another important Thread about the [_Add-on Manager_ Redesign](https://forum.freecadweb.org/viewtopic.php?f=9&t=64628)
 
 Specially the Add-on manager can help for at least (semi-)centralised updates. 
 
@@ -101,5 +103,6 @@ _Note: We have to decide to:
 
 ### [SVN extension](FreePDM_03-2-SVNProjectStructure.md)
 
+### [DB Versioning Update](FreePDM_03-3-DBVersioningUpd.md)
 
 [<< Previous Chapter](FreePDM_02-Workflows.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_03-1-Attributes.md)

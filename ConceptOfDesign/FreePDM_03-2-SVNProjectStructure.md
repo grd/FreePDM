@@ -89,4 +89,4 @@ I added another topic that looks like a bit more an issue to git than svn and th
 - [individual file locking git](https://stackoverflow.com/questions/13662255/is-there-a-way-to-lock-individual-files-or-directories-on-fork-when-using-git)
 - [Private git](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-private-git-server-on-a-vps)
 
-[<< Previous Chapter](FreePDM_03-1-Attributes.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_04-Requirements.md)
+[<< Previous Chapter](FreePDM_03-1-Attributes.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_03-3-DBVersioningUpd.md)
