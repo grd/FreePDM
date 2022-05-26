@@ -32,9 +32,9 @@
 
 List of all item numbers
 
-| Item number    | Path         | Part of Project |
-|----------------|--------------|-----------------|
-| N digit number | /Project/... | item 3          |
+| Item number    | Path         | Part of Project | Number of Files Attached |
+|----------------|--------------|-----------------|--------------------------|
+| N digit number | /Project/... | item 3          | N Digit Number           |
 
 _Notes:_
 
@@ -46,16 +46,17 @@ _Notes:_
 Are we creating one single database list for _ALL_ files.
 OR Are we creating a database file for every Item?
 
-| FileID | (Item number?) | Item Path        | Filename| File type      |
-|--------|----------------|------------------|---------|----------------|
-| Number | ######         | /Project/######/ | Words   | db Attributes  |
-| Number | ######         | /Project/######/ | Words   | Part / Assembly|
-| Number | ######         | /Project/######/ | Words   | Drawing        |
-| Number | ######         | /Project/######/ | Words   | Manual         |
-| Number | ######         | /Project/######/ | Words   | Specification  |
-| Number | ######         | /Project/######/ | Words   | Calculation    |
-| Number | ######         | /Project/######/ | Words   | Image          |
-| Number | ######         | /Project/######/ | Words   | etc..          |
+| FileID | (Item number?) | Item Path        | Filename| File type     | Material   |
+|--------|----------------|------------------|---------|---------------|------------|
+| Number | ######         | /Project/######/ | Words   | db Attributes | None       |
+| Number | ######         | /Project/######/ | Words   | Part          | Yes        |
+| Number | ######         | /Project/######/ | Words   | Assembly      | None       |
+| Number | ######         | /Project/######/ | Words   | Drawing       | None       |
+| Number | ######         | /Project/######/ | Words   | Manual        | None       |
+| Number | ######         | /Project/######/ | Words   | Specification | Optionally |
+| Number | ######         | /Project/######/ | Words   | Calculation   | None       |
+| Number | ######         | /Project/######/ | Words   | Image         | None       |
+| Number | ######         | /Project/######/ | Words   | etc..         | None       |
 
 As long as every 
 
@@ -63,10 +64,16 @@ As long as every
 
 TODO:
 
+Last Edit By
+Created By
+Checked-Out by
+RevisionNumber
+
 | Column 1 | Column 2 | Column 3|
 |----------|----------|---------|
 | item1    | item2    | item 3  |
 
+_Note: Maybe remove this header and add All Info in multiple Tables Below Files_
 
 ### Attributes by Item
 
@@ -76,6 +83,8 @@ TODO:
 |----------|----------|---------|
 | item1    | item2    | item 3  |
 |----------|----------|---------|
+
+_Note: Maybe remove this header and add All Info in multiple Tables Below Items_
 
 ### References
 
