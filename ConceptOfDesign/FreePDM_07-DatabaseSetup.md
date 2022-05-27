@@ -12,21 +12,15 @@
 
 ### user
 
-
-| User Id         | Name | Last name | Email             | Phone number    | Department    |
-|-----------------|------|-----------|-------------------|-----------------|---------------|
-| N digit number? | Word | words     | name@something.st | 12 digit Number | Word or words |
-
-
+| User Id         | User Name | Name  | Last name | Email             | Phone number   | Department    | Role(s) | Aliases |
+|-----------------|-----------|-------|-----------|-------------------|----------------|---------------|---------|---------|
+| N digit number? | Words     | words | words     | name@something.st | N digit Number | Word or words | List(?) | List(?) |
 
 ### Projects
-
 
 | Project ID | Project Number | Path         | Column 3|
 |------------|----------------|--------------|---------|
 | Number     |N digit number  | /Project/... | item 3  |
-
-
 
 ### Item 
 
@@ -73,6 +67,9 @@ Material Attributes
 | ... | Calculation   | None       | None           | None       | None       | None       |
 | ... | Image         | None       | None           | None       | None       | None       |
 | ... | etc..         | None       | None           | None       | None       | None       |
+
+_Note: The Attributes needs probably some mixing._  
+_Note2: What about the units? Dimensionless, Iso by default? Optionally accept more dimensions later on, even if i don't like to add thousand different options like 103 pounds and 2.3 ounce..._
 
 As long as every 
 
