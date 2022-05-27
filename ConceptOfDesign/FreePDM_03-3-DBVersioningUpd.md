@@ -120,6 +120,16 @@ LDAP server in general
 - [Open source LDAP server](https://opensource.com/business/14/5/four-open-source-alternatives-LDAP)
 - [Difference between SQL and LDAP](https://stackoverflow.com/questions/5075394/difference-between-sql-and-ldap#5075461)
 
+Microsoft Active directory
+
+- [ldap vs ad](https://www.okta.com/identity-101/ldap-vs-active-directory/)
+- [Microsoft Configure Active Directory](https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-ad-auth-adutil-tutorial?view=sql-server-ver16)
+- [Microsoft Active Directory course](https://docs.microsoft.com/en-us/learn/paths/active-directory-domain-services/) 
+
+Implementation
+
+- [Joining an LDAP Directory and a MySQL Database](https://docs.oracle.com/cd/E19424-01/820-4809/sample-virtual-config1/index.html)
+
 It looks like That Windchill, Teamcenter AND SolidWorks PLM use a combination of SQL server && LDAP server.
 
 - [Creo LDAP](https://community.ptc.com/t5/Windchill/what-is-the-purpose-of-Method-server-Server-Manager-and-LDAP/td-p/211635
