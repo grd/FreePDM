@@ -71,6 +71,34 @@ Material Attributes
 _Note: The Attributes needs probably some mixing._  
 _Note2: What about the units? Dimensionless, Iso by default? Optionally accept more dimensions later on, even if i don't like to add thousand different options like 103 pounds and 2.3 ounce..._
 
+Historical Attributes
+
+| ... | File type     | Date created | Created by | Last Edit  | Edited by | Checked-out by | Revision state| Revision nr. |
+|-----|---------------|--------------|------------|------------|-----------|----------------|----------------|-------------|
+| ... | db Attributes | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+| ... | Part          | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+| ... | Assembly      | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+| ... | Drawing       | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+| ... | Manual        | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+| ... | Specification | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+| ... | Calculation   | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+| ... | Image         | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+| ... | etc..         | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+
+Buy / Manufacturing
+
+| ... | File type     | Date created | Created by | Last Edit  | Edited by | Checked-out by | Revision state| Revision nr. |
+|-----|---------------|--------------|------------|------------|-----------|----------------|----------------|-------------|
+| ... | db Attributes | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+| ... | Part          | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+| ... | Assembly      | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+| ... | Drawing       | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+| ... | Manual        | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+| ... | Specification | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+| ... | Calculation   | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+| ... | Image         | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+| ... | etc..         | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+
 As long as every 
 
 ### Attributes by File
