@@ -85,19 +85,38 @@ Historical Attributes
 | ... | Image         | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
 | ... | etc..         | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
 
+Revision state:
+
+- New Item
+- Revised
+- Not for new Projects
+- Depreciated
+
 Buy / Manufacturing
 
-| ... | File type     | Date created | Created by | Last Edit  | Edited by | Checked-out by | Revision state| Revision nr. |
-|-----|---------------|--------------|------------|------------|-----------|----------------|----------------|-------------|
-| ... | db Attributes | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
-| ... | Part          | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
-| ... | Assembly      | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
-| ... | Drawing       | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
-| ... | Manual        | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
-| ... | Specification | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
-| ... | Calculation   | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
-| ... | Image         | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
-| ... | etc..         | Date         | Name       | Date       | Name      | Name           | List of States | Number      |
+| ... | File type     | Traceability | Source | Manufacturer ID | Manufacturer Name | Vendor ID | Vendor Name |
+|-----|---------------|--------------|--------|-----------------|-------------------|-----------|-------------|
+| ... | db Attributes | None         | List   | Number          | Name              | Number    | Name        |
+| ... | Part          | List         | List   | Number          | Name              | Number    | Name        |
+| ... | Assembly      | List         | List   | Number          | Name              | Number    | Name        |
+| ... | Drawing       | List         | List   | Number          | Name              | Number    | Name        |
+| ... | Manual        | List         | List   | Number          | Name              | Number    | Name        |
+| ... | Specification | List         | List   | Number          | Name              | Number    | Name        |
+| ... | Calculation   | List         | List   | Number          | Name              | Number    | Name        |
+| ... | Image         | none         | List   | Number          | Name              | Number    | Name        |
+| ... | etc..         | List         | List   | Number          | Name              | Number    | Name        |
+
+Traceability state:
+
+- Lot
+- Lot And Serial Number
+- Serial Number
+- Not traced
+
+Source state:
+
+- Buy
+- Make
 
 As long as every 
 
