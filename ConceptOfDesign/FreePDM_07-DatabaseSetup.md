@@ -118,34 +118,6 @@ Source state:
 - Buy
 - Make
 
-As long as every 
-
-### Attributes by File
-
-TODO:
-
-Last Edit By
-Created By
-Checked-Out by
-RevisionNumber
-
-| Column 1 | Column 2 | Column 3|
-|----------|----------|---------|
-| item1    | item2    | item 3  |
-
-_Note: Maybe remove this header and add All Info in multiple Tables Below Files_
-
-### Attributes by Item
-
-TODO:
-
-| Column 1 | Column 2 | Column 3|
-|----------|----------|---------|
-| item1    | item2    | item 3  |
-|----------|----------|---------|
-
-_Note: Maybe remove this header and add All Info in multiple Tables Below Items_
-
 ### References
 
 Difference
