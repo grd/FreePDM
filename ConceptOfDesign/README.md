@@ -35,4 +35,6 @@
 
 ## [TestFiles](FreePDM_06-TestFiles.md)
 
+## [Database Setup](FreePDM_07-DatabaseSetup.md)
+
 [<< Previous Chapter]() | [Content Table](README.md) | [Next Chapter >>](FreePDM_01-RequestedInformation.md)
