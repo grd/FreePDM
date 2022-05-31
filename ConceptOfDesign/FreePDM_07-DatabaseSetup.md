@@ -4,6 +4,10 @@
 
 ## Database Design
 
+The database stores data from CAD files, including links to where the files are stored.
+Besides this it contains Part, user, project attributes etc.
+For more information about the attributes or a shortlist see [Attributes](FreePDM_03-1-Attributes.md).
+
 <!--
 | Column 1 | Column 2 | Column 3|
 |----------|----------|---------|

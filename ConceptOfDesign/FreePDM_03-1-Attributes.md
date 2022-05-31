@@ -66,4 +66,6 @@ Links in alphabetic order:
 - [ProjectAttributes pdf](ProjectAttributes.pdf) original see [Windchill Project Attributes](https://support.ptc.com/help/wnc/r12.0.2.0/en/index.html#page/Windchill_Help_Center/ProjMgmtProjectAttributes.html)
 - [DefaultSystemAttributes pdf](DefaultSystemAttributes.pdf) original see [Windchill Default System Attributes](https://support.ptc.com/help/windchill/wc110_hc/whc_en/index.html#page/Windchill_Help_Center/WGMCATIAV5AdmConfigWCDefaultSysAtt.html)
 
+Check also [database setup](FreePDM_07-DatabaseSetup.md) for more (and better split out )attributes.
+
 [<< Previous Chapter](FreePDM_03-DesignDecisions.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_03-2-SVNProjectStructure.md)
