@@ -267,3 +267,5 @@ More information about workflows can be found in [UIInteractionFC](FreePDM_02-Wo
 
 Within _FreeCAD_ Some functionality need to be added so that the files can be _Checked-In_ or _Checked-Out_ from a _Menu_ or a _FileObject_.  
 On the other hand _FreeCAD_ Needs Acces to the File location, without any interactions between the different workspaces!
+
+[<< Previous Chapter](FFreePDM_04-Requirements.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_05-1-DatabaseSetup.md)
