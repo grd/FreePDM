@@ -21,7 +21,7 @@ class ItemDataModel():
 	def __init__(self, filename):
 		self.filename = filename
 		self.thumbnail = None
-		self.documentProperties = {}
+		self.__documentProperties__ = {}
 
 	def read(self):
 		with tempfile.TemporaryDirectory() as tmpdirname:
@@ -47,33 +47,31 @@ class ItemDataModel():
 		root = et.fromstring(docx)
 
 		el = root.find(".//Property[@name='Comment']/String")
-		self.documentProperties["Comment"] = el.attrib.get('value')
+		self.__documentProperties__["Comment"] = el.attrib.get('value')
 
 		el = root.find(".//Property[@name='Company']/String")
-		self.documentProperties["Company"] = el.attrib.get('value')
+		self.__documentProperties__["Company"] = el.attrib.get('value')
 
 		el = root.find(".//Property[@name='CreatedBy']/String")
-		self.documentProperties["CreatedBy"] = el.attrib.get('value')
+		self.__documentProperties__["CreatedBy"] = el.attrib.get('value')
 
 		el = root.find(".//Property[@name='CreationDate']/String")
-		self.documentProperties["CreationDate"] = el.attrib.get('value')
+		self.__documentProperties__["CreationDate"] = el.attrib.get('value')
 
 		el = root.find(".//Property[@name='Id']/String")
-		self.documentProperties["Id"] = el.attrib.get('value')
+		self.__documentProperties__["Id"] = el.attrib.get('value')
 
 		el = root.find(".//Property[@name='Label']/String")
-		self.documentProperties["Label"] = el.attrib.get('value')
+		self.__documentProperties__["Label"] = el.attrib.get('value')
 
 		el = root.find(".//Property[@name='LastModifiedBy']/String")
-		self.documentProperties["LastModifiedBy"] = el.attrib.get('value')
+		self.__documentProperties__["LastModifiedBy"] = el.attrib.get('value')
 
 		el = root.find(".//Property[@name='LastModifiedDate']/String")
-		self.documentProperties["LastModifiedDate"] = el.attrib.get('value')
+		self.__documentProperties__["LastModifiedDate"] = el.attrib.get('value')
 
 		el = root.find(".//Property[@name='Uid']/Uuid")
-		self.documentProperties["Uid"] = el.attrib.get('value')
+		self.__documentProperties__["Uid"] = el.attrib.get('value')
 
-
-#fcfile = ItemDataModel("/home/user/temp/freecad3.FCStd")
-#fcfile.read()
- 
+	def get(self):
+		return(self.filename)	                            

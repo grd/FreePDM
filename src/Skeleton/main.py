@@ -7,9 +7,12 @@ from directorymodel import DirectoryModel
 
 # right now it should only show a directory that you specify
 #  and print the values about that directory 
+
+# TODO: Well, right now it only shows the files in one directory.
+
 def main():
     dm = DirectoryModel("/home/user/temp")
-    print(dm.dirList)
+    dm.getDirList()
   
 if __name__=="__main__":
     main();
