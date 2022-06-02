@@ -10,7 +10,8 @@ TODO: Show how to
 TODO: Show how to
 
 ### Install PIP modules
-pip install defusedxml
+pip3 install defusedxml
+pip3 install imageio
 
 ## Install CSV
 TODO: Show how to
