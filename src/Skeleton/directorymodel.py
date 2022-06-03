@@ -29,13 +29,13 @@ class DirectoryModel():
 					file_list.append(d)
 
 		for dl in directory_list:
-			print('[ ' + dl + ' ]')
+			print('Directory: ' + dl)
 		for fl in file_list:
 			if ".FCStd" in fl:
 				idm = ItemDataModel(self.dir + '/' + fl).get()
-				print(os.path.basename(idm))
+				print('FCStd: ' + os.path.basename(idm))
 			else:
-				print(fl)
+				print('File: ' + fl)
 
 
 

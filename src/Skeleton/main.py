@@ -12,7 +12,7 @@ from directorymodel import DirectoryModel
 
 def main():
     dm = DirectoryModel("/home/user/temp")
-    dm.getDirList()
+   # dm.getDirList()
   
 if __name__=="__main__":
     main();
