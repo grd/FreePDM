@@ -24,7 +24,6 @@ Another part of the system is the structure (of the system).
 Inside the system there are some (potential )sub systems.
 Be aware that within this context the Ldap-server is part of the Version system.
 
-
 ### General system
 
 ![BDD FreePDM](FreePDM_CoD-Figures/BDD_FreePDM.png)
@@ -33,8 +32,6 @@ Beside the side packages FreePDM is spit between a _Frond-End_ system and a _Bac
 The _Frond-End_ is installed on the _Client-PC_, while the _Back-End_ is installed on the Server(see image below). 
 
 ![BDD Overview](FreePDM_CoD-Figures/BDD_Overview.png)
-
-
 
 ### server side
 
@@ -69,7 +66,27 @@ For more information about potential _Database_ tables see: [FreePDM_07-Database
 
 #### LDAP-Server - Optional
 
+Somehow the functionality of the _LDAP-server_ is difficult to grasp.
+Or the idea of a _svn-server_ sounds way simpler.
+Beside that it sound more easy a _svn-server_ has some drawbacks.  
+Both _svn_ and _git_ aren't good in handeling _Binary_ _Data_.
+Simply described they just make a copy in the background.
+A _git_ / _svn_ versioning system work on project level.
+So a project contain a set of _Files_ and the set of _Files_ get a certain version.
+While in _CAD-Data_ it is quite common that not all _CAD_Files_ have the same version number.
+That a single _File_ needs a change or even that only the _Drawing_ needs a change.
 
+How does the _LDAP-server_ work:  
+Imagine yourself that the _LDAP-server_ is a _Database_ in the form of a file structure / Folder hierarchy.
+It handle User authentication on _File_ / _Folder_ level.
+But is don't handle versions as what a versioning systems does.
+This means the versioning part should be done between the _LDAP-server_ and the _Database-Server_
+
+
+Main reason why the _LDAP-server_ is currently optionally is that it is unknown if this kind of hierarchy can be achieved from the _Database_ alone.
+
+In [DB Versioning Update](FreePDM_03-3-DBVersioningUpd.md) is already written about the _LDAP-server_.
+If you want to dive deeper you have to look there. 
 
 #### Webserver - Currently not needed, But maybe Optional in the future
 
@@ -104,7 +121,7 @@ A (sub)set of available python _Web Framework_s:
 - [Webpy](https://webpy.org/)
 
 
-What is the best option for a _Web Framework_?
+What is the best option for a _Web-Framework_?
 
 [Is bottle suitable for complex applications?](https://bottlepy.org/docs/dev/faq.html?highlight=apache)
 
@@ -155,7 +172,7 @@ First the standard _Framework_s:
 There is a big difference between the packages above.
 Nginx is probably the most difficult one. Not technically but it has a difficult interaction between the open source package and the payed(don't know if it is closed source) version.
 For example there is no way how to find out what _Database_ types are by default available.  
-Apache, Nginx and Lighttpd have the possibility to work together with an ldap database.
+Apache, Nginx and Lighttpd have the possibility to work together with an ldap _Database_.
 Bu also now it is unknown if the [Nginx](https://www.nginx.com/blog/nginx-plus-authenticate-users/) has this by default
 
 Python _Framework_s:
@@ -171,7 +188,7 @@ Pyramid and Falcon use SQLAlchemy as middle men.
 
 When looking at the environment this can be described as a working site.
 Within this context it is important that the is a state of stability. 
-Currently the Apache _Web Framework_ looks like most developed and stable _Framework_.
+Currently the Apache _Web-Framework_ looks like most developed and stable _Framework_.
 Nginx comes close but because there is a lot less information available it is difficult to see what state is has.  
 The first choice should be Apache and adding Nginx later on as a valid alternative.
 

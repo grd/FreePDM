@@ -97,19 +97,45 @@ According to Okta (See What is LDAP) LDAP is the following:
 > LDAP is an open, vendor-neutral application protocol for accessing and maintaining that data. 
 > LDAP can also tackle authentication, so users can sign on just once and access many different files on the server.
 
-This is one of the big problems.
-Who have acces to what file(s).
+First a comparison between a _svn-server_ and a _LDAP-server_:
+
+_svn-server_                | _LDAP-server_
+----------------------------|-----------------------------------
+Handles changes of text files  | Don't Handle changes explicitly
+Changes binary data are copies | Don't Handle changes explicitly
+Handles Versions on project level | Don't Handle versions explicitly
+Don't handle Authentication | Handle Authentication
+Don't work together with an _Database_ | Able to work together with a _Database_
+Work on project level.      | Work multi level
+
+Basically they solve two different problems, but are not able to work together.
+Where a _svn-server_ handles versions specially on text base projects.
+They're handles a _LDAP-server_ mainly folder, file acces in a folder, file structure.
+Since _CAD-Files_ are mainly binary files it is much more difficult to handle versions.
+Even for a _svn-server_ it are basically copies, and thus it looses part of its power.
+
 If we go now to the internals of an _Item_.
 In the situation without _LDAP-server_ (as shown)all files are synchronised with the _Database_. 
 In the version with _LDAP-server_ is much more easy. Only the _Meta-Data_ is synchronised with the _Database_ because the data itself is part of the _LDAP-server_.
 This makes this implementation less difficult.  
-Another pro of this implementation is that it is widely used by other PLD / PDM systems. see for reference by the [Additional information](#additional-information).
+Another pro of this implementation is that it is widely used by other PLD / PDM systems.
+See for reference by the [Additional information](#additional-information).
 
 The versioning is not handled by this system.
-Since it are binary files it is equally problematic as with a versioning system (that also create copies).  
-FreeCAD saves backup files as _FCStd#_ where the _#_ is a number.
-It is possible make use of this same scheme.
-If preferred Al versions that are before a release can be removed at the moment of a revision.
+Since _CAD-Files_ are binary files it is equally problematic as with a versioning system (that also create copies).  
+Every time one or more files are _Checked-In_ the following steps are performed:
+
+1. Make copy of existing _<filename>.FCStd_ to _<filename>.FCStd#_
+2. Create New database version (for look back)
+3. Overwrite _<filename>.FCStd_ with the changed _File_ from the _User_.
+4. Optionally _Check-Out_ again.
+
+For 1 we use the same scheme that FreeCAD uses for saving backup files.
+Here is the _#_ a number that is added in the _File-Extension_ as _FCStd#_.
+This way a _User_ or _Admin_(can be decided on _Server_ level) is always able to go back to a previous stored versions.
+Every _Released_ _Version_ is a dedicated file on the server what never leads to trouble.
+Also a _Base-Line_(A important stored _Version_ without a _Release Status_) can be created.
+If preferred all versions that are stored before a _Release_ can be removed at the moment of a creating a _Revision_.
 
 #### Additional information
 
