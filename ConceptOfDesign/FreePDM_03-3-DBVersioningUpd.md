@@ -30,7 +30,7 @@ The next diagram is to create a better understanding what happens inside the _It
 In this diagram everything is a bit more general.
 So all the special cases are ignored.
 There are _Connections_ between the different files and the _meta-data_.
-This are data transfers between the files / based on the files and the _Meta-Data_('local' database) of the _Item_.  
+This are data transfers between the files / based on the files and the _Meta-Data_('local' _Database_) of the _Item_.  
 From the _Meta-Data_ there is a _Connection_ to the right side of the _Item_.
 All Other Files have a _connection_ to the left side of the _Item_.
 What this mean are explained in [Interfaces](#interface).
@@ -69,7 +69,7 @@ Both the files and the _Meta-data_ goes to the the same
 
 #### Interface
 
-Here is the diverge between the two alternatives.
+Here is where the two alternatives diverge.
 The divergence have also change inside the _Item_ block as result.
 But what that is follows later.
 
@@ -79,9 +79,9 @@ First we ignore the _LDAP-server_.
 What do we see then:  
 All data goes to the _Database_, Some part directly(The binary Files) and some via the _Meta-Data_.
 
-It is possible to add binary data to a sql server. Normally a database have a known width(call it that way) and grows only length wise.
-In this case we have an unknown amount of versions (of every CAD file) that are stored.
-With this method the database expand in both directions.
+It is possible to add _Binary_ _Data_ to a _SQL-server_. Normally a database have a known width(call it that way) and grows only length wise.
+In this case we have an unknown amount of versions (of every _CAD_ _File_) that are stored.
+With this method the _Database_ expand in both directions.
 For comparison with preview images.
 A preview image in the _Database_ is fine since every item get's a single image.
 The history of images is not important so only the last version needs acces tot the database. 
@@ -91,25 +91,55 @@ So the size of the table don't expand.
 Now the second alternative.
 The _LDAP-server_ is now taken into account.
 
-What is a LDAP server?
+What is a _LDAP-server_?
 According to Okta (See What is LDAP) LDAP is the following:
 
 > LDAP is an open, vendor-neutral application protocol for accessing and maintaining that data. 
 > LDAP can also tackle authentication, so users can sign on just once and access many different files on the server.
 
-This is one of the big problems.
-Who have acces to what file(s).
+First a comparison between a _svn-server_ and a _LDAP-server_:
+
+_svn-server_                | _LDAP-server_
+----------------------------|-----------------------------------
+Handles changes of text files  | Don't Handle changes explicitly
+Changes binary data are copies | Don't Handle changes explicitly
+Handles Versions on project level | Don't Handle versions explicitly
+Don't handle Authentication | Handle Authentication
+Don't work together with an _Database_ | Able to work together with a _Database_
+Work on project level.      | Work multi level
+
+Basically both methods solve two different problems
+Both methods are not able to work together(at least not out of the box).
+Where a _svn-server_ handles _Versions_ specially on text base projects.
+A _LDAP-server_ mainly Handles _Folder_, _File_ acces in a _Folder_, _File-Structure_ and [static](https://backboneplm.com/tech-packs-static-data-vs-dynamic-data/) Data.
+Since _CAD-Files_ are mainly (Static )_Binary Files_ it is much more difficult to handle _Versions_.
+Even for a _svn-server_ it are basically copies, and thus it looses part of its power.
+
 If we go now to the internals of an _Item_.
 In the situation without _LDAP-server_ (as shown)all files are synchronised with the _Database_. 
 In the version with _LDAP-server_ is much more easy. Only the _Meta-Data_ is synchronised with the _Database_ because the data itself is part of the _LDAP-server_.
 This makes this implementation less difficult.  
-Another pro of this implementation is that it is widely used by other PLD / PDM systems. see for reference by the [Additional information](#additional-information).
+Another pro of this implementation is that it is widely used by other PLD / PDM systems.
+See for reference by the [Additional information](#additional-information).
 
 The versioning is not handled by this system.
-Since it are binary files it is equally problematic as with a versioning system (that also create copies).  
-FreeCAD saves backup files as _FCStd#_ where the _#_ is a number.
-It is possible make use of this same scheme.
-If preferred Al versions that are before a release can be removed at the moment of a revision.
+Since _CAD-Files_ are binary files it is equally problematic as with a versioning system (that also create copies).  
+Every time one or more files are _Checked-In_ the following steps are performed:
+
+1. Request Acces to _LDAP-Server_
+2. Modify Entry what result in
+  1. Make copy of existing _<filename>.FCStd_ to _<filename>.FCStd#_
+  2. Create New database version (for look back)
+  3. Overwrite _<filename>.FCStd_ with the changed _File_ from the _User_.
+3. Optionally _Check-Out_ (== request authentication)again.
+4. Loose Acces to _LDAP-Server_ (So no constant acces to the server is required)
+
+For 1.1 we use the same scheme that FreeCAD uses for saving backup files.
+Here is the _#_ a number that is added in the _File-Extension_ as _FCStd#_.
+This way a _User_ or _Admin_(can be decided on _Server_ level) is always able to go back to a previous stored versions.
+Every _Released_ _Version_ is a dedicated file on the server what never leads to trouble.
+Also a _Base-Line_(A important stored _Version_ without a _Release Status_) can be created.
+If preferred all versions that are stored before a _Release_ can be removed at the moment of a creating a _Revision_.
 
 #### Additional information
 
@@ -128,6 +158,7 @@ Microsoft Active directory
 
 Implementation
 
+- [Static vs dynamic data](https://backboneplm.com/tech-packs-static-data-vs-dynamic-data/)
 - [Joining an LDAP Directory and a MySQL Database](https://docs.oracle.com/cd/E19424-01/820-4809/sample-virtual-config1/index.html)
 
 It looks like That Windchill, Teamcenter AND SolidWorks PLM use a combination of SQL server && LDAP server.
