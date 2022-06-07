@@ -72,7 +72,7 @@ Beside that it sound more easy a _svn-server_ has some drawbacks.
 Both _svn_ and _git_ aren't good in handeling _Binary_ _Data_.
 Simply described they just make a copy in the background.
 A _git_ / _svn_ versioning system work on project level.
-So a project contain a set of _Files_ and the set of _Files_ get a certain version.
+So a project contains a set of _Files_ and the set of _Files_ (as a whole )get a certain _Version_ / _Revision_.
 While in _CAD-Data_ it is quite common that not all _CAD_Files_ have the same version number.
 That a single _File_ needs a change or even that only the _Drawing_ needs a change.
 
