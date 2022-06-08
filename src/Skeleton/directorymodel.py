@@ -11,14 +11,16 @@ from itemdatamodel import ItemDataModel
 class DirectoryModel():
 	def __init__(self, dir):
 		self.dir = dir
-		self.dirList = []
+		self.dirList = [["  nr", "Dir/File ", "Filename"]]
 		self.getDirList()
+		
 
 	def getDirList(self):
 		dir_list = os.listdir(self.dir)
 		dir_list.sort()
 		directory_list = []
 		file_list = []
+		nr = 0
 		for d in dir_list:
 			full_path = self.dir + '/' + d
 			# eleminate files and directories starting with "."
@@ -29,13 +31,15 @@ class DirectoryModel():
 					file_list.append(d)
 
 		for dl in directory_list:
-			print('Directory: ' + dl)
+			self.dirList.append([str(nr), 'Directory', dl]) 
+			nr = nr + 1
 		for fl in file_list:
-			if ".FCStd" in fl:
-				idm = ItemDataModel(self.dir + '/' + fl).get()
-				print('FCStd: ' + os.path.basename(idm))
+			if fl.endswith(".FCStd"):
+#				idm = ItemDataModel(self.dir + '/' + fl).get()
+				self.dirList.append([str(nr), 'FCStd    ', fl])
+				nr = nr + 1
 			else:
-				print('File: ' + fl)
-
-
+				self.dirList.append([str(nr), 'File     ', fl])
+				nr = nr + 1
+		self.dirList.pop(0)
 
