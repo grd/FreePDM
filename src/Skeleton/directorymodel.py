@@ -36,10 +36,10 @@ class DirectoryModel():
 		for fl in file_list:
 			if fl.endswith(".FCStd"):
 #				idm = ItemDataModel(self.dir + '/' + fl).get()
-				self.dirList.append([str(nr), 'FCStd    ', fl])
+				self.dirList.append([str(nr), 'FCStd', fl])
 				nr = nr + 1
 			else:
-				self.dirList.append([str(nr), 'File     ', fl])
+				self.dirList.append([str(nr), 'File', fl])
 				nr = nr + 1
 		self.dirList.pop(0)
 
