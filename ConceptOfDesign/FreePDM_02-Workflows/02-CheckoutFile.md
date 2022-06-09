@@ -10,7 +10,7 @@
 
 ### Workflow 1
 
-The user has opened a CAD file from the pdm(see: file storing during editing). While busy the need to edit a file that isn't checked out yet. He goes to that particular file in the assembly tree / goes to the TAB of that file. Then RBM on the part end press check-out to get write acces.
+The user has opened a CAD file from the pdm(see: file storing during editing). While busy the need to edit a file that isn't checked out yet. He goes to that particular file in the assembly tree / goes to the TAB of that file. Then RBM on the part end press check-out to get write access.
 
 #### questions / Comments
 
@@ -19,7 +19,7 @@ The user has opened a CAD file from the pdm(see: file storing during editing). W
 
 ### Workflow 2
 
-The user want to open AND edit a CAD file from the pdm(see: file storing during editing). The user select the part in the pdm and end press check-out to get write acces.
+The user want to open AND edit a CAD file from the pdm(see: file storing during editing). The user select the part in the pdm and end press check-out to get write access.
 
 #### questions / Comments
 

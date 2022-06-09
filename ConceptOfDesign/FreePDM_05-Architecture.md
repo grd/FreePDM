@@ -69,7 +69,7 @@ For more information about potential _Database_ tables see: [FreePDM_07-Database
 Somehow the functionality of the _LDAP-server_ is difficult to grasp.
 Or the idea of a _svn-server_ sounds way simpler.
 Beside that it sound more easy a _svn-server_ has some drawbacks.  
-Both _svn_ and _git_ aren't good in handeling _Binary_ _Data_.
+Both _svn_ and _git_ aren't good in handling _Binary_ _Data_.
 Simply described they just make a copy in the background.
 A _git_ / _svn_ versioning system work on project level.
 So a project contains a set of _Files_ and the set of _Files_ (as a whole )get a certain _Version_ / _Revision_.
@@ -170,7 +170,7 @@ First the standard _Framework_s:
 - xampp - [MariaDB, others are unknown](https://www.apachefriends.org/index.html)
 
 There is a big difference between the packages above.
-Nginx is probably the most difficult one. Not technically but it has a difficult interaction between the open source package and the payed(don't know if it is closed source) version.
+Nginx is probably the most difficult one. Not technically but it has a difficult interaction between the open source package and the paid(don't know if it is closed source) version.
 For example there is no way how to find out what _Database_ types are by default available.  
 Apache, Nginx and Lighttpd have the possibility to work together with an ldap _Database_.
 Bu also now it is unknown if the [Nginx](https://www.nginx.com/blog/nginx-plus-authenticate-users/) has this by default
@@ -245,7 +245,7 @@ The _Container_s could be:
 - [singularity](https://sylabs.io/singularity/)
 
 A container has some drawbacks.
-When a container is stopped and a new one started there is a [risk of losing inforamtion](https://stackoverflow.com/questions/41067032/how-to-stop-relaunch-docker-container-without-losing-the-changes).
+When a container is stopped and a new one started there is a [risk of losing information](https://stackoverflow.com/questions/41067032/how-to-stop-relaunch-docker-container-without-losing-the-changes).
 [More information](https://forums.docker.com/t/lose-data-when-docker-restarts/23018/2).
 
 ### Client side
@@ -253,7 +253,7 @@ When a container is stopped and a new one started there is a [risk of losing inf
 In the ClientPC Block it is assumed that the user is a CAD user because it is the most complex case (see image below).
 If the user is a project manager (who does nothing with CAD, even not viewing) he / she shall mainly check / change the (project )attributes.  
 In such a case there should be a method to install FreePDM without FreeCAD.
-All CAD related features are not necessary eihter so this package should be compacter as its CAD Equivalent.
+All CAD related features are not necessary either so this package should be compacter as its CAD Equivalent.
 
 ![IBD Client PC](FreePDM_CoD-Figures/IBD_ClientPC.png)
 
@@ -283,6 +283,6 @@ More information about workflows can be found in [UIInteractionFC](FreePDM_02-Wo
 #### FreeCAD
 
 Within _FreeCAD_ Some functionality need to be added so that the files can be _Checked-In_ or _Checked-Out_ from a _Menu_ or a _FileObject_.  
-On the other hand _FreeCAD_ Needs Acces to the File location, without any interactions between the different workspaces!
+On the other hand _FreeCAD_ Needs Access to the File location, without any interactions between the different workspaces!
 
 [<< Previous Chapter](FFreePDM_04-Requirements.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_05-1-DatabaseSetup.md)

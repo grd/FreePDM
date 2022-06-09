@@ -83,8 +83,8 @@ It is possible to add _Binary_ _Data_ to a _SQL-server_. Normally a database hav
 In this case we have an unknown amount of versions (of every _CAD_ _File_) that are stored.
 With this method the _Database_ expand in both directions.
 For comparison with preview images.
-A preview image in the _Database_ is fine since every item get's a single image.
-The history of images is not important so only the last version needs acces tot the database. 
+A preview image in the _Database_ is fine since every item gets a single image.
+The history of images is not important so only the last version needs access to the database. 
 If the preview change the existing file is overwritten.
 So the size of the table don't expand.
 
@@ -111,7 +111,7 @@ Work on project level.      | Work multi level
 Basically both methods solve two different problems
 Both methods are not able to work together(at least not out of the box).
 Where a _svn-server_ handles _Versions_ specially on text base projects.
-A _LDAP-server_ mainly Handles _Folder_, _File_ acces in a _Folder_, _File-Structure_ and [static](https://backboneplm.com/tech-packs-static-data-vs-dynamic-data/) Data.
+A _LDAP-server_ mainly Handles _Folder_, _File_ access in a _Folder_, _File-Structure_ and [static](https://backboneplm.com/tech-packs-static-data-vs-dynamic-data/) Data.
 Since _CAD-Files_ are mainly (Static )_Binary Files_ it is much more difficult to handle _Versions_.
 Even for a _svn-server_ it are basically copies, and thus it looses part of its power.
 
@@ -126,13 +126,13 @@ The versioning is not handled by this system.
 Since _CAD-Files_ are binary files it is equally problematic as with a versioning system (that also create copies).  
 Every time one or more files are _Checked-In_ the following steps are performed:
 
-1. Request Acces to _LDAP-Server_
+1. Request Access to _LDAP-Server_
 2. Modify Entry what result in
   1. Make copy of existing _<filename>.FCStd_ to _<filename>.FCStd#_
   2. Create New database version (for look back)
   3. Overwrite _<filename>.FCStd_ with the changed _File_ from the _User_.
 3. Optionally _Check-Out_ (== request authentication)again.
-4. Loose Acces to _LDAP-Server_ (So no constant acces to the server is required)
+4. Loose Access to _LDAP-Server_ (So no constant access to the server is required)
 
 For 1.1 we use the same scheme that FreeCAD uses for saving backup files.
 Here is the _#_ a number that is added in the _File-Extension_ as _FCStd#_.
@@ -177,7 +177,7 @@ Databases and storing binary data.
 ### Conclusion
 
 From the three Alternatives looks it like the system version without _Versioning System_ and with _LDAP-server_ is implementation wise the best option.  
-Is the _LDAP-server_ alway required?
-Maybe not for small companies where _ALl_ users have acces to everything. As long a file and folder structure can be maintained.
+Is the _LDAP-server_ always required?
+Maybe not for small companies where _ALl_ users have access to everything. As long a file and folder structure can be maintained.
 
 [<< Previous Chapter](FreePDM_03-2-SVNProjectStructure.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_04-Requirements.md)

@@ -12,14 +12,14 @@ _All_ functionality interact with each other.
 
 ### Assumptions
 
-What is happening with the version handeling and the database.
+What is happening with the version handling and the database.
 
 - The database that is part of the item can be locked
 - The database that have knowledge of all available items not
 - The database that is related to the CAD files is part of the versioning system
 - If a CAD file is released it's related (database )item is also released
-- From the database interaction the version system give the user write acces
-- From the database interaction the version system release the user write acces.
+- From the database interaction the version system give the user write access
+- From the database interaction the version system release the user write access.
 
 ### Workflow 1  <!-- Edit a file -->
 

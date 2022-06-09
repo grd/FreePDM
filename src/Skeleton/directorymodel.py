@@ -23,7 +23,7 @@ class DirectoryModel():
 		nr = 0
 		for d in dir_list:
 			full_path = self.dir + '/' + d
-			# eleminate files and directories starting with "."
+			# eliminate files and directories starting with "."
 			if not d.startswith("."):
 				if os.path.isdir(full_path):
 					directory_list.append(d)

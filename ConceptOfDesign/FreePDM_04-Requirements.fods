@@ -1306,7 +1306,7 @@
       <text:p>23</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>Part Cant change state without Item</text:p>
+      <text:p>Part Can't change state without Item</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>
@@ -2299,7 +2299,7 @@
       <text:p>AddAttributeFromCAD</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>Fille AssemblyTypeAttribute</text:p>
+      <text:p>Fill AssemblyTypeAttribute</text:p>
      </table:table-cell>
      <table:table-cell table:formula="of:=[$Requirements.A43]" office:value-type="float" office:value="41" calcext:value-type="float">
       <text:p>41</text:p>
@@ -2476,7 +2476,7 @@
       <text:p>Release</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>State Where a Object, Part is alloud for production purposes</text:p>
+      <text:p>State Where a Object, Part is allowed for production purposes</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
@@ -2569,7 +2569,7 @@
       <text:p>Admin</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>A Role with hight responsibility who have more rights than the other Roles</text:p>
+      <text:p>A Role with high responsibility who have more rights than the other Roles</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
