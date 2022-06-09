@@ -21,11 +21,12 @@ class ItemDataModel():
 	def __init__(self, filename):
 		self.filename = filename
 		self.thumbnail = None
-		self.__documentProperties__ = {}
+		self.documentProperties = {}
+		self.read()
 
 	def read(self):
 		with tempfile.TemporaryDirectory() as tmpdirname:
-			print('created temporary directory', tmpdirname)
+#			print('created temporary directory', tmpdirname)
 
 			# extracting the FCStd zip file
 			zip=zipfile.ZipFile(self.filename)
@@ -33,7 +34,7 @@ class ItemDataModel():
 
 			# reading xml file
 			tree = tmpdirname + "/Document.xml"
-			print(tree)
+#			print(tree)
 			self.readXML(tree)
 		
 			# Check whether there is a thumbnail
@@ -47,31 +48,35 @@ class ItemDataModel():
 		root = et.fromstring(docx)
 
 		el = root.find(".//Property[@name='Comment']/String")
-		self.__documentProperties__["Comment"] = el.attrib.get('value')
+		self.documentProperties["Comment"] = el.attrib.get('value')
 
 		el = root.find(".//Property[@name='Company']/String")
-		self.__documentProperties__["Company"] = el.attrib.get('value')
+		self.documentProperties["Company"] = el.attrib.get('value')
 
 		el = root.find(".//Property[@name='CreatedBy']/String")
-		self.__documentProperties__["CreatedBy"] = el.attrib.get('value')
+		self.documentProperties["CreatedBy"] = el.attrib.get('value')
 
 		el = root.find(".//Property[@name='CreationDate']/String")
-		self.__documentProperties__["CreationDate"] = el.attrib.get('value')
+		self.documentProperties["CreationDate"] = el.attrib.get('value')
 
 		el = root.find(".//Property[@name='Id']/String")
-		self.__documentProperties__["Id"] = el.attrib.get('value')
+		self.documentProperties["Id"] = el.attrib.get('value')
 
 		el = root.find(".//Property[@name='Label']/String")
-		self.__documentProperties__["Label"] = el.attrib.get('value')
+		self.documentProperties["Label"] = el.attrib.get('value')
 
 		el = root.find(".//Property[@name='LastModifiedBy']/String")
-		self.__documentProperties__["LastModifiedBy"] = el.attrib.get('value')
+		self.documentProperties["LastModifiedBy"] = el.attrib.get('value')
 
 		el = root.find(".//Property[@name='LastModifiedDate']/String")
-		self.__documentProperties__["LastModifiedDate"] = el.attrib.get('value')
+		self.documentProperties["LastModifiedDate"] = el.attrib.get('value')
 
 		el = root.find(".//Property[@name='Uid']/Uuid")
-		self.__documentProperties__["Uid"] = el.attrib.get('value')
+		self.documentProperties["Uid"] = el.attrib.get('value')
 
-	def get(self):
+	def getFileName(self):
 		return(self.filename)	                            
+
+	def getDocumentPropterties(self):
+		return(self.documentProperties)
+		
