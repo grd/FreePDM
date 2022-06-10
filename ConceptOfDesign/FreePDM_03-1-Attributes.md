@@ -9,11 +9,11 @@ See for set of example attributes in the [Links to documents](#links-to-document
 
 The set of properties of a FreeCAD file:
 
-- [FreeCAD file Data](https://wiki.freecadweb.org/Std_Part#Data)
-- [Body Data](https://wiki.freecadweb.org/PartDesign_Body#Hidden_properties_Data)
-- [Assembly A2 Plus](https://wiki.freecadweb.org/A2plus_Workbench#Assembly_Structure)
+- [FreeCAD file Data](https://wiki.freecad.org/Std_Part#Data)
+- [Body Data](https://wiki.freecad.org/PartDesign_Body#Hidden_properties_Data)
+- [Assembly A2 Plus](https://wiki.freecad.org/A2plus_Workbench#Assembly_Structure)
 - Assembly A3 and A4 uses Std LinkMate for their data.
-[Std LinkMate Data](https://wiki.freecadweb.org/Std_LinkMake#Data)
+[Std LinkMate Data](https://wiki.freecad.org/Std_LinkMake#Data)
 
 ### Parts vs Bodies
 A Part is a container and it can contain multiple bodies and as so it can become an assembly (of Bodies). A Body is a 3D geometry that can either be a solid or a mesh object.

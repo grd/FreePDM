@@ -7,7 +7,7 @@
 ### Introduction
 
 Before in @link there is is spoken about the methods that should be added from the gui.
-This one goes more about the interaction between [FreeCAD](https://freecadweb.org) and the PDM system.
+This one goes more about the interaction between [FreeCAD](https://freecad.org) and the PDM system.
 
 ![Available space](../FreePDM_CoD-Figures/FreePDM-UI-FC_01Workspace.png)
 
@@ -61,7 +61,7 @@ Also there is a part of the workbench that should work with the Tooling that is 
 ![Available space](../FreePDM_CoD-Figures/FreePDM-UI-FC_02FileMenu.png)
 
 The rationale behind why the Check-In, Check-Out buttons are added to the filemenu is easy.
-The File Menu is alway there.
+The File Menu is always there.
 Another option is make a dedicated menu for _All_ pdm functionality, the question is, is that required.
 
 #### questions / Comments 4

@@ -8,7 +8,7 @@
 
 There are already some interfacing figures (From Solid Works). This the links to the files(in alphabetic order) are:
 
-It is the goal to create a( discusion how to create a) set of logic workflows how to handle some activities.
+It is the goal to create a( discussion how to create a) set of logic workflows how to handle some activities.
 Also how to different activities / workflows interact.
 
 ### Assumptions
@@ -24,7 +24,7 @@ Also how to different activities / workflows interact.
 
 ![Projectview-wide](../FreePDM_CoD-Figures/ProjectView_Wide.png)
 In the Project it is possible to select current working project (Specially when workspaces are not implemented).
-Another feature about this is that you can see to what projects you have reading acces.
+Another feature about this is that you can see to what projects you have reading access.
 The project bar is hide-able.
 
 ### questions / Comments 1
@@ -59,7 +59,7 @@ Other activities
 
 Beside these functions there should be thought about additional features as showing:
 
-- an item is changed (while you don't have write acces. So you can request write acces)
+- an item is changed (while you don't have write access. So you can request write access)
 - There is a newer version on the server
 - When the main assembly is added (by a [Search action](#workflow-3)) all lower level items can be added
 

@@ -7,7 +7,7 @@
 
 ### Assumptions
 
-- All model types(like part, assemly, drawing, but also (external )documentation) are called item
+- All model types(like part, assembly, drawing, but also (external )documentation) are called item
 
 
 ### Workflow 1
@@ -19,7 +19,7 @@ Now can start a procedure(Can be self defined) that check the item(s) etc if it 
 
 ### questions / Comments 1
 
-- in [this FC forum thread](https://forum.freecadweb.org/viewtopic.php?f=8&t=68350) there is spoken about the usage of svn. Is this possible with this
+- in [this FC forum thread](https://forum.freecad.org/viewtopic.php?f=8&t=68350) there is spoken about the usage of svn. Is this possible with this
   - grd: To be honest, I don't know but I think that is possible. I looked at some videos that showed that it is possible. But I also talked to Yorik and he said that he liked GIT too. So database should be independent of which kind of database you use.
 - If this procedure is start within FC it should be possible to directly open the created part. This could also be two feature(_Create new item_ AND _Create & Open new item_).
   - grd: I don't know. We are gonna find out.
@@ -41,7 +41,7 @@ An item that have a revision state needs an update. This can be done through cha
 #### questions / Comments 3
 
 - Which roles have the permission to do this?
-- Let's say a part and the coresponding drawing are in the revision state. But later on there is noticed that something is changed that has no influence on the model. Is it valid that the drawing get's a new revision but the part holds the existing one? See example [forum post](https://forum.freecadweb.org/viewtopic.php?f=8&t=68350&start=60#p594331) 
+- Let's say a part and the corresponding drawing are in the revision state. But later on there is noticed that something is changed that has no influence on the model. Is it valid that the drawing gets a new revision but the part holds the existing one? See example [forum post](https://forum.freecad.org/viewtopic.php?f=8&t=68350&start=60#p594331) 
 <!--I wrote it the wrong way around. Of course this change if the drawing is inside the related part / assembly. 
 Let's assume i created a assembly and a drawing. everything is released and there has to be a change for example i described in the notes a type of glue that is not strong enough. is it valid to change the drawing without releasing the model. (So the drawing get release version 2, but the assembly hold release state 1)-->
 

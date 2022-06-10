@@ -23,7 +23,7 @@
   - [ ] Able to install in Container 
 - [ ] Add Testdata to Database
 - [ ] Add Testdata to FileServer
-- [ ] Request Write Acces _Database_
+- [ ] Request Write Access _Database_
 - [ ] Request Write _File_
 
 ### Development Medium term
@@ -45,7 +45,7 @@
   - [ ] Add Attribute Item
   - [ ] Add Attribute File
   - [ ] Add User Permissions
-  - [ ] Change User Permisions
+  - [ ] Change User Permissions
 - [ ] Handle File, Item Change
   - [ ] Handle Item on User Permissions
   - [ ] Handle Item on Item Activity
@@ -79,13 +79,13 @@
 - [ ] Duplicate File
   - [ ] Duplicate File local
   - [ ] Duplicate File on Server
-- [ ] Duplicate Assembly Strucuture
+- [ ] Duplicate Assembly Structure
   - [ ] Option to duplicate lower level files 
 - [ ] Store the output into files
 - [ ] Create feature tree
 - [ ] Create BOM list from (File)hierarchy
 
-### Continue Developement Cycles
+### Continue Development Cycles
 
 - [ ] AuthenticateUserFile
 - [ ] RequestWriteAccessUI
