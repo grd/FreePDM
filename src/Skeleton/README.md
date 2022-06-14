@@ -16,7 +16,7 @@ A PDM for FreeCAD
 * Replacing files in assemblies
 * Dealing with versions (IMO this can be dealt with the data DB)
 * Disable files with a disable state (again in the data DB)
-* Dealing with states (temperary ones, before putting into a release), again in the data DB
+* Dealing with states (temporary ones, before putting into a release), again in the data DB
 * Dealing with checkin and checkout (in the data DB and meta-data DB)
 * Importing and exporting files (in the data DB and meta-data DB)
 * Dealing with projects (creating, modifying, closing, re-opening) in the data DB

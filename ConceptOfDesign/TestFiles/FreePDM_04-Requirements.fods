@@ -1510,7 +1510,7 @@
       <text:p>Release</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>State Where a Object, Part is alloud for production purposes</text:p>
+      <text:p>State Where a Object, Part is allowed for production purposes</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
@@ -1603,7 +1603,7 @@
       <text:p>Admin</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>A Role with hight responsibility who have more rights than the other Roles</text:p>
+      <text:p>A Role with high responsibility who have more rights than the other Roles</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1021"/>
     </table:table-row>
