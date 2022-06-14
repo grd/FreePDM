@@ -46,31 +46,39 @@ OR Are we creating a database file for every Item?
 
 General attributes
 
-| FileID | (Item number?) | Item Path        | Filename| File type     |
-|--------|----------------|------------------|---------|---------------|
-| Number | ######         | /Project/######/ | Words   | db Attributes |
-| Number | ######         | /Project/######/ | Words   | Part          |
-| Number | ######         | /Project/######/ | Words   | Assembly      |
-| Number | ######         | /Project/######/ | Words   | Drawing       |
-| Number | ######         | /Project/######/ | Words   | Manual        |
-| Number | ######         | /Project/######/ | Words   | Specification |
-| Number | ######         | /Project/######/ | Words   | Calculation   |
-| Number | ######         | /Project/######/ | Words   | Image         |
-| Number | ######         | /Project/######/ | Words   | etc..         |
+| FileID | Item No. | Item Name  | Description | Description long | File type     |Item Path         | Filename|
+|--------|----------|------------|-------------|------------------|---------------|------------------|---------|
+| Number | ######   | Words / Nr | Short term  | Multiple terms   | db Attributes | /Project/######/ | Words   |
+| Number | ######   | Words / Nr | Short term  | Multiple terms   | Part          | /Project/######/ | Words   |
+| Number | ######   | Words / Nr | Short term  | Multiple terms   | Assembly      | /Project/######/ | Words   |
+| Number | ######   | Words / Nr | Short term  | Multiple terms   | Drawing       | /Project/######/ | Words   |
+| Number | ######   | Words / Nr | Short term  | Multiple terms   | Manual        | /Project/######/ | Words   |
+| Number | ######   | Words / Nr | Short term  | Multiple terms   | Specification | /Project/######/ | Words   |
+| Number | ######   | Words / Nr | Short term  | Multiple terms   | Calculation   | /Project/######/ | Words   |
+| Number | ######   | Words / Nr | Short term  | Multiple terms   | Image         | /Project/######/ | Words   |
+| Number | ######   | Words / Nr | Short term  | Multiple terms   | etc..         | /Project/######/ | Words   |
+
+Example of a part can be:  
+
+- Item number is: 123456
+- Item name is often same as Item number so: 123456
+- Description is: Screw
+- Description long: ISO 4762 M8x32, A2 - Hexagon Socket Head Cap Screw
+- Filetype: Library
 
 Material Attributes
 
-| ... | File type     | Material   | Surface finish | Volume     | Mass       | Weight     |
-|-----|---------------|------------|----------------|------------|------------|------------|
-| ... | db Attributes | None       | None           | None       | None       | None       |
-| ... | Part          | Yes        | Yes            | Yes        | Yes        | Yes        |
-| ... | Assembly      | None       | Optionally     | Yes        | Optionally | Yes        |
-| ... | Drawing       | None       | None           | None       | None       | None       |
-| ... | Manual        | None       | Optionally     | Optionally | Optionally | Optionally |
-| ... | Specification | Optionally | Optionally     | Optionally | Optionally | Optionally |
-| ... | Calculation   | None       | None           | None       | None       | None       |
-| ... | Image         | None       | None           | None       | None       | None       |
-| ... | etc..         | None       | None           | None       | None       | None       |
+| ... | File type     | Material   | Surface finish | Volume     | Mass       | Weight     | Surface Area |
+|-----|---------------|------------|----------------|------------|------------|------------|--------------|
+| ... | db Attributes | None       | None           | None       | None       | None       | None         |
+| ... | Part          | Yes        | Yes            | Yes        | Yes        | Yes        | Yes          |
+| ... | Assembly      | None       | Optionally     | Yes        | Optionally | Yes        | Yes          |
+| ... | Drawing       | None       | None           | None       | None       | None       | None         |
+| ... | Manual        | None       | Optionally     | Optionally | Optionally | Optionally | Optionally   |
+| ... | Specification | Optionally | Optionally     | Optionally | Optionally | Optionally | Optionally   |
+| ... | Calculation   | None       | None           | None       | None       | None       | None         |
+| ... | Image         | None       | None           | None       | None       | None       | None         |
+| ... | etc..         | None       | None           | None       | None       | None       | None         |
 
 _Note: The Attributes needs probably some mixing._  
 _Note2: What about the units? Dimensionless, Iso by default? Optionally accept more dimensions later on, even if i don't like to add thousand different options like 103 pounds and 2.3 ounce..._
