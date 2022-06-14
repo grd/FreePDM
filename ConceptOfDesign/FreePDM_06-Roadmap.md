@@ -25,6 +25,7 @@
 - [ ] Add Testdata to FileServer
 - [ ] Request Write Access _Database_
 - [ ] Request Write _File_
+- [ ] Start extension mechanisms
 
 ### Development Medium term
 
@@ -58,6 +59,7 @@
   - [ ] Example from Revision to work
 - [ ] Define the user group
 - [ ] Define What features are in what state
+- [ ] Developing extension mechanisms
 
 ### Development Long Term
 
