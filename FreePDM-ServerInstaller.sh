@@ -2,13 +2,18 @@
 
 printf "Welcome to the server Installer from FreePDM:\n"
 
+# TODO: Create install Conf file
 # TODO: Install ssl-server
 # TODO: Install Web-server - Optional
 # TODO: Install SQL-server
 # TODO: Install LDAP-server - Optional
 # TODO: Install Other dependencies
 
-printf "What do you want to install?\n"
+printf "There are a set of (optional )dependencies that are configured now. This dependecies are:
+- A SSL server
+- A web server (Optional)
+- A SQL server
+- A LDAP server (Optional)\n"
 
 sleep 1
 
@@ -16,16 +21,37 @@ printf "Do you want to install a Webserver? (y / n)\n"
 
 read installwebserver
 
-printf "What SQL server do you want to install?\n
-1 - option 1
-2 - option 2
+if installwebserver == "y" ]]; then
+	printf "What backend do you want to install? (1 - 3)\n
+1 - Apache Httpd
+2 - Nginx
 3 - option 3\n"
+
+	read webservertype
+
+	printf "What python web backend do you want to install? (1 - 4)\n
+1 - Django
+2 - Pyramid
+3 - Falcon
+4 - WebPy\n"
+
+	read webserverpython
+fi
+
+printf "What SQL server do you want to install? (1 - 3)\n
+1 - MySQL
+2 - SQLite
+3 - PostgreSQL\n"
 
 read installsqlserver
 
-printf "Do you want to install a LDAP server?\n"
+printf "Do you want to install a LDAP server? (y / n)\n"
 
 read installldapserver
+
+if [[ $installldapserver == "y" ]]; then
+	:
+fi
 
 # from here start installing
 
