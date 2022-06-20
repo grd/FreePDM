@@ -5,14 +5,14 @@
 printf "Welcome to the server Installer from FreePDM:\n"
 
 # TODO: Create install Conf file
-# TODO: Install ssl-server
+# TODO: Install ssh-server
 # TODO: Install Web-server - Optional
 # TODO: Install SQL-server
 # TODO: Install LDAP-server - Optional
 # TODO: Install Other dependencies
 
 printf "There are a set of (optional )dependencies that are configured now. This dependecies are:
-- A SSL server
+- A SSH server
 - A web server (Optional)
 - A SQL server
 - A LDAP server (Optional)\n"
@@ -49,6 +49,10 @@ if [[ $installwebserver == "y" ]]; then
 	read webhostname
 
 	# maybe something about admin + password, ports etc
+elif [[ $installwebserver == "n" ]]; then
+	:
+else
+	printf "$installwebserver is not 'y' OR 'n'.\n"
 fi
 
 # Add line about check for existing server
@@ -59,9 +63,7 @@ printf "What SQL server do you want to install? (1 - 3)\n
 
 read sqlserverc  # sqlserver case
 
-printf "What is your (SQL) server servername\n"
-
-read sqlservername
+read -p "Enter SQL Username:" sqlservername
 
 printf "What is your (sql )server_domain OR IP address? (default something like sql.somename.com)\n"
 
@@ -83,25 +85,37 @@ if [[ $installldapserver == "y" ]]; then
 
 	read ldapserverc
 
-	printf "What is the LDAP username?\n"
+	read -p "Enter LDAP Username:" ldapusername
 
-	read ldapusername
+	# read -sp "Enter LDAP Password:" ldappw1  # Silent
+	read -n "Enter LDAP Password:" ldappw1  # With asterix
 
-	printf "Enter password\n"
-
-	read ldappw1
-
-	printf "Re-enter password\n"
-
-	read ldappw2
+	read -n "Re-enter LDAP Password:" ldappw2  # With asterix
 
 fi
+
+# Show cofiguration summery
+
 
 # from here start installing
 printf "Installing start within a few seconds\n"
 
 sleep 3
 
+printf "Update repositories.\n"
+sudo apt update
+# printf "Upgrade repositories.\n"  # upgrade don't work yet
+# sudo apt upgrade
+
+# Install of a SSH server
+testcommand="ssh"
+packages="openssh-server"
+# if ! [[ $(command -v $the_command) &> /dev/null ]]; then
+if ! (( command -V $testcommand )); then  #
+  printf "$testcommand could not be found.\n$packages shall be installed. \n"
+	sudo apt install -y $packages  # Somehow apt install fials
+	exit
+fi
 
 # Install of a webserver
 
@@ -110,14 +124,18 @@ if [[ $installwebserver == "y" ]]; then
 	case $webserverc in
 		1)
 			webserver="Apache httpd"
+			testcommand=""
 			packages=""
+
 			;;
 		2)
 			webserver="Nginx"
+			testcommand=""
 			packages=""
 			;;
 		3)
 			webserver="option3"
+			testcommand=""
 			packages=""
 			;;
 	esac
@@ -130,18 +148,22 @@ if [[ $installwebserver == "y" ]]; then
 	case $webserverpythonc in
 		1)
 			webserver="Django"
+			testcommand=""
 			packages=""
 			;;
 		2)
 			webserver="Pyramid"
+			testcommand=""
 			packages=""
 			;;
 		3)
 			webserver="Falcon"
+			testcommand=""
 			packages=""
 			;;
 		4)
 			webserver="WebPy"
+			testcommand=""
 			packages=""
 			;;
 		esac
@@ -160,39 +182,48 @@ fi
 case $sqlserverc in
 	1)
 		sqlserver="MySQL"
-		packages=""
+		testcommand=""
+		packages="mysql-server"
 		;;
 	2)
 		sqlserver="SQLite"
-		packages=""
+		testcommand=""
+		packages="sqlite3"
 		;;
 	3)
 		sqlserver="postgreSQL"
-		packages=""
+		testcommand=""
+		packages="postgresql postgresql-contrib"
+		# https://www.geeksforgeeks.org/install-postgresql-on-linux/
 		;;
 esac
 
-printf "The following SQL server shall be installed: $sqlserver."
+printf "The following SQL server shall be installed: $sqlserver.\n"
 
 # install LDAP server
+# https://www.howtoforge.com/how-to-install-openldap-on-debian-11/
 
 if [[ $installldapserver == "y" ]]; then
 
 	case $ldapserverc in
 		1)
 			ldapserver="open LDAP"
-			packages=""
+			testcommand=""
+			packages="slapd ldap-utils"
 			;;
 		2)
 			ldapserver="Apache DS"
+			testcommand=""
 			packages=""
 			;;
 		3)
-			ldapserver="openDJ"
+			ldapserver="OpenDJ"
+			testcommand=""
 			packages=""
 			;;
 		4)
-			ldapserver="o389 Directory server"
+			ldapserver="389 Directory server"
+			testcommand=""
 			packages=""
 			;;
 	esac
