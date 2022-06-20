@@ -25,10 +25,9 @@ printf "Do you want to install a Webserver? (y / n)\n"
 read installwebserver
 
 if [[ $installwebserver == "y" ]]; then
-	printf "What backend do you want to install? (1 - 3)\n
+	printf "What backend do you want to install? (1 - 2)\n
 1 - Apache Httpd
-2 - Nginx
-3 - option 3\n"
+2 - Nginx\n"
 
 	read webserverc  # webserver case
 
@@ -113,8 +112,10 @@ packages="openssh-server"
 # if ! [[ $(command -v $the_command) &> /dev/null ]]; then
 if ! (( command -V $testcommand )); then  #
   printf "$testcommand could not be found.\n$packages shall be installed. \n"
-	sudo apt install -y $packages  # Somehow apt install fials
+	sudo apt install -y $packages
 	exit
+else
+	printf "$packages already installed\n"
 fi
 
 # Install of a webserver
@@ -123,25 +124,30 @@ if [[ $installwebserver == "y" ]]; then
 
 	case $webserverc in
 		1)
+			# https://ubuntu.com/tutorials/install-and-configure-apache#1-overview
 			webserver="Apache httpd"
-			testcommand=""
-			packages=""
+			testcommand="apache2"  # should also work with apachectl -v
+			packages="apache2"
 
 			;;
 		2)
+			# https://ubuntu.com/tutorials/install-and-configure-nginx#1-overview
 			webserver="Nginx"
-			testcommand=""
-			packages=""
-			;;
-		3)
-			webserver="option3"
-			testcommand=""
-			packages=""
+			testcommand="nginx"
+			packages="nginx"
 			;;
 	esac
 
 	printf "The following Web server shall be installed: $webserver."
 	sleep 1
+
+	if ! (( command -V $testcommand )); then  #
+	  printf "$testcommand could not be found.\n$packages shall be installed. \n"
+		sudo apt install -y $packages
+		exit
+	else
+		printf "$packages already installed \n"
+	fi
 
 	# If statement for IPaddres has always same length and set of dots on same place
 
