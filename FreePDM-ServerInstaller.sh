@@ -31,13 +31,24 @@ if [[ $installwebserver == "y" ]]; then
 
 	read webserverc  # webserver case
 
+	if [[ $webserverc == "" ]]; then
+		webserverc=1
+		printf "http server was emtpty and is replaced by it's default"
+	fi
+
+	# python webserver default has to be choosen!
 	printf "What python web backend do you want to install? (1 - 4)\n
 1 - Django
-2 - Pyramid
+2 - Pyramid (Default)
 3 - Falcon
 4 - WebPy\n"
 
 	read webserverpythonc  # webserver python case
+
+	if [[ $webserverpythonc == "" ]]; then
+		webserverpythonc=2
+		printf "python web server was emtpty and is replaced by it's default"
+	fi
 
 	printf "What is your server name?\n"
 
@@ -58,9 +69,14 @@ fi
 printf "What SQL server do you want to install? (1 - 3)\n
 1 - MySQL
 2 - SQLite
-3 - PostgreSQL\n"
+3 - PostgreSQL(default)\n"
 
 read sqlserverc  # sqlserver case
+
+if [[ $sqlserverc == "" ]]; then
+	sqlserverc=3
+	printf "SQL server was emtpty and is replaced by it's default\n"
+fi
 
 read -p "Enter SQL Username:" sqlservername
 
@@ -77,12 +93,17 @@ read installldapserver
 
 if [[ $installldapserver == "y" ]]; then
 	printf "What LDAP server do you want to install? (1 - 4)\n
-1 - open LDAP
+1 - open LDAP (Default)
 2 - Apache DS
 3 - openDJ
 4 - 389 Directory server\n"
 
 	read ldapserverc
+
+	if [[ $ldapserverc == "" ]]; then
+		ldapserverc=1
+		printf "LDAP server was emtpty and is replaced by it's default"
+	fi
 
 	read -p "Enter LDAP Username:" ldapusername
 
@@ -110,7 +131,7 @@ sudo apt update
 testcommand="ssh"
 packages="openssh-server"
 # if ! [[ $(command -v $the_command) &> /dev/null ]]; then
-if ! (( command -V $testcommand )); then  #
+if ! [[ $(command -v $testcommand) ]]; then
   printf "$testcommand could not be found.\n$packages shall be installed. \n"
 	sudo apt install -y $packages
 	exit
@@ -128,7 +149,6 @@ if [[ $installwebserver == "y" ]]; then
 			webserver="Apache httpd"
 			testcommand="apache2"  # should also work with apachectl -v
 			packages="apache2"
-
 			;;
 		2)
 			# https://ubuntu.com/tutorials/install-and-configure-nginx#1-overview
@@ -147,7 +167,7 @@ if [[ $installwebserver == "y" ]]; then
 	printf "The following Web server shall be installed: $webserver."
 	sleep 1
 
-	if ! (( command -V $testcommand )); then  #
+	if ! [[ $(command -v $testcommand) ]]; then
 	  printf "$testcommand could not be found.\n$packages shall be installed. \n"
 		sudo apt install -y $packages
 		exit
@@ -215,16 +235,28 @@ case $sqlserverc in
 		packages="sqlite3"
 		;;
 	3)
+		# https://www.geeksforgeeks.org/install-postgresql-on-linux/
+		# https://sqlserverguides.com/postgresql-installation-on-linux/
 		sqlserver="postgreSQL"
 		testcommand="postgres"
 		packages="postgresql postgresql-contrib"
-		# https://www.geeksforgeeks.org/install-postgresql-on-linux/
+
+		# from: https://www.postgresql.org/download/linux/debian/
+		# Create the file repository configuration:
+		printf "Add postgreSQL repository to list.\n"
+		sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+
+		# Import the repository signing key:
+		wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 		;;
 esac
 
 printf "The following SQL server shall be installed: $sqlserver.\n"
 
-if ! (( command -V $testcommand )); then  #
+printf "Update packages.\n"
+sudo apt-get update
+
+if ! [[ $(command -v $testcommand) ]]; then
 	printf "$testcommand could not be found.\n$packages shall be installed. \n"
 	sudo apt install -y $packages
 	exit
@@ -233,13 +265,13 @@ else
 fi
 
 # install LDAP server
-# https://www.howtoforge.com/how-to-install-openldap-on-debian-11/
 
 if [[ $installldapserver == "y" ]]; then
 
 	case $ldapserverc in
 		# Basically all are Java implementations except 389 directory service
 		1)
+			# https://www.howtoforge.com/how-to-install-openldap-on-debian-11/
 			ldapserver="open LDAP"
 			testcommand="slapd"  # https://serverfault.com/questions/839948/how-to-check-the-version-of-openldap-installed-in-command-line
 			packages="slapd ldap-utils"
@@ -265,6 +297,14 @@ if [[ $installldapserver == "y" ]]; then
 
 	printf "The following LDAP server shall be installed: $ldapserver."
 	sleep 1
+fi
+
+if ! [[ $(command -v $testcommand) ]]; then
+	printf "$testcommand could not be found.\n$packages shall be installed. \n"
+	sudo apt install -y $packages
+	exit
+else
+	printf "$packages already installed \n"
 fi
 
 # Install other dependecies
