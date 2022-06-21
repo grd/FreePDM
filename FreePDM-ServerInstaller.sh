@@ -136,6 +136,12 @@ if [[ $installwebserver == "y" ]]; then
 			testcommand="nginx"
 			packages="nginx"
 			;;
+		3)
+			# https://www.hostinger.com/tutorials/how-to-install-tomcat-on-ubuntu/
+			webserver="Appache tomcat"  # Java
+			testcommand=""
+			packages=""
+				;;
 	esac
 
 	printf "The following Web server shall be installed: $webserver."
@@ -152,17 +158,21 @@ if [[ $installwebserver == "y" ]]; then
 	# If statement for IPaddres has always same length and set of dots on same place
 
 	case $webserverpythonc in
+		# Make use of package manager OR Virtual Environment...?
 		1)
+			# https://www.digitalocean.com/community/tutorials/how-to-install-the-django-web-framework-on-ubuntu-20-04
 			webserver="Django"
-			testcommand=""
-			packages=""
+			testcommand=""  # "django-admin --version"
+			packages=""  # "python3-django"
 			;;
 		2)
+			# https://www.digitalocean.com/community/tutorials/how-to-use-the-pyramid-framework-to-build-your-python-web-app-on-ubuntu
 			webserver="Pyramid"
 			testcommand=""
 			packages=""
 			;;
 		3)
+			# https://www.digitalocean.com/community/tutorials/how-to-deploy-falcon-web-applications-with-gunicorn-and-nginx-on-ubuntu-16-04
 			webserver="Falcon"
 			testcommand=""
 			packages=""
@@ -170,9 +180,17 @@ if [[ $installwebserver == "y" ]]; then
 		4)
 			webserver="WebPy"
 			testcommand=""
-			packages=""
+			packages=""  # "python-webpy"
 			;;
-		esac
+	esac
+
+	# if ! (( command -V $testcommand )); then  #
+	# 	printf "$testcommand could not be found.\n$packages shall be installed. \n"
+	# 	sudo apt install -y $packages
+	# 	exit
+	# else
+	# 	printf "$packages already installed \n"
+	# fi
 
 	printf "The following Python Web server shall be installed: $webserverpython."
 	sleep 1
@@ -188,17 +206,17 @@ fi
 case $sqlserverc in
 	1)
 		sqlserver="MySQL"
-		testcommand=""
+		testcommand="mysql"
 		packages="mysql-server"
 		;;
 	2)
 		sqlserver="SQLite"
-		testcommand=""
+		testcommand="sqlite3"  # can also be sqlite3 --version
 		packages="sqlite3"
 		;;
 	3)
 		sqlserver="postgreSQL"
-		testcommand=""
+		testcommand="postgres"
 		packages="postgresql postgresql-contrib"
 		# https://www.geeksforgeeks.org/install-postgresql-on-linux/
 		;;
@@ -206,31 +224,42 @@ esac
 
 printf "The following SQL server shall be installed: $sqlserver.\n"
 
+if ! (( command -V $testcommand )); then  #
+	printf "$testcommand could not be found.\n$packages shall be installed. \n"
+	sudo apt install -y $packages
+	exit
+else
+	printf "$packages already installed \n"
+fi
+
 # install LDAP server
 # https://www.howtoforge.com/how-to-install-openldap-on-debian-11/
 
 if [[ $installldapserver == "y" ]]; then
 
 	case $ldapserverc in
+		# Basically all are Java implementations except 389 directory service
 		1)
 			ldapserver="open LDAP"
-			testcommand=""
+			testcommand="slapd"  # https://serverfault.com/questions/839948/how-to-check-the-version-of-openldap-installed-in-command-line
 			packages="slapd ldap-utils"
 			;;
 		2)
 			ldapserver="Apache DS"
 			testcommand=""
-			packages=""
+			packages="apacheds"
 			;;
 		3)
+			# https://backstage.forgerock.com/docs/opendj/2.6/install-guide/
 			ldapserver="OpenDJ"
 			testcommand=""
 			packages=""
 			;;
 		4)
+			# https://directory.fedoraproject.org/docs/389ds/howto/howto-debianubuntu.html
 			ldapserver="389 Directory server"
 			testcommand=""
-			packages=""
+			packages="termcap-compat apache2-mpm-worker"
 			;;
 	esac
 
