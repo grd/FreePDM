@@ -1,10 +1,13 @@
-# Code Snippets
+# FreePDM
+***Documentation***
+
+## Code Snippets
 There is no way to add a button, menu entry from python to a workbench which is added with c++. So here is a comparison how to do that with python and with c++.
 
-## Adding a command:
+### Adding a command:
 This can be done either with python or c++.
 
-### 1. python
+#### 1. python
 
 ```python
 import FreeCAD as App
@@ -54,7 +57,7 @@ class myWorkbench(Workbench):
         self.appendMenu("Gear", ["MyCommand"])
 ```
 
-### 2. C++
+#### 2. C++
 
 ```c++
 
@@ -125,3 +128,5 @@ Gui::ToolBarItem* Workbench::setupToolBars() const
     return root;
 }
 ```
+
+[<< Previous Chapter](startup.md) | [Content Table](README.md) | [Next Chapter >>]()
