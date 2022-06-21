@@ -112,6 +112,10 @@ if [[ $installldapserver == "y" ]]; then
 
 	read -n "Re-enter LDAP Password:" ldappw2  # With asterix
 
+elif [[ $installldapserver == "n" ]]; then
+	:
+else
+	printf "$installldapserver is not 'y' OR 'n'.\n"
 fi
 
 # Show cofiguration summery
