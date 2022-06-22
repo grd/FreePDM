@@ -63,7 +63,7 @@ read -p "Do you want to install a Webserver? (y / n) " installwebserver
 
 if [[ $installwebserver == "y" ]]; then
 	printf "What backend do you want to install? (1 - 2)\n
-1 - Apache Httpd
+1 - Apache Httpd (default)
 2 - Nginx\n"
 
 	read webserverc  # webserver case
@@ -87,13 +87,9 @@ if [[ $installwebserver == "y" ]]; then
 		printf "python web server was emtpty and is replaced by it's default"
 	fi
 
-	printf "What is your server name?\n"
+	read -p "What is your server name? " webservername
 
-	read webservername
-
-	printf "What is your (web )server_domain OR IP address? (default something like web.somename.com)\n"
-
-	read webhostname
+	read -p "What is your (web )server_domain OR IP address? (default something like web.somename.com) " webhostname
 
 	# maybe something about admin + password, ports etc
 elif [[ $installwebserver == "n" ]]; then
@@ -117,9 +113,7 @@ fi
 
 read -p "Enter SQL Username:" sqlservername
 
-printf "What is your (sql )server_domain OR IP address? (default something like sql.somename.com)\n"
-
-read sqlhostname
+read -p "What is your (sql )server_domain OR IP address? (default something like sql.somename.com) " sqlhostname
 
 # maybe something about admin + password, ports etc
 
