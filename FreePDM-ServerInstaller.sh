@@ -17,12 +17,49 @@ printf "There are a set of (optional )dependencies that are configured now. This
 - A SQL server
 - A LDAP server (Optional)\n"
 
+# https://stackoverflow.com/questions/4662938/create-text-file-and-fill-it-using-bash
+conffile="server.conf"
+if [[ -e $conffile ]]; then
+	printf "$conffile already exist\n"
+
+	while :
+	do
+	read -p "Do you want to reuse this configuration file? (y / n) " reuseconf
+
+		if [[ $reuseconf == "y" ]]; then
+			# Read the file
+			setconf="read"
+
+			break
+		elif [[ $reuseconf == "n" ]]; then
+			oldconf="server$(date +%y%m%d-T%H%M%S).conf"
+
+			$(mv $conffile $oldconf)
+
+			printf "$conffile renamed to $oldconf\n"
+
+			echo > $conffile
+
+			printf "New $conffile created\n"
+
+			setconf="write"
+			break
+		else
+			printf "$reuseconf is not 'y' OR 'n'.\n"
+		fi
+
+	done
+
+else
+	echo > $conffile
+	setconf="write"
+fi
+
 sleep 1
 
 # Add line about check for existing server
-printf "Do you want to install a Webserver? (y / n)\n"
+read -p "Do you want to install a Webserver? (y / n) " installwebserver
 
-read installwebserver
 
 if [[ $installwebserver == "y" ]]; then
 	printf "What backend do you want to install? (1 - 2)\n
@@ -231,12 +268,16 @@ case $sqlserverc in
 	1)
 		sqlserver="MySQL"
 		testcommand="mysql"
-		packages="mysql-server"
+		packages="mysql-server mysql-client"
+		# mysql is replaced by mariadb see: https://wiki.debian.org/MySql
+		# https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-10
 		;;
 	2)
 		sqlserver="SQLite"
 		testcommand="sqlite3"  # can also be sqlite3 --version
-		packages="sqlite3"
+		packages="sqlite3 uwsgi-plugin-sqlite3 SQLitebrowser"
+		# sqldiff is in unstable # https://manpages.debian.org/unstable/sqlite3/sqldiff.1.en.html
+		# sqlite3_analyzer is in unsable # https://manpages.debian.org/unstable/sqlite3-tools/sqlite3_analyzer.1.en.html
 		;;
 	3)
 		# https://www.geeksforgeeks.org/install-postgresql-on-linux/
