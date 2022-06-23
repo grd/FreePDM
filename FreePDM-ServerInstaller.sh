@@ -24,7 +24,7 @@ if [[ -e $conffile ]]; then
 
 	while :
 	do
-	read -p "Do you want to reuse this configuration file? (y / n)" $'\n' reuseconf
+	read -p "Do you want to reuse this configuration file? (y / n)"$'\n' reuseconf
 
 		if [[ $reuseconf == "y" ]]; then
 			# Read the file
@@ -40,6 +40,8 @@ if [[ -e $conffile ]]; then
 
 			echo > $conffile
 
+			echo "# Config file FreePDM Installer" >> server.conf
+
 			printf "New $conffile created\n"
 
 			setconf="write"
@@ -52,6 +54,9 @@ if [[ -e $conffile ]]; then
 
 else
 	echo > $conffile
+
+	echo "# Config file FreePDM Installer" >> server.conf
+
 	setconf="write"
 fi
 
@@ -65,9 +70,12 @@ elif [[ $setconf == "write" ]]; then
 	while :
 	do
 		# -- SQL Server --
-		read -p "Do you want to install a Webserver? (y / n)" $'\n' installwebserver
+		read -p "Do you want to install a Webserver? (y / n)"$'\n' installwebserver
 
 		if [[ $installwebserver == "y" ]]; then
+
+			echo "installwebserver = \"$installwebserver\"" >> server.conf
+
 			printf "What backend do you want to install? (1 - 2)\n
 1 - Apache Httpd (default)
 2 - Nginx\n"
@@ -78,6 +86,8 @@ elif [[ $setconf == "write" ]]; then
 				webserverc=1
 				printf "http server was emtpty OR outside range and is replaced by it's default. \n"
 			fi
+
+			echo "webserverc = $webserverc" >> server.conf
 
 			# python webserver default has to be choosen!
 			printf "What python web backend do you want to install? (1 - 4)\n
@@ -93,14 +103,23 @@ elif [[ $setconf == "write" ]]; then
 				printf "python web server was emtpty OR outside range and is replaced by it's default. \n"
 			fi
 
-			read -p "What is your server name?" $'\n' webservername
+			echo "webserverpythonc = $webserverpythonc" >> server.conf
 
-			read -p "What is your (web )server_domain OR IP address? (default something like web.somename.com)" $'\n' webhostname
+			read -p "What is your server name?"$'\n' webservername
+
+			echo "webservername = \"$webservername\"" >> server.conf
+
+			read -p "What is your (web )server_domain OR IP address? (default something like web.somename.com)"$'\n' webhostname
+
+			echo "webhostname = \"$webhostname\"" >> server.conf
 
 			# maybe something about admin + password, ports etc
 			break
 
 		elif [[ $installwebserver == "n" ]]; then
+
+			echo "installwebserver = \"$installwebserver\"" >> server.conf
+
 			break
 			:
 		else
@@ -122,9 +141,15 @@ elif [[ $setconf == "write" ]]; then
 		printf "SQL server was emtpty OR outside range and is replaced by it's default\n"
 	fi
 
-	read -p "Enter SQL Username:" $'\n' sqlservername
+	echo "sqlserverc = $sqlserverc" >> server.conf
 
-	read -p "What is your (sql )server_domain OR IP address? (default something like sql.somename.com)" $'\n' sqlhostname
+	read -p "Enter SQL Username:"$'\n' sqlservername
+
+	echo "sqlservername = \"$sqlservername\"" >> server.conf
+
+	read -p "What is your (sql )server_domain OR IP address? (default something like sql.somename.com)"$'\n' sqlhostname
+
+	echo "sqlhostname = \"$sqlhostname\"" >> server.conf
 
 	# maybe something about admin + password, ports etc
 
@@ -134,9 +159,12 @@ elif [[ $setconf == "write" ]]; then
 	while :
 	do
 
-		read -p "Do you want to install a LDAP server? (y / n)" $'\n' installldapserver
+		read -p "Do you want to install a LDAP server? (y / n)"$'\n' installldapserver
 
 		if [[ $installldapserver == "y" ]]; then
+
+			echo "installldapserver = \"$installldapserver\"" >> server.conf
+
 			printf "What LDAP server do you want to install? (1 - 4)\n
 1 - open LDAP (Default)
 2 - Apache DS
@@ -150,17 +178,21 @@ elif [[ $setconf == "write" ]]; then
 				printf "LDAP server was emtpty OR outside range and is replaced by it's default. \n"
 			fi
 
-			read -p "Enter LDAP Username:" $'\n' ldapusername
+			echo "ldapserverc = $ldapserverc" >> server.conf
+
+			# user name and passwords are not stored
+			read -p "Enter LDAP Username:"$'\n' ldapusername
 
 			# read -sp "Enter LDAP Password:" ldappw1  # Silent
-			read -p "Enter LDAP Password:" $'\n' -s ldappw1  # With asterix
+			read -p "Enter LDAP Password:"$'\n' -s ldappw1  # With asterix
 
-			read -p "Re-enter LDAP Password:" $'\n' -s ldappw2  # With asterix
+			read -p "Re-enter LDAP Password:"$'\n' -s ldappw2  # With asterix
 
 			break
 
 		elif [[ $installldapserver == "n" ]]; then
-			:
+			echo "installldapserver = \"$installldapserver\"" >> server.conf
+
 			break
 
 		else
