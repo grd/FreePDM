@@ -39,6 +39,7 @@ if [[ -e $conffile ]]; then
 			printf "$conffile renamed to $oldconf\n"
 
 			echo > $conffile
+			echo "!# /bin/bash" >> server.conf
 
 			echo "# Config file FreePDM Installer" >> server.conf
 
@@ -54,6 +55,7 @@ if [[ -e $conffile ]]; then
 
 else
 	echo > $conffile
+	echo "!# /bin/bash" >> server.conf
 
 	echo "# Config file FreePDM Installer" >> server.conf
 
