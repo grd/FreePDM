@@ -17,105 +17,160 @@ printf "There are a set of (optional )dependencies that are configured now. This
 - A SQL server
 - A LDAP server (Optional)\n"
 
+# https://stackoverflow.com/questions/4662938/create-text-file-and-fill-it-using-bash
+conffile="server.conf"
+if [[ -e $conffile ]]; then
+	printf "$conffile already exist\n"
+
+	while :
+	do
+	read -p "Do you want to reuse this configuration file? (y / n)" $'\n' reuseconf
+
+		if [[ $reuseconf == "y" ]]; then
+			# Read the file
+			setconf="read"
+
+			break
+		elif [[ $reuseconf == "n" ]]; then
+			oldconf="server$(date +%y%m%d-T%H%M%S).conf"
+
+			$(mv $conffile $oldconf)
+
+			printf "$conffile renamed to $oldconf\n"
+
+			echo > $conffile
+
+			printf "New $conffile created\n"
+
+			setconf="write"
+			break
+		else
+			printf "$reuseconf is not 'y' OR 'n'.\n"
+		fi
+
+	done
+
+else
+	echo > $conffile
+	setconf="write"
+fi
+
 sleep 1
 
 # Add line about check for existing server
-printf "Do you want to install a Webserver? (y / n)\n"
+if [[ $setconf == "read" ]]; then
+	# This is most complex because it can switch to read at some point in the process
+	:
+elif [[ $setconf == "write" ]]; then
+	while :
+	do
+		# -- SQL Server --
+		read -p "Do you want to install a Webserver? (y / n)" $'\n' installwebserver
 
-read installwebserver
-
-if [[ $installwebserver == "y" ]]; then
-	printf "What backend do you want to install? (1 - 2)\n
-1 - Apache Httpd
+		if [[ $installwebserver == "y" ]]; then
+			printf "What backend do you want to install? (1 - 2)\n
+1 - Apache Httpd (default)
 2 - Nginx\n"
 
-	read webserverc  # webserver case
+			read webserverc  # webserver case
 
-	if [[ $webserverc == "" ]]; then
-		webserverc=1
-		printf "http server was emtpty and is replaced by it's default"
-	fi
+			if [[ $webserverc == "" || $webserverc > 2 || $webserverc < 1 ]]; then
+				webserverc=1
+				printf "http server was emtpty OR outside range and is replaced by it's default. \n"
+			fi
 
-	# python webserver default has to be choosen!
-	printf "What python web backend do you want to install? (1 - 4)\n
+			# python webserver default has to be choosen!
+			printf "What python web backend do you want to install? (1 - 4)\n
 1 - Django
 2 - Pyramid (Default)
 3 - Falcon
 4 - WebPy\n"
 
-	read webserverpythonc  # webserver python case
+			read webserverpythonc  # webserver python case
 
-	if [[ $webserverpythonc == "" ]]; then
-		webserverpythonc=2
-		printf "python web server was emtpty and is replaced by it's default"
+			if [[ $webserverpythonc == "" || $webserverpythonc > 4 || $webserverpythonc < 1 ]]; then
+				webserverpythonc=2
+				printf "python web server was emtpty OR outside range and is replaced by it's default. \n"
+			fi
+
+			read -p "What is your server name?" $'\n' webservername
+
+			read -p "What is your (web )server_domain OR IP address? (default something like web.somename.com)" $'\n' webhostname
+
+			# maybe something about admin + password, ports etc
+			break
+
+		elif [[ $installwebserver == "n" ]]; then
+			break
+			:
+		else
+			printf "$installwebserver is not 'y' OR 'n'.\n"
+		fi
+	done
+
+	# -- SQL Server --
+	# Add line about check for existing server
+	printf "What SQL server do you want to install? (1 - 3)\n
+	1 - MySQL
+	2 - SQLite
+	3 - PostgreSQL(default)\n"
+
+	read sqlserverc  # sqlserver case
+
+	if [[ $sqlserverc == "" || $sqlserverc > 3 || $sqlserverc < 1 ]]; then
+		sqlserverc=3
+		printf "SQL server was emtpty OR outside range and is replaced by it's default\n"
 	fi
 
-	printf "What is your server name?\n"
+	read -p "Enter SQL Username:" $'\n' sqlservername
 
-	read webservername
-
-	printf "What is your (web )server_domain OR IP address? (default something like web.somename.com)\n"
-
-	read webhostname
+	read -p "What is your (sql )server_domain OR IP address? (default something like sql.somename.com)" $'\n' sqlhostname
 
 	# maybe something about admin + password, ports etc
-elif [[ $installwebserver == "n" ]]; then
-	:
-else
-	printf "$installwebserver is not 'y' OR 'n'.\n"
-fi
 
-# Add line about check for existing server
-printf "What SQL server do you want to install? (1 - 3)\n
-1 - MySQL
-2 - SQLite
-3 - PostgreSQL(default)\n"
+	# -- LDAP Server --
+	# Add line about check for existing server
 
-read sqlserverc  # sqlserver case
+	while :
+	do
 
-if [[ $sqlserverc == "" ]]; then
-	sqlserverc=3
-	printf "SQL server was emtpty and is replaced by it's default\n"
-fi
+		read -p "Do you want to install a LDAP server? (y / n)" $'\n' installldapserver
 
-read -p "Enter SQL Username:" sqlservername
-
-printf "What is your (sql )server_domain OR IP address? (default something like sql.somename.com)\n"
-
-read sqlhostname
-
-# maybe something about admin + password, ports etc
-
-# Add line about check for existing server
-printf "Do you want to install a LDAP server? (y / n)\n"
-
-read installldapserver
-
-if [[ $installldapserver == "y" ]]; then
-	printf "What LDAP server do you want to install? (1 - 4)\n
+		if [[ $installldapserver == "y" ]]; then
+			printf "What LDAP server do you want to install? (1 - 4)\n
 1 - open LDAP (Default)
 2 - Apache DS
 3 - openDJ
 4 - 389 Directory server\n"
 
-	read ldapserverc
+			read ldapserverc
 
-	if [[ $ldapserverc == "" ]]; then
-		ldapserverc=1
-		printf "LDAP server was emtpty and is replaced by it's default"
-	fi
+			if [[ $ldapserverc == "" || $ldapserverc > 4 || $ldapserverc < 1  ]]; then
+				ldapserverc=1
+				printf "LDAP server was emtpty OR outside range and is replaced by it's default. \n"
+			fi
 
-	read -p "Enter LDAP Username:" ldapusername
+			read -p "Enter LDAP Username:" $'\n' ldapusername
 
-	# read -sp "Enter LDAP Password:" ldappw1  # Silent
-	read -n "Enter LDAP Password:" ldappw1  # With asterix
+			# read -sp "Enter LDAP Password:" ldappw1  # Silent
+			read -p "Enter LDAP Password:" $'\n' -s ldappw1  # With asterix
 
-	read -n "Re-enter LDAP Password:" ldappw2  # With asterix
+			read -p "Re-enter LDAP Password:" $'\n' -s ldappw2  # With asterix
 
-elif [[ $installldapserver == "n" ]]; then
-	:
+			break
+
+		elif [[ $installldapserver == "n" ]]; then
+			:
+			break
+
+		else
+			printf "$installldapserver is not 'y' OR 'n'.\n"
+		fi
+
+	done
+
 else
-	printf "$installldapserver is not 'y' OR 'n'.\n"
+	:
 fi
 
 # Show cofiguration summery
@@ -231,12 +286,16 @@ case $sqlserverc in
 	1)
 		sqlserver="MySQL"
 		testcommand="mysql"
-		packages="mysql-server"
+		packages="mysql-server mysql-client"
+		# mysql is replaced by mariadb see: https://wiki.debian.org/MySql
+		# https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-10
 		;;
 	2)
 		sqlserver="SQLite"
 		testcommand="sqlite3"  # can also be sqlite3 --version
-		packages="sqlite3"
+		packages="sqlite3 uwsgi-plugin-sqlite3 SQLitebrowser"
+		# sqldiff is in unstable # https://manpages.debian.org/unstable/sqlite3/sqldiff.1.en.html
+		# sqlite3_analyzer is in unsable # https://manpages.debian.org/unstable/sqlite3-tools/sqlite3_analyzer.1.en.html
 		;;
 	3)
 		# https://www.geeksforgeeks.org/install-postgresql-on-linux/
