@@ -93,6 +93,27 @@ elif [[ $setconf == "write" ]]; then
 
 			echo "webserverc = $webserverc" >> server.conf
 
+			case $webserverc in
+				1)
+					# https://ubuntu.com/tutorials/install-and-configure-apache#1-overview
+					webserver="Apache httpd"
+					testcommand="apache2"  # should also work with apachectl -v
+					packages="apache2"
+					;;
+				2)
+					# https://ubuntu.com/tutorials/install-and-configure-nginx#1-overview
+					webserver="Nginx"
+					testcommand="nginx"
+					packages="nginx"
+					;;
+				3)
+					# https://www.hostinger.com/tutorials/how-to-install-tomcat-on-ubuntu/
+					webserver="Appache tomcat"  # Java
+					testcommand=""
+					packages=""
+						;;
+			esac
+
 			# python webserver default has to be choosen!
 			printf "What python web backend do you want to install? (1 - 4)\n
 1 - Django
@@ -108,6 +129,33 @@ elif [[ $setconf == "write" ]]; then
 			fi
 
 			echo "webserverpythonc = $webserverpythonc" >> server.conf
+
+			case $webserverpythonc in
+				# Make use of package manager OR Virtual Environment...?
+				1)
+					# https://www.digitalocean.com/community/tutorials/how-to-install-the-django-web-framework-on-ubuntu-20-04
+					webserver="Django"
+					testcommand=""  # "django-admin --version"
+					packages=""  # "python3-django"
+					;;
+				2)
+					# https://www.digitalocean.com/community/tutorials/how-to-use-the-pyramid-framework-to-build-your-python-web-app-on-ubuntu
+					webserver="Pyramid"
+					testcommand=""
+					packages=""
+					;;
+				3)
+					# https://www.digitalocean.com/community/tutorials/how-to-deploy-falcon-web-applications-with-gunicorn-and-nginx-on-ubuntu-16-04
+					webserver="Falcon"
+					testcommand=""
+					packages=""
+					;;
+				4)
+					webserver="WebPy"
+					testcommand=""
+					packages=""  # "python-webpy"
+					;;
+			esac
 
 			read -p "What is your server name?"$'\n' webservername
 
@@ -149,6 +197,30 @@ elif [[ $setconf == "write" ]]; then
 
 	echo "sqlserverc = $sqlserverc" >> server.conf
 
+	case $sqlserverc in
+		1)
+			sqlserver="MySQL"
+			testcommand="mysql"
+			packages="mysql-server mysql-client"
+			# mysql is replaced by mariadb see: https://wiki.debian.org/MySql
+			# https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-10
+			;;
+		2)
+			sqlserver="SQLite"
+			testcommand="sqlite3"  # can also be sqlite3 --version
+			packages="sqlite3 uwsgi-plugin-sqlite3 SQLitebrowser"
+			# sqldiff is in unstable # https://manpages.debian.org/unstable/sqlite3/sqldiff.1.en.html
+			# sqlite3_analyzer is in unsable # https://manpages.debian.org/unstable/sqlite3-tools/sqlite3_analyzer.1.en.html
+			;;
+		3)
+			# https://www.geeksforgeeks.org/install-postgresql-on-linux/
+			# https://sqlserverguides.com/postgresql-installation-on-linux/
+			sqlserver="postgreSQL"
+			testcommand="postgres"
+			packages="postgresql postgresql-contrib"
+			;;
+	esac
+
 	read -p "Enter SQL Username:"$'\n' sqlservername
 
 	echo "sqlservername = \"$sqlservername\"" >> server.conf
@@ -189,6 +261,33 @@ elif [[ $setconf == "write" ]]; then
 			fi
 
 			echo "ldapserverc = $ldapserverc" >> server.conf
+
+			case $ldapserverc in
+				# Basically all are Java implementations except 389 directory service
+				1)
+					# https://www.howtoforge.com/how-to-install-openldap-on-debian-11/
+					ldapserver="open LDAP"
+					testcommand="slapd"  # https://serverfault.com/questions/839948/how-to-check-the-version-of-openldap-installed-in-command-line
+					packages="slapd ldap-utils"
+					;;
+				2)
+					ldapserver="Apache DS"
+					testcommand=""
+					packages="apacheds"
+					;;
+				3)
+					# https://backstage.forgerock.com/docs/opendj/2.6/install-guide/
+					ldapserver="OpenDJ"
+					testcommand=""
+					packages=""
+					;;
+				4)
+					# https://directory.fedoraproject.org/docs/389ds/howto/howto-debianubuntu.html
+					ldapserver="389 Directory server"
+					testcommand=""
+					packages="termcap-compat apache2-mpm-worker"
+					;;
+			esac
 
 			# user name and passwords are not stored
 			read -p "Enter LDAP Username:"$'\n' ldapusername
@@ -246,23 +345,14 @@ if [[ $installwebserver == "y" ]]; then
 
 	case $webserverc in
 		1)
-			# https://ubuntu.com/tutorials/install-and-configure-apache#1-overview
-			webserver="Apache httpd"
-			testcommand="apache2"  # should also work with apachectl -v
-			packages="apache2"
+			:
 			;;
 		2)
-			# https://ubuntu.com/tutorials/install-and-configure-nginx#1-overview
-			webserver="Nginx"
-			testcommand="nginx"
-			packages="nginx"
+			:
 			;;
 		3)
-			# https://www.hostinger.com/tutorials/how-to-install-tomcat-on-ubuntu/
-			webserver="Appache tomcat"  # Java
-			testcommand=""
-			packages=""
-				;;
+			:
+			;;
 	esac
 
 	printf "The following Web server shall be installed: $webserver."
@@ -281,27 +371,16 @@ if [[ $installwebserver == "y" ]]; then
 	case $webserverpythonc in
 		# Make use of package manager OR Virtual Environment...?
 		1)
-			# https://www.digitalocean.com/community/tutorials/how-to-install-the-django-web-framework-on-ubuntu-20-04
-			webserver="Django"
-			testcommand=""  # "django-admin --version"
-			packages=""  # "python3-django"
+			:
 			;;
 		2)
-			# https://www.digitalocean.com/community/tutorials/how-to-use-the-pyramid-framework-to-build-your-python-web-app-on-ubuntu
-			webserver="Pyramid"
-			testcommand=""
-			packages=""
+			:
 			;;
 		3)
-			# https://www.digitalocean.com/community/tutorials/how-to-deploy-falcon-web-applications-with-gunicorn-and-nginx-on-ubuntu-16-04
-			webserver="Falcon"
-			testcommand=""
-			packages=""
+			:
 			;;
 		4)
-			webserver="WebPy"
-			testcommand=""
-			packages=""  # "python-webpy"
+			:
 			;;
 	esac
 
@@ -326,26 +405,12 @@ fi
 
 case $sqlserverc in
 	1)
-		sqlserver="MySQL"
-		testcommand="mysql"
-		packages="mysql-server mysql-client"
-		# mysql is replaced by mariadb see: https://wiki.debian.org/MySql
-		# https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-10
+		:
 		;;
 	2)
-		sqlserver="SQLite"
-		testcommand="sqlite3"  # can also be sqlite3 --version
-		packages="sqlite3 uwsgi-plugin-sqlite3 SQLitebrowser"
-		# sqldiff is in unstable # https://manpages.debian.org/unstable/sqlite3/sqldiff.1.en.html
-		# sqlite3_analyzer is in unsable # https://manpages.debian.org/unstable/sqlite3-tools/sqlite3_analyzer.1.en.html
+		:
 		;;
 	3)
-		# https://www.geeksforgeeks.org/install-postgresql-on-linux/
-		# https://sqlserverguides.com/postgresql-installation-on-linux/
-		sqlserver="postgreSQL"
-		testcommand="postgres"
-		packages="postgresql postgresql-contrib"
-
 		# from: https://www.postgresql.org/download/linux/debian/
 		# Create the file repository configuration:
 		printf "Add postgreSQL repository to list.\n"
@@ -376,27 +441,16 @@ if [[ $installldapserver == "y" ]]; then
 	case $ldapserverc in
 		# Basically all are Java implementations except 389 directory service
 		1)
-			# https://www.howtoforge.com/how-to-install-openldap-on-debian-11/
-			ldapserver="open LDAP"
-			testcommand="slapd"  # https://serverfault.com/questions/839948/how-to-check-the-version-of-openldap-installed-in-command-line
-			packages="slapd ldap-utils"
+			:
 			;;
 		2)
-			ldapserver="Apache DS"
-			testcommand=""
-			packages="apacheds"
+			:
 			;;
 		3)
-			# https://backstage.forgerock.com/docs/opendj/2.6/install-guide/
-			ldapserver="OpenDJ"
-			testcommand=""
-			packages=""
+			:
 			;;
 		4)
-			# https://directory.fedoraproject.org/docs/389ds/howto/howto-debianubuntu.html
-			ldapserver="389 Directory server"
-			testcommand=""
-			packages="termcap-compat apache2-mpm-worker"
+			:
 			;;
 	esac
 
