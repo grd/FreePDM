@@ -69,7 +69,9 @@ if [[ $setconf == "read" ]]; then
 elif [[ $setconf == "write" ]]; then
 	while :
 	do
-		# -- SQL Server --
+		# -- Web Server --
+		echo "# -- Web server --" >> server.conf
+
 		read -p "Do you want to install a Webserver? (y / n)"$'\n' installwebserver
 
 		if [[ $installwebserver == "y" ]]; then
@@ -128,6 +130,8 @@ elif [[ $setconf == "write" ]]; then
 	done
 
 	# -- SQL Server --
+	echo "# -- SQL server --" >> server.conf
+
 	# Add line about check for existing server
 	printf "What SQL server do you want to install? (1 - 3)\n
 	1 - MySQL
@@ -148,12 +152,16 @@ elif [[ $setconf == "write" ]]; then
 	echo "sqlservername = \"$sqlservername\"" >> server.conf
 
 	read -p "What is your (sql )server_domain OR IP address? (default something like sql.somename.com)"$'\n' sqlhostname
+	# Can i check if something is an IP addres?, Is there a need for?
+	# https://stackoverflow.com/questions/23675400/validating-an-ip-address-using-bash-script
 
 	echo "sqlhostname = \"$sqlhostname\"" >> server.conf
 
 	# maybe something about admin + password, ports etc
 
 	# -- LDAP Server --
+	echo "# -- LDAP server --" >> server.conf
+
 	# Add line about check for existing server
 
 	while :
