@@ -24,7 +24,7 @@ if [[ -e $conffile ]]; then
 
 	while :
 	do
-	read -p "Do you want to reuse this configuration file? (y / n)" $'\n' reuseconf
+	read -p "Do you want to reuse this configuration file? (y / n)"$'\n' reuseconf
 
 		if [[ $reuseconf == "y" ]]; then
 			# Read the file
@@ -39,6 +39,9 @@ if [[ -e $conffile ]]; then
 			printf "$conffile renamed to $oldconf\n"
 
 			echo > $conffile
+			echo "!# /bin/bash" >> server.conf
+
+			echo "# Config file FreePDM Installer" >> server.conf
 
 			printf "New $conffile created\n"
 
@@ -52,6 +55,10 @@ if [[ -e $conffile ]]; then
 
 else
 	echo > $conffile
+	echo "!# /bin/bash" >> server.conf
+
+	echo "# Config file FreePDM Installer" >> server.conf
+
 	setconf="write"
 fi
 
@@ -64,10 +71,15 @@ if [[ $setconf == "read" ]]; then
 elif [[ $setconf == "write" ]]; then
 	while :
 	do
-		# -- SQL Server --
-		read -p "Do you want to install a Webserver? (y / n)" $'\n' installwebserver
+		# -- Web Server --
+		echo "# -- Web server --" >> server.conf
+
+		read -p "Do you want to install a Webserver? (y / n)"$'\n' installwebserver
 
 		if [[ $installwebserver == "y" ]]; then
+
+			echo "installwebserver = \"$installwebserver\"" >> server.conf
+
 			printf "What backend do you want to install? (1 - 2)\n
 1 - Apache Httpd (default)
 2 - Nginx\n"
@@ -78,6 +90,29 @@ elif [[ $setconf == "write" ]]; then
 				webserverc=1
 				printf "http server was emtpty OR outside range and is replaced by it's default. \n"
 			fi
+
+			echo "webserverc = $webserverc" >> server.conf
+
+			case $webserverc in
+				1)
+					# https://ubuntu.com/tutorials/install-and-configure-apache#1-overview
+					webserver="Apache httpd"
+					testcommand="apache2"  # should also work with apachectl -v
+					packages="apache2"
+					;;
+				2)
+					# https://ubuntu.com/tutorials/install-and-configure-nginx#1-overview
+					webserver="Nginx"
+					testcommand="nginx"
+					packages="nginx"
+					;;
+				3)
+					# https://www.hostinger.com/tutorials/how-to-install-tomcat-on-ubuntu/
+					webserver="Appache tomcat"  # Java
+					testcommand=""
+					packages=""
+						;;
+			esac
 
 			# python webserver default has to be choosen!
 			printf "What python web backend do you want to install? (1 - 4)\n
@@ -93,14 +128,50 @@ elif [[ $setconf == "write" ]]; then
 				printf "python web server was emtpty OR outside range and is replaced by it's default. \n"
 			fi
 
-			read -p "What is your server name?" $'\n' webservername
+			echo "webserverpythonc = $webserverpythonc" >> server.conf
 
-			read -p "What is your (web )server_domain OR IP address? (default something like web.somename.com)" $'\n' webhostname
+			case $webserverpythonc in
+				# Make use of package manager OR Virtual Environment...?
+				1)
+					# https://www.digitalocean.com/community/tutorials/how-to-install-the-django-web-framework-on-ubuntu-20-04
+					webserver="Django"
+					testcommand=""  # "django-admin --version"
+					packages=""  # "python3-django"
+					;;
+				2)
+					# https://www.digitalocean.com/community/tutorials/how-to-use-the-pyramid-framework-to-build-your-python-web-app-on-ubuntu
+					webserver="Pyramid"
+					testcommand=""
+					packages=""
+					;;
+				3)
+					# https://www.digitalocean.com/community/tutorials/how-to-deploy-falcon-web-applications-with-gunicorn-and-nginx-on-ubuntu-16-04
+					webserver="Falcon"
+					testcommand=""
+					packages=""
+					;;
+				4)
+					webserver="WebPy"
+					testcommand=""
+					packages=""  # "python-webpy"
+					;;
+			esac
+
+			read -p "What is your server name?"$'\n' webservername
+
+			echo "webservername = \"$webservername\"" >> server.conf
+
+			read -p "What is your (web )server_domain OR IP address? (default something like web.somename.com)"$'\n' webhostname
+
+			echo "webhostname = \"$webhostname\"" >> server.conf
 
 			# maybe something about admin + password, ports etc
 			break
 
 		elif [[ $installwebserver == "n" ]]; then
+
+			echo "installwebserver = \"$installwebserver\"" >> server.conf
+
 			break
 			:
 		else
@@ -109,6 +180,8 @@ elif [[ $setconf == "write" ]]; then
 	done
 
 	# -- SQL Server --
+	echo "# -- SQL server --" >> server.conf
+
 	# Add line about check for existing server
 	printf "What SQL server do you want to install? (1 - 3)\n
 	1 - MySQL
@@ -122,21 +195,58 @@ elif [[ $setconf == "write" ]]; then
 		printf "SQL server was emtpty OR outside range and is replaced by it's default\n"
 	fi
 
-	read -p "Enter SQL Username:" $'\n' sqlservername
+	echo "sqlserverc = $sqlserverc" >> server.conf
 
-	read -p "What is your (sql )server_domain OR IP address? (default something like sql.somename.com)" $'\n' sqlhostname
+	case $sqlserverc in
+		1)
+			sqlserver="MySQL"
+			testcommand="mysql"
+			packages="mysql-server mysql-client"
+			# mysql is replaced by mariadb see: https://wiki.debian.org/MySql
+			# https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-10
+			;;
+		2)
+			sqlserver="SQLite"
+			testcommand="sqlite3"  # can also be sqlite3 --version
+			packages="sqlite3 uwsgi-plugin-sqlite3 SQLitebrowser"
+			# sqldiff is in unstable # https://manpages.debian.org/unstable/sqlite3/sqldiff.1.en.html
+			# sqlite3_analyzer is in unsable # https://manpages.debian.org/unstable/sqlite3-tools/sqlite3_analyzer.1.en.html
+			;;
+		3)
+			# https://www.geeksforgeeks.org/install-postgresql-on-linux/
+			# https://sqlserverguides.com/postgresql-installation-on-linux/
+			sqlserver="postgreSQL"
+			testcommand="postgres"
+			packages="postgresql postgresql-contrib"
+			;;
+	esac
+
+	read -p "Enter SQL Username:"$'\n' sqlservername
+
+	echo "sqlservername = \"$sqlservername\"" >> server.conf
+
+	read -p "What is your (sql )server_domain OR IP address? (default something like sql.somename.com)"$'\n' sqlhostname
+	# Can i check if something is an IP addres?, Is there a need for?
+	# https://stackoverflow.com/questions/23675400/validating-an-ip-address-using-bash-script
+
+	echo "sqlhostname = \"$sqlhostname\"" >> server.conf
 
 	# maybe something about admin + password, ports etc
 
 	# -- LDAP Server --
+	echo "# -- LDAP server --" >> server.conf
+
 	# Add line about check for existing server
 
 	while :
 	do
 
-		read -p "Do you want to install a LDAP server? (y / n)" $'\n' installldapserver
+		read -p "Do you want to install a LDAP server? (y / n)"$'\n' installldapserver
 
 		if [[ $installldapserver == "y" ]]; then
+
+			echo "installldapserver = \"$installldapserver\"" >> server.conf
+
 			printf "What LDAP server do you want to install? (1 - 4)\n
 1 - open LDAP (Default)
 2 - Apache DS
@@ -150,17 +260,48 @@ elif [[ $setconf == "write" ]]; then
 				printf "LDAP server was emtpty OR outside range and is replaced by it's default. \n"
 			fi
 
-			read -p "Enter LDAP Username:" $'\n' ldapusername
+			echo "ldapserverc = $ldapserverc" >> server.conf
+
+			case $ldapserverc in
+				# Basically all are Java implementations except 389 directory service
+				1)
+					# https://www.howtoforge.com/how-to-install-openldap-on-debian-11/
+					ldapserver="open LDAP"
+					testcommand="slapd"  # https://serverfault.com/questions/839948/how-to-check-the-version-of-openldap-installed-in-command-line
+					packages="slapd ldap-utils"
+					;;
+				2)
+					ldapserver="Apache DS"
+					testcommand=""
+					packages="apacheds"
+					;;
+				3)
+					# https://backstage.forgerock.com/docs/opendj/2.6/install-guide/
+					ldapserver="OpenDJ"
+					testcommand=""
+					packages=""
+					;;
+				4)
+					# https://directory.fedoraproject.org/docs/389ds/howto/howto-debianubuntu.html
+					ldapserver="389 Directory server"
+					testcommand=""
+					packages="termcap-compat apache2-mpm-worker"
+					;;
+			esac
+
+			# user name and passwords are not stored
+			read -p "Enter LDAP Username:"$'\n' ldapusername
 
 			# read -sp "Enter LDAP Password:" ldappw1  # Silent
-			read -p "Enter LDAP Password:" $'\n' -s ldappw1  # With asterix
+			read -p "Enter LDAP Password:"$'\n' -s ldappw1  # With asterix
 
-			read -p "Re-enter LDAP Password:" $'\n' -s ldappw2  # With asterix
+			read -p "Re-enter LDAP Password:"$'\n' -s ldappw2  # With asterix
 
 			break
 
 		elif [[ $installldapserver == "n" ]]; then
-			:
+			echo "installldapserver = \"$installldapserver\"" >> server.conf
+
 			break
 
 		else
@@ -204,23 +345,14 @@ if [[ $installwebserver == "y" ]]; then
 
 	case $webserverc in
 		1)
-			# https://ubuntu.com/tutorials/install-and-configure-apache#1-overview
-			webserver="Apache httpd"
-			testcommand="apache2"  # should also work with apachectl -v
-			packages="apache2"
+			:
 			;;
 		2)
-			# https://ubuntu.com/tutorials/install-and-configure-nginx#1-overview
-			webserver="Nginx"
-			testcommand="nginx"
-			packages="nginx"
+			:
 			;;
 		3)
-			# https://www.hostinger.com/tutorials/how-to-install-tomcat-on-ubuntu/
-			webserver="Appache tomcat"  # Java
-			testcommand=""
-			packages=""
-				;;
+			:
+			;;
 	esac
 
 	printf "The following Web server shall be installed: $webserver."
@@ -239,27 +371,16 @@ if [[ $installwebserver == "y" ]]; then
 	case $webserverpythonc in
 		# Make use of package manager OR Virtual Environment...?
 		1)
-			# https://www.digitalocean.com/community/tutorials/how-to-install-the-django-web-framework-on-ubuntu-20-04
-			webserver="Django"
-			testcommand=""  # "django-admin --version"
-			packages=""  # "python3-django"
+			:
 			;;
 		2)
-			# https://www.digitalocean.com/community/tutorials/how-to-use-the-pyramid-framework-to-build-your-python-web-app-on-ubuntu
-			webserver="Pyramid"
-			testcommand=""
-			packages=""
+			:
 			;;
 		3)
-			# https://www.digitalocean.com/community/tutorials/how-to-deploy-falcon-web-applications-with-gunicorn-and-nginx-on-ubuntu-16-04
-			webserver="Falcon"
-			testcommand=""
-			packages=""
+			:
 			;;
 		4)
-			webserver="WebPy"
-			testcommand=""
-			packages=""  # "python-webpy"
+			:
 			;;
 	esac
 
@@ -284,26 +405,12 @@ fi
 
 case $sqlserverc in
 	1)
-		sqlserver="MySQL"
-		testcommand="mysql"
-		packages="mysql-server mysql-client"
-		# mysql is replaced by mariadb see: https://wiki.debian.org/MySql
-		# https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-10
+		:
 		;;
 	2)
-		sqlserver="SQLite"
-		testcommand="sqlite3"  # can also be sqlite3 --version
-		packages="sqlite3 uwsgi-plugin-sqlite3 SQLitebrowser"
-		# sqldiff is in unstable # https://manpages.debian.org/unstable/sqlite3/sqldiff.1.en.html
-		# sqlite3_analyzer is in unsable # https://manpages.debian.org/unstable/sqlite3-tools/sqlite3_analyzer.1.en.html
+		:
 		;;
 	3)
-		# https://www.geeksforgeeks.org/install-postgresql-on-linux/
-		# https://sqlserverguides.com/postgresql-installation-on-linux/
-		sqlserver="postgreSQL"
-		testcommand="postgres"
-		packages="postgresql postgresql-contrib"
-
 		# from: https://www.postgresql.org/download/linux/debian/
 		# Create the file repository configuration:
 		printf "Add postgreSQL repository to list.\n"
@@ -334,27 +441,16 @@ if [[ $installldapserver == "y" ]]; then
 	case $ldapserverc in
 		# Basically all are Java implementations except 389 directory service
 		1)
-			# https://www.howtoforge.com/how-to-install-openldap-on-debian-11/
-			ldapserver="open LDAP"
-			testcommand="slapd"  # https://serverfault.com/questions/839948/how-to-check-the-version-of-openldap-installed-in-command-line
-			packages="slapd ldap-utils"
+			:
 			;;
 		2)
-			ldapserver="Apache DS"
-			testcommand=""
-			packages="apacheds"
+			:
 			;;
 		3)
-			# https://backstage.forgerock.com/docs/opendj/2.6/install-guide/
-			ldapserver="OpenDJ"
-			testcommand=""
-			packages=""
+			:
 			;;
 		4)
-			# https://directory.fedoraproject.org/docs/389ds/howto/howto-debianubuntu.html
-			ldapserver="389 Directory server"
-			testcommand=""
-			packages="termcap-compat apache2-mpm-worker"
+			:
 			;;
 	esac
 
