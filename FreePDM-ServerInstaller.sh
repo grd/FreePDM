@@ -195,13 +195,12 @@ elif [[ $setconf == "write" ]]; then
 		printf "SQL server was emtpty OR outside range and is replaced by it's default\n"
 	fi
 
-	echo "sqlserverc = $sqlserverc" >> server.conf
-
 	case $sqlserverc in
 		1)
 			sqlserver="MySQL"
 			testcommand="mysql"
 			packages="mysql-server mysql-client"
+			defaultportnumber=3306  # https://kinsta.com/knowledgebase/mysql-port/
 			# mysql is replaced by mariadb see: https://wiki.debian.org/MySql
 			# https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-10
 			;;
@@ -209,6 +208,7 @@ elif [[ $setconf == "write" ]]; then
 			sqlserver="SQLite"
 			testcommand="sqlite3"  # can also be sqlite3 --version
 			packages="sqlite3 uwsgi-plugin-sqlite3 SQLitebrowser"
+			defaultportnumber=""
 			# sqldiff is in unstable # https://manpages.debian.org/unstable/sqlite3/sqldiff.1.en.html
 			# sqlite3_analyzer is in unsable # https://manpages.debian.org/unstable/sqlite3-tools/sqlite3_analyzer.1.en.html
 			;;
@@ -218,8 +218,11 @@ elif [[ $setconf == "write" ]]; then
 			sqlserver="postgreSQL"
 			testcommand="postgres"
 			packages="postgresql postgresql-contrib"
+			defaultportnumber=5432
 			;;
 	esac
+
+	echo "sqlserverc = $sqlserverc" >> server.conf
 
 	read -p "Enter SQL Username:"$'\n' sqlservername
 
@@ -231,7 +234,45 @@ elif [[ $setconf == "write" ]]; then
 
 	echo "sqlhostname = \"$sqlhostname\"" >> server.conf
 
-	# maybe something about admin + password, ports etc
+	read -p "The default portnumber is $defaultportnumber. Do you want to change it?(for current port leave empty)"$'\n' portnumber
+
+	if [[ $portnumber == "" ]]; then
+		portnuber=$defaultportnumber
+	fi
+
+	echo "portnumber = \"$portnumber\"" >> server.conf
+
+	read -p "What is the Database root directory?"$'\n' sqlrootdirectory
+
+	echo "sqlrootdirectory = \"$sqlrootdirectory\"" >> server.conf
+
+	read -p "What is your Database name?"$'\n' sqldatabasename
+
+	echo "sqldatabasename = \"$sqldatabasename\"" >> server.conf
+
+	read -p "What is your Database admin name?(for current user leave empty)"$'\n' sqldatabaseadmin
+
+	if [[ $sqldatabaseadmin == "" ]]; then
+		sqldatabaseadmin=$(whoami)
+	fi
+
+	# Don't save admin name to file
+	# echo "sqldatabaseadmin = \"$sqldatabaseadmin\"" >> server.conf
+
+	read -p "What is your Database admin password?"$'\n' sqldatabaseapassword
+
+	# Don't save admin password to file
+	# echo "sqldatabaseapassword = \"$sqldatabaseapassword\"" >> server.conf
+
+	read -p "What is your Database user name?"$'\n' sqldatabaseuser
+
+	# Don't save user name to file
+	# echo "sqldatabaseuser = \"$sqldatabaseuser\"" >> server.conf
+
+	read -p "What is your Database user password?"$'\n' sqldatabaseupassword
+
+	# Don't save user password to file
+	# echo "sqldatabaseupassword = \"$sqldatabaseupassword\"" >> server.conf
 
 	# -- LDAP Server --
 	echo "# -- LDAP server --" >> server.conf
@@ -403,14 +444,21 @@ fi
 # Check if SQL server already exist. if yes  add database to existing server?
 # work only with selected sql server
 
+printf "The following SQL server shall be installed: $sqlserver.\n"
+
 case $sqlserverc in
 	1)
-		:
+		# MySQL
+		printf "Update packages AND upgrade packages.\n"
+		sudo apt update
 		;;
 	2)
-		:
+		# SQLite
+		printf "Update packages.\n"
+		sudo apt update
 		;;
 	3)
+		# PostgreSQL
 		# from: https://www.postgresql.org/download/linux/debian/
 		# Create the file repository configuration:
 		printf "Add postgreSQL repository to list.\n"
@@ -418,10 +466,11 @@ case $sqlserverc in
 
 		# Import the repository signing key:
 		wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+
+		printf "Update packages.\n"
+		sudo apt update
 		;;
 esac
-
-printf "The following SQL server shall be installed: $sqlserver.\n"
 
 printf "Update packages.\n"
 sudo apt-get update
