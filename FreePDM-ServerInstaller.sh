@@ -187,6 +187,7 @@ elif [[ $setconf == "write" ]]; then
 1 - MySQL Community Edition
 2 - SQLite
 3 - PostgreSQL(default)
+4 - MariaDB
 4 - Other\n"
 
 	read sqlserverc  # sqlserver case
@@ -222,8 +223,26 @@ elif [[ $setconf == "write" ]]; then
 			packages="postgresql postgresql-contrib"
 			defaultportnumber=5432
 			;;
+		4)
+			printf "What MariaDB version do you want to install? (1 - 2)\n
+1 - MariaDB Enterprice Edition(default)
+2 - MariaDB Community Edition\n"
+
+			read mariadbedition
+
+			if [[ $mariadbedition == "" || $mariadbedition > 2 || $mariadbedition < 1 ]]; then
+				sqlserverc=1
+				printf "MariaDB Edition was emtpty OR outside range and is replaced by it's default\n"
+			fi
+
+			sqlserver="mariadb"
+			testcommand="mariadb"  # can also be sqlite3 --version
+			packages=""
+			defaultportnumber="3306"
+			;;
 		5)
 			printf"For custom SQL servers You have to install them selfes.\n"  # Add extra info later on
+			;;
 	esac
 
 	echo "sqlserverc = $sqlserverc" >> server.conf
@@ -263,7 +282,8 @@ elif [[ $setconf == "write" ]]; then
 	# Don't save admin name to file
 	# echo "sqldatabaseadmin = \"$sqldatabaseadmin\"" >> server.conf
 
-	read -p "What is your Database admin password?"$'\n' sqldatabaseapassword
+	printf "What is your Database user password?\n"
+	read -s -r sqldatabaseapassword
 
 	# Don't save admin password to file
 	# echo "sqldatabaseapassword = \"$sqldatabaseapassword\"" >> server.conf
@@ -273,7 +293,8 @@ elif [[ $setconf == "write" ]]; then
 	# Don't save user name to file
 	# echo "sqldatabaseuser = \"$sqldatabaseuser\"" >> server.conf
 
-	read -p "What is your Database user password?"$'\n' sqldatabaseupassword
+	printf "What is your Database user password?\n"
+	read -s -r sqldatabaseupassword
 
 	# Don't save user password to file
 	# echo "sqldatabaseupassword = \"$sqldatabaseupassword\"" >> server.conf
@@ -494,6 +515,35 @@ case $sqlserverc in
 		printf "Install PostgreSQL.\n"
 		;;
 	4)
+		# MariaDB
+		# https://mariadb.com/docs/deploy/deployment-methods/repo/
+		printf "Update packages AND upgrade packages.\n"
+		sudo apt update && sudo apt upgrade
+
+		printf "Install required packages for MariaDB.\n"
+		sudo apt install wget apt-transport-https
+		case $mariadbedition in
+			1 )
+				# Enterprice Edition
+				wget https://dlm.mariadb.com/enterprise-release-helpers/mariadb_es_repo_setup
+
+				echo "cfcd35671125d657a212d92b93be7b1f4ad2fda58dfa8b5ab4b601bf3afa4eae  mariadb_es_repo_setup" | sha256sum -c -
+
+				chmod +x mariadb_es_repo_setup
+
+				sudo ./mariadb_es_repo_setup --token="CUSTOMER_DOWNLOAD_TOKEN" --apply
+				;;
+			2)
+				# Community Edition
+				wget https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
+
+				echo "d4e4635eeb79b0e96483bd70703209c63da55a236eadd7397f769ee434d92ca8  mariadb_repo_setup" | sha256sum -c -
+
+				chmod +x mariadb_repo_setup
+
+				sudo ./mariadb_repo_setup;;
+		esac
+	5)
 		printf "assumed a SQL sefver is already installed"
 		;;
 esac
