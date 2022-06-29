@@ -184,13 +184,14 @@ elif [[ $setconf == "write" ]]; then
 
 	# Add line about check for existing server
 	printf "What SQL server do you want to install? (1 - 3)\n
-	1 - MySQL
-	2 - SQLite
-	3 - PostgreSQL(default)\n"
+1 - MySQL Community Edition
+2 - SQLite
+3 - PostgreSQL(default)
+4 - Other\n"
 
 	read sqlserverc  # sqlserver case
 
-	if [[ $sqlserverc == "" || $sqlserverc > 3 || $sqlserverc < 1 ]]; then
+	if [[ $sqlserverc == "" || $sqlserverc > 4 || $sqlserverc < 1 ]]; then
 		sqlserverc=3
 		printf "SQL server was emtpty OR outside range and is replaced by it's default\n"
 	fi
@@ -199,7 +200,8 @@ elif [[ $setconf == "write" ]]; then
 		1)
 			sqlserver="MySQL"
 			testcommand="mysql"
-			packages="mysql-server mysql-client"
+			# packages="mysql-server mysql-client"
+			packages="mysql-community-server"  # as alternative see link installation
 			defaultportnumber=3306  # https://kinsta.com/knowledgebase/mysql-port/
 			# mysql is replaced by mariadb see: https://wiki.debian.org/MySql
 			# https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-10
@@ -220,6 +222,8 @@ elif [[ $setconf == "write" ]]; then
 			packages="postgresql postgresql-contrib"
 			defaultportnumber=5432
 			;;
+		5)
+			printf"For custom SQL servers You have to install them selfes.\n"  # Add extra info later on
 	esac
 
 	echo "sqlserverc = $sqlserverc" >> server.conf
@@ -242,7 +246,7 @@ elif [[ $setconf == "write" ]]; then
 
 	echo "portnumber = \"$portnumber\"" >> server.conf
 
-	read -p "What is the Database root directory?"$'\n' sqlrootdirectory
+	read -p "What is the Database root directory?"$'\n' sqlrootdirectory  # Adding default location? second disc?
 
 	echo "sqlrootdirectory = \"$sqlrootdirectory\"" >> server.conf
 
@@ -449,8 +453,24 @@ printf "The following SQL server shall be installed: $sqlserver.\n"
 case $sqlserverc in
 	1)
 		# MySQL
+		# https://www.linuxcapable.com/how-to-install-the-latest-mysql-8-on-debian-11/
 		printf "Update packages AND upgrade packages.\n"
+		sudo apt update && sudo apt upgrade
+
+		printf "Install required packages for MySQL.\n"
+		sudo apt install software-properties-common apt-transport-https wget ca-certificates gnupg2 -y
+
+		# Import the repository signing key:
+		printf "Add MySQL repository signing key.\n"
+		sudo wget -O- http://repo.mysql.com/RPM-GPG-KEY-mysql-2022 | gpg --dearmor | sudo tee /usr/share/keyrings/mysql.gpg
+
+		printf "Add MySQL Repository.\n"
+		echo 'deb [signed-by=/usr/share/keyrings/mysql.gpg] http://repo.mysql.com/apt/debian bullseye mysql-8.0' | sudo tee /etc/apt/sources.list.d/mysql.list
+
+		printf "Update packages.\n"
 		sudo apt update
+
+		printf "Install MySQL.\n"
 		;;
 	2)
 		# SQLite
@@ -461,14 +481,20 @@ case $sqlserverc in
 		# PostgreSQL
 		# from: https://www.postgresql.org/download/linux/debian/
 		# Create the file repository configuration:
-		printf "Add postgreSQL repository to list.\n"
+		printf "Add postgreSQL repository.\n"
 		sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 
 		# Import the repository signing key:
+		printf "Add Repository signing key "
 		wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
 		printf "Update packages.\n"
 		sudo apt update
+
+		printf "Install PostgreSQL.\n"
+		;;
+	4)
+		printf "assumed a SQL sefver is already installed"
 		;;
 esac
 
