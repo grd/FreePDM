@@ -188,7 +188,7 @@ elif [[ $setconf == "write" ]]; then
 2 - SQLite
 3 - PostgreSQL(default)
 4 - MariaDB
-4 - Other\n"
+5 - Other\n"
 
 	read sqlserverc  # sqlserver case
 
