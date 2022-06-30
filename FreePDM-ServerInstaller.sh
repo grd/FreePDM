@@ -28,6 +28,7 @@ if [[ -e $conffile ]]; then
 
 		if [[ $reuseconf == "y" ]]; then
 			# Read the file
+			# https://www.geeksforgeeks.org/bash-scripting-how-to-read-a-file-line-by-line/
 			setconf="read"
 
 			break
@@ -241,13 +242,13 @@ elif [[ $setconf == "write" ]]; then
 			defaultportnumber="3306"
 			;;
 		5)
-			printf"For custom SQL servers You have to install them selfes.\n"  # Add extra info later on
+			printf "For custom SQL servers You have to install them selfes.\n"  # Add extra info later on
 			;;
 	esac
 
 	echo "sqlserverc = $sqlserverc" >> server.conf
 
-	read -p "Enter SQL Username:"$'\n' sqlservername
+	read -p "Enter SQL Servername:"$'\n' sqlservername
 
 	echo "sqlservername = \"$sqlservername\"" >> server.conf
 
@@ -265,7 +266,7 @@ elif [[ $setconf == "write" ]]; then
 
 	echo "portnumber = \"$portnumber\"" >> server.conf
 
-	read -p "What is the Database root directory?"$'\n' sqlrootdirectory  # Adding default location? second disc?
+	read -p "What is the Database root directory?"$'\n' -r sqlrootdirectory  # Adding default location? second disc?
 
 	echo "sqlrootdirectory = \"$sqlrootdirectory\"" >> server.conf
 
@@ -282,8 +283,8 @@ elif [[ $setconf == "write" ]]; then
 	# Don't save admin name to file
 	# echo "sqldatabaseadmin = \"$sqldatabaseadmin\"" >> server.conf
 
-	printf "What is your Database user password?\n"
-	read -s -r sqldatabaseapassword
+	# printf "What is your Database user password?\n"
+	read -p "What is your Database user password?"$'\n' -s -r sqldatabaseapassword
 
 	# Don't save admin password to file
 	# echo "sqldatabaseapassword = \"$sqldatabaseapassword\"" >> server.conf
@@ -293,8 +294,8 @@ elif [[ $setconf == "write" ]]; then
 	# Don't save user name to file
 	# echo "sqldatabaseuser = \"$sqldatabaseuser\"" >> server.conf
 
-	printf "What is your Database user password?\n"
-	read -s -r sqldatabaseupassword
+	# printf "What is your Database user password?\n"
+	read -p "What is your Database user password?"$'\n' -s -r sqldatabaseupassword
 
 	# Don't save user password to file
 	# echo "sqldatabaseupassword = \"$sqldatabaseupassword\"" >> server.conf
@@ -335,33 +336,93 @@ elif [[ $setconf == "write" ]]; then
 					ldapserver="open LDAP"
 					testcommand="slapd"  # https://serverfault.com/questions/839948/how-to-check-the-version-of-openldap-installed-in-command-line
 					packages="slapd ldap-utils"
+					port=389
 					;;
 				2)
 					ldapserver="Apache DS"
 					testcommand=""
 					packages="apacheds"
+					port=389
 					;;
 				3)
 					# https://backstage.forgerock.com/docs/opendj/2.6/install-guide/
 					ldapserver="OpenDJ"
 					testcommand=""
 					packages=""
+					port=389
 					;;
 				4)
 					# https://directory.fedoraproject.org/docs/389ds/howto/howto-debianubuntu.html
 					ldapserver="389 Directory server"
 					testcommand=""
 					packages="termcap-compat apache2-mpm-worker"
+					port=389
 					;;
 			esac
 
-			# user name and passwords are not stored
-			read -p "Enter LDAP Username:"$'\n' ldapusername
+			read -p "ldap organisation name, o=" o
+
+			echo "o = \"$o\"" >> server.conf
+
+			read -p "ldap domain component, dc=" dcfulldomain
+
+			# https://linuxize.com/post/bash-concatenate-strings/
+			# https://www.geeksforgeeks.org/bash-scripting-split-string/
+			# Set space as the delimiter
+			IFS='.'
+
+			# Read the split words into an array based on dot delimiter
+			read -ra newarr <<< "$dcfulldomain"
+
+			# concanete each value of the array by using the loop
+			# lastelement=${newarr[(( $length - 1 ))]}
+			printf "$lastelement\n"
+
+			var=""
+			for element in "${newarr[@]}";
+			do
+			  if [[ $element == ${newarr[(( $length - 1 ))]} ]]; then
+			    var+="dc=$element"
+			  else
+			    var+="dc=$element,"
+			  fi
+			done
+			printf "$dcfulldomain is replaced by $dc.\n"
+
+			echo "dc = \"$dc\"" >> server.conf
+
+			read -p "ldap common name, cn=" cn
+
+			echo "cn = \"$cn\"" >> server.conf
+
+			# Admin name and passwords are not stored
+			read -p "Enter LDAP admin name:"$'\n' ldapadminname
+
+			# Don't save admin name to file
+			# echo "ldapadminname = \"$ldapadminname\"" >> server.conf
 
 			# read -sp "Enter LDAP Password:" ldappw1  # Silent
-			read -p "Enter LDAP Password:"$'\n' -s ldappw1  # With asterix
+			read -p "Enter LDAP admin password:"$'\n' -s -r ldapadminpassword1  # With asterix
 
-			read -p "Re-enter LDAP Password:"$'\n' -s ldappw2  # With asterix
+			if [[ $sqldatabaseadmin == "" ]]; then
+				sqldatabaseadmin=$(whoami)
+			fi
+
+			# Don't save user password to file
+			# echo "ldapadminpassword1 = \"ldapadminpassword1\"" >> server.conf
+
+			read -p "Enter LDAP username:"$'\n' ldapusername
+
+			# read -sp "Enter LDAP Password:" ldappw1  # Silent
+			read -p "Enter LDAP user password:"$'\n' -s -r ldapuserpassword1  # With asterix
+
+			# Don't save user password to file
+			# echo "ldapuserpassword1 = \"ldapuserpassword1\"" >> server.conf
+
+			read -p "Re-enter LDAP user password:"$'\n' -s -r ldapuserpassword2  # With asterix
+
+			# Don't save user password to file
+			# echo "ldapuserpassword2 = \"ldapuserpassword2\"" >> server.conf
 
 			break
 
@@ -562,9 +623,12 @@ fi
 # install LDAP server
 
 if [[ $installldapserver == "y" ]]; then
+	# https://likegeeks.com/linux-ldap-server/
+	# phpldapadmin is not default available on debian
+	# https://kifarunix.com/install-phpldapadmin-on-debian-10-debian-11/
 
 	case $ldapserverc in
-		# Basically all are Java implementations except 389 directory service
+		# Basically all are Java implementations except 389 directory service(c++)
 		1)
 			:
 			;;
@@ -590,5 +654,9 @@ if ! [[ $(command -v $testcommand) ]]; then
 else
 	printf "$packages already installed \n"
 fi
+
+printf "Enable ldap.\n"
+
+systemctl enable slapd
 
 # Install other dependecies
