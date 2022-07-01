@@ -456,6 +456,8 @@ sudo apt update
 # sudo apt upgrade
 
 # Install of a SSH server
+printf "Install SSH-server\n"
+
 testcommand="ssh"
 packages="openssh-server"
 # if ! [[ $(command -v $the_command) &> /dev/null ]]; then
@@ -466,65 +468,6 @@ if ! [[ $(command -v $testcommand) ]]; then
 else
 	printf "$packages already installed\n"
 fi
-
-# Install of a webserver
-
-if [[ $installwebserver == "y" ]]; then
-
-	case $webserverc in
-		1)
-			:
-			;;
-		2)
-			:
-			;;
-		3)
-			:
-			;;
-	esac
-
-	printf "The following Web server shall be installed: $webserver."
-	sleep 1
-
-	if ! [[ $(command -v $testcommand) ]]; then
-	  printf "$testcommand could not be found.\n$packages shall be installed. \n"
-		sudo apt install -y $packages
-		exit
-	else
-		printf "$packages already installed \n"
-	fi
-
-	# If statement for IPaddres has always same length and set of dots on same place
-
-	case $webserverpythonc in
-		# Make use of package manager OR Virtual Environment...?
-		1)
-			:
-			;;
-		2)
-			:
-			;;
-		3)
-			:
-			;;
-		4)
-			:
-			;;
-	esac
-
-	# if ! (( command -V $testcommand )); then  #
-	# 	printf "$testcommand could not be found.\n$packages shall be installed. \n"
-	# 	sudo apt install -y $packages
-	# 	exit
-	# else
-	# 	printf "$packages already installed \n"
-	# fi
-
-	printf "The following Python Web server shall be installed: $webserverpython."
-	sleep 1
-
-fi
-
 
 # install of SQL server
 
@@ -621,8 +564,66 @@ else
 	printf "$packages already installed \n"
 fi
 
-# install LDAP server
+# Install of a webserver
 
+if [[ $installwebserver == "y" ]]; then
+
+	case $webserverc in
+		1)
+			:
+			;;
+		2)
+			:
+			;;
+		3)
+			:
+			;;
+	esac
+
+	printf "The following Web server shall be installed: $webserver."
+	sleep 1
+
+	if ! [[ $(command -v $testcommand) ]]; then
+	  printf "$testcommand could not be found.\n$packages shall be installed. \n"
+		sudo apt install -y $packages
+		exit
+	else
+		printf "$packages already installed \n"
+	fi
+
+	# If statement for IPaddres has always same length and set of dots on same place
+
+	case $webserverpythonc in
+		# Make use of package manager OR Virtual Environment...?
+		1)
+			:
+			;;
+		2)
+			:
+			;;
+		3)
+			:
+			;;
+		4)
+			:
+			;;
+	esac
+
+	# if ! (( command -V $testcommand )); then  #
+	# 	printf "$testcommand could not be found.\n$packages shall be installed. \n"
+	# 	sudo apt install -y $packages
+	# 	exit
+	# else
+	# 	printf "$packages already installed \n"
+	# fi
+
+	printf "The following Python Web server shall be installed: $webserverpython."
+	sleep 1
+
+fi
+
+# install LDAP server
+# printf command below case
 if [[ $installldapserver == "y" ]]; then
 	# https://likegeeks.com/linux-ldap-server/
 	# phpldapadmin is not default available on debian
@@ -646,18 +647,19 @@ if [[ $installldapserver == "y" ]]; then
 
 	printf "The following LDAP server shall be installed: $ldapserver."
 	sleep 1
+
+	if ! [[ $(command -v $testcommand) ]]; then
+		printf "$testcommand could not be found.\n$packages shall be installed. \n"
+		sudo apt install -y $packages
+		exit
+	else
+		printf "$packages already installed \n"
+	fi
+
+	printf "Enable ldap.\n"
+
+	systemctl enable slapd
+
 fi
-
-if ! [[ $(command -v $testcommand) ]]; then
-	printf "$testcommand could not be found.\n$packages shall be installed. \n"
-	sudo apt install -y $packages
-	exit
-else
-	printf "$packages already installed \n"
-fi
-
-printf "Enable ldap.\n"
-
-systemctl enable slapd
 
 # Install other dependecies
