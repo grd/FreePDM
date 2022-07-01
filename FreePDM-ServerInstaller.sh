@@ -5,11 +5,11 @@
 printf "Welcome to the server Installer from FreePDM:\n"
 
 # TODO: Create install Conf file
-# TODO: Install ssh-server
-# TODO: Install Web-server - Optional
 # TODO: Install SQL-server
+# TODO: Install Web-server - Optional
 # TODO: Install LDAP-server - Optional
 # TODO: Install Other dependencies
+# TODO: Test Test Test...
 
 printf "There are a set of (optional )dependencies that are configured now. This dependecies are:
 - A SSH server
