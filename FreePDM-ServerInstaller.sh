@@ -13,8 +13,8 @@ printf "Welcome to the server Installer from FreePDM:\n"
 
 printf "There are a set of (optional )dependencies that are configured now. This dependecies are:
 - A SSH server
-- A web server (Optional)
 - A SQL server
+- A web server (Optional)
 - A LDAP server (Optional)\n"
 
 # https://stackoverflow.com/questions/4662938/create-text-file-and-fill-it-using-bash
@@ -70,115 +70,6 @@ if [[ $setconf == "read" ]]; then
 	# This is most complex because it can switch to read at some point in the process
 	:
 elif [[ $setconf == "write" ]]; then
-	while :
-	do
-		# -- Web Server --
-		echo "# -- Web server --" >> server.conf
-
-		read -p "Do you want to install a Webserver? (y / n)"$'\n' installwebserver
-
-		if [[ $installwebserver == "y" ]]; then
-
-			echo "installwebserver = \"$installwebserver\"" >> server.conf
-
-			printf "What backend do you want to install? (1 - 2)\n
-1 - Apache Httpd (default)
-2 - Nginx\n"
-
-			read webserverc  # webserver case
-
-			if [[ $webserverc == "" || $webserverc > 2 || $webserverc < 1 ]]; then
-				webserverc=1
-				printf "http server was emtpty OR outside range and is replaced by it's default. \n"
-			fi
-
-			echo "webserverc = $webserverc" >> server.conf
-
-			case $webserverc in
-				1)
-					# https://ubuntu.com/tutorials/install-and-configure-apache#1-overview
-					webserver="Apache httpd"
-					testcommand="apache2"  # should also work with apachectl -v
-					packages="apache2"
-					;;
-				2)
-					# https://ubuntu.com/tutorials/install-and-configure-nginx#1-overview
-					webserver="Nginx"
-					testcommand="nginx"
-					packages="nginx"
-					;;
-				3)
-					# https://www.hostinger.com/tutorials/how-to-install-tomcat-on-ubuntu/
-					webserver="Appache tomcat"  # Java
-					testcommand=""
-					packages=""
-						;;
-			esac
-
-			# python webserver default has to be choosen!
-			printf "What python web backend do you want to install? (1 - 4)\n
-1 - Django
-2 - Pyramid (Default)
-3 - Falcon
-4 - WebPy\n"
-
-			read webserverpythonc  # webserver python case
-
-			if [[ $webserverpythonc == "" || $webserverpythonc > 4 || $webserverpythonc < 1 ]]; then
-				webserverpythonc=2
-				printf "python web server was emtpty OR outside range and is replaced by it's default. \n"
-			fi
-
-			echo "webserverpythonc = $webserverpythonc" >> server.conf
-
-			case $webserverpythonc in
-				# Make use of package manager OR Virtual Environment...?
-				1)
-					# https://www.digitalocean.com/community/tutorials/how-to-install-the-django-web-framework-on-ubuntu-20-04
-					webserver="Django"
-					testcommand=""  # "django-admin --version"
-					packages=""  # "python3-django"
-					;;
-				2)
-					# https://www.digitalocean.com/community/tutorials/how-to-use-the-pyramid-framework-to-build-your-python-web-app-on-ubuntu
-					webserver="Pyramid"
-					testcommand=""
-					packages=""
-					;;
-				3)
-					# https://www.digitalocean.com/community/tutorials/how-to-deploy-falcon-web-applications-with-gunicorn-and-nginx-on-ubuntu-16-04
-					webserver="Falcon"
-					testcommand=""
-					packages=""
-					;;
-				4)
-					webserver="WebPy"
-					testcommand=""
-					packages=""  # "python-webpy"
-					;;
-			esac
-
-			read -p "What is your server name?"$'\n' webservername
-
-			echo "webservername = \"$webservername\"" >> server.conf
-
-			read -p "What is your (web )server_domain OR IP address? (default something like web.somename.com)"$'\n' webhostname
-
-			echo "webhostname = \"$webhostname\"" >> server.conf
-
-			# maybe something about admin + password, ports etc
-			break
-
-		elif [[ $installwebserver == "n" ]]; then
-
-			echo "installwebserver = \"$installwebserver\"" >> server.conf
-
-			break
-			:
-		else
-			printf "$installwebserver is not 'y' OR 'n'.\n"
-		fi
-	done
 
 	# -- SQL Server --
 	echo "# -- SQL server --" >> server.conf
@@ -299,6 +190,116 @@ elif [[ $setconf == "write" ]]; then
 
 	# Don't save user password to file
 	# echo "sqldatabaseupassword = \"$sqldatabaseupassword\"" >> server.conf
+
+	while :
+	do
+		# -- Web Server --
+		echo "# -- Web server --" >> server.conf
+
+		read -p "Do you want to install a Webserver? (y / n)"$'\n' installwebserver
+
+		if [[ $installwebserver == "y" ]]; then
+
+			echo "installwebserver = \"$installwebserver\"" >> server.conf
+
+			printf "What backend do you want to install? (1 - 2)\n
+1 - Apache Httpd (default)
+2 - Nginx\n"
+
+			read webserverc  # webserver case
+
+			if [[ $webserverc == "" || $webserverc > 2 || $webserverc < 1 ]]; then
+				webserverc=1
+				printf "http server was emtpty OR outside range and is replaced by it's default. \n"
+			fi
+
+			echo "webserverc = $webserverc" >> server.conf
+
+			case $webserverc in
+				1)
+					# https://ubuntu.com/tutorials/install-and-configure-apache#1-overview
+					webserver="Apache httpd"
+					testcommand="apache2"  # should also work with apachectl -v
+					packages="apache2"
+					;;
+				2)
+					# https://ubuntu.com/tutorials/install-and-configure-nginx#1-overview
+					webserver="Nginx"
+					testcommand="nginx"
+					packages="nginx"
+					;;
+				3)
+					# https://www.hostinger.com/tutorials/how-to-install-tomcat-on-ubuntu/
+					webserver="Appache tomcat"  # Java
+					testcommand=""
+					packages=""
+						;;
+			esac
+
+			# python webserver default has to be choosen!
+			printf "What python web backend do you want to install? (1 - 4)\n
+1 - Django
+2 - Pyramid (Default)
+3 - Falcon
+4 - WebPy\n"
+
+			read webserverpythonc  # webserver python case
+
+			if [[ $webserverpythonc == "" || $webserverpythonc > 4 || $webserverpythonc < 1 ]]; then
+				webserverpythonc=2
+				printf "python web server was emtpty OR outside range and is replaced by it's default. \n"
+			fi
+
+			echo "webserverpythonc = $webserverpythonc" >> server.conf
+
+			case $webserverpythonc in
+				# Make use of package manager OR Virtual Environment...?
+				1)
+					# https://www.digitalocean.com/community/tutorials/how-to-install-the-django-web-framework-on-ubuntu-20-04
+					webserver="Django"
+					testcommand=""  # "django-admin --version"
+					packages=""  # "python3-django"
+					;;
+				2)
+					# https://www.digitalocean.com/community/tutorials/how-to-use-the-pyramid-framework-to-build-your-python-web-app-on-ubuntu
+					webserver="Pyramid"
+					testcommand=""
+					packages=""
+					;;
+				3)
+					# https://www.digitalocean.com/community/tutorials/how-to-deploy-falcon-web-applications-with-gunicorn-and-nginx-on-ubuntu-16-04
+					webserver="Falcon"
+					testcommand=""
+					packages=""
+					;;
+				4)
+					webserver="WebPy"
+					testcommand=""
+					packages=""  # "python-webpy"
+					;;
+			esac
+
+			read -p "What is your server name?"$'\n' webservername
+
+			echo "webservername = \"$webservername\"" >> server.conf
+
+			read -p "What is your (web )server_domain OR IP address? (default something like web.somename.com)"$'\n' webhostname
+
+			echo "webhostname = \"$webhostname\"" >> server.conf
+
+			# maybe something about admin + password, ports etc
+			break
+
+		elif [[ $installwebserver == "n" ]]; then
+
+			echo "installwebserver = \"$installwebserver\"" >> server.conf
+
+			break
+			:
+		else
+			printf "$installwebserver is not 'y' OR 'n'.\n"
+		fi
+	done
 
 	# -- LDAP Server --
 	echo "# -- LDAP server --" >> server.conf
