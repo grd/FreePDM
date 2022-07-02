@@ -5,16 +5,16 @@
 printf "Welcome to the server Installer from FreePDM:\n"
 
 # TODO: Create install Conf file
-# TODO: Install ssh-server
-# TODO: Install Web-server - Optional
 # TODO: Install SQL-server
+# TODO: Install Web-server - Optional
 # TODO: Install LDAP-server - Optional
 # TODO: Install Other dependencies
+# TODO: Test Test Test...
 
 printf "There are a set of (optional )dependencies that are configured now. This dependecies are:
 - A SSH server
-- A web server (Optional)
 - A SQL server
+- A web server (Optional)
 - A LDAP server (Optional)\n"
 
 # https://stackoverflow.com/questions/4662938/create-text-file-and-fill-it-using-bash
@@ -28,6 +28,7 @@ if [[ -e $conffile ]]; then
 
 		if [[ $reuseconf == "y" ]]; then
 			# Read the file
+			# https://www.geeksforgeeks.org/bash-scripting-how-to-read-a-file-line-by-line/
 			setconf="read"
 
 			break
@@ -69,6 +70,127 @@ if [[ $setconf == "read" ]]; then
 	# This is most complex because it can switch to read at some point in the process
 	:
 elif [[ $setconf == "write" ]]; then
+
+	# -- SQL Server --
+	echo "# -- SQL server --" >> server.conf
+
+	# Add line about check for existing server
+	printf "What SQL server do you want to install? (1 - 3)\n
+1 - MySQL Community Edition
+2 - SQLite
+3 - PostgreSQL(default)
+4 - MariaDB
+5 - Other\n"
+
+	read sqlserverc  # sqlserver case
+
+	if [[ $sqlserverc == "" || $sqlserverc > 4 || $sqlserverc < 1 ]]; then
+		sqlserverc=3
+		printf "SQL server was emtpty OR outside range and is replaced by it's default\n"
+	fi
+
+	case $sqlserverc in
+		1)
+			sqlserver="MySQL"
+			testcommand="mysql"
+			# packages="mysql-server mysql-client"
+			packages="mysql-community-server"  # as alternative see link installation
+			defaultportnumber=3306  # https://kinsta.com/knowledgebase/mysql-port/
+			# mysql is replaced by mariadb see: https://wiki.debian.org/MySql
+			# https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-10
+			;;
+		2)
+			sqlserver="SQLite"
+			testcommand="sqlite3"  # can also be sqlite3 --version
+			packages="sqlite3 uwsgi-plugin-sqlite3 SQLitebrowser"
+			defaultportnumber=""
+			# sqldiff is in unstable # https://manpages.debian.org/unstable/sqlite3/sqldiff.1.en.html
+			# sqlite3_analyzer is in unsable # https://manpages.debian.org/unstable/sqlite3-tools/sqlite3_analyzer.1.en.html
+			;;
+		3)
+			# https://www.geeksforgeeks.org/install-postgresql-on-linux/
+			# https://sqlserverguides.com/postgresql-installation-on-linux/
+			sqlserver="postgreSQL"
+			testcommand="postgres"
+			packages="postgresql postgresql-contrib"
+			defaultportnumber=5432
+			;;
+		4)
+			printf "What MariaDB version do you want to install? (1 - 2)\n
+1 - MariaDB Enterprice Edition(default)
+2 - MariaDB Community Edition\n"
+
+			read mariadbedition
+
+			if [[ $mariadbedition == "" || $mariadbedition > 2 || $mariadbedition < 1 ]]; then
+				sqlserverc=1
+				printf "MariaDB Edition was emtpty OR outside range and is replaced by it's default\n"
+			fi
+
+			sqlserver="mariadb"
+			testcommand="mariadb"  # can also be sqlite3 --version
+			packages=""
+			defaultportnumber="3306"
+			;;
+		5)
+			printf "For custom SQL servers You have to install them selfes.\n"  # Add extra info later on
+			;;
+	esac
+
+	echo "sqlserverc = $sqlserverc" >> server.conf
+
+	read -p "Enter SQL Servername:"$'\n' sqlservername
+
+	echo "sqlservername = \"$sqlservername\"" >> server.conf
+
+	read -p "What is your (sql )server_domain OR IP address? (default something like sql.somename.com)"$'\n' sqlhostname
+	# Can i check if something is an IP addres?, Is there a need for?
+	# https://stackoverflow.com/questions/23675400/validating-an-ip-address-using-bash-script
+
+	echo "sqlhostname = \"$sqlhostname\"" >> server.conf
+
+	read -p "The default portnumber is $defaultportnumber. Do you want to change it?(for current port leave empty)"$'\n' portnumber
+
+	if [[ $portnumber == "" ]]; then
+		portnuber=$defaultportnumber
+	fi
+
+	echo "portnumber = \"$portnumber\"" >> server.conf
+
+	read -p "What is the Database root directory?"$'\n' -r sqlrootdirectory  # Adding default location? second disc?
+
+	echo "sqlrootdirectory = \"$sqlrootdirectory\"" >> server.conf
+
+	read -p "What is your Database name?"$'\n' sqldatabasename
+
+	echo "sqldatabasename = \"$sqldatabasename\"" >> server.conf
+
+	read -p "What is your Database admin name?(for current user leave empty)"$'\n' sqldatabaseadmin
+
+	if [[ $sqldatabaseadmin == "" ]]; then
+		sqldatabaseadmin=$(whoami)
+	fi
+
+	# Don't save admin name to file
+	# echo "sqldatabaseadmin = \"$sqldatabaseadmin\"" >> server.conf
+
+	# printf "What is your Database user password?\n"
+	read -p "What is your Database user password?"$'\n' -s -r sqldatabaseapassword
+
+	# Don't save admin password to file
+	# echo "sqldatabaseapassword = \"$sqldatabaseapassword\"" >> server.conf
+
+	read -p "What is your Database user name?"$'\n' sqldatabaseuser
+
+	# Don't save user name to file
+	# echo "sqldatabaseuser = \"$sqldatabaseuser\"" >> server.conf
+
+	# printf "What is your Database user password?\n"
+	read -p "What is your Database user password?"$'\n' -s -r sqldatabaseupassword
+
+	# Don't save user password to file
+	# echo "sqldatabaseupassword = \"$sqldatabaseupassword\"" >> server.conf
+
 	while :
 	do
 		# -- Web Server --
@@ -179,60 +301,6 @@ elif [[ $setconf == "write" ]]; then
 		fi
 	done
 
-	# -- SQL Server --
-	echo "# -- SQL server --" >> server.conf
-
-	# Add line about check for existing server
-	printf "What SQL server do you want to install? (1 - 3)\n
-	1 - MySQL
-	2 - SQLite
-	3 - PostgreSQL(default)\n"
-
-	read sqlserverc  # sqlserver case
-
-	if [[ $sqlserverc == "" || $sqlserverc > 3 || $sqlserverc < 1 ]]; then
-		sqlserverc=3
-		printf "SQL server was emtpty OR outside range and is replaced by it's default\n"
-	fi
-
-	echo "sqlserverc = $sqlserverc" >> server.conf
-
-	case $sqlserverc in
-		1)
-			sqlserver="MySQL"
-			testcommand="mysql"
-			packages="mysql-server mysql-client"
-			# mysql is replaced by mariadb see: https://wiki.debian.org/MySql
-			# https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-10
-			;;
-		2)
-			sqlserver="SQLite"
-			testcommand="sqlite3"  # can also be sqlite3 --version
-			packages="sqlite3 uwsgi-plugin-sqlite3 SQLitebrowser"
-			# sqldiff is in unstable # https://manpages.debian.org/unstable/sqlite3/sqldiff.1.en.html
-			# sqlite3_analyzer is in unsable # https://manpages.debian.org/unstable/sqlite3-tools/sqlite3_analyzer.1.en.html
-			;;
-		3)
-			# https://www.geeksforgeeks.org/install-postgresql-on-linux/
-			# https://sqlserverguides.com/postgresql-installation-on-linux/
-			sqlserver="postgreSQL"
-			testcommand="postgres"
-			packages="postgresql postgresql-contrib"
-			;;
-	esac
-
-	read -p "Enter SQL Username:"$'\n' sqlservername
-
-	echo "sqlservername = \"$sqlservername\"" >> server.conf
-
-	read -p "What is your (sql )server_domain OR IP address? (default something like sql.somename.com)"$'\n' sqlhostname
-	# Can i check if something is an IP addres?, Is there a need for?
-	# https://stackoverflow.com/questions/23675400/validating-an-ip-address-using-bash-script
-
-	echo "sqlhostname = \"$sqlhostname\"" >> server.conf
-
-	# maybe something about admin + password, ports etc
-
 	# -- LDAP Server --
 	echo "# -- LDAP server --" >> server.conf
 
@@ -269,33 +337,93 @@ elif [[ $setconf == "write" ]]; then
 					ldapserver="open LDAP"
 					testcommand="slapd"  # https://serverfault.com/questions/839948/how-to-check-the-version-of-openldap-installed-in-command-line
 					packages="slapd ldap-utils"
+					port=389
 					;;
 				2)
 					ldapserver="Apache DS"
 					testcommand=""
 					packages="apacheds"
+					port=389
 					;;
 				3)
 					# https://backstage.forgerock.com/docs/opendj/2.6/install-guide/
 					ldapserver="OpenDJ"
 					testcommand=""
 					packages=""
+					port=389
 					;;
 				4)
 					# https://directory.fedoraproject.org/docs/389ds/howto/howto-debianubuntu.html
 					ldapserver="389 Directory server"
 					testcommand=""
 					packages="termcap-compat apache2-mpm-worker"
+					port=389
 					;;
 			esac
 
-			# user name and passwords are not stored
-			read -p "Enter LDAP Username:"$'\n' ldapusername
+			read -p "ldap organisation name, o=" o
+
+			echo "o = \"$o\"" >> server.conf
+
+			read -p "ldap domain component, dc=" dcfulldomain
+
+			# https://linuxize.com/post/bash-concatenate-strings/
+			# https://www.geeksforgeeks.org/bash-scripting-split-string/
+			# Set space as the delimiter
+			IFS='.'
+
+			# Read the split words into an array based on dot delimiter
+			read -ra newarr <<< "$dcfulldomain"
+
+			# concanete each value of the array by using the loop
+			# lastelement=${newarr[(( $length - 1 ))]}
+			printf "$lastelement\n"
+
+			var=""
+			for element in "${newarr[@]}";
+			do
+			  if [[ $element == ${newarr[(( $length - 1 ))]} ]]; then
+			    var+="dc=$element"
+			  else
+			    var+="dc=$element,"
+			  fi
+			done
+			printf "$dcfulldomain is replaced by $dc.\n"
+
+			echo "dc = \"$dc\"" >> server.conf
+
+			read -p "ldap common name, cn=" cn
+
+			echo "cn = \"$cn\"" >> server.conf
+
+			# Admin name and passwords are not stored
+			read -p "Enter LDAP admin name:"$'\n' ldapadminname
+
+			# Don't save admin name to file
+			# echo "ldapadminname = \"$ldapadminname\"" >> server.conf
 
 			# read -sp "Enter LDAP Password:" ldappw1  # Silent
-			read -p "Enter LDAP Password:"$'\n' -s ldappw1  # With asterix
+			read -p "Enter LDAP admin password:"$'\n' -s -r ldapadminpassword1  # With asterix
 
-			read -p "Re-enter LDAP Password:"$'\n' -s ldappw2  # With asterix
+			if [[ $sqldatabaseadmin == "" ]]; then
+				sqldatabaseadmin=$(whoami)
+			fi
+
+			# Don't save user password to file
+			# echo "ldapadminpassword1 = \"ldapadminpassword1\"" >> server.conf
+
+			read -p "Enter LDAP username:"$'\n' ldapusername
+
+			# read -sp "Enter LDAP Password:" ldappw1  # Silent
+			read -p "Enter LDAP user password:"$'\n' -s -r ldapuserpassword1  # With asterix
+
+			# Don't save user password to file
+			# echo "ldapuserpassword1 = \"ldapuserpassword1\"" >> server.conf
+
+			read -p "Re-enter LDAP user password:"$'\n' -s -r ldapuserpassword2  # With asterix
+
+			# Don't save user password to file
+			# echo "ldapuserpassword2 = \"ldapuserpassword2\"" >> server.conf
 
 			break
 
@@ -328,6 +456,8 @@ sudo apt update
 # sudo apt upgrade
 
 # Install of a SSH server
+printf "Install SSH-server\n"
+
 testcommand="ssh"
 packages="openssh-server"
 # if ! [[ $(command -v $the_command) &> /dev/null ]]; then
@@ -337,6 +467,101 @@ if ! [[ $(command -v $testcommand) ]]; then
 	exit
 else
 	printf "$packages already installed\n"
+fi
+
+# install of SQL server
+
+# Check if SQL server already exist. if yes  add database to existing server?
+# work only with selected sql server
+
+printf "The following SQL server shall be installed: $sqlserver.\n"
+
+case $sqlserverc in
+	1)
+		# MySQL
+		# https://www.linuxcapable.com/how-to-install-the-latest-mysql-8-on-debian-11/
+		printf "Update packages AND upgrade packages.\n"
+		sudo apt update && sudo apt upgrade
+
+		printf "Install required packages for MySQL.\n"
+		sudo apt install software-properties-common apt-transport-https wget ca-certificates gnupg2 -y
+
+		# Import the repository signing key:
+		printf "Add MySQL repository signing key.\n"
+		sudo wget -O- http://repo.mysql.com/RPM-GPG-KEY-mysql-2022 | gpg --dearmor | sudo tee /usr/share/keyrings/mysql.gpg
+
+		printf "Add MySQL Repository.\n"
+		echo 'deb [signed-by=/usr/share/keyrings/mysql.gpg] http://repo.mysql.com/apt/debian bullseye mysql-8.0' | sudo tee /etc/apt/sources.list.d/mysql.list
+
+		printf "Update packages.\n"
+		sudo apt update
+
+		printf "Install MySQL.\n"
+		;;
+	2)
+		# SQLite
+		printf "Update packages.\n"
+		sudo apt update
+		;;
+	3)
+		# PostgreSQL
+		# from: https://www.postgresql.org/download/linux/debian/
+		# Create the file repository configuration:
+		printf "Add postgreSQL repository.\n"
+		sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+
+		# Import the repository signing key:
+		printf "Add Repository signing key "
+		wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+
+		printf "Update packages.\n"
+		sudo apt update
+
+		printf "Install PostgreSQL.\n"
+		;;
+	4)
+		# MariaDB
+		# https://mariadb.com/docs/deploy/deployment-methods/repo/
+		printf "Update packages AND upgrade packages.\n"
+		sudo apt update && sudo apt upgrade
+
+		printf "Install required packages for MariaDB.\n"
+		sudo apt install wget apt-transport-https
+		case $mariadbedition in
+			1 )
+				# Enterprice Edition
+				wget https://dlm.mariadb.com/enterprise-release-helpers/mariadb_es_repo_setup
+
+				echo "cfcd35671125d657a212d92b93be7b1f4ad2fda58dfa8b5ab4b601bf3afa4eae  mariadb_es_repo_setup" | sha256sum -c -
+
+				chmod +x mariadb_es_repo_setup
+
+				sudo ./mariadb_es_repo_setup --token="CUSTOMER_DOWNLOAD_TOKEN" --apply
+				;;
+			2)
+				# Community Edition
+				wget https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
+
+				echo "d4e4635eeb79b0e96483bd70703209c63da55a236eadd7397f769ee434d92ca8  mariadb_repo_setup" | sha256sum -c -
+
+				chmod +x mariadb_repo_setup
+
+				sudo ./mariadb_repo_setup;;
+		esac
+	5)
+		printf "assumed a SQL sefver is already installed"
+		;;
+esac
+
+printf "Update packages.\n"
+sudo apt-get update
+
+if ! [[ $(command -v $testcommand) ]]; then
+	printf "$testcommand could not be found.\n$packages shall be installed. \n"
+	sudo apt install -y $packages
+	exit
+else
+	printf "$packages already installed \n"
 fi
 
 # Install of a webserver
@@ -397,49 +622,15 @@ if [[ $installwebserver == "y" ]]; then
 
 fi
 
-
-# install of SQL server
-
-# Check if SQL server already exist. if yes  add database to existing server?
-# work only with selected sql server
-
-case $sqlserverc in
-	1)
-		:
-		;;
-	2)
-		:
-		;;
-	3)
-		# from: https://www.postgresql.org/download/linux/debian/
-		# Create the file repository configuration:
-		printf "Add postgreSQL repository to list.\n"
-		sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-
-		# Import the repository signing key:
-		wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-		;;
-esac
-
-printf "The following SQL server shall be installed: $sqlserver.\n"
-
-printf "Update packages.\n"
-sudo apt-get update
-
-if ! [[ $(command -v $testcommand) ]]; then
-	printf "$testcommand could not be found.\n$packages shall be installed. \n"
-	sudo apt install -y $packages
-	exit
-else
-	printf "$packages already installed \n"
-fi
-
 # install LDAP server
-
+# printf command below case
 if [[ $installldapserver == "y" ]]; then
+	# https://likegeeks.com/linux-ldap-server/
+	# phpldapadmin is not default available on debian
+	# https://kifarunix.com/install-phpldapadmin-on-debian-10-debian-11/
 
 	case $ldapserverc in
-		# Basically all are Java implementations except 389 directory service
+		# Basically all are Java implementations except 389 directory service(c++)
 		1)
 			:
 			;;
@@ -456,14 +647,19 @@ if [[ $installldapserver == "y" ]]; then
 
 	printf "The following LDAP server shall be installed: $ldapserver."
 	sleep 1
-fi
 
-if ! [[ $(command -v $testcommand) ]]; then
-	printf "$testcommand could not be found.\n$packages shall be installed. \n"
-	sudo apt install -y $packages
-	exit
-else
-	printf "$packages already installed \n"
+	if ! [[ $(command -v $testcommand) ]]; then
+		printf "$testcommand could not be found.\n$packages shall be installed. \n"
+		sudo apt install -y $packages
+		exit
+	else
+		printf "$packages already installed \n"
+	fi
+
+	printf "Enable ldap.\n"
+
+	systemctl enable slapd
+
 fi
 
 # Install other dependecies
