@@ -280,7 +280,7 @@ If so Feel free to create a Pull Request.\n"
 				4)
 					webserver="WebPy"
 					testcommand=""
-					packages=""  # "python-webpy"
+					packages="web.py"  # "python-webpy"
 					;;
 				5)
 					# No Python webserver
@@ -466,7 +466,8 @@ sudo apt update
 # printf "Upgrade repositories.\n"  # upgrade don't work yet
 # sudo apt upgrade
 
-# Install of a SSH server
+
+# Install of a SSH server if not available
 printf "Install SSH-server\n"
 
 testcommand="ssh"
@@ -479,6 +480,34 @@ if ! [[ $(command -v $testcommand) ]]; then
 else
 	printf "$packages already installed\n"
 fi
+
+
+# Install of python3 and pip3 if not available
+printf "Install Python and pip\n"
+
+testcommand="python3"
+packages="python3"
+# if ! [[ $(command -v $the_command) &> /dev/null ]]; then
+if ! [[ $(command -v $testcommand) ]]; then
+  printf "$testcommand could not be found.\n$packages shall be installed. \n"
+	sudo apt install -y $packages
+	exit
+else
+	printf "$packages already installed\n"
+fi
+
+testcommand="pip3"
+packages="python3-pip"
+# if ! [[ $(command -v $the_command) &> /dev/null ]]; then
+if ! [[ $(command -v $testcommand) ]]; then
+  printf "$testcommand could not be found.\n$packages shall be installed. \n"
+	sudo apt install -y $packages
+	pip install pip_search
+	exit
+else
+	printf "$packages already installed\n"
+fi
+
 
 # install of SQL server
 
