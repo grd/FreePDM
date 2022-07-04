@@ -191,16 +191,20 @@ elif [[ $setconf == "write" ]]; then
 	# Don't save user password to file
 	# echo "sqldatabaseupassword = \"$sqldatabaseupassword\"" >> server.conf
 
+	# -- Web Server --
+	echo "# -- Web server --" >> server.conf
+
 	while :
 	do
-		# -- Web Server --
-		echo "# -- Web server --" >> server.conf
 
 		read -p "Do you want to install a Webserver? (y / n)"$'\n' installwebserver
 
 		if [[ $installwebserver == "y" ]]; then
 
 			echo "installwebserver = \"$installwebserver\"" >> server.conf
+
+			printf "A Web Interface is not implemented yet. Choose this only if you want to create one by yourself.
+If so Feel free to create a Pull Request.\n"
 
 			printf "What backend do you want to install? (1 - 2)\n
 1 - Apache Httpd (default)
@@ -237,15 +241,16 @@ elif [[ $setconf == "write" ]]; then
 			esac
 
 			# python webserver default has to be choosen!
-			printf "What python web backend do you want to install? (1 - 4)\n
+			printf "What python web backend do you want to install? (1 - 5)\n
 1 - Django
 2 - Pyramid (Default)
 3 - Falcon
-4 - WebPy\n"
+4 - WebPy
+5 - None\n"
 
 			read webserverpythonc  # webserver python case
 
-			if [[ $webserverpythonc == "" || $webserverpythonc > 4 || $webserverpythonc < 1 ]]; then
+			if [[ $webserverpythonc == "" || $webserverpythonc > 5 || $webserverpythonc < 1 ]]; then
 				webserverpythonc=2
 				printf "python web server was emtpty OR outside range and is replaced by it's default. \n"
 			fi
@@ -257,25 +262,31 @@ elif [[ $setconf == "write" ]]; then
 				1)
 					# https://www.digitalocean.com/community/tutorials/how-to-install-the-django-web-framework-on-ubuntu-20-04
 					webserver="Django"
-					testcommand=""  # "django-admin --version"
-					packages=""  # "python3-django"
+					testcommand="django-admin --version"
+					packages="django"
 					;;
 				2)
 					# https://www.digitalocean.com/community/tutorials/how-to-use-the-pyramid-framework-to-build-your-python-web-app-on-ubuntu
 					webserver="Pyramid"
-					testcommand=""
-					packages=""
+					testcommand=""  # added later
+					packages="pyramid"
 					;;
 				3)
 					# https://www.digitalocean.com/community/tutorials/how-to-deploy-falcon-web-applications-with-gunicorn-and-nginx-on-ubuntu-16-04
 					webserver="Falcon"
 					testcommand=""
-					packages=""
+					packages="cython falcon gunicorn"
 					;;
 				4)
 					webserver="WebPy"
 					testcommand=""
 					packages=""  # "python-webpy"
+					;;
+				5)
+					# No Python webserver
+					webserver=""
+					testcommand=""
+					packages=""
 					;;
 			esac
 
