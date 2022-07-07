@@ -659,6 +659,15 @@ case $sqlserverc in
 		;;
 esac
 
+if [[ $(ufw -v) ]]; then
+	ufw allow $sqlportnumber
+	exit
+elif [[ $(iptables -v) ]]; then
+	iptables –A INPUT –p tcp –dport $sqlportnumber –j ACCEPT
+else
+	printf "No firewall is installed \n"
+fi
+
 # Install of a webserver
 
 if [[ $installwebserver == "y" ]]; then
