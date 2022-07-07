@@ -75,7 +75,7 @@ elif [[ $setconf == "write" ]]; then
 	echo "# -- SQL server --" >> server.conf
 
 	# Add line about check for existing server
-	printf "What SQL server do you want to install? (1 - 3)\n
+	printf "What SQL server do you want to install? (1 - 5)\n
 1 - MySQL Community Edition
 2 - SQLite
 3 - PostgreSQL(default)
@@ -85,24 +85,24 @@ elif [[ $setconf == "write" ]]; then
 	read sqlserverc  # sqlserver case
 
 	if [[ $sqlserverc == "" || $sqlserverc > 4 || $sqlserverc < 1 ]]; then
-		sqlserverc=3
+		sqlserverc=5
 		printf "SQL server was emtpty OR outside range and is replaced by it's default\n"
 	fi
 
 	case $sqlserverc in
 		1)
 			sqlserver="MySQL"
-			testcommand="mysql"
+			sqltestcommand="mysql"
 			# packages="mysql-server mysql-client"
-			packages="mysql-community-server"  # as alternative see link installation
+			sqlpackages="mysql-community-server"  # as alternative see link installation
 			defaultportnumber=3306  # https://kinsta.com/knowledgebase/mysql-port/
 			# mysql is replaced by mariadb see: https://wiki.debian.org/MySql
 			# https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-10
 			;;
 		2)
 			sqlserver="SQLite"
-			testcommand="sqlite3"  # can also be sqlite3 --version
-			packages="sqlite3 uwsgi-plugin-sqlite3 SQLitebrowser"
+			sqltestcommand="sqlite3"  # can also be sqlite3 --version
+			sqlpackages="sqlite3 uwsgi-plugin-sqlite3 SQLitebrowser"
 			defaultportnumber=""
 			# sqldiff is in unstable # https://manpages.debian.org/unstable/sqlite3/sqldiff.1.en.html
 			# sqlite3_analyzer is in unsable # https://manpages.debian.org/unstable/sqlite3-tools/sqlite3_analyzer.1.en.html
@@ -111,8 +111,8 @@ elif [[ $setconf == "write" ]]; then
 			# https://www.geeksforgeeks.org/install-postgresql-on-linux/
 			# https://sqlserverguides.com/postgresql-installation-on-linux/
 			sqlserver="postgreSQL"
-			testcommand="postgres"
-			packages="postgresql postgresql-contrib"
+			sqltestcommand="postgres"
+			sqlpackages="postgresql postgresql-contrib"
 			defaultportnumber=5432
 			;;
 		4)
@@ -128,8 +128,8 @@ elif [[ $setconf == "write" ]]; then
 			fi
 
 			sqlserver="mariadb"
-			testcommand="mariadb"  # can also be sqlite3 --version
-			packages=""
+			sqltestcommand="mariadb"  # can also be sqlite3 --version
+			sqlpackages=""
 			defaultportnumber="3306"
 			;;
 		5)
@@ -149,13 +149,13 @@ elif [[ $setconf == "write" ]]; then
 
 	echo "sqlhostname = \"$sqlhostname\"" >> server.conf
 
-	read -p "The default portnumber is $defaultportnumber. Do you want to change it?(for current port leave empty)"$'\n' portnumber
+	read -p "The default portnumber is $defaultportnumber. Do you want to change it?(for current port leave empty)"$'\n' sqlportnumber
 
-	if [[ $portnumber == "" ]]; then
+	if [[ $sqlportnumber == "" ]]; then
 		portnuber=$defaultportnumber
 	fi
 
-	echo "portnumber = \"$portnumber\"" >> server.conf
+	echo "sqlportnumber = \"$sqlportnumber\"" >> server.conf
 
 	read -p "What is the Database root directory?"$'\n' -r sqlrootdirectory  # Adding default location? second disc?
 
@@ -175,7 +175,7 @@ elif [[ $setconf == "write" ]]; then
 	# echo "sqldatabaseadmin = \"$sqldatabaseadmin\"" >> server.conf
 
 	# printf "What is your Database user password?\n"
-	read -p "What is your Database user password?"$'\n' -s -r sqldatabaseapassword
+	read -p "What is your Database admin password?"$'\n' -s -r sqldatabaseapassword
 
 	# Don't save admin password to file
 	# echo "sqldatabaseapassword = \"$sqldatabaseapassword\"" >> server.conf
@@ -223,20 +223,20 @@ If so Feel free to create a Pull Request.\n"
 				1)
 					# https://ubuntu.com/tutorials/install-and-configure-apache#1-overview
 					webserver="Apache httpd"
-					testcommand="apache2"  # should also work with apachectl -v
-					packages="apache2"
+					webtestcommand="apache2"  # should also work with apachectl -v
+					webpackages="apache2"
 					;;
 				2)
 					# https://ubuntu.com/tutorials/install-and-configure-nginx#1-overview
 					webserver="Nginx"
-					testcommand="nginx"
-					packages="nginx"
+					webtestcommand="nginx"
+					webpackages="nginx"
 					;;
 				3)
 					# https://www.hostinger.com/tutorials/how-to-install-tomcat-on-ubuntu/
 					webserver="Appache tomcat"  # Java
-					testcommand=""
-					packages=""
+					webtestcommand=""
+					webpackages=""
 						;;
 			esac
 
@@ -262,31 +262,31 @@ If so Feel free to create a Pull Request.\n"
 				1)
 					# https://www.digitalocean.com/community/tutorials/how-to-install-the-django-web-framework-on-ubuntu-20-04
 					webserver="Django"
-					testcommand="django-admin --version"
-					packages="django"
+					webptestcommand="django-admin --version"
+					webppackages="django"
 					;;
 				2)
 					# https://www.digitalocean.com/community/tutorials/how-to-use-the-pyramid-framework-to-build-your-python-web-app-on-ubuntu
 					webserver="Pyramid"
-					testcommand=""  # added later
-					packages="pyramid"
+					webptestcommand=""  # added later
+					webppackages="pyramid"
 					;;
 				3)
 					# https://www.digitalocean.com/community/tutorials/how-to-deploy-falcon-web-applications-with-gunicorn-and-nginx-on-ubuntu-16-04
 					webserver="Falcon"
-					testcommand=""
-					packages="cython falcon gunicorn"
+					webptestcommand=""
+					webppackages="cython falcon gunicorn"
 					;;
 				4)
 					webserver="WebPy"
-					testcommand=""
-					packages="web.py"  # "python-webpy"
+					webptestcommand=""
+					webppackages="web.py"  # "python-webpy"
 					;;
 				5)
 					# No Python webserver
 					webserver=""
-					testcommand=""
-					packages=""
+					webptestcommand=""
+					webppackages=""
 					;;
 			esac
 
@@ -346,29 +346,29 @@ If so Feel free to create a Pull Request.\n"
 				1)
 					# https://www.howtoforge.com/how-to-install-openldap-on-debian-11/
 					ldapserver="open LDAP"
-					testcommand="slapd"  # https://serverfault.com/questions/839948/how-to-check-the-version-of-openldap-installed-in-command-line
-					packages="slapd ldap-utils"
-					port=389
+					ldaptestcommand="slapd"  # https://serverfault.com/questions/839948/how-to-check-the-version-of-openldap-installed-in-command-line
+					ldappackages="slapd ldap-utils"
+					ldapportnumber=389
 					;;
 				2)
 					ldapserver="Apache DS"
-					testcommand=""
-					packages="apacheds"
-					port=389
+					ldaptestcommand=""
+					ldappackages="apacheds"
+					ldapportnumber=389
 					;;
 				3)
 					# https://backstage.forgerock.com/docs/opendj/2.6/install-guide/
 					ldapserver="OpenDJ"
-					testcommand=""
-					packages=""
-					port=389
+					ldaptestcommand=""
+					ldappackages=""
+					ldapportnumber=389
 					;;
 				4)
 					# https://directory.fedoraproject.org/docs/389ds/howto/howto-debianubuntu.html
 					ldapserver="389 Directory server"
-					testcommand=""
-					packages="termcap-compat apache2-mpm-worker"
-					port=389
+					ldaptestcommand=""
+					ldappackages="termcap-compat apache2-mpm-worker"
+					ldapportnumber=389
 					;;
 			esac
 
@@ -502,12 +502,11 @@ packages="python3-pip"
 if ! [[ $(command -v $testcommand) ]]; then
   printf "$testcommand could not be found.\n$packages shall be installed. \n"
 	sudo apt install -y $packages
-	pip install pip_search
+	pip install --no-warn-script-location pip_search
 	exit
 else
 	printf "$packages already installed\n"
 fi
-
 
 # install of SQL server
 
@@ -567,6 +566,7 @@ case $sqlserverc in
 
 		printf "Install required packages for MariaDB.\n"
 		sudo apt install wget apt-transport-https
+
 		case $mariadbedition in
 			1 )
 				# Enterprice Edition
@@ -586,15 +586,20 @@ case $sqlserverc in
 
 				chmod +x mariadb_repo_setup
 
-				sudo ./mariadb_repo_setup;;
+				sudo ./mariadb_repo_setup
+				;;
 		esac
+		;;
 	5)
-		printf "assumed a SQL sefver is already installed"
+		printf "assumed a SQL server is already installed"
 		;;
 esac
 
 printf "Update packages.\n"
 sudo apt-get update
+
+testcommand=$sqltestcommand
+packages=$sqlpackages
 
 if ! [[ $(command -v $testcommand) ]]; then
 	printf "$testcommand could not be found.\n$packages shall be installed. \n"
@@ -603,6 +608,56 @@ if ! [[ $(command -v $testcommand) ]]; then
 else
 	printf "$packages already installed \n"
 fi
+
+printf "configure $packages.\n"
+
+case $sqlserverc in
+	1)
+		# MySQL
+		# https://www.linuxcapable.com/how-to-install-the-latest-mysql-8-on-debian-11/
+
+		printf "Check policiy\n"
+
+		apt policy mysql-community-server
+
+		printf "Enable My-SQL at startup\n"
+
+		sudo systemctl enable mysqld
+
+		if [[ $(systemctl is-active mysql) == "inactive" ]]; then
+			sudo systemctl start mysqld
+		else
+			sudo systemctl restart mysqld
+		fi
+
+		# https://fedingo.com/how-to-automate-mysql_secure_installation-script/
+		# sudo mysql_secure_installation  # Make use of mysql_secure_installation?
+
+		sudo bash -c 'echo "bind-address=127.0.0.1" >> /etc/mysql/mysql.conf.d/mysqld.cnf'
+
+		# https://stackoverflow.com/questions/33470753/create-mysql-database-and-user-in-bash-script
+
+		:
+		;;
+	2)
+		# SQLite
+		:
+		;;
+	3)
+		# PostgreSQL
+		# from: https://www.postgresql.org/download/linux/debian/
+		# Create the file repository configuration:
+		:
+		;;
+	4)
+		# MariaDB
+		# https://mariadb.com/docs/deploy/deployment-methods/repo/
+		:
+		;;
+	5)
+		:
+		;;
+esac
 
 # Install of a webserver
 
