@@ -165,7 +165,7 @@ elif [[ $setconf == "write" ]]; then
 
 	echo "sqldatabasename = \"$sqldatabasename\"" >> server.conf
 
-	read -p "What is your Database admin name?(for current user leave empty)"$'\n' sqldatabaseadmin
+	read -p "What is your Database admin(root acces) name?(for current user leave empty)"$'\n' sqldatabaseadmin
 
 	if [[ $sqldatabaseadmin == "" ]]; then
 		sqldatabaseadmin=$(whoami)
@@ -595,9 +595,6 @@ case $sqlserverc in
 		;;
 esac
 
-printf "Update packages.\n"
-sudo apt-get update
-
 testcommand=$sqltestcommand
 packages=$sqlpackages
 
@@ -622,12 +619,12 @@ case $sqlserverc in
 
 		printf "Enable My-SQL at startup\n"
 
-		sudo systemctl enable mysqld
+		sudo systemctl enable mysql
 
 		if [[ $(systemctl is-active mysql) == "inactive" ]]; then
-			sudo systemctl start mysqld
+			sudo systemctl start mysql
 		else
-			sudo systemctl restart mysqld
+			sudo systemctl restart mysql
 		fi
 
 		# https://fedingo.com/how-to-automate-mysql_secure_installation-script/
@@ -637,7 +634,35 @@ case $sqlserverc in
 
 		# https://stackoverflow.com/questions/33470753/create-mysql-database-and-user-in-bash-script
 
-		:
+		# Add sqlhostname to hosts file
+		printf "Add sql host name to host file.\n"
+
+		sudo bash -c '127.0.0.1 	$sqlhostname" >> /etc/hosts'
+
+		printf "Create new user.\n"
+
+		# login as admin
+		# https://stackoverflow.com/questions/33470753/create-mysql-database-and-user-in-bash-script
+		sudo mysql -u $sqldatabaseadmin -p${sqldatabaseapassword}
+
+		# create new user
+		# https://stackoverflow.com/questions/37239970/connect-to-mysql-server-without-sudo
+		CREATE USER $sqldatabaseuser@$sqlhostname IDENTIFIED BY $sqldatabaseupassword;
+
+		# Give database privilidges
+		GRANT ALL PRIVILEGES ON database_name.* TO $sqldatabaseuser@$sqlhostname;
+
+		EXIT
+
+		# Login as user and create database
+
+		printf "Login as user and create database\n"
+
+		mysql -u $sqldatabaseuser -p${sqldatabaseupassword}
+
+		CREATE DATABASE $sqldatabasename CHARACTER SET utf8;
+
+		exit
 		;;
 	2)
 		# SQLite
