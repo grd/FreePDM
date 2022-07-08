@@ -684,6 +684,10 @@ case $sqlserverc in
 		;;
 esac
 
+# Open port number firewall
+
+printf "Open firewall port: $sqlportnumber for sql.\n"
+
 if [[ $(ufw -v) ]]; then
 	ufw allow $sqlportnumber
 	exit
