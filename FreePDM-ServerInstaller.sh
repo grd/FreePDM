@@ -100,12 +100,18 @@ elif [[ $setconf == "write" ]]; then
 			# https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-10
 			;;
 		2)
-			sqlserver="SQLite"
-			sqltestcommand="sqlite3"  # can also be sqlite3 --version
-			sqlpackages="sqlite3 uwsgi-plugin-sqlite3 SQLitebrowser"
-			defaultportnumber=""
-			# sqldiff is in unstable # https://manpages.debian.org/unstable/sqlite3/sqldiff.1.en.html
-			# sqlite3_analyzer is in unsable # https://manpages.debian.org/unstable/sqlite3-tools/sqlite3_analyzer.1.en.html
+			read -p "SQLite don't have a default connection with LDAP. Are you sure you want to continue?[y/n]"$'\n' sqlitecontinue
+
+			if [[ $sqlitecontinue == "y" ]]; then
+				sqlserver="SQLite"
+				sqltestcommand="sqlite3"  # can also be sqlite3 --version
+				sqlpackages="sqlite3 uwsgi-plugin-sqlite3 SQLitebrowser"
+				defaultportnumber=""
+				# sqldiff is in unstable # https://manpages.debian.org/unstable/sqlite3/sqldiff.1.en.html
+				# sqlite3_analyzer is in unsable # https://manpages.debian.org/unstable/sqlite3-tools/sqlite3_analyzer.1.en.html
+			else
+				exit
+			fi
 			;;
 		3)
 			# https://www.geeksforgeeks.org/install-postgresql-on-linux/
