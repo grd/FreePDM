@@ -100,7 +100,7 @@ elif [[ $setconf == "write" ]]; then
 			# https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-10
 			;;
 		2)
-			read -p "SQLite don't have a default connection with LDAP. Are you sure you want to continue?[y/n]"$'\n' sqlitecontinue
+			read -p "SQLite don't have a default connection with LDAP. Are you sure you want to continue?[y/n(n is exit)]"$'\n' sqlitecontinue
 
 			if [[ $sqlitecontinue == "y" ]]; then
 				sqlserver="SQLite"
