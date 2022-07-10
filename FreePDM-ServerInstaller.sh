@@ -171,6 +171,8 @@ elif [[ $setconf == "write" ]]; then
 
 	echo "sqldatabasename = \"$sqldatabasename\"" >> server.conf
 
+	# Default user name after installation: MySQL == root, SQLite==None, PostgreSQL == postgres, MariaDB == root
+	# What to do? Database Admin is the default user? Or Add extra admin user?
 	read -p "What is your Database admin(root acces) name?(for current user leave empty)"$'\n' sqldatabaseadmin
 
 	if [[ $sqldatabaseadmin == "" ]]; then
