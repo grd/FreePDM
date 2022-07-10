@@ -656,7 +656,7 @@ case $sqlserverc in
 		CREATE USER $sqldatabaseuser@$sqlhostname IDENTIFIED BY $sqldatabaseupassword;
 
 		# Give database privilidges
-		GRANT ALL PRIVILEGES ON database_name.* TO $sqldatabaseuser@$sqlhostname;
+		GRANT ALL PRIVILEGES ON $sqldatabasename.* TO $sqldatabaseuser@$sqlhostname;  # Will this work first create user priviledges without existing db...
 
 		EXIT
 
