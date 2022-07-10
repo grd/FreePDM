@@ -573,7 +573,7 @@ case $sqlserverc in
 		sudo apt update && sudo apt upgrade
 
 		printf "Install required packages for MariaDB.\n"
-		sudo apt install wget apt-transport-https
+		sudo apt install curl wget apt-transport-https
 
 		case $mariadbedition in
 			1 )
@@ -736,7 +736,59 @@ case $sqlserverc in
 	4)
 		# MariaDB
 		# https://mariadb.com/docs/deploy/deployment-methods/repo/
-		:
+
+		printf "Check policiy\n"
+
+		apt policy mariadb
+
+		printf "Enable $sqlserver at startup\n"
+
+		sudo systemctl enable mariadb
+
+		if [[ $(systemctl is-active mariadb) == "inactive" ]]; then
+			sudo systemctl start mariadb
+		else
+			sudo systemctl restart mariadb
+		fi
+
+		# https://fedingo.com/how-to-automate-mysql_secure_installation-script/
+		# sudo mysql_secure_installation  # Make use of mysql_secure_installation?
+
+		sudo bash -c 'echo "bind-address=127.0.0.1" >> /etc/mysql/mysql.conf.d/mysqld.cnf'
+
+		# https://stackoverflow.com/questions/33470753/create-mysql-database-and-user-in-bash-script
+
+		# Add sqlhostname to hosts file
+		printf "Add sql host name to host file.\n"
+
+		sudo bash -c '127.0.0.1 	$sqlhostname" >> /etc/hosts'
+
+		printf "Create new user.\n"
+
+		# login as admin
+		# https://stackoverflow.com/questions/33470753/create-mysql-database-and-user-in-bash-script
+		sudo mariadb -u $sqldatabaseadmin -p${sqldatabaseapassword}
+
+		# create new user
+		# https://stackoverflow.com/questions/37239970/connect-to-mysql-server-without-sudo
+		CREATE USER $sqldatabaseuser@$sqlhostname IDENTIFIED BY $sqldatabaseupassword;
+
+		# Give database privilidges
+		GRANT ALL PRIVILEGES ON $sqldatabasename.* TO $sqldatabaseuser@$sqlhostname;  # Will this work first create user priviledges without existing db...
+
+		EXIT
+
+		# Login as user and create database
+		# https://linuxwebdevelopment.com/how-to-create-a-new-database-in-mysql/
+
+		printf "Login as user and create database\n"
+
+		mysql -u $sqldatabaseuser -p${sqldatabaseupassword}
+
+		CREATE DATABASE $sqldatabasename CHARACTER SET utf8;
+
+		EXIT
+
 		;;
 	5)
 		:
