@@ -614,7 +614,7 @@ else
 	printf "$packages already installed \n"
 fi
 
-printf "configure $packages.\n"
+printf "configure $sqlserver.\n"
 
 case $sqlserverc in
 	1)
@@ -625,7 +625,7 @@ case $sqlserverc in
 
 		apt policy mysql-community-server
 
-		printf "Enable My-SQL at startup\n"
+		printf "Enable $sqlserver at startup\n"
 
 		sudo systemctl enable mysql
 
@@ -663,6 +663,7 @@ case $sqlserverc in
 		EXIT
 
 		# Login as user and create database
+		# https://linuxwebdevelopment.com/how-to-create-a-new-database-in-mysql/
 
 		printf "Login as user and create database\n"
 
@@ -670,7 +671,7 @@ case $sqlserverc in
 
 		CREATE DATABASE $sqldatabasename CHARACTER SET utf8;
 
-		exit
+		EXIT
 		;;
 	2)
 		# SQLite
@@ -680,7 +681,57 @@ case $sqlserverc in
 		# PostgreSQL
 		# from: https://www.postgresql.org/download/linux/debian/
 		# Create the file repository configuration:
-		:
+		printf "Check policiy\n"
+
+		apt policy postgresql
+
+		printf "Enable $sqlserver at startup\n"
+
+		sudo systemctl enable postgresql
+
+		if [[ $(systemctl is-active postgresql) == "inactive" ]]; then
+			sudo systemctl start postgresql
+		else
+			sudo systemctl restart postgresql
+		fi
+
+		# https://stackoverflow.com/questions/33470753/create-mysql-database-and-user-in-bash-script
+
+		# Add sqlhostname to hosts file
+		printf "Add sql host name to host file.\n"
+
+		sudo bash -c '127.0.0.1 	$sqlhostname" >> /etc/hosts'
+
+		printf "Create new user.\n"
+
+		# login as admin
+		# https://dba.stackexchange.com/questions/198125/sudo-u-postgres-psql-postgres-does-not-ask-for-password
+		sudo -u postgres psql postgres
+
+		# create new user
+		# https://stackoverflow.com/questions/37239970/connect-to-mysql-server-without-sudo
+		# https://www.postgresql.org/docs/current/app-createuser.html
+		# https://www.postgresql.org/docs/current/sql-createuser.html
+		CREATE USER $sqldatabaseadmin WITH PASSWORD $sqldatabaseapassword;
+		ALTER ROLE $sqldatabaseadmin ADMIN;
+
+		# Give database privilidges
+		GRANT ALL PRIVILEGES ON $sqldatabasename.* TO $sqldatabaseuser;  # @$sqlhostname
+		GRANT ALL PRIVILEGES ON $sqldatabasename.* TO $sqldatabaseadmin;  # @$sqlhostname
+
+		FLUSH PRIVILEGES;
+
+		# Login as user and create database
+
+		printf "Login as user and create database\n"
+
+		CREATE USER $sqldatabaseuser WITH PASSWORD $sqldatabaseupassword;
+		# ALTER ROLE $sqldatabaseadmin ADMIN;
+
+		# Encodings: https://www.postgresql.org/docs/14/multibyte.html
+		CREATE DATABASE $sqldatabasename WITH ENCODING UTF8;
+
+		\q
 		;;
 	4)
 		# MariaDB
