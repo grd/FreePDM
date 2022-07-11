@@ -100,7 +100,7 @@ elif [[ $setconf == "write" ]]; then
 			# https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-10
 			;;
 		2)
-			read -p "SQLite don't have a default connection with LDAP. Are you sure you want to continue?[y/n]"$'\n' sqlitecontinue
+			read -p "SQLite don't have a default connection with LDAP. Are you sure you want to continue?[y/n(n is exit)]"$'\n' sqlitecontinue
 
 			if [[ $sqlitecontinue == "y" ]]; then
 				sqlserver="SQLite"
@@ -171,6 +171,8 @@ elif [[ $setconf == "write" ]]; then
 
 	echo "sqldatabasename = \"$sqldatabasename\"" >> server.conf
 
+	# Default user name after installation: MySQL == root, SQLite==None, PostgreSQL == postgres, MariaDB == root
+	# What to do? Database Admin is the default user? Or Add extra admin user?
 	read -p "What is your Database admin(root acces) name?(for current user leave empty)"$'\n' sqldatabaseadmin
 
 	if [[ $sqldatabaseadmin == "" ]]; then
@@ -571,7 +573,7 @@ case $sqlserverc in
 		sudo apt update && sudo apt upgrade
 
 		printf "Install required packages for MariaDB.\n"
-		sudo apt install wget apt-transport-https
+		sudo apt install curl wget apt-transport-https
 
 		case $mariadbedition in
 			1 )
@@ -612,7 +614,7 @@ else
 	printf "$packages already installed \n"
 fi
 
-printf "configure $packages.\n"
+printf "configure $sqlserver.\n"
 
 case $sqlserverc in
 	1)
@@ -623,7 +625,7 @@ case $sqlserverc in
 
 		apt policy mysql-community-server
 
-		printf "Enable My-SQL at startup\n"
+		printf "Enable $sqlserver at startup\n"
 
 		sudo systemctl enable mysql
 
@@ -656,11 +658,12 @@ case $sqlserverc in
 		CREATE USER $sqldatabaseuser@$sqlhostname IDENTIFIED BY $sqldatabaseupassword;
 
 		# Give database privilidges
-		GRANT ALL PRIVILEGES ON database_name.* TO $sqldatabaseuser@$sqlhostname;
+		GRANT ALL PRIVILEGES ON $sqldatabasename.* TO $sqldatabaseuser@$sqlhostname;  # Will this work first create user priviledges without existing db...
 
 		EXIT
 
 		# Login as user and create database
+		# https://linuxwebdevelopment.com/how-to-create-a-new-database-in-mysql/
 
 		printf "Login as user and create database\n"
 
@@ -668,7 +671,7 @@ case $sqlserverc in
 
 		CREATE DATABASE $sqldatabasename CHARACTER SET utf8;
 
-		exit
+		EXIT
 		;;
 	2)
 		# SQLite
@@ -678,12 +681,114 @@ case $sqlserverc in
 		# PostgreSQL
 		# from: https://www.postgresql.org/download/linux/debian/
 		# Create the file repository configuration:
-		:
+		printf "Check policiy\n"
+
+		apt policy postgresql
+
+		printf "Enable $sqlserver at startup\n"
+
+		sudo systemctl enable postgresql
+
+		if [[ $(systemctl is-active postgresql) == "inactive" ]]; then
+			sudo systemctl start postgresql
+		else
+			sudo systemctl restart postgresql
+		fi
+
+		# https://stackoverflow.com/questions/33470753/create-mysql-database-and-user-in-bash-script
+
+		# Add sqlhostname to hosts file
+		printf "Add sql host name to host file.\n"
+
+		sudo bash -c '127.0.0.1 	$sqlhostname" >> /etc/hosts'
+
+		printf "Create new user.\n"
+
+		# login as admin
+		# https://dba.stackexchange.com/questions/198125/sudo-u-postgres-psql-postgres-does-not-ask-for-password
+		sudo -u postgres psql postgres
+
+		# create new user
+		# https://stackoverflow.com/questions/37239970/connect-to-mysql-server-without-sudo
+		# https://www.postgresql.org/docs/current/app-createuser.html
+		# https://www.postgresql.org/docs/current/sql-createuser.html
+		CREATE USER $sqldatabaseadmin WITH PASSWORD $sqldatabaseapassword;
+		ALTER ROLE $sqldatabaseadmin ADMIN;
+
+		# Give database privilidges
+		GRANT ALL PRIVILEGES ON $sqldatabasename.* TO $sqldatabaseuser;  # @$sqlhostname
+		GRANT ALL PRIVILEGES ON $sqldatabasename.* TO $sqldatabaseadmin;  # @$sqlhostname
+
+		FLUSH PRIVILEGES;
+
+		# Login as user and create database
+
+		printf "Login as user and create database\n"
+
+		CREATE USER $sqldatabaseuser WITH PASSWORD $sqldatabaseupassword;
+		# ALTER ROLE $sqldatabaseadmin ADMIN;
+
+		# Encodings: https://www.postgresql.org/docs/14/multibyte.html
+		CREATE DATABASE $sqldatabasename WITH ENCODING UTF8;
+
+		\q
 		;;
 	4)
 		# MariaDB
 		# https://mariadb.com/docs/deploy/deployment-methods/repo/
-		:
+
+		printf "Check policiy\n"
+
+		apt policy mariadb
+
+		printf "Enable $sqlserver at startup\n"
+
+		sudo systemctl enable mariadb
+
+		if [[ $(systemctl is-active mariadb) == "inactive" ]]; then
+			sudo systemctl start mariadb
+		else
+			sudo systemctl restart mariadb
+		fi
+
+		# https://fedingo.com/how-to-automate-mysql_secure_installation-script/
+		# sudo mysql_secure_installation  # Make use of mysql_secure_installation?
+
+		sudo bash -c 'echo "bind-address=127.0.0.1" >> /etc/mysql/mysql.conf.d/mysqld.cnf'
+
+		# https://stackoverflow.com/questions/33470753/create-mysql-database-and-user-in-bash-script
+
+		# Add sqlhostname to hosts file
+		printf "Add sql host name to host file.\n"
+
+		sudo bash -c '127.0.0.1 	$sqlhostname" >> /etc/hosts'
+
+		printf "Create new user.\n"
+
+		# login as admin
+		# https://stackoverflow.com/questions/33470753/create-mysql-database-and-user-in-bash-script
+		sudo mariadb -u $sqldatabaseadmin -p${sqldatabaseapassword}
+
+		# create new user
+		# https://stackoverflow.com/questions/37239970/connect-to-mysql-server-without-sudo
+		CREATE USER $sqldatabaseuser@$sqlhostname IDENTIFIED BY $sqldatabaseupassword;
+
+		# Give database privilidges
+		GRANT ALL PRIVILEGES ON $sqldatabasename.* TO $sqldatabaseuser@$sqlhostname;  # Will this work first create user priviledges without existing db...
+
+		EXIT
+
+		# Login as user and create database
+		# https://linuxwebdevelopment.com/how-to-create-a-new-database-in-mysql/
+
+		printf "Login as user and create database\n"
+
+		mysql -u $sqldatabaseuser -p${sqldatabaseupassword}
+
+		CREATE DATABASE $sqldatabasename CHARACTER SET utf8;
+
+		EXIT
+
 		;;
 	5)
 		:
