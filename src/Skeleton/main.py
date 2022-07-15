@@ -31,7 +31,9 @@ def handleDirectory(dir):
             dir = dir + '/' + dm.dirList[num][2]
             return(dir)
         elif item[1] == 'FCStd':
-            idm = ItemDataModel(dir + '/' + item[2]).documentProperties
+            fcFile = ItemDataModel(dir + '/' + item[2])
+            idm = fcFile.documentProperties
+            print("File Size: " + fcFile.getFileSize())
             print("Data from FCStd model")
             for x, y in idm.items():
                 print(x.ljust(18, ' ') + y)

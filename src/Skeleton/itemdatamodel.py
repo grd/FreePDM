@@ -19,17 +19,20 @@ import zipfile
 
 class ItemDataModel():
 	def __init__(self, filename):
-		self.filename = filename
+		self.fileName = filename
 		self.thumbnail = None
 		self.documentProperties = {}
 		self.read()
+
+		# check out file size
+		self.fileSize = os.path.getsize(filename)
 
 	def read(self):
 		with tempfile.TemporaryDirectory() as tmpdirname:
 #			print('created temporary directory', tmpdirname)
 
 			# extracting the FCStd zip file
-			zip=zipfile.ZipFile(self.filename)
+			zip=zipfile.ZipFile(self.fileName)
 			zip.extractall(tmpdirname)
 
 			# reading xml file
@@ -92,7 +95,10 @@ class ItemDataModel():
 
 
 	def getFileName(self):
-		return(self.filename)	                            
+		return(self.fileName)	                            
+
+	def getFileSize(self):
+		return(str(self.fileSize))
 
 	def getDocumentPropterties(self):
 		return(self.documentProperties)
