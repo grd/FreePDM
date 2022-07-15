@@ -791,7 +791,7 @@ case $sqlserverc in
 
 		;;
 	5)
-		:
+		printf "No SQL server is installed.\n"
 		;;
 esac
 
