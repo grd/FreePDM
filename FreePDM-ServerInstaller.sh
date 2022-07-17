@@ -357,6 +357,7 @@ If so Feel free to create a Pull Request.\n"
 					ldaptestcommand="slapd"  # https://serverfault.com/questions/839948/how-to-check-the-version-of-openldap-installed-in-command-line
 					ldappackages="slapd ldap-utils"
 					ldapportnumber=389
+					printf "When installing OpenLDAP also an Admin Password it requested.\n"
 					;;
 				2)
 					ldapserver="Apache DS"
@@ -423,6 +424,7 @@ If so Feel free to create a Pull Request.\n"
 
 			# read -sp "Enter LDAP Password:" ldappw1  # Silent
 			read -p "Enter LDAP admin password:"$'\n' -s -r ldapadminpassword1  # With asterix
+			# maybe remove this question later on. Inside OpenLDAP a password is requested from menu.
 
 			if [[ $sqldatabaseadmin == "" ]]; then
 				sqldatabaseadmin=$(whoami)
@@ -873,9 +875,43 @@ if [[ $installldapserver == "y" ]]; then
 	# phpldapadmin is not default available on debian
 	# https://kifarunix.com/install-phpldapadmin-on-debian-10-debian-11/
 
+	printf "The following LDAP server shall be installed: $ldapserver."
+	sleep 1
+
+	# Add backports to main and update
+	printf "Add Debian backports to main.\n"
+	sudo touch /etc/apt/sources.list.d/openldap.list
+	echo "deb http://deb.debian.org/debian bullseye-backports main" | sudo tee -a /etc/apt/sources.list.d/openldap.list
+
+	printf "Update repositories.\n"
+	apt update
+
+	testcommand=$ldaptestcommand
+	packages=$ldappackages
+
+	if ! [[ $(command -v $testcommand) ]]; then
+		printf "$testcommand could not be found.\n$packages shall be installed. \n"
+		sudo apt install -y $packages
+		exit
+	else
+		printf "$packages already installed \n"
+	fi
+
 	case $ldapserverc in
 		# Basically all are Java implementations except 389 directory service(c++)
 		1)
+			# https://www.linux.com/topic/desktop/how-install-openldap-ubuntu-server-1804/
+
+			# configure ldap
+			printf "Show initial Configuration.\n"
+
+			sudo slapcat
+
+			# More Configuration changes follows later
+
+			printf "Enable ldap.\n"
+
+			systemctl enable slapd
 			:
 			;;
 		2)
@@ -888,21 +924,6 @@ if [[ $installldapserver == "y" ]]; then
 			:
 			;;
 	esac
-
-	printf "The following LDAP server shall be installed: $ldapserver."
-	sleep 1
-
-	if ! [[ $(command -v $testcommand) ]]; then
-		printf "$testcommand could not be found.\n$packages shall be installed. \n"
-		sudo apt install -y $packages
-		exit
-	else
-		printf "$packages already installed \n"
-	fi
-
-	printf "Enable ldap.\n"
-
-	systemctl enable slapd
 
 fi
 
