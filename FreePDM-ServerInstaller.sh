@@ -302,7 +302,11 @@ If so Feel free to create a Pull Request.\n"
 
 			echo "webservername = \"$webservername\"" >> server.conf
 
-			read -p "What is your (web )server_domain OR IP address? (default something like web.somename.com)"$'\n' webhostname
+			read -p "What is your IP address? "$'\n' webip
+
+			echo "webip = \"$webip\"" >> server.conf
+
+			read -p "What is your (web )server_domain name? (default something like web.somename.com)"$'\n' webhostname
 
 			echo "webhostname = \"$webhostname\"" >> server.conf
 
@@ -314,11 +318,14 @@ If so Feel free to create a Pull Request.\n"
 			echo "installwebserver = \"$installwebserver\"" >> server.conf
 
 			break
-			:
+
 		else
+
 			printf "$installwebserver is not 'y' OR 'n'.\n"
+
 		fi
 	done
+
 
 	# -- LDAP Server --
 	echo "# -- LDAP server --" >> server.conf
@@ -824,20 +831,11 @@ fi
 
 if [[ $installwebserver == "y" ]]; then
 
-	case $webserverc in
-		1)
-			:
-			;;
-		2)
-			:
-			;;
-		3)
-			:
-			;;
-	esac
-
 	printf "The following Web server shall be installed: $webserver."
 	sleep 1
+
+	testcommand=$webtestcommand
+	packages=$webpackages
 
 	if ! [[ $(command -v $testcommand) ]]; then
 	  printf "$testcommand could not be found.\n$packages shall be installed. \n"
@@ -847,7 +845,110 @@ if [[ $installwebserver == "y" ]]; then
 		printf "$packages already installed \n"
 	fi
 
+	printf "Create basic site.\n"
+
+	# Set space as the delimiter
+	IFS='.'
+
+	# Read the split words into an array based on dot delimiter
+	read -ra newarr <<< "$webhostname"
+
+	# concanete each value of the array by using the loop
+
+	for element in "${newarr[@]}";
+	do
+		if [[ $element == "www" ]]; then
+			:
+		else
+			basicsite="$element"
+		fi
+	done
+
+	indexfile="<html>
+<head>
+  <title> Test FreePDM </title>
+</head>
+<body>
+  <p> Welcome to FreePDM!
+</body>
+</html>"
+
+	docroot="/var/www/$basicsite/"
+	sudo mkdir docroot
+
+	cd /var/www/$basicsite/
+
+	echo > "index.html"
+
+	echo $indexfile >> "index.html"
+
+	case $webserverc in
+		1)
+			# Apache httpd
+
+			printf "Create virtual host conf file.\n"
+
+			vhostfile="<VirtualHost *:80>
+				# The ServerName directive sets the request scheme, hostname and port that
+				# the server uses to identify itself. This is used when creating
+				# redirection URLs. In the context of virtual hosts, the ServerName
+				# specifies what hostname must appear in the request's Host: header to
+				# match this virtual host. For the default virtual host (this file) this
+				# value is not decisive as it is used as a last resort host regardless.
+				# However, you must set it for any further virtual host explicitly.
+				ServerName $webhostname
+
+				ServerAdmin webmaster@localhost
+				DocumentRoot $docroot
+
+				# Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
+				# error, crit, alert, emerg.
+				# It is also possible to configure the loglevel for particular
+				# modules, e.g.
+				#LogLevel info ssl:warn
+
+				ErrorLog ${APACHE_LOG_DIR}/error.log
+				CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+				# For most configuration files from conf-available/, which are
+				# enabled or disabled at a global level, it is possible to
+				# include a line for only one particular virtual host. For example the
+				# following line enables the CGI configuration for this host only
+				# after it has been globally disabled with \"a2disconf\".
+				#Include conf-available/serve-cgi-bin.conf
+			</VirtualHost>
+
+			# vim: syntax=apache ts=4 sw=4 sts=4 sr noet"
+
+			sudo cd /etc/apache2/sites-available/
+
+			echo > "$basicsite.conf"
+
+			echo $vhostfile >> "$basicsite.conf"
+
+			printf "Enable Apache httpd (Apache2).\n"
+
+			systemctl enable apache2
+
+			if [[ $(systemctl is-active apache2) == "inactive" ]]; then
+				sudo systemctl start apache2
+			else
+				sudo systemctl restart apache2
+			fi
+
+			;;
+		2)
+			:
+			;;
+		3)
+			:
+			;;
+	esac
+
 	# If statement for IPaddres has always same length and set of dots on same place
+
+	printf "The following Python Web server shall be installed: $webserverpython."
+	sleep 1
 
 	case $webserverpythonc in
 		# Make use of package manager OR Virtual Environment...?
@@ -873,12 +974,10 @@ if [[ $installwebserver == "y" ]]; then
 	# 	printf "$packages already installed \n"
 	# fi
 
-	printf "The following Python Web server shall be installed: $webserverpython."
-	sleep 1
-
 fi
 
 # install LDAP server
+
 # printf command below case
 if [[ $installldapserver == "y" ]]; then
 	# https://likegeeks.com/linux-ldap-server/
@@ -929,7 +1028,7 @@ if [[ $installldapserver == "y" ]]; then
 			else
 				sudo systemctl restart slapd
 			fi
-			:
+
 			;;
 		2)
 			# ApacheDS
@@ -946,7 +1045,7 @@ if [[ $installldapserver == "y" ]]; then
 			else
 				sudo /etc/init.d/apacheds-${version}-default restart
 			fi
-			:
+
 			;;
 		3)
 			# openDJ
@@ -967,14 +1066,13 @@ if [[ $installldapserver == "y" ]]; then
 			# wget --content-disposition https://github.com/OpenIdentityPlatform/OpenDJ/releases/4.5.0/org.openidentityplatform.opendj.opendj-ldap-toolkit.zip
 			# wget --content-disposition https://github.com/OpenIdentityPlatform/OpenDJ/releases/4.5.0/org.openidentityplatform.opendj.opendj-rest2ldap-servlet.war
 
-			sudo dpkg -i opendj_4.5.0-1_all.deb
+			sudo dpkg -i opendj_4.5-1_all.deb
 
 			printf "Default location openDJ is /opt/opendj/.
 			Config openDJ.\n"
 
 			sudo /opt/opendj/setup
 
-			:
 			;;
 		4)
 			# 389 Directory Server
@@ -992,7 +1090,7 @@ if [[ $installldapserver == "y" ]]; then
 			else
 				sudo 389-ds restart
 			fi
-			:
+
 			;;
 	esac
 
