@@ -900,6 +900,7 @@ if [[ $installldapserver == "y" ]]; then
 	case $ldapserverc in
 		# Basically all are Java implementations except 389 directory service(c++)
 		1)
+			# openLDAP
 			# https://www.linux.com/topic/desktop/how-install-openldap-ubuntu-server-1804/
 
 			# configure ldap
@@ -909,9 +910,15 @@ if [[ $installldapserver == "y" ]]; then
 
 			# More Configuration changes follows later
 
-			printf "Enable ldap.\n"
+			printf "Enable openldap.\n"
 
 			systemctl enable slapd
+
+			if [[ $(systemctl is-active slapd) == "inactive" ]]; then
+				sudo systemctl start slapd
+			else
+				sudo systemctl restart slapd
+			fi
 			:
 			;;
 		2)
