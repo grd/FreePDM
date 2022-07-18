@@ -967,7 +967,7 @@ if [[ $installldapserver == "y" ]]; then
 			# wget --content-disposition https://github.com/OpenIdentityPlatform/OpenDJ/releases/4.5.0/org.openidentityplatform.opendj.opendj-ldap-toolkit.zip
 			# wget --content-disposition https://github.com/OpenIdentityPlatform/OpenDJ/releases/4.5.0/org.openidentityplatform.opendj.opendj-rest2ldap-servlet.war
 
-			sudo dpkg -i opendj_X.Y.Z-1_all.deb
+			sudo dpkg -i opendj_4.5.0-1_all.deb
 
 			printf "Default location openDJ is /opt/opendj/.
 			Config openDJ.\n"
