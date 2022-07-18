@@ -302,7 +302,11 @@ If so Feel free to create a Pull Request.\n"
 
 			echo "webservername = \"$webservername\"" >> server.conf
 
-			read -p "What is your (web )server_domain OR IP address? (default something like web.somename.com)"$'\n' webhostname
+			read -p "What is your IP address? "$'\n' webip
+
+			echo "webip = \"$webip\"" >> server.conf
+
+			read -p "What is your (web )server_domain name? (default something like web.somename.com)"$'\n' webhostname
 
 			echo "webhostname = \"$webhostname\"" >> server.conf
 
@@ -314,11 +318,14 @@ If so Feel free to create a Pull Request.\n"
 			echo "installwebserver = \"$installwebserver\"" >> server.conf
 
 			break
-			:
+
 		else
+
 			printf "$installwebserver is not 'y' OR 'n'.\n"
+
 		fi
 	done
+
 
 	# -- LDAP Server --
 	echo "# -- LDAP server --" >> server.conf
@@ -357,10 +364,14 @@ If so Feel free to create a Pull Request.\n"
 					ldaptestcommand="slapd"  # https://serverfault.com/questions/839948/how-to-check-the-version-of-openldap-installed-in-command-line
 					ldappackages="slapd ldap-utils"
 					ldapportnumber=389
+					printf "When installing OpenLDAP also an Admin Password it requested.\n"
 					;;
 				2)
+					printf "It is recomended to install Apache Directory Studio too.
+					Install Eclipse IDE and then Install Apache directory Studio via the Marketplace.\n"
 					ldapserver="Apache DS"
 					ldaptestcommand=""
+					ldappackages="apacheds"
 					ldappackages="apacheds"
 					ldapportnumber=389
 					;;
@@ -375,76 +386,84 @@ If so Feel free to create a Pull Request.\n"
 					# https://directory.fedoraproject.org/docs/389ds/howto/howto-debianubuntu.html
 					ldapserver="389 Directory server"
 					ldaptestcommand=""
-					ldappackages="termcap-compat apache2-mpm-worker"
+					ldappackages="termcap-compat apache2-mpm-worker 389-ds cockpit-389-ds python3-lib389"
 					ldapportnumber=389
 					;;
 			esac
 
-			read -p "ldap organisation name, o=" o
+			if [[ $ldapserverc ne 3 ]]; then
+				read -p "ldap organisation name, o=" o
 
-			echo "o = \"$o\"" >> server.conf
+				echo "o = \"$o\"" >> server.conf
 
-			read -p "ldap domain component, dc=" dcfulldomain
+				read -p "ldap domain component, dc=" dcfulldomain
 
-			# https://linuxize.com/post/bash-concatenate-strings/
-			# https://www.geeksforgeeks.org/bash-scripting-split-string/
-			# Set space as the delimiter
-			IFS='.'
+				# https://linuxize.com/post/bash-concatenate-strings/
+				# https://www.geeksforgeeks.org/bash-scripting-split-string/
+				# Set space as the delimiter
+				IFS='.'
 
-			# Read the split words into an array based on dot delimiter
-			read -ra newarr <<< "$dcfulldomain"
+				# Read the split words into an array based on dot delimiter
+				read -ra newarr <<< "$dcfulldomain"
 
-			# concanete each value of the array by using the loop
-			# lastelement=${newarr[(( $length - 1 ))]}
-			printf "$lastelement\n"
+				# concanete each value of the array by using the loop
+				# lastelement=${newarr[(( $length - 1 ))]}
+				printf "$lastelement\n"
 
-			var=""
-			for element in "${newarr[@]}";
-			do
-			  if [[ $element == ${newarr[(( $length - 1 ))]} ]]; then
-			    var+="dc=$element"
-			  else
-			    var+="dc=$element,"
-			  fi
-			done
-			printf "$dcfulldomain is replaced by $dc.\n"
+				var=""
+				for element in "${newarr[@]}";
+				do
+				  if [[ $element == ${newarr[(( $length - 1 ))]} ]]; then
+				    var+="dc=$element"
+				  else
+				    var+="dc=$element,"
+				  fi
+				done
+				printf "$dcfulldomain is replaced by $dc.\n"
 
-			echo "dc = \"$dc\"" >> server.conf
+				echo "dc = \"$dc\"" >> server.conf
 
-			read -p "ldap common name, cn=" cn
+				read -p "ldap common name, cn=" cn
 
-			echo "cn = \"$cn\"" >> server.conf
+				echo "cn = \"$cn\"" >> server.conf
 
-			# Admin name and passwords are not stored
-			read -p "Enter LDAP admin name:"$'\n' ldapadminname
+				# Admin name and passwords are not stored
+				read -p "Enter LDAP admin name:"$'\n' ldapadminname
 
-			# Don't save admin name to file
-			# echo "ldapadminname = \"$ldapadminname\"" >> server.conf
+				# Don't save admin name to file
+				# echo "ldapadminname = \"$ldapadminname\"" >> server.conf
 
-			# read -sp "Enter LDAP Password:" ldappw1  # Silent
-			read -p "Enter LDAP admin password:"$'\n' -s -r ldapadminpassword1  # With asterix
+				# read -sp "Enter LDAP Password:" ldappw1  # Silent
+				read -p "Enter LDAP admin password:"$'\n' -s -r ldapadminpassword1  # With asterix
+				# maybe remove this question later on. Inside OpenLDAP a password is requested from menu.
 
-			if [[ $sqldatabaseadmin == "" ]]; then
-				sqldatabaseadmin=$(whoami)
+				if [[ $sqldatabaseadmin == "" ]]; then
+					sqldatabaseadmin=$(whoami)
+				fi
+
+				# Don't save user password to file
+				# echo "ldapadminpassword1 = \"ldapadminpassword1\"" >> server.conf
+
+				read -p "Enter LDAP username:"$'\n' ldapusername
+
+				# read -sp "Enter LDAP Password:" ldappw1  # Silent
+				read -p "Enter LDAP user password:"$'\n' -s -r ldapuserpassword1  # With asterix
+
+				# Don't save user password to file
+				# echo "ldapuserpassword1 = \"ldapuserpassword1\"" >> server.conf
+
+				read -p "Re-enter LDAP user password:"$'\n' -s -r ldapuserpassword2  # With asterix
+
+				# Don't save user password to file
+				# echo "ldapuserpassword2 = \"ldapuserpassword2\"" >> server.conf
+
+				break
+			else
+
+				# OpenDJ give his own configuration setup so no configuration from here...
+				printf "OpenDJ give it's own configuration setup.\n"
+
 			fi
-
-			# Don't save user password to file
-			# echo "ldapadminpassword1 = \"ldapadminpassword1\"" >> server.conf
-
-			read -p "Enter LDAP username:"$'\n' ldapusername
-
-			# read -sp "Enter LDAP Password:" ldappw1  # Silent
-			read -p "Enter LDAP user password:"$'\n' -s -r ldapuserpassword1  # With asterix
-
-			# Don't save user password to file
-			# echo "ldapuserpassword1 = \"ldapuserpassword1\"" >> server.conf
-
-			read -p "Re-enter LDAP user password:"$'\n' -s -r ldapuserpassword2  # With asterix
-
-			# Don't save user password to file
-			# echo "ldapuserpassword2 = \"ldapuserpassword2\"" >> server.conf
-
-			break
 
 		elif [[ $installldapserver == "n" ]]; then
 			echo "installldapserver = \"$installldapserver\"" >> server.conf
@@ -791,7 +810,7 @@ case $sqlserverc in
 
 		;;
 	5)
-		:
+		printf "No SQL server is installed.\n"
 		;;
 esac
 
@@ -812,20 +831,11 @@ fi
 
 if [[ $installwebserver == "y" ]]; then
 
-	case $webserverc in
-		1)
-			:
-			;;
-		2)
-			:
-			;;
-		3)
-			:
-			;;
-	esac
-
 	printf "The following Web server shall be installed: $webserver."
 	sleep 1
+
+	testcommand=$webtestcommand
+	packages=$webpackages
 
 	if ! [[ $(command -v $testcommand) ]]; then
 	  printf "$testcommand could not be found.\n$packages shall be installed. \n"
@@ -835,7 +845,135 @@ if [[ $installwebserver == "y" ]]; then
 		printf "$packages already installed \n"
 	fi
 
+	printf "Create basic site.\n"
+
+	# Set space as the delimiter
+	IFS='.'
+
+	# Read the split words into an array based on dot delimiter
+	read -ra newarr <<< "$webhostname"
+
+	# concanete each value of the array by using the loop
+
+	for element in "${newarr[@]}";
+	do
+		if [[ $element == "www" ]]; then
+			:
+		else
+			basicsite="$element"
+		fi
+	done
+
+	indexfile="<html>
+<head>
+  <title> Test FreePDM </title>
+</head>
+<body>
+  <p> Welcome to FreePDM!
+</body>
+</html>"
+
+	docroot="/var/www/$basicsite/"
+	sudo mkdir docroot
+
+	cd /var/www/$basicsite/
+
+	echo > "index.html"
+
+	echo $indexfile >> "index.html"
+
+	case $webserverc in
+		1)
+			# Apache httpd
+			# https://ubuntu.com/tutorials/install-and-configure-apache
+
+			printf "Create virtual host conf file.\n"
+
+			vhostfile="<VirtualHost *:80>
+				# The ServerName directive sets the request scheme, hostname and port that
+				# the server uses to identify itself. This is used when creating
+				# redirection URLs. In the context of virtual hosts, the ServerName
+				# specifies what hostname must appear in the request's Host: header to
+				# match this virtual host. For the default virtual host (this file) this
+				# value is not decisive as it is used as a last resort host regardless.
+				# However, you must set it for any further virtual host explicitly.
+				ServerName $webhostname
+
+				ServerAdmin webmaster@localhost
+				DocumentRoot $docroot
+
+				# Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
+				# error, crit, alert, emerg.
+				# It is also possible to configure the loglevel for particular
+				# modules, e.g.
+				#LogLevel info ssl:warn
+
+				ErrorLog ${APACHE_LOG_DIR}/error.log
+				CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+				# For most configuration files from conf-available/, which are
+				# enabled or disabled at a global level, it is possible to
+				# include a line for only one particular virtual host. For example the
+				# following line enables the CGI configuration for this host only
+				# after it has been globally disabled with \"a2disconf\".
+				#Include conf-available/serve-cgi-bin.conf
+			</VirtualHost>
+
+			# vim: syntax=apache ts=4 sw=4 sts=4 sr noet"
+
+			sudo cd /etc/apache2/sites-available/
+
+			echo > "$basicsite.conf"
+
+			echo $vhostfile >> "$basicsite.conf"
+
+			printf "Enable Apache httpd (Apache2).\n"
+
+			systemctl enable apache2
+
+			if [[ $(systemctl is-active apache2) == "inactive" ]]; then
+				sudo systemctl start apache2
+			else
+				sudo systemctl restart apache2
+			fi
+
+			;;
+		2)
+			# Nginx
+			# https://ubuntu.com/tutorials/install-and-configure-nginx
+
+			printf "Create virtual host conf file.\n"
+
+			vhostfile="server {
+       listen 80;
+       listen [::]:80;
+
+       server_name $webhostname;
+
+       root /var/www/$basicsite;
+       index index.html;
+
+       location / {
+               try_files $uri $uri/ =404;
+       }
+}"
+
+			sudo cd /etc/nginx/sites-enabled/
+
+			echo > "$basicsite.conf"
+
+			echo $vhostfile >> "$basicsite.conf"  # use nginx a .conf filetype? can't find back
+
+			;;
+		3)
+			:
+			;;
+	esac
+
 	# If statement for IPaddres has always same length and set of dots on same place
+
+	printf "The following Python Web server shall be installed: $webserverpython."
+	sleep 1
 
 	case $webserverpythonc in
 		# Make use of package manager OR Virtual Environment...?
@@ -861,36 +999,29 @@ if [[ $installwebserver == "y" ]]; then
 	# 	printf "$packages already installed \n"
 	# fi
 
-	printf "The following Python Web server shall be installed: $webserverpython."
-	sleep 1
-
 fi
 
 # install LDAP server
+
 # printf command below case
 if [[ $installldapserver == "y" ]]; then
 	# https://likegeeks.com/linux-ldap-server/
 	# phpldapadmin is not default available on debian
 	# https://kifarunix.com/install-phpldapadmin-on-debian-10-debian-11/
 
-	case $ldapserverc in
-		# Basically all are Java implementations except 389 directory service(c++)
-		1)
-			:
-			;;
-		2)
-			:
-			;;
-		3)
-			:
-			;;
-		4)
-			:
-			;;
-	esac
-
 	printf "The following LDAP server shall be installed: $ldapserver."
 	sleep 1
+
+	# Add backports to main and update
+	printf "Add Debian backports to main.\n"
+	sudo touch /etc/apt/sources.list.d/openldap.list
+	echo "deb http://deb.debian.org/debian bullseye-backports main" | sudo tee -a /etc/apt/sources.list.d/openldap.list
+
+	printf "Update repositories.\n"
+	apt update
+
+	testcommand=$ldaptestcommand
+	packages=$ldappackages
 
 	if ! [[ $(command -v $testcommand) ]]; then
 		printf "$testcommand could not be found.\n$packages shall be installed. \n"
@@ -900,9 +1031,93 @@ if [[ $installldapserver == "y" ]]; then
 		printf "$packages already installed \n"
 	fi
 
-	printf "Enable ldap.\n"
+	case $ldapserverc in
+		# Basically all are Java implementations except 389 directory service(c++)
+		1)
+			# openLDAP
+			# https://www.linux.com/topic/desktop/how-install-openldap-ubuntu-server-1804/
 
-	systemctl enable slapd
+			# configure ldap
+			printf "Show initial Configuration.\n"
+
+			sudo slapcat
+
+			# More Configuration changes follows later
+
+			printf "Enable openldap.\n"
+
+			systemctl enable slapd
+
+			if [[ $(systemctl is-active slapd) == "inactive" ]]; then
+				sudo systemctl start slapd
+			else
+				sudo systemctl restart slapd
+			fi
+
+			;;
+		2)
+			# ApacheDS
+			# configure ldap
+
+			# More Configuration changes follows later
+
+			printf "Enable apacheds.\n"
+
+			systemctl enable apacheds
+
+			if [[ $(systemctl is-active sudo /etc/init.d/apacheds-${version}-default) == "inactive" ]]; then
+				sudo /etc/init.d/apacheds-${version}-default start
+			else
+				sudo /etc/init.d/apacheds-${version}-default restart
+			fi
+
+			;;
+		3)
+			# openDJ
+			# https://askubuntu.com/questions/772235/how-to-find-path-to-java
+
+			printf "Create Java links.\n"
+
+			OPENDJ_JAVA_HOME=$(dirname $(which java))
+			OPENDJ_JAVA_BIN=$(which java)
+
+			printf "Download and install openDJ.\n"
+
+			# https://github.com/OpenIdentityPlatform/OpenDJ/wiki/Installation-Guide#to-install-from-the-debian-package
+			wget --content-disposition https://github.com/OpenIdentityPlatform/OpenDJ/releases/4.5.0/opendj_4.5.0-1_all.deb
+
+			# optional downloads:
+			# wget --content-disposition https://github.com/OpenIdentityPlatform/OpenDJ/releases/4.5.0/org.openidentityplatform.opendj.opendj-dsml-servlet.war
+			# wget --content-disposition https://github.com/OpenIdentityPlatform/OpenDJ/releases/4.5.0/org.openidentityplatform.opendj.opendj-ldap-toolkit.zip
+			# wget --content-disposition https://github.com/OpenIdentityPlatform/OpenDJ/releases/4.5.0/org.openidentityplatform.opendj.opendj-rest2ldap-servlet.war
+
+			sudo dpkg -i opendj_4.5-1_all.deb
+
+			printf "Default location openDJ is /opt/opendj/.
+			Config openDJ.\n"
+
+			sudo /opt/opendj/setup
+
+			;;
+		4)
+			# 389 Directory Server
+			# configure ldap
+
+			# More Configuration changes follows later
+			# https://directory.fedoraproject.org/docs/389ds/howto/quickstart.html
+
+			printf "Enable 389-ds.\n"
+
+			systemctl enable 389-ds
+
+			if [[ $(systemctl is-active 389-ds) == "inactive" ]]; then
+				sudo 389-ds start
+			else
+				sudo 389-ds restart
+			fi
+
+			;;
+	esac
 
 fi
 
