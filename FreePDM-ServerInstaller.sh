@@ -11,7 +11,7 @@ printf "Welcome to the server Installer from FreePDM:\n"
 # TODO: Install Other dependencies
 # TODO: Test Test Test...
 
-printf "There are a set of (optional )dependencies that are configured now. This dependecies are:
+printf "There are a set of (optional) dependencies that are configured now. These dependencies are:
 - A SSH server
 - A SQL server
 - A web server (Optional)
@@ -100,7 +100,7 @@ elif [[ $setconf == "write" ]]; then
 			# https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-10
 			;;
 		2)
-			read -p "SQLite don't have a default connection with LDAP. Are you sure you want to continue?[y/n(n is exit)]"$'\n' sqlitecontinue
+			read -p "SQLite doesn't have a default connection with LDAP. Are you sure you want to continue?[y/n(n is exit)]"$'\n' sqlitecontinue
 
 			if [[ $sqlitecontinue == "y" ]]; then
 				sqlserver="SQLite"
@@ -108,7 +108,7 @@ elif [[ $setconf == "write" ]]; then
 				sqlpackages="sqlite3 uwsgi-plugin-sqlite3 SQLitebrowser"
 				defaultportnumber=""
 				# sqldiff is in unstable # https://manpages.debian.org/unstable/sqlite3/sqldiff.1.en.html
-				# sqlite3_analyzer is in unsable # https://manpages.debian.org/unstable/sqlite3-tools/sqlite3_analyzer.1.en.html
+				# sqlite3_analyzer is in unstable # https://manpages.debian.org/unstable/sqlite3-tools/sqlite3_analyzer.1.en.html
 			else
 				exit
 			fi
@@ -150,12 +150,12 @@ elif [[ $setconf == "write" ]]; then
 	echo "sqlservername = \"$sqlservername\"" >> server.conf
 
 	read -p "What is your (sql )server_domain OR IP address? (default something like sql.somename.com)"$'\n' sqlhostname
-	# Can i check if something is an IP addres?, Is there a need for?
+	# Can i check if something is an IP address? Is there a necessity?
 	# https://stackoverflow.com/questions/23675400/validating-an-ip-address-using-bash-script
 
 	echo "sqlhostname = \"$sqlhostname\"" >> server.conf
 
-	read -p "The default portnumber is $defaultportnumber. Do you want to change it?(for current port leave empty)"$'\n' sqlportnumber
+	read -p "The default portnumber is $defaultportnumber. Do you want to change it? (for current port leave empty)"$'\n' sqlportnumber
 
 	if [[ $sqlportnumber == "" ]]; then
 		portnuber=$defaultportnumber
@@ -173,7 +173,7 @@ elif [[ $setconf == "write" ]]; then
 
 	# Default user name after installation: MySQL == root, SQLite==None, PostgreSQL == postgres, MariaDB == root
 	# What to do? Database Admin is the default user? Or Add extra admin user?
-	read -p "What is your Database admin(root acces) name?(for current user leave empty)"$'\n' sqldatabaseadmin
+	read -p "What is your Database admin (root access) name? (for current user leave empty)"$'\n' sqldatabaseadmin
 
 	if [[ $sqldatabaseadmin == "" ]]; then
 		sqldatabaseadmin=$(whoami)
@@ -248,7 +248,7 @@ If so Feel free to create a Pull Request.\n"
 						;;
 			esac
 
-			# python webserver default has to be choosen!
+			# python webserver default has to be chosen!
 			printf "What python web backend do you want to install? (1 - 5)\n
 1 - Django
 2 - Pyramid (Default)
@@ -461,11 +461,11 @@ else
 	:
 fi
 
-# Show cofiguration summery
+# Show configuration summary
 
 
 # from here start installing
-printf "Installing start within a few seconds\n"
+printf "Installation will start within a few seconds\n"
 
 sleep 3
 
@@ -516,9 +516,9 @@ else
 	printf "$packages already installed\n"
 fi
 
-# install of SQL server
+# Install of SQL server
 
-# Check if SQL server already exist. if yes  add database to existing server?
+# Check if SQL server already exists. If so, add database to existing server?
 # work only with selected sql server
 
 printf "The following SQL server shall be installed: $sqlserver.\n"
@@ -621,7 +621,7 @@ case $sqlserverc in
 		# MySQL
 		# https://www.linuxcapable.com/how-to-install-the-latest-mysql-8-on-debian-11/
 
-		printf "Check policiy\n"
+		printf "Check policy\n"
 
 		apt policy mysql-community-server
 
@@ -657,8 +657,8 @@ case $sqlserverc in
 		# https://stackoverflow.com/questions/37239970/connect-to-mysql-server-without-sudo
 		CREATE USER $sqldatabaseuser@$sqlhostname IDENTIFIED BY $sqldatabaseupassword;
 
-		# Give database privilidges
-		GRANT ALL PRIVILEGES ON $sqldatabasename.* TO $sqldatabaseuser@$sqlhostname;  # Will this work first create user priviledges without existing db...
+		# Give database privileges
+		GRANT ALL PRIVILEGES ON $sqldatabasename.* TO $sqldatabaseuser@$sqlhostname;  # Will this work first create user privileges without existing db...
 
 		EXIT
 
@@ -681,7 +681,7 @@ case $sqlserverc in
 		# PostgreSQL
 		# from: https://www.postgresql.org/download/linux/debian/
 		# Create the file repository configuration:
-		printf "Check policiy\n"
+		printf "Check policy\n"
 
 		apt policy postgresql
 
@@ -715,7 +715,7 @@ case $sqlserverc in
 		CREATE USER $sqldatabaseadmin WITH PASSWORD $sqldatabaseapassword;
 		ALTER ROLE $sqldatabaseadmin ADMIN;
 
-		# Give database privilidges
+		# Give database privileges
 		GRANT ALL PRIVILEGES ON $sqldatabasename.* TO $sqldatabaseuser;  # @$sqlhostname
 		GRANT ALL PRIVILEGES ON $sqldatabasename.* TO $sqldatabaseadmin;  # @$sqlhostname
 
@@ -737,7 +737,7 @@ case $sqlserverc in
 		# MariaDB
 		# https://mariadb.com/docs/deploy/deployment-methods/repo/
 
-		printf "Check policiy\n"
+		printf "Check policy\n"
 
 		apt policy mariadb
 
@@ -773,8 +773,8 @@ case $sqlserverc in
 		# https://stackoverflow.com/questions/37239970/connect-to-mysql-server-without-sudo
 		CREATE USER $sqldatabaseuser@$sqlhostname IDENTIFIED BY $sqldatabaseupassword;
 
-		# Give database privilidges
-		GRANT ALL PRIVILEGES ON $sqldatabasename.* TO $sqldatabaseuser@$sqlhostname;  # Will this work first create user priviledges without existing db...
+		# Give database privileges
+		GRANT ALL PRIVILEGES ON $sqldatabasename.* TO $sqldatabaseuser@$sqlhostname;  # Will this work first create user privileges without existing db...
 
 		EXIT
 
@@ -906,4 +906,4 @@ if [[ $installldapserver == "y" ]]; then
 
 fi
 
-# Install other dependecies
+# Install other dependencies
