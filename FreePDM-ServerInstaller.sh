@@ -360,8 +360,11 @@ If so Feel free to create a Pull Request.\n"
 					printf "When installing OpenLDAP also an Admin Password it requested.\n"
 					;;
 				2)
+					printf "It is recomended to install Apache Directory Studio too.
+					Install Eclipse IDE and then Install Apache directory Studio via the Marketplace.\n"
 					ldapserver="Apache DS"
 					ldaptestcommand=""
+					ldappackages="apacheds"
 					ldappackages="apacheds"
 					ldapportnumber=389
 					;;
@@ -922,6 +925,20 @@ if [[ $installldapserver == "y" ]]; then
 			:
 			;;
 		2)
+			# ApacheDS
+			# configure ldap
+
+			# More Configuration changes follows later
+
+			printf "Enable apacheds.\n"
+
+			systemctl enable apacheds
+
+			if [[ $(systemctl is-active sudo /etc/init.d/apacheds-${version}-default) == "inactive" ]]; then
+				sudo /etc/init.d/apacheds-${version}-default start
+			else
+				sudo /etc/init.d/apacheds-${version}-default restart
+			fi
 			:
 			;;
 		3)
