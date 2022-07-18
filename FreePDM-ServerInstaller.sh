@@ -379,7 +379,7 @@ If so Feel free to create a Pull Request.\n"
 					# https://directory.fedoraproject.org/docs/389ds/howto/howto-debianubuntu.html
 					ldapserver="389 Directory server"
 					ldaptestcommand=""
-					ldappackages="termcap-compat apache2-mpm-worker"
+					ldappackages="termcap-compat apache2-mpm-worker 389-ds cockpit-389-ds python3-lib389"
 					ldapportnumber=389
 					;;
 			esac
@@ -945,6 +945,21 @@ if [[ $installldapserver == "y" ]]; then
 			:
 			;;
 		4)
+			# 389 Directory Server
+			# configure ldap
+
+			# More Configuration changes follows later
+			# https://directory.fedoraproject.org/docs/389ds/howto/quickstart.html
+
+			printf "Enable 389-ds.\n"
+
+			systemctl enable 389-ds
+
+			if [[ $(systemctl is-active 389-ds) == "inactive" ]]; then
+				sudo 389-ds start
+			else
+				sudo 389-ds restart
+			fi
 			:
 			;;
 	esac
