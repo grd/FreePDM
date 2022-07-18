@@ -885,6 +885,7 @@ if [[ $installwebserver == "y" ]]; then
 	case $webserverc in
 		1)
 			# Apache httpd
+			# https://ubuntu.com/tutorials/install-and-configure-apache
 
 			printf "Create virtual host conf file.\n"
 
@@ -938,7 +939,31 @@ if [[ $installwebserver == "y" ]]; then
 
 			;;
 		2)
-			:
+			# Nginx
+			# https://ubuntu.com/tutorials/install-and-configure-nginx
+
+			printf "Create virtual host conf file.\n"
+
+			vhostfile="server {
+       listen 80;
+       listen [::]:80;
+
+       server_name $webhostname;
+
+       root /var/www/$basicsite;
+       index index.html;
+
+       location / {
+               try_files $uri $uri/ =404;
+       }
+}"
+
+			sudo cd /etc/nginx/sites-enabled/
+
+			echo > "$basicsite.conf"
+
+			echo $vhostfile >> "$basicsite.conf"  # use nginx a .conf filetype? can't find back
+
 			;;
 		3)
 			:
