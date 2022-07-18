@@ -384,72 +384,79 @@ If so Feel free to create a Pull Request.\n"
 					;;
 			esac
 
-			read -p "ldap organisation name, o=" o
+			if [[ $ldapserverc ne 3 ]]; then
+				read -p "ldap organisation name, o=" o
 
-			echo "o = \"$o\"" >> server.conf
+				echo "o = \"$o\"" >> server.conf
 
-			read -p "ldap domain component, dc=" dcfulldomain
+				read -p "ldap domain component, dc=" dcfulldomain
 
-			# https://linuxize.com/post/bash-concatenate-strings/
-			# https://www.geeksforgeeks.org/bash-scripting-split-string/
-			# Set space as the delimiter
-			IFS='.'
+				# https://linuxize.com/post/bash-concatenate-strings/
+				# https://www.geeksforgeeks.org/bash-scripting-split-string/
+				# Set space as the delimiter
+				IFS='.'
 
-			# Read the split words into an array based on dot delimiter
-			read -ra newarr <<< "$dcfulldomain"
+				# Read the split words into an array based on dot delimiter
+				read -ra newarr <<< "$dcfulldomain"
 
-			# concanete each value of the array by using the loop
-			# lastelement=${newarr[(( $length - 1 ))]}
-			printf "$lastelement\n"
+				# concanete each value of the array by using the loop
+				# lastelement=${newarr[(( $length - 1 ))]}
+				printf "$lastelement\n"
 
-			var=""
-			for element in "${newarr[@]}";
-			do
-			  if [[ $element == ${newarr[(( $length - 1 ))]} ]]; then
-			    var+="dc=$element"
-			  else
-			    var+="dc=$element,"
-			  fi
-			done
-			printf "$dcfulldomain is replaced by $dc.\n"
+				var=""
+				for element in "${newarr[@]}";
+				do
+				  if [[ $element == ${newarr[(( $length - 1 ))]} ]]; then
+				    var+="dc=$element"
+				  else
+				    var+="dc=$element,"
+				  fi
+				done
+				printf "$dcfulldomain is replaced by $dc.\n"
 
-			echo "dc = \"$dc\"" >> server.conf
+				echo "dc = \"$dc\"" >> server.conf
 
-			read -p "ldap common name, cn=" cn
+				read -p "ldap common name, cn=" cn
 
-			echo "cn = \"$cn\"" >> server.conf
+				echo "cn = \"$cn\"" >> server.conf
 
-			# Admin name and passwords are not stored
-			read -p "Enter LDAP admin name:"$'\n' ldapadminname
+				# Admin name and passwords are not stored
+				read -p "Enter LDAP admin name:"$'\n' ldapadminname
 
-			# Don't save admin name to file
-			# echo "ldapadminname = \"$ldapadminname\"" >> server.conf
+				# Don't save admin name to file
+				# echo "ldapadminname = \"$ldapadminname\"" >> server.conf
 
-			# read -sp "Enter LDAP Password:" ldappw1  # Silent
-			read -p "Enter LDAP admin password:"$'\n' -s -r ldapadminpassword1  # With asterix
-			# maybe remove this question later on. Inside OpenLDAP a password is requested from menu.
+				# read -sp "Enter LDAP Password:" ldappw1  # Silent
+				read -p "Enter LDAP admin password:"$'\n' -s -r ldapadminpassword1  # With asterix
+				# maybe remove this question later on. Inside OpenLDAP a password is requested from menu.
 
-			if [[ $sqldatabaseadmin == "" ]]; then
-				sqldatabaseadmin=$(whoami)
+				if [[ $sqldatabaseadmin == "" ]]; then
+					sqldatabaseadmin=$(whoami)
+				fi
+
+				# Don't save user password to file
+				# echo "ldapadminpassword1 = \"ldapadminpassword1\"" >> server.conf
+
+				read -p "Enter LDAP username:"$'\n' ldapusername
+
+				# read -sp "Enter LDAP Password:" ldappw1  # Silent
+				read -p "Enter LDAP user password:"$'\n' -s -r ldapuserpassword1  # With asterix
+
+				# Don't save user password to file
+				# echo "ldapuserpassword1 = \"ldapuserpassword1\"" >> server.conf
+
+				read -p "Re-enter LDAP user password:"$'\n' -s -r ldapuserpassword2  # With asterix
+
+				# Don't save user password to file
+				# echo "ldapuserpassword2 = \"ldapuserpassword2\"" >> server.conf
+
+				break
+			else
+
+				# OpenDJ give his own configuration setup so no configuration from here...
+				printf "OpenDJ give it's own configuration setup.\n"
+
 			fi
-
-			# Don't save user password to file
-			# echo "ldapadminpassword1 = \"ldapadminpassword1\"" >> server.conf
-
-			read -p "Enter LDAP username:"$'\n' ldapusername
-
-			# read -sp "Enter LDAP Password:" ldappw1  # Silent
-			read -p "Enter LDAP user password:"$'\n' -s -r ldapuserpassword1  # With asterix
-
-			# Don't save user password to file
-			# echo "ldapuserpassword1 = \"ldapuserpassword1\"" >> server.conf
-
-			read -p "Re-enter LDAP user password:"$'\n' -s -r ldapuserpassword2  # With asterix
-
-			# Don't save user password to file
-			# echo "ldapuserpassword2 = \"ldapuserpassword2\"" >> server.conf
-
-			break
 
 		elif [[ $installldapserver == "n" ]]; then
 			echo "installldapserver = \"$installldapserver\"" >> server.conf
@@ -942,6 +949,31 @@ if [[ $installldapserver == "y" ]]; then
 			:
 			;;
 		3)
+			# openDJ
+			# https://askubuntu.com/questions/772235/how-to-find-path-to-java
+
+			printf "Create Java links.\n"
+
+			OPENDJ_JAVA_HOME=$(dirname $(which java))
+			OPENDJ_JAVA_BIN=$(which java)
+
+			printf "Download and install openDJ.\n"
+
+			# https://github.com/OpenIdentityPlatform/OpenDJ/wiki/Installation-Guide#to-install-from-the-debian-package
+			wget --content-disposition https://github.com/OpenIdentityPlatform/OpenDJ/releases/4.5.0/opendj_4.5.0-1_all.deb
+
+			# optional downloads:
+			# wget --content-disposition https://github.com/OpenIdentityPlatform/OpenDJ/releases/4.5.0/org.openidentityplatform.opendj.opendj-dsml-servlet.war
+			# wget --content-disposition https://github.com/OpenIdentityPlatform/OpenDJ/releases/4.5.0/org.openidentityplatform.opendj.opendj-ldap-toolkit.zip
+			# wget --content-disposition https://github.com/OpenIdentityPlatform/OpenDJ/releases/4.5.0/org.openidentityplatform.opendj.opendj-rest2ldap-servlet.war
+
+			sudo dpkg -i opendj_X.Y.Z-1_all.deb
+
+			printf "Default location openDJ is /opt/opendj/.
+			Config openDJ.\n"
+
+			sudo /opt/opendj/setup
+
 			:
 			;;
 		4)
