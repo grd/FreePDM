@@ -8,7 +8,7 @@ from itemdatamodel import ItemDataModel
 
 # The directorymodel is a list of files that can be used inside a GUI
 
-class DirectoryModel():
+class DirectoryModel(object):
 	def __init__(self, dir):
 		self.dir = dir
 		self.dirList = [["  nr", "Dir/File ", "Filename"]]
@@ -42,3 +42,15 @@ class DirectoryModel():
 				nr = nr + 1
 		self.dirList.pop(0)
 
+	def size(self):
+		len(self.dirList)
+
+	# What kind of FC files do you want to see? 
+	# Do you want to see the history of the files?
+	# def filter(self):
+
+	# Purge stored versions of files. All up to number 
+	# def purge(number):
+
+	def helloWorld():
+		return("Hello World.")

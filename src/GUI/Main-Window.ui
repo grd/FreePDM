@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>817</width>
     <height>600</height>
    </rect>
   </property>
@@ -56,20 +56,18 @@
    <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>10</x>
       <y>30</y>
       <width>791</width>
       <height>401</height>
      </rect>
     </property>
-    <row>
-     <property name="text">
-      <string>New Row</string>
-     </property>
-    </row>
     <column>
      <property name="text">
-      <string>Number</string>
+      <string extracomment="Optionally number">Number</string>
+     </property>
+     <property name="toolTip">
+      <string extracomment="Optional number"/>
      </property>
     </column>
     <column>
@@ -84,7 +82,7 @@
     </column>
     <column>
      <property name="text">
-      <string>Checked Out</string>
+      <string>Status</string>
      </property>
     </column>
     <column>
@@ -102,11 +100,6 @@
       <string>Size</string>
      </property>
     </column>
-    <item row="0" column="0">
-     <property name="text">
-      <string/>
-     </property>
-    </item>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -114,7 +107,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>817</width>
      <height>22</height>
     </rect>
    </property>
