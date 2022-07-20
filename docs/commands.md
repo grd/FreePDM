@@ -1,13 +1,12 @@
-# FreePDM
-***Documentation***
+## FreePDM Documentation
 
-## Code Snippets
-There is no way to add a button, menu entry from python to a workbench which is added with c++. So here is a comparison how to do that with python and with c++.
+### Code Snippets
+There is no way to add a button/menu entry from python to a workbench which is added with cpp (c++). So here is a comparison how to do that with python and with cpp.
 
 ### Adding a command:
-This can be done either with python or c++.
+This can be done either with python or cpp.
 
-#### 1. python
+#### Python
 
 ```python
 import FreeCAD as App
@@ -15,8 +14,8 @@ import FreeCAD as App
 class MyCommand(object):
     def IsActive(self):
         """
-        availability of the command (eg.: check for existence of a document,...)
-        if this function returns False, the menu/ buttons are ßdisabled (gray)
+        availability of the command (eg.: check for existence of a document...)
+        if this function returns False, the menu/buttons are disabled (greyed out)
         """
         if App.ActiveDocument is None:
             return False
@@ -57,9 +56,9 @@ class myWorkbench(Workbench):
         self.appendMenu("Gear", ["MyCommand"])
 ```
 
-#### 2. C++
+#### Cplusplus
 
-```c++
+```cpp
 
 #include <App/Document.h>
 #include <Gui/Command.h>
@@ -88,14 +87,14 @@ void MyCommand::activated(int)
 
 bool MyCommand::isActive(void)
 {
-    // availability of the command (eg.: check for existence of a document,...)
-    // if this function returns False, the menu/ buttons are ßdisabled (gray)
+    // availability of the command (eg.: check for existence of a document...)
+    // if this function returns False the menu/buttons are disabled (greyed out)
     return (hasActiveDocument() && !Gui::Control().activeDialog());
 }
 ```
 To register the command in FreeCAD:
 
-```c++
+```cpp
 #include <Gui/Command.h>
 
 Gui::CommandManager &rcCmdMgr = Gui::Application::Instance->commandManager();
@@ -104,7 +103,7 @@ rcCmdMgr.addCommand(new MyCommand());
 Adding a item to a menu/toolbar:
 
 if your command is added with python you have to run this code:
-in src/module/Gui/AppModuleGui.cpp add to PyMOD_INIT_FUNC:
+in `src/module/Gui/AppModuleGui.cpp` add to `PyMOD_INIT_FUNC`:
 
 ```c++
 // try to instantiate a python module
@@ -115,10 +114,10 @@ try{
 }
 ```
 
-and add the name of the command to a tooltip/menu in src/module/Gui/Workbench.cpp Workbench::setupToolBars
+and add the name of the command to a `tooltip/menu in src/module/Gui/Workbench.cpp` `Workbench::setupToolBars`
 
 
-```c++
+```cpp
 Gui::ToolBarItem* Workbench::setupToolBars() const
 {
     Gui::ToolBarItem* root = StdWorkbench::setupToolBars();

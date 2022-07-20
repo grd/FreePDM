@@ -1,5 +1,4 @@
-# FreePDM
-***Documentation***
+## FreePDM Documentation
 
 ## Table of Contents
 
