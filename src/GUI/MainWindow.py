@@ -14,9 +14,6 @@ from PySide2.QtUiTools import QUiLoader
 
 
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'Skeleton'))
-print(sys.path)
-
-print(os.fspath(Path(__file__).resolve().parents[1] / 'Skeleton'))
 
 import directorymodel
 
