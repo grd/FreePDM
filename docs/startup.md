@@ -20,6 +20,7 @@ TODO: Show how to
 ```shell
 pip3 install defusedxml
 pip3 install imageio
+pip3 install PySide2
 ```
 
 #### CSV
