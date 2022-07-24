@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 import sys
 
-from PySide2.QtWidgets import QApplication, QMainWindow, QMessageBox, QDialog
+from PySide2.QtWidgets import QApplication, QMainWindow, QMessageBox, QDialog, QTableWidget
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtCore import QFile
 from PySide2.QtUiTools import QUiLoader
@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
     def load_ui(self):
         loader = QUiLoader()
         path = os.fspath(Path(__file__).resolve().parents[1] / "GUI/MainWindow.ui")
-        # print(path)
+        print(path)
         ui_file = QFile(path)
         ui_file.open(QFile.ReadOnly)
         self.ui = loader.load(ui_file, self)
@@ -43,6 +43,7 @@ class MainWindow(QMainWindow):
         ui_file.close()
         self.ui.tableWidget.verticalHeader().setVisible(False)
         self.ui.tableWidget.horizontalHeader().setVisible(False)
+        self.ui.tableWidget.setSelectionBehavior(QTableWidget.SelectRows)
 
     def load_data(self):
         dm = DirectoryModel(self.dir)
