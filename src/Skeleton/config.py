@@ -12,8 +12,8 @@
 #      These directories are shown at the start of the main window.
 #        "startupdir"
 # 
+from directorymodel import DirectoryModel
 
-
-class generalOptions(object):
-    def __init__():
+# class generalOptions(object):
+#     def __init__():
         # reading the INI file

@@ -14,9 +14,10 @@ import sys
 
 def handleDirectory(dir):
     dm = DirectoryModel(dir)
-    print("  nr Dir/File  Filename")
+    print("  nr Dir/File  Filename              size")
     for list in dm.dirList:
-        print(list[0].rjust(4, ' ') + ' ' + list[1].ljust(9, ' ') + ' ' + list[2])
+        print(list['nr'].rjust(4, ' ') + ' ' + list['dirOrFile'].ljust(9, ' ') + ' ' + list['filename'].ljust(25, ' ') + list['size'])
+#        print(list['nr'].rjust(4, ' ') + ' ' + list['filename'].ljust(25, ' ') + list['size'])
   
     ip = input("Press a number or'q' to quit, or '-1' to go the higher directory ") 
     if ip == 'q':
@@ -27,11 +28,11 @@ def handleDirectory(dir):
         return(dir)
     if num >= 0 and num <= len(dm.dirList): # We have a number here...
         item = dm.dirList[num]
-        if item[1] == 'Directory':
-            dir = dir + '/' + dm.dirList[num][2]
+        if item['dirOrFile'] == 'Directory':
+            dir = dir + '/' + dm.dirList[num]['filename']
             return(dir)
-        elif item[1] == 'FCStd':
-            fcFile = ItemDataModel(dir + '/' + item[2])
+        elif item['dirOrFile'] == 'FCStd':
+            fcFile = ItemDataModel(dir + '/' + item['filename'])
             idm = fcFile.documentProperties
             print("File Size: " + fcFile.getFileSize())
             print("Data from FCStd model")
