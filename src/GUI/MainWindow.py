@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
     def load_ui(self):
         loader = QUiLoader()
         path = os.fspath(Path(__file__).resolve().parents[1] / "GUI/MainWindow.ui")
-        print(path)
+        # print(path)
         ui_file = QFile(path)
         ui_file.open(QFile.ReadOnly)
         self.ui = loader.load(ui_file, self)
@@ -41,6 +41,8 @@ class MainWindow(QMainWindow):
         # self.ui.setWindowIcon(QtGui.QIcon(os.fspath(Path(__file__).resolve().parents[1] / "ui/logos/O_logo-32x32.png")))  # Probably done in ui file OSX don't show icon
         self.ui.show()
         ui_file.close()
+        self.ui.tableWidget.verticalHeader().setVisible(False)
+        self.ui.tableWidget.horizontalHeader().setVisible(False)
 
     def load_data(self):
         dm = DirectoryModel(self.dir)

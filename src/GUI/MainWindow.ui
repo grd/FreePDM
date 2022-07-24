@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="CheckInButton">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -27,7 +27,7 @@
      <string>Check In</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="CheckOutButton">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -40,17 +40,17 @@
      <string>Check Out</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_3">
+   <widget class="QPushButton" name="FilterButton">
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>420</x>
       <y>0</y>
       <width>80</width>
       <height>25</height>
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>Filter</string>
     </property>
    </widget>
    <widget class="QTableWidget" name="tableWidget">
@@ -59,7 +59,7 @@
       <x>10</x>
       <y>30</y>
       <width>791</width>
-      <height>401</height>
+      <height>521</height>
      </rect>
     </property>
     <column>
@@ -100,6 +100,32 @@
       <string>Size</string>
      </property>
     </column>
+   </widget>
+   <widget class="QPushButton" name="PurgeButton">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>0</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Purge</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="CheckInOutButton">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>0</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Check In/Out</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
