@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 import sys
 
-from PySide2 import QtCore, QtWidgets
+from PySide2 import QtCore, QtWidgets, QtGui
 from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem
 from PySide2.QtCore import QFile, Qt
 from PySide2.QtUiTools import QUiLoader
@@ -41,17 +41,25 @@ class MainWindow(QMainWindow):
         # self.ui.setWindowIcon(QtGui.QIcon(os.fspath(Path(__file__).resolve().parents[1] / "ui/logos/O_logo-32x32.png")))  # Probably done in ui file OSX don't show icon
         self.ui.show()
         ui_file.close()
+        self.ui.tableWorkspace.setColumnWidth(0, 10)
+        self.ui.tableWorkspace.setColumnWidth(1, 150)
+        self.ui.tableWorkspace.setColumnWidth(2, 200)
+        self.ui.tableWorkspace.setColumnWidth(3, 80)
+        self.ui.tableWorkspace.setColumnWidth(4, 80)
+        self.ui.tableWorkspace.setColumnWidth(5, 80)
         self.ui.tableWorkspace.verticalHeader().setVisible(False)
         self.ui.tableWorkspace.setColumnWidth(0, 30)
         self.ui.tableWorkspace.setSelectionBehavior(QTableWidget.SelectRows)
         self.ui.tableWorkspace.selectionModel().selectionChanged.connect(self.on_selectionChanged)
         # self.ui.buttonCheckOutButton('Check In', clicked=self.retrieveCheckButtonValues)
 
+    # deal with checkbox click on a field
     def retrieveCheckButtonValues(self):
         for row in range(self.ui.tableWidget.rowCount()):
-            if self.ui.tableWorkspace.item(row, 0).checkState == Qt.CheckState.Checked:
+            if self.ui.tableWorkspace.item(row, 0).checkState() == Qt.CheckState.Checked:
                 print("selected row: ", row)
 
+    # deal with the rows
     def on_selectionChanged(self, selected, deselected):
         for ix in selected.indexes():
             print('Selected Cell Location Row: {0}, Column: {1}'.format(ix.row(), ix.column()))
@@ -70,8 +78,14 @@ class MainWindow(QMainWindow):
             cb.setCheckState(Qt.CheckState.Unchecked)
             self.ui.tableWorkspace.setItem(row, 0, cb)
 
-            self.ui.tableWorkspace.setItem(row, 1, QtWidgets.QTableWidgetItem(item["dirOrFile"]))
-            self.ui.tableWorkspace.setItem(row, 2, QtWidgets.QTableWidgetItem(item["filename"]))
+            # self.ui.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(item["dirOrFile"]))
+            file = QTableWidgetItem(item["filename"])
+            if item["dirOrFile"] == "Directory":
+                file.setForeground(QtGui.QColor("blue")) 
+            self.ui.tableWorkspace.setItem(row, 1, file)
+            
+            # self.ui.tableWorkspace.setItem(row, 1, QtWidgets.QTableWidgetItem(item["dirOrFile"]))
+            # self.ui.tableWorkspace.setItem(row, 2, QtWidgets.QTableWidgetItem(item["filename"]))
             self.ui.tableWorkspace.setItem(row, 3, QtWidgets.QTableWidgetItem(item["size"]))
             row += 1
 

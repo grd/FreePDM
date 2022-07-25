@@ -83,7 +83,7 @@
       </column>
       <column>
        <property name="text">
-        <string extracomment="Optionally number">Number</string>
+        <string extracomment="Optionally number">Name</string>
        </property>
        <property name="toolTip">
         <string extracomment="Optional number"/>
