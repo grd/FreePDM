@@ -10,7 +10,8 @@ import os
 import sys
 
 # right now it should only show a directory that you specify
-#  and print the values of the FC file about that directory. 
+#  and print the values of the FC file about that directory.
+
 
 def handleDirectory(dir):
     dm = DirectoryModel(dir)
@@ -18,15 +19,15 @@ def handleDirectory(dir):
     for list in dm.dirList:
         print(list['nr'].rjust(4, ' ') + ' ' + list['dirOrFile'].ljust(9, ' ') + ' ' + list['filename'].ljust(25, ' ') + list['size'])
 #        print(list['nr'].rjust(4, ' ') + ' ' + list['filename'].ljust(25, ' ') + list['size'])
-  
-    ip = input("Press a number or'q' to quit, or '-1' to go the higher directory ") 
+
+    ip = input("Press a number or'q' to quit, or '-1' to go the higher directory ")
     if ip == 'q':
         exit()
-    num = int(ip) # Just don't press anything. It doesn't work like that...
+    num = int(ip)  # Just don't press anything. It doesn't work like that...
     if num == -1:
         dir = dir[0:dir.rfind("/")]
         return(dir)
-    if num >= 0 and num <= len(dm.dirList): # We have a number here...
+    if num >= 0 and num <= len(dm.dirList):  # We have a number here...
         item = dm.dirList[num]
         if item['dirOrFile'] == 'Directory':
             dir = dir + '/' + dm.dirList[num]['filename']
@@ -48,11 +49,10 @@ def main():
     dir = os.path.expanduser('~')
     if len(sys.argv) == 2:
         dir = sys.argv[1]
-    
+
     while True:
         dir = handleDirectory(dir)
 
-        
 
-if __name__=="__main__":
-    main();
+if __name__ == "__main__":
+    main()

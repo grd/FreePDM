@@ -130,5 +130,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# MVS Studio
+.vscode/
+
 # OSX Operating system
 .DS_Store

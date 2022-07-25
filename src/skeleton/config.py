@@ -8,12 +8,12 @@
 # The file format is probably ini since that is the easiest.
 #
 #  The items are:
-#    * The start of the project directory (or directories). 
+#    * The start of the project directory (or directories).
 #      These directories are shown at the start of the main window.
 #        "startupdir"
-# 
+#
 from directorymodel import DirectoryModel
 
 # class generalOptions(object):
 #     def __init__():
-        # reading the INI file
+#     reading the INI file
