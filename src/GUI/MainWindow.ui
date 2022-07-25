@@ -57,7 +57,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>30</y>
+      <y>40</y>
       <width>791</width>
       <height>521</height>
      </rect>
@@ -69,7 +69,7 @@
     </column>
     <column>
      <property name="text">
-      <string extracomment="Optionally number">Number</string>
+      <string extracomment="Optionally number">Name</string>
      </property>
      <property name="toolTip">
       <string extracomment="Optional number"/>

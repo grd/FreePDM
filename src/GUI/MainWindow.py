@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 import sys
 
-from PySide2 import QtCore, QtWidgets
+from PySide2 import QtCore, QtWidgets, QtGui
 from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton
 from PySide2.QtCore import QFile, Qt
 from PySide2.QtUiTools import QUiLoader
@@ -41,9 +41,12 @@ class MainWindow(QMainWindow):
         # self.ui.setWindowIcon(QtGui.QIcon(os.fspath(Path(__file__).resolve().parents[1] / "ui/logos/O_logo-32x32.png")))  # Probably done in ui file OSX don't show icon
         self.ui.show()
         ui_file.close()
-        self.ui.tableWidget.setColumnWidth(0,10)
-        self.ui.tableWidget.setColumnWidth(1,100)
-        self.ui.tableWidget.setColumnWidth(2,200)
+        self.ui.tableWidget.setColumnWidth(0, 10)
+        self.ui.tableWidget.setColumnWidth(1, 150)
+        self.ui.tableWidget.setColumnWidth(2, 200)
+        self.ui.tableWidget.setColumnWidth(3, 80)
+        self.ui.tableWidget.setColumnWidth(4, 80)
+        self.ui.tableWidget.setColumnWidth(5, 80)
         self.ui.tableWidget.verticalHeader().setVisible(False)
         self.ui.tableWidget.setSelectionBehavior(QTableWidget.SelectRows)
         self.ui.tableWidget.selectionModel().selectionChanged.connect(self.on_selectionChanged)
@@ -74,9 +77,13 @@ class MainWindow(QMainWindow):
             cb.setCheckState(Qt.CheckState.Unchecked)
             self.ui.tableWidget.setItem(row, 0, cb)
 
-            self.ui.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(item["dirOrFile"]))
-            self.ui.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(item["filename"]))
-            self.ui.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem(item["size"]))
+            # self.ui.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(item["dirOrFile"]))
+            file = QTableWidgetItem(item["filename"])
+            if item["dirOrFile"] == "Directory":
+                file.setForeground(QtGui.QColor("blue")) 
+            self.ui.tableWidget.setItem(row, 1, file)
+            # self.ui.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(item["filename"]))
+            self.ui.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(item["size"]))
             row=row+1
 
 
