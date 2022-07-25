@@ -63,6 +63,7 @@ class MainWindow(QMainWindow):
         dm = DirectoryModel(self.dir)
         row = 0
         self.ui.tableWorkspace.setRowCount(dm.size())
+        # https://stackoverflow.com/questions/39511181/python-add-checkbox-to-every-row-in-qtablewidget
         for item in dm.dirList:
             cb = QTableWidgetItem("")
             cb.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
