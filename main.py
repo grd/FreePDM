@@ -1,6 +1,6 @@
 # This Python file uses the following encoding: utf-8
 import sys
-from src.GUI.MainWindow import main
+from src.gui.MainWindow import main
 
 # https://pythonspot.com/pyqt5-grid-layout/
 # https://doc.qt.io/qtforpython/overviews/layout.html

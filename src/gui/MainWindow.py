@@ -12,7 +12,7 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWid
 from PySide2.QtCore import QFile, Qt
 from PySide2.QtUiTools import QUiLoader
 
-sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'Skeleton'))
+sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'skeleton'))
 
 from directorymodel import DirectoryModel
 
@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
 
     def load_ui(self):
         loader = QUiLoader()
-        path = os.fspath(Path(__file__).resolve().parents[1] / "GUI/MainWindow.ui")
+        path = os.fspath(Path(__file__).resolve().parents[1] / "gui/MainWindow.ui")
         print(path)
         ui_file = QFile(path)
         ui_file.open(QFile.ReadOnly)
