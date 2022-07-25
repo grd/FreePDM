@@ -64,15 +64,15 @@
     </property>
     <column>
      <property name="text">
-      <string extracomment="Optionally number">Number</string>
-     </property>
-     <property name="toolTip">
-      <string extracomment="Optional number"/>
+      <string>Q</string>
      </property>
     </column>
     <column>
      <property name="text">
-      <string>Name</string>
+      <string extracomment="Optionally number">Number</string>
+     </property>
+     <property name="toolTip">
+      <string extracomment="Optional number"/>
      </property>
     </column>
     <column>

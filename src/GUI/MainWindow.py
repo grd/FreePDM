@@ -8,7 +8,7 @@ from pathlib import Path
 import sys
 
 from PySide2 import QtCore, QtWidgets
-from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem
+from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton
 from PySide2.QtCore import QFile, Qt
 from PySide2.QtUiTools import QUiLoader
 
@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
     def load_ui(self):
         loader = QUiLoader()
         path = os.fspath(Path(__file__).resolve().parents[1] / "GUI/MainWindow.ui")
-        print(path)
+        # print(path)
         ui_file = QFile(path)
         ui_file.open(QFile.ReadOnly)
         self.ui = loader.load(ui_file, self)
@@ -41,16 +41,21 @@ class MainWindow(QMainWindow):
         # self.ui.setWindowIcon(QtGui.QIcon(os.fspath(Path(__file__).resolve().parents[1] / "ui/logos/O_logo-32x32.png")))  # Probably done in ui file OSX don't show icon
         self.ui.show()
         ui_file.close()
+        self.ui.tableWidget.setColumnWidth(0,10)
+        self.ui.tableWidget.setColumnWidth(1,100)
+        self.ui.tableWidget.setColumnWidth(2,200)
         self.ui.tableWidget.verticalHeader().setVisible(False)
         self.ui.tableWidget.setSelectionBehavior(QTableWidget.SelectRows)
         self.ui.tableWidget.selectionModel().selectionChanged.connect(self.on_selectionChanged)
-        # self.ui.CheckOutButton('Check In', clicked=self.retrieveCheckButtonValues)
+        self.ui.CheckOutButton.clicked.connect(self.retrieveCheckButtonValues)
 
+    # deal with checkbox click on a field
     def retrieveCheckButtonValues(self):
         for row in range(self.ui.tableWidget.rowCount()):
-            if self.ui.tableWidget.item(row, 0).checkState == Qt.CheckState.Checked:
+            if self.ui.tableWidget.item(row, 0).checkState() == Qt.CheckState.Checked:
                 print("selected row: ", row)
 
+    # deal with the checkboxes
     def on_selectionChanged(self, selected, deselected):
         for ix in selected.indexes():
             print('Selected Cell Location Row: {0}, Column: {1}'.format(ix.row(), ix.column()))
