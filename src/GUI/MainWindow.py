@@ -27,7 +27,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.load_ui()
         self.load_data()
-    
+
     def load_ui(self):
         loader = QUiLoader()
         path = os.fspath(Path(__file__).resolve().parents[1] / "GUI/MainWindow.ui")
@@ -58,7 +58,6 @@ class MainWindow(QMainWindow):
         for ix in deselected.indexes():
             print('Deselected Cell Location Row: {0}, Column: {1}'.format(ix.row(), ix.column()))
 
-
     def load_data(self):
         dm = DirectoryModel(self.dir)
         row = 0
@@ -72,7 +71,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWorkspace.setItem(row, 1, QtWidgets.QTableWidgetItem(item["dirOrFile"]))
             self.ui.tableWorkspace.setItem(row, 2, QtWidgets.QTableWidgetItem(item["filename"]))
             self.ui.tableWorkspace.setItem(row, 3, QtWidgets.QTableWidgetItem(item["size"]))
-            row=row+1
+            row += 1
 
 
 def main():
