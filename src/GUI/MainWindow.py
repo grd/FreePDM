@@ -41,14 +41,14 @@ class MainWindow(QMainWindow):
         # self.ui.setWindowIcon(QtGui.QIcon(os.fspath(Path(__file__).resolve().parents[1] / "ui/logos/O_logo-32x32.png")))  # Probably done in ui file OSX don't show icon
         self.ui.show()
         ui_file.close()
-        self.ui.tableWidget.verticalHeader().setVisible(False)
-        self.ui.tableWidget.setSelectionBehavior(QTableWidget.SelectRows)
-        self.ui.tableWidget.selectionModel().selectionChanged.connect(self.on_selectionChanged)
-        # self.ui.CheckOutButton('Check In', clicked=self.retrieveCheckButtonValues)
+        self.ui.tableWorkspace.verticalHeader().setVisible(False)
+        self.ui.tableWorkspace.setSelectionBehavior(QTableWidget.SelectRows)
+        self.ui.tableWorkspace.selectionModel().selectionChanged.connect(self.on_selectionChanged)
+        # self.ui.buttonCheckOutButton('Check In', clicked=self.retrieveCheckButtonValues)
 
     def retrieveCheckButtonValues(self):
         for row in range(self.ui.tableWidget.rowCount()):
-            if self.ui.tableWidget.item(row, 0).checkState == Qt.CheckState.Checked:
+            if self.ui.tableWorkspace.item(row, 0).checkState == Qt.CheckState.Checked:
                 print("selected row: ", row)
 
     def on_selectionChanged(self, selected, deselected):
@@ -62,16 +62,16 @@ class MainWindow(QMainWindow):
     def load_data(self):
         dm = DirectoryModel(self.dir)
         row = 0
-        self.ui.tableWidget.setRowCount(dm.size())
+        self.ui.tableWorkspace.setRowCount(dm.size())
         for item in dm.dirList:
             cb = QTableWidgetItem("")
             cb.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
             cb.setCheckState(Qt.CheckState.Unchecked)
-            self.ui.tableWidget.setItem(row, 0, cb)
+            self.ui.tableWorkspace.setItem(row, 0, cb)
 
-            self.ui.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(item["dirOrFile"]))
-            self.ui.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(item["filename"]))
-            self.ui.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem(item["size"]))
+            self.ui.tableWorkspace.setItem(row, 1, QtWidgets.QTableWidgetItem(item["dirOrFile"]))
+            self.ui.tableWorkspace.setItem(row, 2, QtWidgets.QTableWidgetItem(item["filename"]))
+            self.ui.tableWorkspace.setItem(row, 3, QtWidgets.QTableWidgetItem(item["size"]))
             row=row+1
 
 
