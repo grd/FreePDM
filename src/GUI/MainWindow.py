@@ -42,6 +42,7 @@ class MainWindow(QMainWindow):
         self.ui.show()
         ui_file.close()
         self.ui.tableWorkspace.verticalHeader().setVisible(False)
+        self.ui.tableWorkspace.setColumnWidth(0, 30)
         self.ui.tableWorkspace.setSelectionBehavior(QTableWidget.SelectRows)
         self.ui.tableWorkspace.selectionModel().selectionChanged.connect(self.on_selectionChanged)
         # self.ui.buttonCheckOutButton('Check In', clicked=self.retrieveCheckButtonValues)
