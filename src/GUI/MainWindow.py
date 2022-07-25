@@ -7,8 +7,8 @@ import os
 from pathlib import Path
 import sys
 
-from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem
 from PySide2 import QtCore, QtWidgets
+from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem
 from PySide2.QtCore import QFile, Qt
 from PySide2.QtUiTools import QUiLoader
 
@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget.verticalHeader().setVisible(False)
         self.ui.tableWidget.setSelectionBehavior(QTableWidget.SelectRows)
         self.ui.tableWidget.selectionModel().selectionChanged.connect(self.on_selectionChanged)
-        self.ui.CheckInButton('Check In', clicked=self.retrieveCheckButtonValues)
+        # self.ui.CheckOutButton('Check In', clicked=self.retrieveCheckButtonValues)
 
     def retrieveCheckButtonValues(self):
         for row in range(self.ui.tableWidget.rowCount()):
