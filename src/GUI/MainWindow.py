@@ -7,9 +7,9 @@ import os
 from pathlib import Path
 import sys
 
-from PySide2.QtWidgets import QApplication, QMainWindow, QMessageBox, QDialog, QTableWidget
-from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtCore import QFile
+from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem
+from PySide2 import QtCore, QtWidgets
+from PySide2.QtCore import QFile, Qt
 from PySide2.QtUiTools import QUiLoader
 
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'Skeleton'))
@@ -42,17 +42,36 @@ class MainWindow(QMainWindow):
         self.ui.show()
         ui_file.close()
         self.ui.tableWidget.verticalHeader().setVisible(False)
-        self.ui.tableWidget.horizontalHeader().setVisible(False)
         self.ui.tableWidget.setSelectionBehavior(QTableWidget.SelectRows)
+        self.ui.tableWidget.selectionModel().selectionChanged.connect(self.on_selectionChanged)
+        self.ui.CheckInButton('Check In', clicked=self.retrieveCheckButtonValues)
+
+    def retrieveCheckButtonValues(self):
+        for row in range(self.ui.tableWidget.rowCount()):
+            if self.ui.tableWidget.item(row, 0).checkState == Qt.CheckState.Checked:
+                print("selected row: ", row)
+
+    def on_selectionChanged(self, selected, deselected):
+        for ix in selected.indexes():
+            print('Selected Cell Location Row: {0}, Column: {1}'.format(ix.row(), ix.column()))
+
+        for ix in deselected.indexes():
+            print('Deselected Cell Location Row: {0}, Column: {1}'.format(ix.row(), ix.column()))
+
 
     def load_data(self):
         dm = DirectoryModel(self.dir)
         row = 0
         self.ui.tableWidget.setRowCount(dm.size())
         for item in dm.dirList:
-            self.ui.tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(item["dirOrFile"]))
-            self.ui.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(item["filename"]))
-            self.ui.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(item["size"]))
+            cb = QTableWidgetItem("")
+            cb.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
+            cb.setCheckState(Qt.CheckState.Unchecked)
+            self.ui.tableWidget.setItem(row, 0, cb)
+
+            self.ui.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(item["dirOrFile"]))
+            self.ui.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(item["filename"]))
+            self.ui.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem(item["size"]))
             row=row+1
 
 
