@@ -19,10 +19,11 @@ from directorymodel import DirectoryModel
 
 class MainWindow(QMainWindow):
     def __init__(self):
-        self.dir = os.path.expanduser('~')
+        self.homeDirectory = os.path.expanduser('~')
         if len(sys.argv) == 2:
-            self.dir = sys.argv[1]
-        print("self.dir =", self.dir)
+            self.homeDirectory = sys.argv[1]
+        print("self.homeDirectory = ", self.homeDirectory)
+        self.directory = self.homeDirectory
 
         super(MainWindow, self).__init__()
         self.load_ui()
@@ -52,6 +53,7 @@ class MainWindow(QMainWindow):
         self.ui.tableWorkspace.setSelectionBehavior(QTableWidget.SelectRows)
         self.ui.tableWorkspace.selectionModel().selectionChanged.connect(self.on_selectionChanged)
         # self.ui.buttonCheckOutButton('Check In', clicked=self.retrieveCheckButtonValues)
+        
 
     # deal with checkbox click on a field
     def retrieveCheckButtonValues(self):
@@ -68,25 +70,23 @@ class MainWindow(QMainWindow):
             print('Deselected Cell Location Row: {0}, Column: {1}'.format(ix.row(), ix.column()))
 
     def load_data(self):
-        dm = DirectoryModel(self.dir)
+        dm = DirectoryModel(self.directory)
         row = 0
         self.ui.tableWorkspace.setRowCount(dm.size())
         # https://stackoverflow.com/questions/39511181/python-add-checkbox-to-every-row-in-qtablewidget
-        for item in dm.dirList:
+        for item in dm.directoryList:
             cb = QTableWidgetItem("")
             cb.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
             cb.setCheckState(Qt.CheckState.Unchecked)
             self.ui.tableWorkspace.setItem(row, 0, cb)
 
-            # self.ui.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(item["dirOrFile"]))
-            file = QTableWidgetItem(item["filename"])
-            if item["dirOrFile"] == "Directory":
-                file.setForeground(QtGui.QColor("blue")) 
+            file = QTableWidgetItem(item['filename'])
+            if item['type'] == 'Directory':
+                file.setForeground(QtGui.QColor('blue')) 
             self.ui.tableWorkspace.setItem(row, 1, file)
             
-            # self.ui.tableWorkspace.setItem(row, 1, QtWidgets.QTableWidgetItem(item["dirOrFile"]))
-            # self.ui.tableWorkspace.setItem(row, 2, QtWidgets.QTableWidgetItem(item["filename"]))
-            self.ui.tableWorkspace.setItem(row, 3, QtWidgets.QTableWidgetItem(item["size"]))
+            self.ui.tableWorkspace.setItem(row, 5, QTableWidgetItem(item['type']))
+            self.ui.tableWorkspace.setItem(row, 6, QTableWidgetItem(item['size']))
             row += 1
 
 
