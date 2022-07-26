@@ -16,7 +16,7 @@ import sys
 def handleDirectory(dir):
     dm = DirectoryModel(dir)
     print("  nr Dir/File  Filename              size")
-    for list in dm.dirList:
+    for list in dm.directoryList:
         print(list['nr'].rjust(4, ' ') + ' ' + list['dirOrFile'].ljust(9, ' ') + ' ' + list['filename'].ljust(25, ' ') + list['size'])
 #        print(list['nr'].rjust(4, ' ') + ' ' + list['filename'].ljust(25, ' ') + list['size'])
 
@@ -27,10 +27,10 @@ def handleDirectory(dir):
     if num == -1:
         dir = dir[0:dir.rfind("/")]
         return(dir)
-    if num >= 0 and num <= len(dm.dirList):  # We have a number here...
-        item = dm.dirList[num]
+    if num >= 0 and num <= len(dm.directoryList):  # We have a number here...
+        item = dm.directoryList[num]
         if item['dirOrFile'] == 'Directory':
-            dir = dir + '/' + dm.dirList[num]['filename']
+            dir = dir + '/' + dm.directoryList[num]['filename']
             return(dir)
         elif item['dirOrFile'] == 'FCStd':
             fcFile = ItemDataModel(dir + '/' + item['filename'])
