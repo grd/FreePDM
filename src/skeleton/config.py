@@ -16,16 +16,14 @@ import configparser
 #
 
 class generalOptions(object):
-    def __init__():
+    def __init__(self):
+        self.load_config()
 
-config = configparser.ConfigParser()
-config['DEFAULT'] = {'StartupDirectory': '',
-                     'Filter': '',
-                    'Compression': 'yes',
-                    'CompressionLevel': '9'}
-config['bitbucket.org'] = {}
-config['bitbucket.org']['User'] = 'hg'
-config['topsecret.server.com'] = {}
-config['DEFAULT']['ForwardX11'] = 'yes'
-with open('example.ini', 'w') as configfile:
-   config.write(configfile)
+    def load_config(self):
+        config = configparser.ConfigParser()
+        config['DEFAULT'] = {'StartupDirectory': '',
+                            'Filter': '',
+                            'LogFile': '',
+                            'LogLevel': ''}
+        with open('example.ini', 'w') as configfile:
+            config.write(configfile)
