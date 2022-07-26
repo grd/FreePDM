@@ -52,9 +52,18 @@ class MainWindow(QMainWindow):
         self.ui.tableWorkspace.verticalHeader().setVisible(False)
         self.ui.tableWorkspace.setColumnWidth(0, 30)
         self.ui.tableWorkspace.setSelectionBehavior(QTableWidget.SelectRows)
-        self.ui.tableWorkspace.selectionModel().selectionChanged.connect(self.on_selectionChanged)
+        # self.ui.tableWorkspace.selectionModel().selectionChanged.connect(self.on_selectionChanged)
+        self.ui.tableWorkspace.doubleClicked.connect(self.fileDoubleClicked)
         # self.ui.buttonCheckOutButton('Check In', clicked=self.retrieveCheckButtonValues)
-        
+
+    # deal with doubleclick
+    def fileDoubleClicked(self, event):
+        row = event.row()
+        item = self.ui.tableWorkspace.item(row, 5).text()
+        print('item = ', item)
+        if item == 'Directory':
+            self.current_directory = self.current_directory + '/' + self.ui.tableWorkspace.item(row, 1).text()
+            self.load_data()
 
     # deal with checkbox click on a field
     def retrieveCheckButtonValues(self):
