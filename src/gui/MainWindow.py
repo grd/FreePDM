@@ -94,12 +94,18 @@ class MainWindow(QMainWindow):
             self.ui.tableWorkspace.setItem(row, 0, cb)
 
             file = QTableWidgetItem(item['filename'])
+            file.setFlags(file.flags() ^ Qt.ItemIsEditable)
             if item['type'] == 'Directory':
                 file.setForeground(QtGui.QColor('blue')) 
             self.ui.tableWorkspace.setItem(row, 1, file)
             
-            self.ui.tableWorkspace.setItem(row, 5, QTableWidgetItem(item['type']))
-            self.ui.tableWorkspace.setItem(row, 6, QTableWidgetItem(item['size']))
+            type = QTableWidgetItem(item['type'])
+            type.setFlags(type.flags() ^ Qt.ItemIsEditable)
+            self.ui.tableWorkspace.setItem(row, 5, type)
+
+            size = QTableWidgetItem(item['size'])
+            size.setFlags(size.flags() ^ Qt.ItemIsEditable)
+            self.ui.tableWorkspace.setItem(row, 6, size)
             row += 1
 
 
