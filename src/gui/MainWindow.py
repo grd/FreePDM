@@ -19,13 +19,14 @@ from directorymodel import DirectoryModel
 
 class MainWindow(QMainWindow):
     def __init__(self):
-        self.homeDirectory = os.path.expanduser('~')
-        if len(sys.argv) == 2:
-            self.homeDirectory = sys.argv[1]
-        print("self.homeDirectory = ", self.homeDirectory)
-        self.directory = self.homeDirectory
-
         super(MainWindow, self).__init__()
+
+        self.root_directory = os.path.expanduser('~')
+        if len(sys.argv) == 2:
+            self.root_directory = sys.argv[1]
+        print("self.root_directory = ", self.root_directory)
+        self.current_directory = self.root_directory
+
         self.load_ui()
         self.load_data()
 
@@ -70,7 +71,7 @@ class MainWindow(QMainWindow):
             print('Deselected Cell Location Row: {0}, Column: {1}'.format(ix.row(), ix.column()))
 
     def load_data(self):
-        dm = DirectoryModel(self.directory)
+        dm = DirectoryModel(self.current_directory, self.root_directory == self.current_directory)
         row = 0
         self.ui.tableWorkspace.setRowCount(dm.size())
         # https://stackoverflow.com/questions/39511181/python-add-checkbox-to-every-row-in-qtablewidget
