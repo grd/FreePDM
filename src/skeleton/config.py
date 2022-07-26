@@ -3,6 +3,8 @@
     :license:   MIT License.
 """
 
+import configparser
+
 # Reading and writing the configuration file.
 # The location of the file is: (I don't know yet, and the name too).
 # The file format is probably ini since that is the easiest.
@@ -12,8 +14,18 @@
 #      These directories are shown at the start of the main window.
 #        "startupdir"
 #
-from directorymodel import DirectoryModel
 
-# class generalOptions(object):
-#     def __init__():
-#     reading the INI file
+class generalOptions(object):
+    def __init__():
+
+config = configparser.ConfigParser()
+config['DEFAULT'] = {'StartupDirectory': '',
+                     'Filter': '',
+                    'Compression': 'yes',
+                    'CompressionLevel': '9'}
+config['bitbucket.org'] = {}
+config['bitbucket.org']['User'] = 'hg'
+config['topsecret.server.com'] = {}
+config['DEFAULT']['ForwardX11'] = 'yes'
+with open('example.ini', 'w') as configfile:
+   config.write(configfile)

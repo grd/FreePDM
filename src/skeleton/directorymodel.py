@@ -58,7 +58,7 @@ class DirectoryModel(object):
                 nr = nr + 1
  
         # dealing with the first item
-        if withParentDirectory is 'True':
+        if withParentDirectory == True:
             self.directoryList[0] = ({'nr': str(0), 'type': 'Directory', 'filename': '..', 'size': ''})
         else:
             self.directoryList.pop(0)

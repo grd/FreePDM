@@ -61,8 +61,11 @@ class MainWindow(QMainWindow):
         row = event.row()
         item = self.ui.tableWorkspace.item(row, 5).text()
         print('item = ', item)
+
+        # Change directory
         if item == 'Directory':
-            self.current_directory = self.current_directory + '/' + self.ui.tableWorkspace.item(row, 1).text()
+            dir = self.ui.tableWorkspace.item(row, 1).text()
+            self.current_directory = os.path.abspath(os.path.join(self.current_directory, dir))
             self.load_data()
 
     # deal with checkbox click on a field
@@ -80,7 +83,7 @@ class MainWindow(QMainWindow):
             print('Deselected Cell Location Row: {0}, Column: {1}'.format(ix.row(), ix.column()))
 
     def load_data(self):
-        dm = DirectoryModel(self.current_directory, self.root_directory == self.current_directory)
+        dm = DirectoryModel(self.current_directory, self.root_directory != self.current_directory)
         row = 0
         self.ui.tableWorkspace.setRowCount(dm.size())
         # https://stackoverflow.com/questions/39511181/python-add-checkbox-to-every-row-in-qtablewidget
