@@ -14,6 +14,7 @@ A PDM for FreeCAD
 * Dealing with other info (such as LidbreOffice files and other media)
 * Adding, Renaming and deleting files. Renaming can be tricky when the file is used in assemblies.
 * Replacing files in assemblies
+* Copying files (incl. it's dependencies. Everything below and drawings, all optional)
 * Dealing with versions (IMO this can be dealt with the data DB)
 * Disable files with a disable state (again in the data DB)
 * Dealing with states (temporary ones, before putting into a release), again in the data DB
