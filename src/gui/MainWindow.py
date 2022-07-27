@@ -98,7 +98,19 @@ class MainWindow(QMainWindow):
             if item['type'] == 'Directory':
                 file.setForeground(QtGui.QColor('blue')) 
             self.ui.tableWorkspace.setItem(row, 1, file)
-            
+
+            description = QTableWidgetItem('')
+            description.setFlags(description.flags() ^ Qt.ItemIsEditable)
+            self.ui.tableWorkspace.setItem(row, 2, description)
+
+            state = QTableWidgetItem('')
+            state.setFlags(state.flags() ^ Qt.ItemIsEditable)
+            self.ui.tableWorkspace.setItem(row, 3, state)
+          
+            version = QTableWidgetItem('')
+            version.setFlags(version.flags() ^ Qt.ItemIsEditable)
+            self.ui.tableWorkspace.setItem(row, 4, version)
+
             type = QTableWidgetItem(item['type'])
             type.setFlags(type.flags() ^ Qt.ItemIsEditable)
             self.ui.tableWorkspace.setItem(row, 5, type)

@@ -53,6 +53,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="buttonFilter">
+        <property name="text">
+         <string>Filter</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="spacerpurge2filter">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -66,9 +73,9 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="buttonFilter">
+       <widget class="QPushButton" name="buttonSearch">
         <property name="text">
-         <string>Filter</string>
+         <string>Search</string>
         </property>
        </widget>
       </item>
@@ -96,12 +103,12 @@
       </column>
       <column>
        <property name="text">
-        <string>Status</string>
+        <string>State</string>
        </property>
       </column>
       <column>
        <property name="text">
-        <string>State</string>
+        <string>Version</string>
        </property>
       </column>
       <column>
