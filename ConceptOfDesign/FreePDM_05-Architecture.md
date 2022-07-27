@@ -33,10 +33,9 @@ The _Frond-End_ is installed on the _Client-PC_, while the _Back-End_ is install
 
 ![BDD Overview](FreePDM_CoD-Figures/BDD_Overview.png)
 
-### server side
+### Server-side
 
-Currently the Server is an abstract object. 
-It can be:
+Currently the Server is an abstract object. It can be:
 
 - A physical Device
 - A virtual Machine
@@ -47,9 +46,9 @@ For a more _Container_ like environment see: [_Container_](#Container-(Optional)
 
 ![IBD Server](FreePDM_CoD-Figures/IBD_Server.png)
 
-One of the requirements is that it should be possible to run a server without / With al limited amount of extra hardware.
+One of the requirements is that it should be possible to run a server with a limited amount of extra hardware.
 Of course this holds only for small environments!
-For a few user this should be work in a Virtual machine or a Raspberry Pi_ but for more users this is probably not powerful enough!  
+For a few user this should be work in a Virtual machine or a _Raspberry Pi_ but for more users this is probably not powerful enough!  
 
 An extra Item could be _Raspberry Pi_ cluster this [DIY project](https://www.raspberrypi.com/tutorials/cluster-raspberry-pi-tutorial/) or [the _Tuning Pi_](https://turingpi.com/).
 
@@ -201,7 +200,7 @@ Pyramid and Falcon are much smaller than Django.
 ##### Extra information
 
 - [Full stack python Apache](https://www.fullstackpython.com/apache-http-server.html)
-- [Full stack python Ngix](https://www.fullstackpython.com/nginx.html)
+- [Full stack python Nginx](https://www.fullstackpython.com/nginx.html)
 - [Full stack python Django](https://www.fullstackpython.com/django.html)
 - [Full stack python Falcon](https://www.fullstackpython.com/falcon.html)
 - [Full stack python Pyramid](https://www.fullstackpython.com/pyramid.html)
