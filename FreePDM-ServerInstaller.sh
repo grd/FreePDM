@@ -367,7 +367,7 @@ If so Feel free to create a Pull Request.\n"
 					printf "When installing OpenLDAP also an Admin Password it requested.\n"
 					;;
 				2)
-					printf "It is recomended to install Apache Directory Studio too.
+					printf "It is recommended to install Apache Directory Studio too.
 					Install Eclipse IDE and then Install Apache directory Studio via the Marketplace.\n"
 					ldapserver="Apache DS"
 					ldaptestcommand=""
@@ -434,7 +434,7 @@ If so Feel free to create a Pull Request.\n"
 				# echo "ldapadminname = \"$ldapadminname\"" >> server.conf
 
 				# read -sp "Enter LDAP Password:" ldappw1  # Silent
-				read -p "Enter LDAP admin password:"$'\n' -s -r ldapadminpassword1  # With asterix
+				read -p "Enter LDAP admin password:"$'\n' -s -r ldapadminpassword1  # With asterisk
 				# maybe remove this question later on. Inside OpenLDAP a password is requested from menu.
 
 				if [[ $sqldatabaseadmin == "" ]]; then
@@ -447,12 +447,12 @@ If so Feel free to create a Pull Request.\n"
 				read -p "Enter LDAP username:"$'\n' ldapusername
 
 				# read -sp "Enter LDAP Password:" ldappw1  # Silent
-				read -p "Enter LDAP user password:"$'\n' -s -r ldapuserpassword1  # With asterix
+				read -p "Enter LDAP user password:"$'\n' -s -r ldapuserpassword1  # With asterisk
 
 				# Don't save user password to file
 				# echo "ldapuserpassword1 = \"ldapuserpassword1\"" >> server.conf
 
-				read -p "Re-enter LDAP user password:"$'\n' -s -r ldapuserpassword2  # With asterix
+				read -p "Re-enter LDAP user password:"$'\n' -s -r ldapuserpassword2  # With asterisk
 
 				# Don't save user password to file
 				# echo "ldapuserpassword2 = \"ldapuserpassword2\"" >> server.conf
@@ -970,7 +970,7 @@ if [[ $installwebserver == "y" ]]; then
 			;;
 	esac
 
-	# If statement for IPaddres has always same length and set of dots on same place
+	# If statement for IPaddress has always same length and set of dots on same place
 
 	printf "The following Python Web server shall be installed: $webserverpython."
 	sleep 1

@@ -42,10 +42,10 @@ In the diagram below show the _Interfaces_ between the _Item_, _Database_ and _V
 
 ![BDD ItemInterface 3Way](FreePDM_CoD-Figures/BDD_ItemInterface-3Way.png)
 
-If we go back to the _Item_ block there we have two _Interfaces_. These two _Interfaces_ correspondent with the diagram directly above.  
-As al the _Rationale_ and _Problems_ explain there are some difficulties to overcome.  
+If we go back to the _Item_ block there we have two _Interfaces_. These two _Interfaces_ correspond with the diagram directly above.  
+As all the _Rationale_ and _Problems_ explain there are some difficulties to overcome.  
 The main issue is split between the _Version system_ and the _database_. 
-In this split lies ho to handle binary files where most version system are not good at.
+In this split lies the solution to handle binary files where most version system fall short.
 Binary files are in such a system basically all copies and not delta files what it is with text files.
 
 ### two way system
