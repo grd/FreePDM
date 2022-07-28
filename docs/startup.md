@@ -18,9 +18,10 @@ TODO: Show how to
 ##### `pip` modules
 
 ```shell
-pip3 install defusedxml
-pip3 install imageio
-pip3 install PySide2
+pip install defusedxml
+pip install imageio
+pip install PySide2
+pip install appdirs
 ```
 
 #### CSV
