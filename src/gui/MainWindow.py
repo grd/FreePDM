@@ -116,6 +116,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWorkspace.setItem(row, 5, type)
 
             size = QTableWidgetItem(item['size'])
+            size.setTextAlignment(Qt.AlignRight)
             size.setFlags(size.flags() ^ Qt.ItemIsEditable)
             self.ui.tableWorkspace.setItem(row, 6, size)
             row += 1
