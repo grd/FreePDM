@@ -20,7 +20,7 @@ from PySide2 import QtGui
 
 
 class ItemDataModel():
-    def __init__(self, filename):
+    def __init__(self, filename):  # filename is also imported so change
         self.fileName = filename
         self.thumbnail = None
         self.documentProperties = {}
@@ -31,11 +31,11 @@ class ItemDataModel():
 
     def read(self):
         with tempfile.TemporaryDirectory() as tmpdirname:
-#            print('created temporary directory', tmpdirname)
+            # print('created temporary directory', tmpdirname)
 
             # extracting the FCStd zip file
-            zip=zipfile.ZipFile(self.fileName)
-            zip.extractall(tmpdirname)
+            zippedfile = zipfile.ZipFile(self.fileName)  # zip is python internal function
+            zippedfile.extractall(tmpdirname)
 
             # reading xml file
             tree = tmpdirname + "/Document.xml"
@@ -53,46 +53,46 @@ class ItemDataModel():
 
         root = et.fromstring(docx)
 
-        el = root.find(".//Property[@name='Comment']/String")
-        self.documentProperties["Comment"] = el.attrib.get('value')
+        element = root.find(".//Property[@name='Comment']/String")
+        self.documentProperties["Comment"] = element.attrib.get('value')
 
-        el = root.find(".//Property[@name='Company']/String")
-        self.documentProperties["Company"] = el.attrib.get('value')
+        element = root.find(".//Property[@name='Company']/String")
+        self.documentProperties["Company"] = element.attrib.get('value')
 
-        el = root.find(".//Property[@name='CreatedBy']/String")
-        self.documentProperties["CreatedBy"] = el.attrib.get('value')
+        element = root.find(".//Property[@name='CreatedBy']/String")
+        self.documentProperties["CreatedBy"] = element.attrib.get('value')
 
-        el = root.find(".//Property[@name='CreationDate']/String")
-        self.documentProperties["CreationDate"] = el.attrib.get('value')
+        element = root.find(".//Property[@name='CreationDate']/String")
+        self.documentProperties["CreationDate"] = element.attrib.get('value')
 
-        el = root.find(".//Property[@name='Id']/String")
-        self.documentProperties["Id"] = el.attrib.get('value')
+        element = root.find(".//Property[@name='Id']/String")
+        self.documentProperties["Id"] = element.attrib.get('value')
 
-        el = root.find(".//Property[@name='Label']/String")
-        self.documentProperties["Label"] = el.attrib.get('value')
+        element = root.find(".//Property[@name='Label']/String")
+        self.documentProperties["Label"] = element.attrib.get('value')
 
-        el = root.find(".//Property[@name='LastModifiedBy']/String")
-        self.documentProperties["LastModifiedBy"] = el.attrib.get('value')
+        element = root.find(".//Property[@name='LastModifiedBy']/String")
+        self.documentProperties["LastModifiedBy"] = element.attrib.get('value')
 
-        el = root.find(".//Property[@name='LastModifiedDate']/String")
-        self.documentProperties["LastModifiedDate"] = el.attrib.get('value')
+        element = root.find(".//Property[@name='LastModifiedDate']/String")
+        self.documentProperties["LastModifiedDate"] = element.attrib.get('value')
 
-        el = root.find(".//Property[@name='Uid']/Uuid")
-        self.documentProperties["Uid"] = el.attrib.get('value')
+        element = root.find(".//Property[@name='Uid']/Uuid")
+        self.documentProperties["Uid"] = element.attrib.get('value')
 
-        el = root.find(".//Property[@name='a2p_Version']/String")
-        if el is not None:
-            self.documentProperties["Assembly-A2P"] = el.attrib.get('value')
+        element = root.find(".//Property[@name='a2p_Version']/String")
+        if element is not None:
+            self.documentProperties["Assembly-A2P"] = element.attrib.get('value')
 
-        el = root.find(".//Property[@name='Proxy']/Python")
-        if el is not None:
-            a3assy = el.attrib.get('module')
+        element = root.find(".//Property[@name='Proxy']/Python")
+        if element is not None:
+            a3assy = element.attrib.get('module')
             if a3assy == 'freecad.asm3.assembly':
                 self.documentProperties["Assembly-A3"] = 'A3-Assy'
 
-        el = root.find(".//Property[@name='SolverId']/String")
-        if el is not None:
-            a4assy = el.attrib.get('value')
+        element = root.find(".//Property[@name='SolverId']/String")
+        if element is not None:
+            a4assy = element.attrib.get('value')
             if a4assy == 'Asm4EE':
                 self.documentProperties["Assembly-A4"] = 'A4-Assy'
 

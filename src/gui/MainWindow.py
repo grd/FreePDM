@@ -83,20 +83,20 @@ class MainWindow(QMainWindow):
             print('Deselected Cell Location Row: {0}, Column: {1}'.format(ix.row(), ix.column()))
 
     def load_data(self):
-        dm = DirectoryModel(self.current_directory, self.root_directory != self.current_directory)
+        dirmodel = DirectoryModel(self.current_directory, self.root_directory != self.current_directory)
         row = 0
-        self.ui.tableWorkspace.setRowCount(dm.size())
+        self.ui.tableWorkspace.setRowCount(dirmodel.size())
         # https://stackoverflow.com/questions/39511181/python-add-checkbox-to-every-row-in-qtablewidget
-        for item in dm.directoryList:
-            cb = QTableWidgetItem("")
-            cb.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
-            cb.setCheckState(Qt.CheckState.Unchecked)
-            self.ui.tableWorkspace.setItem(row, 0, cb)
+        for item in dirmodel.directoryList:
+            checkb = QTableWidgetItem("")
+            checkb.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
+            checkb.setCheckState(Qt.CheckState.Unchecked)
+            self.ui.tableWorkspace.setItem(row, 0, checkb)
 
             file = QTableWidgetItem(item['filename'])
             file.setFlags(file.flags() ^ Qt.ItemIsEditable)
             if item['type'] == 'Directory':
-                file.setForeground(QtGui.QColor('blue')) 
+                file.setForeground(QtGui.QColor('blue'))
             self.ui.tableWorkspace.setItem(row, 1, file)
 
             description = QTableWidgetItem('')
@@ -106,14 +106,14 @@ class MainWindow(QMainWindow):
             state = QTableWidgetItem('')
             state.setFlags(state.flags() ^ Qt.ItemIsEditable)
             self.ui.tableWorkspace.setItem(row, 3, state)
-          
+
             version = QTableWidgetItem('')
             version.setFlags(version.flags() ^ Qt.ItemIsEditable)
             self.ui.tableWorkspace.setItem(row, 4, version)
 
-            type = QTableWidgetItem(item['type'])
-            type.setFlags(type.flags() ^ Qt.ItemIsEditable)
-            self.ui.tableWorkspace.setItem(row, 5, type)
+            itemtype = QTableWidgetItem(item['type'])  # type is default function in python
+            itemtype.setFlags(itemtype.flags() ^ Qt.ItemIsEditable)
+            self.ui.tableWorkspace.setItem(row, 5, itemtype)
 
             size = QTableWidgetItem(item['size'])
             size.setTextAlignment(Qt.AlignRight)

@@ -32,14 +32,14 @@ class DirectoryModel(object):
         directory_list = []
         file_list = []
         nr = 0
-        for d in dir_list:
-            full_item_path = self.full_path(d)
+        for directory in dir_list:
+            full_item_path = self.full_path(directory)
             # eliminate files and directories starting with "."
-            if not d.startswith("."):
+            if not directory.startswith("."):
                 if os.path.isdir(full_item_path):
-                    directory_list.append(d)
+                    directory_list.append(directory)
                 if os.path.isfile(full_item_path):
-                    file_list.append(d)
+                    file_list.append(directory)
 
         # Keep this in mind:
 
@@ -51,20 +51,20 @@ class DirectoryModel(object):
         #                        "type": "Dir or File",
         #                        "size": "file size"}]
 
-        for dl in directory_list:
-            self.directoryList.append({'nr': str(nr), 'filename': dl, 'type': 'Directory', 'size': ''})
-            nr = nr + 1
-        for fl in file_list:
-            size = str(os.path.getsize(self.full_path(fl)))
-            if fl.endswith(".FCStd"):
-                self.directoryList.append({'nr': str(nr), 'filename': fl, 'type': 'FCStd', 'size': size})
-                nr = nr + 1
+        for directory in directory_list:
+            self.directoryList.append({'nr': str(nr), 'filename': directory, 'type': 'Directory', 'size': ''})
+            nr += 1
+        for file in file_list:
+            size = str(os.path.getsize(self.full_path(file)))
+            if file.endswith(".FCStd"):
+                self.directoryList.append({'nr': str(nr), 'filename': file, 'type': 'FCStd', 'size': size})
+                nr += 1
             else:
-                self.directoryList.append({'nr': str(nr), 'filename': fl, 'type': 'File', 'size': size})
-                nr = nr + 1
- 
+                self.directoryList.append({'nr': str(nr), 'filename': file, 'type': 'File', 'size': size})
+                nr += 1
+
         # dealing with the first item
-        if withParentDirectory == True:
+        if withParentDirectory is True:
             self.directoryList[0] = ({'nr': str(0), 'filename': '..', 'type': 'Directory', 'size': ''})
         else:
             self.directoryList.pop(0)

@@ -13,45 +13,45 @@ import sys
 #  and print the values of the FC file about that directory.
 
 
-def handleDirectory(dir):
-    dm = DirectoryModel(dir)
+def handleDirectory(directory):  # dir is a build in python function
+    dirmodel = DirectoryModel(directory)
     print("  nr Dir/File  Filename              size")
-    for list in dm.directoryList:
+    for list in dirmodel.directoryList:
         print(list['nr'].rjust(4, ' ') + ' ' + list['dirOrFile'].ljust(9, ' ') + ' ' + list['filename'].ljust(25, ' ') + list['size'])
 #        print(list['nr'].rjust(4, ' ') + ' ' + list['filename'].ljust(25, ' ') + list['size'])
 
-    ip = input("Press a number or'q' to quit, or '-1' to go the higher directory ")
-    if ip == 'q':
+    keyinput = input("Press a number or'q' to quit, or '-1' to go the higher directory ")
+    if keyinput == 'q':
         exit()
-    num = int(ip)  # Just don't press anything. It doesn't work like that...
+    num = int(keyinput)  # Just don't press anything. It doesn't work like that...
     if num == -1:
-        dir = dir[0:dir.rfind("/")]
-        return(dir)
-    if num >= 0 and num <= len(dm.directoryList):  # We have a number here...
-        item = dm.directoryList[num]
+        directory = directory[0:directory.rfind("/")]
+        return(directory)
+    if num >= 0 and num <= len(dirmodel.directoryList):  # We have a number here...
+        item = dirmodel.directoryList[num]
         if item['dirOrFile'] == 'Directory':
-            dir = dir + '/' + dm.directoryList[num]['filename']
-            return(dir)
+            directory = directory + '/' + dirmodel.directoryList[num]['filename']
+            return(directory)
         elif item['dirOrFile'] == 'FCStd':
-            fcFile = ItemDataModel(dir + '/' + item['filename'])
+            fcFile = ItemDataModel(directory + '/' + item['filename'])
             idm = fcFile.documentProperties
             print("File Size: " + fcFile.getFileSize())
             print("Data from FCStd model")
             for x, y in idm.items():
                 print(x.ljust(18, ' ') + y)
             input("Press Enter to return")
-            return(dir)
+            return(directory)
         else:
-            return(dir)
+            return(directory)
 
 
 def main():
-    dir = os.path.expanduser('~')
+    directory = os.path.expanduser('~')
     if len(sys.argv) == 2:
-        dir = sys.argv[1]
+        directory = sys.argv[1]
 
     while True:
-        dir = handleDirectory(dir)
+        directory = handleDirectory(directory)
 
 
 if __name__ == "__main__":

@@ -19,6 +19,7 @@ sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'skeleton'))
 
 from itemdatamodel import ItemDataModel
 
+
 class EditItem(QDialog):
     def __init__(self, file):
         super(EditItem, self).__init__()
@@ -51,7 +52,8 @@ class EditItem(QDialog):
             print("yes, we have a thumbnail and it is loaded")
 
             pixmap = QtGui.QPixmap(self.idm.thumbnail)
-            self.ui.lbl.setPixmap(pixmap.scaled(256, 256)) # , QtCore.Qt.KeepAspectRatio , QtCore.Qt.SmoothTransformation))
+            self.ui.lbl.setPixmap(pixmap.scaled(256, 256))  # , QtCore.Qt.KeepAspectRatio , QtCore.Qt.SmoothTransformation))
+
 
 def main():
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
