@@ -13,6 +13,7 @@ import tempfile
 import os
 import imageio
 import zipfile
+from PySide2 import QtGui
 
 # The Class ItemDataModel is the main class for reading and writing
 # one FCStd file. The file can be read without opening a FreeCAD file.
@@ -43,7 +44,8 @@ class ItemDataModel():
 
             # Check whether there is a thumbnail
             if os.path.isdir(tmpdirname + "/thumbnails"):
-                self.thumbnail = imageio.v3.imread(tmpdirname + "/thumbnails/Thumbnail.png")
+                self.documentProperties["thumbnail"] = tmpdirname + "/thumbnails/Thumbnail.png"
+                self.thumbnail = QtGui.QImage(self.documentProperties['thumbnail'])
 
     def readXML(self, data):
         with open(data) as docxml:

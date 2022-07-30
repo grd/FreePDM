@@ -40,7 +40,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>70</y>
+     <y>110</y>
      <width>211</width>
      <height>25</height>
     </rect>
@@ -50,7 +50,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>70</y>
+     <y>110</y>
      <width>91</width>
      <height>17</height>
     </rect>
@@ -63,7 +63,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>110</y>
+     <y>150</y>
      <width>91</width>
      <height>17</height>
     </rect>
@@ -76,7 +76,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>110</y>
+     <y>150</y>
      <width>211</width>
      <height>25</height>
     </rect>
@@ -86,7 +86,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>150</y>
+     <y>190</y>
      <width>91</width>
      <height>17</height>
     </rect>
@@ -99,7 +99,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>150</y>
+     <y>190</y>
      <width>211</width>
      <height>25</height>
     </rect>
@@ -109,7 +109,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>190</y>
+     <y>230</y>
      <width>91</width>
      <height>17</height>
     </rect>
@@ -122,7 +122,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>190</y>
+     <y>230</y>
      <width>211</width>
      <height>25</height>
     </rect>
@@ -132,7 +132,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>230</y>
+     <y>270</y>
      <width>91</width>
      <height>17</height>
     </rect>
@@ -141,21 +141,11 @@
     <string>Material</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="materialEdit">
-   <property name="geometry">
-    <rect>
-     <x>130</x>
-     <y>230</y>
-     <width>211</width>
-     <height>25</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QLabel" name="label_7">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>270</y>
+     <y>310</y>
      <width>91</width>
      <height>17</height>
     </rect>
@@ -168,7 +158,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>270</y>
+     <y>310</y>
      <width>211</width>
      <height>25</height>
     </rect>
@@ -178,7 +168,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>310</y>
+     <y>350</y>
      <width>111</width>
      <height>17</height>
     </rect>
@@ -191,7 +181,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>310</y>
+     <y>350</y>
      <width>211</width>
      <height>25</height>
     </rect>
@@ -201,7 +191,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>350</y>
+     <y>390</y>
      <width>211</width>
      <height>25</height>
     </rect>
@@ -211,7 +201,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>350</y>
+     <y>390</y>
      <width>111</width>
      <height>17</height>
     </rect>
@@ -224,7 +214,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>390</y>
+     <y>430</y>
      <width>111</width>
      <height>17</height>
     </rect>
@@ -237,7 +227,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>390</y>
+     <y>430</y>
      <width>211</width>
      <height>25</height>
     </rect>
@@ -247,7 +237,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>430</y>
+     <y>470</y>
      <width>211</width>
      <height>25</height>
     </rect>
@@ -257,23 +247,13 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>430</y>
+     <y>470</y>
      <width>111</width>
      <height>17</height>
     </rect>
    </property>
    <property name="text">
     <string>Key Words</string>
-   </property>
-  </widget>
-  <widget class="QGraphicsView" name="imageView">
-   <property name="geometry">
-    <rect>
-     <x>360</x>
-     <y>30</y>
-     <width>271</width>
-     <height>281</height>
-    </rect>
    </property>
   </widget>
   <widget class="QPushButton" name="saveButton">
@@ -300,6 +280,52 @@
    </property>
    <property name="text">
     <string>Cancel</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="partCombo">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>70</y>
+     <width>211</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_12">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>70</y>
+     <width>81</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Part</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="materialCombo">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>270</y>
+     <width>211</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lbl">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>30</y>
+     <width>171</width>
+     <height>161</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>bla</string>
    </property>
   </widget>
  </widget>
