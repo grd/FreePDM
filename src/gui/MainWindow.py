@@ -12,6 +12,8 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWid
 from PySide2.QtCore import QFile, Qt
 from PySide2.QtUiTools import QUiLoader
 
+from EditItem import EditItem
+
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'skeleton'))
 
 from directorymodel import DirectoryModel
@@ -60,13 +62,22 @@ class MainWindow(QMainWindow):
     def fileDoubleClicked(self, event):
         row = event.row()
         item = self.ui.tableWorkspace.item(row, 5).text()
-        print('item = ', item)
+        # print('item = ', item)
 
         # Change directory
         if item == 'Directory':
             dir = self.ui.tableWorkspace.item(row, 1).text()
             self.current_directory = os.path.abspath(os.path.join(self.current_directory, dir))
             self.load_data()
+
+        # Edit FC Item
+        if item == 'FCStd':
+            part = self.ui.tableWorkspace.item(row, 1).text()
+            part = os.path.abspath(os.path.join(self.current_directory, part))
+            EditItem(part)
+            self.load_data()
+
+  
 
     # deal with checkbox click on a field
     def retrieveCheckButtonValues(self):
