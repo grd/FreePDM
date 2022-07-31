@@ -27,7 +27,7 @@ class EditItem(QDialog):
         self.idm = ItemDataModel(self.file)
 
         loader = QUiLoader()
-        path = os.fspath(Path(__file__).resolve().parents[1] / "EditItem.ui")
+        path = os.fspath(Path(__file__).resolve().parents[1] / "gui/EditItem.ui")
         print(path)
         ui_file = QFile(path)
         ui_file.open(QFile.ReadOnly)
