@@ -27,7 +27,7 @@ class EditItem(QDialog):
         self.idm = ItemDataModel(self.file)
 
         loader = QUiLoader()
-        path = os.fspath(Path(__file__).resolve().parents[1] / "gui/EditItem.ui")
+        path = os.fspath(Path(__file__).resolve().parents[1] / "EditItem.ui")
         print(path)
         ui_file = QFile(path)
         ui_file.open(QFile.ReadOnly)
@@ -58,7 +58,7 @@ class EditItem(QDialog):
 def main():
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)
-    mainwindow=EditItem("/home/user/temp/part-inches.FCStd")
+    mainwindow = EditItem("/home/user/temp/part-inches.FCStd")
     sys.exit(app.exec_())
 
 
