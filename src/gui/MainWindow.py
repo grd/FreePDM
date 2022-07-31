@@ -12,7 +12,7 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWid
 from PySide2.QtCore import QFile, Qt
 from PySide2.QtUiTools import QUiLoader
 
-from EditItem import EditItem
+from .EditItem import EditItem
 
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'skeleton'))
 
