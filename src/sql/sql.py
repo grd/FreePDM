@@ -27,7 +27,7 @@ class SQL(Base):
 
 
 class SQLUser(Base):
-    """SQL User"""
+    """Class with default SQL User properties"""
     __tablename__ = 'user_account'
     user_id = Column(Integer, primary_key=True)
     user_name = Column(String(30))
@@ -40,8 +40,17 @@ class SQLUser(Base):
 
 
 class SQLRole(Base):
-    """Class for genrating Roles"""
+    """Class with default SQL Role properties"""
     __tablename__ = 'roles'
     role_id = Column(Integer, primary_key=True)
     role_name = Column(String(30))
     # TODO: add privileges - Also how to
+
+
+class SQLProject(Base):
+    """Class with default SQL Role properties"""
+    __tablename__ = 'roles'
+    project_id = Column(Integer, primary_key=True)
+    Project_number = Column(Integer)
+    project_name = Column(String(30))
+    project_path = Column(String)
