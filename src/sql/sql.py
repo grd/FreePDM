@@ -130,5 +130,5 @@ class SQLHistory(Base):
     history_checked_out_by = Column(String)
     history_revision_state = Column(String)
     history_revision_number = Column(Integer)  # Maybe other format
-    # Create Complex revisions (Example: Date, major.minor, major.letter_minor)
+    # TODO: Create Complex revisions (Example: Date, major.minor, major.letter_minor)
     history_store_number = Column(Integer)  # last store version iterator
