@@ -6,7 +6,7 @@
 """
 
 from sqlalchemy.orm import declarative_base
-from sqlalchemy import Column, Float, Integer, String, ForeignKey
+from sqlalchemy import Column, Float, Integer, String, Date, ForeignKey
 from typing import NewType, Optional
 
 Base = declarative_base()
@@ -104,6 +104,7 @@ class SQLDocument(Base):
 
 
 class SQLModelMaterial(Base):
+    """Class with SQL Material properties"""
     __tablename__ = 'materials'
 
     modelmat_id = Column(Integer, primary_key=True)
@@ -114,3 +115,20 @@ class SQLModelMaterial(Base):
     model_weight = Column(Float)  # model_mass * model_volume
     model_surface_area = Column(Float)
     model_number = Column(Integer, ForeignKey('models.model_number'), nullable=False)
+
+
+# TODO: A histric item / Model / Document can  have a foreign key to all of those tables.
+class SQLHistory(Base):
+    """Class with SQL History properties"""
+    __tablename__ = 'history'
+
+    hisory_id = Column(Integer, primary_key=True)
+    history_date_created = Column(Date)
+    history_created_by = Column(String)
+    history_date_last_edit = Column(Date)
+    history_last_edit_by = Column(String)
+    history_checked_out_by = Column(String)
+    history_revision_state = Column(String)
+    history_revision_number = Column(Integer)  # Maybe other format
+    # Create Complex revisions (Example: Date, major.minor, major.letter_minor)
+    history_store_number = Column(Integer)  # last store version iterator
