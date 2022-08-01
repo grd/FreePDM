@@ -6,7 +6,7 @@
 """
 
 from sqlalchemy.orm import declarative_base
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Float, Integer, String, ForeignKey
 from typing import NewType, Optional
 
 Base = declarative_base()
@@ -29,6 +29,7 @@ class SQL(Base):
 class SQLUser(Base):
     """Class with default SQL User properties"""
     __tablename__ = 'user_account'
+
     user_id = Column(Integer, primary_key=True)
     user_name = Column(String(30))
     first_name = Column(String(30))
@@ -42,6 +43,7 @@ class SQLUser(Base):
 class SQLRole(Base):
     """Class with default SQL Role properties"""
     __tablename__ = 'roles'
+
     role_id = Column(Integer, primary_key=True)
     role_name = Column(String(32))
     # TODO: add privileges - Also how to
@@ -50,7 +52,65 @@ class SQLRole(Base):
 class SQLProject(Base):
     """Class with default SQL Role properties"""
     __tablename__ = 'projects'
+
     project_id = Column(Integer, primary_key=True)
     project_number = Column(Integer)  # this can come another source as the Db so not same as project_id
     project_name = Column(String(32))
     project_path = Column(String)
+
+
+class SQLItem(Base):
+    """Class with SQL Item properties"""
+    __tablename__ = 'items'
+
+    item_id = Column(Integer, primary_key=True)
+    item_number = Column(Integer)
+    item_name = Column(String(32))
+    item_description = Column(String(32))
+    item_full_description = Column(String)
+    # item should be able to exist in multiple projects. but need a singel store location
+    item_in_project = Column(Integer, ForeignKey('projects.project_number'), nullable=False)
+    item_path = Column(String)
+
+
+class SQLModel(Base):
+    """Class with SQL Item properties"""
+    __tablename__ = 'models'
+
+    model_id = Column(Integer, primary_key=True)
+    model_number = Column(Integer, ForeignKey('items.item_number'))
+    model_name = Column(String(32))
+    model_description = Column(String(32))
+    model_full_description = Column(String)
+    model_filename = Column(String(255))  # Limit of current file systems
+    # Auto calculate extension
+    model_ext = Column(String(255))  # Total limit of filename and extension is 255
+    # model_path = Column(String)  # should belongs to same path as described in item
+
+
+class SQLDocument(Base):
+    """Class with SQL Item properties"""
+    __tablename__ = 'documents'
+
+    document_id = Column(Integer, primary_key=True)
+    document_number = Column(Integer, ForeignKey('items.item_number'), nullable=False)
+    document_name = Column(String(32))
+    document_description = Column(String(32))
+    document_full_description = Column(String)
+    document_filename = Column(String(255))  # Limit of current file systems
+    # Auto calculate extension
+    document_ext = Column(String(255))  # Total limit of filename and extension is 255
+    # document_path = Column(String)  # should belongs to same path as described in item
+
+
+class SQLModelMaterial(Base):
+    __tablename__ = 'materials'
+
+    modelmat_id = Column(Integer, primary_key=True)
+    model_material = Column(String(32))
+    model_finish = Column(String(32))
+    model_mass = Column(Float)  # unit mass
+    model_volume = Column(Float)
+    model_weight = Column(Float)  # model_mass * model_volume
+    model_surface_area = Column(Float)
+    model_number = Column(Integer, ForeignKey('models.model_number'), nullable=False)
