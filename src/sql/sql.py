@@ -6,7 +6,7 @@
 """
 
 from sqlalchemy.orm import declarative_base
-from sqlalchemy import Column, Float, Integer, String, Date, ForeignKey
+from sqlalchemy import Column, Boolean, Integer, Float, String, Date, ForeignKey
 from typing import NewType, Optional
 
 Base = declarative_base()
@@ -132,3 +132,32 @@ class SQLHistory(Base):
     history_revision_number = Column(Integer)  # Maybe other format
     # TODO: Create Complex revisions (Example: Date, major.minor, major.letter_minor)
     history_store_number = Column(Integer)  # last store version iterator
+
+
+class SQLPurchase(Base):
+    """Class with SQL purchasing properties"""
+    __tablename__ = 'purchasing'
+
+    purchasing_id = Column(Integer, primary_key=True)
+    purchasing_source = Column(Boolean)  # Repesent Buy OR Manufacture
+    purchasing_tracebility = Column(String)  # Represent list: Lot, Lot And Serial Number, Serial Number, Not traced
+    manufacturer_id = Column(Integer, ForeignKey('manufacturers.manufacturer_id'))
+    vendor_id = Column(Integer, ForeignKey('vendors.vendor_id'))
+
+
+class SQLManufacturer(Base):
+    """Class with SQL Manufacturing properties"""
+    __tablename__ = 'manufacturers'
+
+    manufacturer_id = Column(Integer, primary_key=True)
+    manufacturer_name = Column(String(32))
+    # TODO: Add manufacturer address
+
+
+class SQLVendor(Base):
+    """Class with SQL Vendor properties"""
+    __tablename__ = 'vendors'
+
+    vendor_id = Column(Integer, primary_key=True)
+    vendor_name = Column(String(32))
+    # TODO: Add manufacturer address
