@@ -6,7 +6,7 @@
 """
 
 from sqlalchemy.orm import declarative_base
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
 from typing import NewType, Optional
 
 Base = declarative_base()
@@ -43,14 +43,14 @@ class SQLRole(Base):
     """Class with default SQL Role properties"""
     __tablename__ = 'roles'
     role_id = Column(Integer, primary_key=True)
-    role_name = Column(String(30))
+    role_name = Column(String(32))
     # TODO: add privileges - Also how to
 
 
 class SQLProject(Base):
     """Class with default SQL Role properties"""
-    __tablename__ = 'roles'
+    __tablename__ = 'projects'
     project_id = Column(Integer, primary_key=True)
-    Project_number = Column(Integer)
-    project_name = Column(String(30))
+    project_number = Column(Integer)  # this can come another source as the Db so not same as project_id
+    project_name = Column(String(32))
     project_path = Column(String)
