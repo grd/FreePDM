@@ -43,12 +43,32 @@ class CreateMySQLDb(CreateDb):  # Alles in een file of beter te splitsen?
         super(CreateMySQLDb, self).__init__()
 
     def start_engine(self, encoding: str, echo: bool, future: bool, dialect: Optional[str]):
+        """
+        Start MySQL engine.
+        Note: MySQL engine is not default developement database. 
+
+        Parameters
+        ----------
+
+        encoding [str] : Set text encoding for database.
+            The default encoding is `utf-8`
+
+        echo [bool] : Set logging On / Off
+            If True Engine will log all statements.
+
+        future [bool] : Future proof style
+            SQLAlchemy 2.0 up style Engine, Connection (Introduced in SQLAlchemy 1.4).
+
+        dialect [string] : If other SQL python libraies are used this can be set.
+            Optional parameter. 
+        """
         self.encoding = encoding
         self.echo = echo
         self.future = future
         self.dialect = dialect
         # # https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls
         if (self.dialect == "default") or (self.dialect is None):
+            # Installing via `FreePDM-ServerInstaller.sh` installs default engine
             # default
             engine = create_engine('mysql://scott:tiger@localhost/foo')
             pass
@@ -73,6 +93,24 @@ class CreatePostgreSQLDb(CreateDb):
         super(CreatePosgrSQLDb, self).__init__()
 
     def start_engine(self, encoding: str, echo: bool, future: bool, dialect: Optional[str]):
+        """
+        Start PostgreSQL engine.
+
+        Parameters
+        ----------
+
+        encoding [str] : Set text encoding for database.
+            The default encoding is `utf-8`
+
+        echo [bool] : Set logging On / Off
+            If True Engine will log all statements.
+
+        future [bool] : Future proof style
+            SQLAlchemy 2.0 up style Engine, Connection (Introduced in SQLAlchemy 1.4).
+
+        dialect [string] : If other SQL python libraies are used this can be set.
+            Optional parameter. 
+        """
         self.encoding = encoding
         self.echo = echo
         self.future = future
@@ -102,6 +140,22 @@ class CreateSQLiteDb(CreateDb):  # Alles in een file of beter te splitsen?
         print("SQLite")
 
     def start_engine(self, encoding: str, echo: bool, future: bool):
+        """
+        Start SQLite engine.
+        Note: SQLite engine is not default developement database. 
+
+        Parameters
+        ----------
+
+        encoding [str] : Set text encoding for database.
+            The default encoding is `utf-8`
+
+        echo [bool] : Set logging On / Off
+            If True Engine will log all statements.
+
+        future [bool] : Future proof style
+            SQLAlchemy 2.0 up style Engine, Connection (Introduced in SQLAlchemy 1.4).
+        """
         self.encoding = encoding
         self.echo = echo
         self.future = future
