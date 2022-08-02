@@ -104,7 +104,7 @@ Revision state:
 - Not for new Projects
 - Depreciated
 
-Buy / Manufacturing
+Buy / Manufacturing(Purchasing)
 
 | ... | File type     | Traceability | Source | Manufacturer ID | Manufacturer Name | Vendor ID | Vendor Name |
 |-----|---------------|--------------|--------|-----------------|-------------------|-----------|-------------|
