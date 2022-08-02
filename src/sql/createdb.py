@@ -221,4 +221,31 @@ def create_default_tables():
 if __name__ == "__main__":
     import sys
 
+    # at least two variables required: filename; url_to_database.
+    # if more variables need to be added it is always: filenname; database_type; url_to_database; **vargs
+    if len(sys.argv) == 1:
+        raise ValueError("Not enough parameters added")
+    elif len(sys.argv) == 2:
+        # default SQL engine choosen: PostgreSQL
+        url_list = sys.argv[1].split(',')
+        if len(url_list) == 1:
+            print("Complete url received.")
+            url = url_list
+        elif len(url_list) == 6:
+            print("Url shall be created")
+            psql_engine = CreatePostgreSQLDb()
+            url = psql_engine.make_url(url_list[0], url_list[1], url_list[2], url_list[3], url_list[4], int(url_list[5]))
+        else:
+            raise ValueError("{} is not the right amount of values for the url. [1 or 6]\n".format(len(url_list)))
+        pass
+    elif len(sys.argv) == 3:
+        # Choose own SQL Engine
+        pass
+    else:
+        # pass all parameters trough
+        try:
+            pass
+        except:
+            pass
+
     create_default_tables()
