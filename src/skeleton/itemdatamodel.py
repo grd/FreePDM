@@ -22,6 +22,7 @@ from PySide2 import QtGui
 class ItemDataModel():
     def __init__(self, filename):  # filename is also imported so change
         self.fileName = filename
+        self.xmldocument = None
         self.thumbnail = None
         self.documentProperties = {}
         self.read()
@@ -49,9 +50,9 @@ class ItemDataModel():
 
     def readXML(self, data):
         with open(data) as docxml:
-            docx = docxml.read()
+            self.xmldocument = docxml.read()
 
-        root = et.fromstring(docx)
+        root = et.fromstring(self.xmldocument)
 
         element = root.find(".//Property[@name='Comment']/String")
         self.documentProperties["Comment"] = element.attrib.get('value')
