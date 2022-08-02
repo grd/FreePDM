@@ -90,7 +90,7 @@ class CreatePostgreSQLDb(CreateDb):
 
     def __init__(self):
         print("PostgreSQL")
-        super(CreatePosgrSQLDb, self).__init__()
+        super(CreatePostgreSQLDb, self).__init__()
 
     def start_engine(self, encoding: str, echo: bool, future: bool, dialect: Optional[str]):
         """
