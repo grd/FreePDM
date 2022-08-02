@@ -46,6 +46,8 @@ class EditItem(QDialog):
         self.ui.dateEdit.setReadOnly(True)
         self.ui.weightEdit.setReadOnly(True)
         self.ui.unitEdit.setReadOnly(True)
+        self.ui.saveButton.clicked.connect(self.saveButton)
+        self.ui.okButton.clicked.connect(self.pushOkButton)
 
         self.ui.nameEdit.setText(self.idm.documentProperties["Label"])
         self.ui.dateEdit.setText(self.idm.documentProperties["CreationDate"])
@@ -54,6 +56,13 @@ class EditItem(QDialog):
         if "thumbnail" in self.idm.documentProperties:
             pixmap = QtGui.QPixmap(self.idm.thumbnail)
             self.ui.lbl.setPixmap(pixmap.scaled(256, 256))  # , QtCore.Qt.KeepAspectRatio , QtCore.Qt.SmoothTransformation))
+
+    def saveButton(self):
+        self.ui.hide()
+    
+    def pushOkButton(self):
+        self.ui.hide()
+
 
 
 def main():

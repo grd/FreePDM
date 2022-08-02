@@ -77,7 +77,8 @@ class MainWindow(QMainWindow):
             part.ui.show()
             part.ui.exec_()
             self.load_data()
-
+            self.ui.show()
+ 
   
 
     # deal with checkbox click on a field
