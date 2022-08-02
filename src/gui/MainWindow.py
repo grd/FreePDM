@@ -12,11 +12,10 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWid
 from PySide2.QtCore import QFile, Qt
 from PySide2.QtUiTools import QUiLoader
 
-from .EditItem import EditItem
-
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'skeleton'))
 
 from directorymodel import DirectoryModel
+from EditItem import EditItem
 
 
 class MainWindow(QMainWindow):
@@ -74,7 +73,9 @@ class MainWindow(QMainWindow):
         if item == 'FCStd':
             part = self.ui.tableWorkspace.item(row, 1).text()
             part = os.path.abspath(os.path.join(self.current_directory, part))
-            EditItem(part)
+            part = EditItem(part)
+            part.ui.show()
+            part.ui.exec_()
             self.load_data()
 
   
