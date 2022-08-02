@@ -21,6 +21,40 @@ class CreateDb(Base):
     def __init__(self):
         pass
 
+    def make_url(self, drivername: str, username: str, password: str, host: str, port: int, database_name: str):
+        """
+        Create new url
+
+        Parameters
+        ----------
+
+        drivername [str] :
+            drivername. For example 'postgresql+psycopg2'
+
+        username [str] :
+            username
+
+        password [str] :
+            password.
+
+        host [str] :
+            host adress. For example localhost
+
+        port [int] :
+            SQL port.
+
+        database_name [str] :
+            name of the database
+        """
+        self.drivername = drivername
+        self.username = username
+        self.password = password
+        self.host = host
+        self.port = port
+        self.database_name = database_name
+        new_url = URL()
+        new_url.create(self.drivername, self.username, self.password, self.host, self.port, self.database_name)
+
     # https://docs.sqlalchemy.org/en/14/tutorial/dbapi_transactions.html#committing-changes
     def create_db(self):
         """create database"""
