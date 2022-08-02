@@ -36,9 +36,6 @@ class EditItem(QDialog):
         # Some change below based on https://pythonprogramming.net/basic-gui-pyqt-tutorial/
         # self.ui.setWindowIcon(QtGui.QIcon(os.fspath(Path(__file__).resolve().parents[1] / "ui/logos/O_logo-32x32.png")))  # Probably done in ui file OSX don't show icon
 
-        # self.ui.show()
-        # ui_file.close()
-
         self.ui.setWindowTitle("Edit Item")  # Done in ui file
 
         self.ui.nameEdit.setReadOnly(True)
@@ -48,6 +45,8 @@ class EditItem(QDialog):
         self.ui.unitEdit.setReadOnly(True)
         self.ui.saveButton.clicked.connect(self.saveButton)
         self.ui.okButton.clicked.connect(self.pushOkButton)
+        if os.access(self.file, os.R_OK) == True:
+            self.ui.okButton.setEnabled(False)
 
         self.ui.nameEdit.setText(self.idm.documentProperties["Label"])
         self.ui.dateEdit.setText(self.idm.documentProperties["CreationDate"])
