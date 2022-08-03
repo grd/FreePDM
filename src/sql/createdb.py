@@ -216,9 +216,62 @@ class CreateSQLiteDb(CreateDb):  # Alles in een file of beter te splitsen?
         engine = create_engine(self.url, echo=self.echo, future=self.future)  # start from memory
 
 
-def start_the_engine():
-    """Start your engine"""
-    pass
+def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[str] = ',', **vargs):
+    """
+    Start your choosen engine
+
+    Parameters
+    ----------
+
+    prefered_engine [str] :
+        What sql engine is prefered to use.
+
+    url [str]:
+        url for databasse. This can be a single string but also a list of parameters (, seperated).
+        This list conatain the following information: drivername; username; password; host; port; database_name.
+        TODO: add dialect as optional value
+
+    split [str]:
+        split string in list (Optional). default value is ','.
+
+    **vargs:
+        Other parameters are parsed trough
+    """
+    url_list = urls_string.split(split)
+    if len(url_list) == 1:
+        print("Complete url received.")
+        url = url_list
+    elif len(url_list) == 6:
+        print("Url shall be created")
+        psql_engine = CreatePostgreSQLDb()
+        url = psql_engine.make_url(url_list[0], url_list[1], url_list[2], url_list[3], url_list[4], int(url_list[5]))
+        dialect = None
+        # if dialect is part of the url...
+    elif len(url_list) == 7:
+        # list including dialect
+        url_dialect = url_list[0] + '+' + url_list[6]
+        url = psql_engine.make_url(url_dialect, url_list[1], url_list[2], url_list[3], int(url_list[4]), url_list[5])
+        dialect = url_list[6]
+    else:
+        raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
+
+    # Something goes wrong here
+    # Now there are two instances of the same class created. One for the url and on for createing the db.
+    if (db_type == "mysql") or (db_type == "MySQL"):
+        msql = CreateMySQLDb()
+        msql.start_engine(url, dialect=dialect, **vargs)
+        return(msql)
+        pass
+    elif (db_type == "postgresql") or (db_type == "PostgresSQL"):
+        psql = CreatePostgreSQLDb()
+        psql.start_engine(url, dialect=dialect, **vargs)
+        return(psql)  # Not sure if returning this is required
+    elif (db_type == "sqlite") or (db_type == "SQLite"):
+        sqli = CreateSQLiteDb()
+        sqli.start_engine(url, **vargs)
+        return(sqli)
+    else:
+        raise ValueError("{} Is not a Valif input for 'db_type'.".format(db_type))
 
 
 def create_default_tables():
@@ -234,25 +287,16 @@ if __name__ == "__main__":
         raise ValueError("Not enough parameters added")
     elif len(sys.argv) == 2:
         # default SQL engine choosen: PostgreSQL
-        url_list = sys.argv[1].split(',')
-        if len(url_list) == 1:
-            print("Complete url received.")
-            url = url_list
-        elif len(url_list) == 6:
-            print("Url shall be created")
-            psql_engine = CreatePostgreSQLDb()
-            url = psql_engine.make_url(url_list[0], url_list[1], url_list[2], url_list[3], url_list[4], int(url_list[5]))
-        else:
-            raise ValueError("{} is not the right amount of values for the url. [1 or 6]\n".format(len(url_list)))
-        pass
+        sqldb = start_your_engine(sys.argv[1], "postgresql")
     elif len(sys.argv) == 3:
         # Choose own SQL Engine
-        pass
+        sqldb = start_your_engine(sys.argv[1],sys.argv[2])
     else:
         # pass all parameters trough
         try:
-            pass
-        except:
+            raise NotADirectoryError("Parsing argumenets is not implemented yet.")
+            # sqldb = start_your_engine(sys.argv[1],sys.argv[2], sys.argv[2:])
+        except:  # there should an erro message but not tested
             pass
 
     create_default_tables()
