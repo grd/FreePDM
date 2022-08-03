@@ -21,7 +21,7 @@ class CreateDb(Base):
     def __init__(self):
         pass
 
-    def make_url(self, drivername: str, username: str, password: str, host: str, port: int, database_name: str):
+    def make_url(self, drivername: str, username: str, password: str, host: str, port: int, database_name: str) -> str:
         """
         Create new url
 
@@ -45,6 +45,11 @@ class CreateDb(Base):
 
         database_name [str] :
             name of the database
+
+        Returns
+        -------
+
+        url [str]
         """
         self.drivername = drivername
         self.username = username
@@ -52,8 +57,9 @@ class CreateDb(Base):
         self.host = host
         self.port = port
         self.database_name = database_name
-        new_url = URL()
-        new_url.create(self.drivername, self.username, self.password, self.host, self.port, self.database_name)
+        create_url = URL()
+        new_url = create_url.create(self.drivername, self.username, self.password, self.host, self.port, self.database_name)
+        return(new_url)
 
     # https://docs.sqlalchemy.org/en/14/tutorial/dbapi_transactions.html#committing-changes
     def create_db(self):
@@ -109,15 +115,15 @@ class CreateMySQLDb(CreateDb):  # Alles in een file of beter te splitsen?
         if (self.dialect == "default") or (self.dialect is None):
             # Installing via `FreePDM-ServerInstaller.sh` installs default engine
             # default
-            engine = create_engine('mysql://scott:tiger@localhost/foo', echo=self.echo, future=self.future)
+            engine = create_engine(self.url, echo=self.echo, future=self.future)
             pass
         elif (self.dialect == "mysqlclient") or (self.dialect == "mysqldb"):
             # mysqlclient (a maintained fork of MySQL-Python)
-            engine = create_engine('mysql+mysqldb://scott:tiger@localhost/foo', echo=self.echo, future=self.future)
+            engine = create_engine(self.url, echo=self.echo, future=self.future)
             pass
         elif (self.dialect == "PyMySQL") or (self.dialect == "pymysql"):
             # PyMySQL
-            engine = create_engine('mysql+pymysql://scott:tiger@localhost/foo', echo=self.echo, future=self.future)
+            engine = create_engine(self.url, echo=self.echo, future=self.future)
         else:
             pass
 
@@ -160,15 +166,15 @@ class CreatePostgreSQLDb(CreateDb):
         # https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls
         if (self.dialect == "default") or (self.dialect is None):
             # default
-            engine = create_engine('postgresql://scott:tiger@localhost/mydatabase', echo=self.echo, future=self.future)
+            engine = create_engine(self.url, echo=self.echo, future=self.future)
             pass
         elif self.dialect == "psycopg2":
             # psycopg2
-            engine = create_engine('postgresql+psycopg2://scott:tiger@localhost/mydatabase', echo=self.echo, future=self.future)
+            engine = create_engine(self.url, echo=self.echo, future=self.future)
             pass
         elif self.dialect == "pg8000":
             # pg8000
-            engine = create_engine('postgresql+pg8000://scott:tiger@localhost/mydatabase', echo=self.echo, future=self.future)
+            engine = create_engine(self.url, echo=self.echo, future=self.future)
         else:
             pass
 
@@ -206,7 +212,8 @@ class CreateSQLiteDb(CreateDb):  # Alles in een file of beter te splitsen?
         self.echo = echo
         self.future = future
         # https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls
-        engine = create_engine("sqlite+pysqlite:///:memory:", echo=self.echo, future=self.future)  # start from memory
+        # exampleurl: "sqlite+pysqlite:///:memory:"
+        engine = create_engine(self.url, echo=self.echo, future=self.future)  # start from memory
 
 
 def start_the_engine():
