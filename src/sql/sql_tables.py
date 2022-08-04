@@ -8,6 +8,7 @@
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Boolean, Integer, Float, String, Date, Enum, LargeBinary
+import sql_enum
 from typing import NewType, Optional
 
 Base = declarative_base()
@@ -55,7 +56,7 @@ class SQLProject(Base):
     project_id = Column(Integer, primary_key=True)
     project_number = Column(Integer)  # this can come another source as the Db so not same as project_id
     project_name = Column(String(32))
-    project_status = Column(Enum)  # TODO: Create Enum list
+    project_status = Column(Enum(sql_enum.ProjectState))
     Project_date_start = Column(Date)
     Project_date_finish = Column(Date)  # TODO check finsh date is after start date
     project_path = Column(String)
@@ -138,14 +139,14 @@ class SQLMaterial(Base):
     material_id = Column(Integer, primary_key=True)
     material_name = Column(String(32))
     material_finish = Column(String(32))
-    material_mass = Column(Float)
-    material_mass_unit = Column(Enum)  # TODO: Create Enum list
+    material_density = Column(Float)
+    material_density_unit = Column(Enum(sql_enum.DensityUnit))
     material_volume = Column(Float)  # TODO: From CAD file
-    material_volume_unit = Column(Enum)  # TODO: Create Enum list
-    material_weight = Column(Float)  # material_mass * material_volume
-    material_weight_unit = Column(Enum)  # TODO: Create Enum list
+    material_volume_unit = Column(Enum(sql_enum.VolumeUnit))
+    material_weight = Column(Float)  # material_density * material_volume
+    material_weight_unit = Column(Enum(sql_enum.WeightUnit))
     material_surface_area = Column(Float)
-    material_surface_area_unit = Column(Enum)  # TODO: Create Enum list
+    material_surface_area_unit = Column(Enum(sql_enum.AreaUnit))
     model_number = Column(Integer, ForeignKey('models.model_number'), nullable=False)
 
     def __repr__(self):
@@ -165,7 +166,7 @@ class SQLHistory(Base):
     history_date_last_edit = Column(Date)
     history_last_edit_by = Column(String)
     history_checked_out_by = Column(String)
-    history_revision_state = Column(Enum)  # TODO: Create Enum list
+    history_revision_state = Column(Enum(sql_enum.RevisionState))
     history_revision_number = Column(Integer)  # Maybe other format
     # TODO: Create Complex revisions (Example: Date, major.minor, major.letter_minor)
     history_stored_number = Column(Integer)  # last store version iterator
@@ -184,7 +185,7 @@ class SQLPurchase(Base):
     purchasing_id = Column(Integer, primary_key=True)
     purchasing_source = Column(Boolean)  # Repesent Buy OR Manufacture
     # Optionally Enum
-    purchasing_tracebility = Column(Enum)  # TODO: Create Enum list
+    purchasing_tracebility = Column(Enum(sql_enum.TracebilityState))
     # Represent list: Lot, Lot And Serial Number, Serial Number, Not traced
     manufacturer_id = Column(Integer, ForeignKey('manufacturers.manufacturer_id'))
     vendor_id = Column(Integer, ForeignKey('vendors.vendor_id'))
