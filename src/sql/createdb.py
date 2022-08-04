@@ -10,7 +10,7 @@ from sql import SQLUser, SQLRole, SQLProject, SQLItem, SQLModel, SQLDocument, SQ
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
-from typing import NewType, Optional
+from typing import NewType, Optional, Union
 
 Base = declarative_base()
 
@@ -21,7 +21,7 @@ class CreateDb(Base):
     def __init__(self):
         pass
 
-    def make_url(self, drivername: str, username: str, password: str, host: str, port: int, database_name: str):
+    def make_url(self, drivername: str, username: Optional[str], password:  Optional[str], host: Optional[str], port: Optional[int], database_name: Optional[str]):
         """
         Create new url
 
@@ -45,6 +45,11 @@ class CreateDb(Base):
 
         database_name [str] :
             name of the database
+
+        Returns
+        -------
+
+        url [str]
         """
         self.drivername = drivername
         self.username = username
@@ -52,8 +57,8 @@ class CreateDb(Base):
         self.host = host
         self.port = port
         self.database_name = database_name
-        new_url = URL()
-        new_url.create(self.drivername, self.username, self.password, self.host, self.port, self.database_name)
+        new_url = URL.create(self.drivername, self.username, self.password, self.host, self.port, self.database_name)
+        return(new_url)
 
     # https://docs.sqlalchemy.org/en/14/tutorial/dbapi_transactions.html#committing-changes
     def create_db(self):
@@ -77,7 +82,7 @@ class CreateMySQLDb(CreateDb):  # Alles in een file of beter te splitsen?
         print("MySQL")
         super(CreateMySQLDb, self).__init__()
 
-    def start_engine(self, url: str, encoding: str, echo: bool, future: bool, dialect: Optional[str]):
+    def start_engine(self, url: Union[str | URL], encoding: str, echo: bool, future: bool, dialect: Optional[str]):
         """
         Start MySQL engine.
         Note: MySQL engine is not default developement database. 
@@ -98,7 +103,7 @@ class CreateMySQLDb(CreateDb):  # Alles in een file of beter te splitsen?
             SQLAlchemy 2.0 up style Engine, Connection (Introduced in SQLAlchemy 1.4).
 
         dialect [string] : If other SQL python libraies are used this can be set.
-            Optional parameter. 
+            Optional parameter.
         """
         self.url = url
         self.encoding = encoding
@@ -109,15 +114,15 @@ class CreateMySQLDb(CreateDb):  # Alles in een file of beter te splitsen?
         if (self.dialect == "default") or (self.dialect is None):
             # Installing via `FreePDM-ServerInstaller.sh` installs default engine
             # default
-            engine = create_engine('mysql://scott:tiger@localhost/foo', echo=self.echo, future=self.future)
+            engine = create_engine(self.url, echo=self.echo, future=self.future)
             pass
         elif (self.dialect == "mysqlclient") or (self.dialect == "mysqldb"):
             # mysqlclient (a maintained fork of MySQL-Python)
-            engine = create_engine('mysql+mysqldb://scott:tiger@localhost/foo', echo=self.echo, future=self.future)
+            engine = create_engine(self.url, echo=self.echo, future=self.future)
             pass
         elif (self.dialect == "PyMySQL") or (self.dialect == "pymysql"):
             # PyMySQL
-            engine = create_engine('mysql+pymysql://scott:tiger@localhost/foo', echo=self.echo, future=self.future)
+            engine = create_engine(self.url, echo=self.echo, future=self.future)
         else:
             pass
 
@@ -130,7 +135,7 @@ class CreatePostgreSQLDb(CreateDb):
         print("PostgreSQL")
         super(CreatePostgreSQLDb, self).__init__()
 
-    def start_engine(self, url: str, encoding: str, echo: bool, future: bool, dialect: Optional[str]):
+    def start_engine(self, url: Union[str | URL], encoding: str, echo: bool, future: bool, dialect: Optional[str]):
         """
         Start PostgreSQL engine.
 
@@ -150,7 +155,7 @@ class CreatePostgreSQLDb(CreateDb):
             SQLAlchemy 2.0 up style Engine, Connection (Introduced in SQLAlchemy 1.4).
 
         dialect [string] : If other SQL python libraies are used this can be set.
-            Optional parameter. 
+            Optional parameter.
         """
         self.url = url
         self.encoding = encoding
@@ -160,17 +165,18 @@ class CreatePostgreSQLDb(CreateDb):
         # https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls
         if (self.dialect == "default") or (self.dialect is None):
             # default
-            engine = create_engine('postgresql://scott:tiger@localhost/mydatabase', echo=self.echo, future=self.future)
+            engine = create_engine(self.url, echo=self.echo, future=self.future)
             pass
         elif self.dialect == "psycopg2":
             # psycopg2
-            engine = create_engine('postgresql+psycopg2://scott:tiger@localhost/mydatabase', echo=self.echo, future=self.future)
+            engine = create_engine(self.url, echo=self.echo, future=self.future)
             pass
         elif self.dialect == "pg8000":
             # pg8000
-            engine = create_engine('postgresql+pg8000://scott:tiger@localhost/mydatabase', echo=self.echo, future=self.future)
+            engine = create_engine(self.url, echo=self.echo, future=self.future)
         else:
             pass
+        return(engine)
 
 
 class CreateSQLiteDb(CreateDb):  # Alles in een file of beter te splitsen?
@@ -181,10 +187,10 @@ class CreateSQLiteDb(CreateDb):  # Alles in een file of beter te splitsen?
         super(CreateSQLiteDb, self).__init__()
         print("SQLite")
 
-    def start_engine(self, url: str, encoding: str, echo: bool, future: bool):
+    def start_engine(self, url: Union[str | URL], encoding: str, echo: bool, future: bool):
         """
         Start SQLite engine.
-        Note: SQLite engine is not default developement database. 
+        Note: SQLite engine is not default developement database.
 
         Parameters
         ----------
@@ -206,12 +212,96 @@ class CreateSQLiteDb(CreateDb):  # Alles in een file of beter te splitsen?
         self.echo = echo
         self.future = future
         # https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls
-        engine = create_engine("sqlite+pysqlite:///:memory:", echo=self.echo, future=self.future)  # start from memory
+        # exampleurl: "sqlite+pysqlite:///:memory:"
+        engine = create_engine(self.url, echo=self.echo, future=self.future)  # start from memory
+        return(engine)
 
 
-def start_the_engine():
-    """Start your engine"""
-    pass
+def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[str] = ',', **vargs):
+    """
+    Start your choosen engine
+
+    Parameters
+    ----------
+
+    prefered_engine [str] :
+        What sql engine is prefered to use.
+
+    url [str]:
+        url for databasse. This can be a single string but also a list of parameters (, seperated).
+        This list conatain the following information: drivername; username; password; host; port; database_name.
+        TODO: add dialect as optional value
+
+    split [str]:
+        split string in list (Optional). default value is ','.
+
+    **vargs:
+        Other parameters are parsed trough
+    """
+    url_list = url_string.split(split)
+
+    if (db_type == "mysql") or (db_type == "MySQL"):
+        msql_engine = CreateMySQLDb()
+        if len(url_list) == 1:
+            print("Complete url received.")
+            new_url = url_list[0]
+        elif len(url_list) == 6:
+            print("Url shall be created")
+            new_url = msql_engine.make_url(url_list[0], url_list[1], url_list[2], url_list[3], url_list[4], int(url_list[5]))
+            dialect = None
+            # if dialect is part of the url...
+        elif len(url_list) == 7:
+            # list including dialect
+            url_dialect = url_list[0] + '+' + url_list[6]
+            new_url = msql_engine.make_url(url_dialect, url_list[1], url_list[2], url_list[3], int(url_list[4]), url_list[5])
+            dialect = url_list[6]
+        else:
+            raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
+
+        msql_engine.start_engine(new_url, dialect=dialect, **vargs)
+        return(msql_engine)
+    elif (db_type == None) or (db_type == "postgresql") or (db_type == "PostgresSQL"):
+        psql_engine = CreatePostgreSQLDb()
+        if len(url_list) == 1:
+            print("Complete url received.")
+            new_url = url_list[0]
+        elif len(url_list) == 6:
+            print("Url shall be created")
+            new_url = psql_engine.make_url(url_list[0], url_list[1], url_list[2], url_list[3], url_list[4], int(url_list[5]))
+            dialect = None
+            # if dialect is part of the url...
+        elif len(url_list) == 7:
+            # list including dialect
+            url_dialect = url_list[0] + '+' + url_list[6]
+            new_url = psql_engine.make_url(url_dialect, url_list[1], url_list[2], url_list[3], int(url_list[4]), url_list[5])
+            dialect = url_list[6]
+        else:
+            raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
+
+        psql_engine.start_engine(new_url, dialect=dialect, **vargs)
+        return(psql_engine)  # Not sure if returning this is required
+    elif (db_type == "sqlite") or (db_type == "SQLite"):
+        sqli_engine = CreateSQLiteDb()
+        if len(url_list) == 1:
+            print("Complete url received.")
+            new_url = url_list[0]
+        elif len(url_list) == 6:
+            print("Url shall be created")
+            new_url = sqli_engine.make_url(url_list[0], url_list[1], url_list[2], url_list[3], url_list[4], int(url_list[5]))
+            dialect = None
+            # if dialect is part of the url...
+        elif len(url_list) == 7:
+            # list including dialect
+            url_dialect = url_list[0] + '+' + url_list[6]
+            new_url = sqli_engine.make_url(url_dialect, url_list[1], url_list[2], url_list[3], int(url_list[4]), url_list[5])
+            dialect = url_list[6]
+        else:
+            raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
+
+        sqli_engine.start_engine(url, **vargs)
+        return(sqli_engine)
+    else:
+        raise ValueError("{} Is not a Valif input for 'db_type'.".format(db_type))
 
 
 def create_default_tables():
@@ -227,25 +317,16 @@ if __name__ == "__main__":
         raise ValueError("Not enough parameters added")
     elif len(sys.argv) == 2:
         # default SQL engine choosen: PostgreSQL
-        url_list = sys.argv[1].split(',')
-        if len(url_list) == 1:
-            print("Complete url received.")
-            url = url_list
-        elif len(url_list) == 6:
-            print("Url shall be created")
-            psql_engine = CreatePostgreSQLDb()
-            url = psql_engine.make_url(url_list[0], url_list[1], url_list[2], url_list[3], url_list[4], int(url_list[5]))
-        else:
-            raise ValueError("{} is not the right amount of values for the url. [1 or 6]\n".format(len(url_list)))
-        pass
+        sqldb = start_your_engine(sys.argv[1], "postgresql")
     elif len(sys.argv) == 3:
         # Choose own SQL Engine
-        pass
+        sqldb = start_your_engine(sys.argv[1], sys.argv[2])
     else:
         # pass all parameters trough
         try:
-            pass
-        except:
+            raise NotImplementedError("Parsing argumenets is not implemented yet.")
+            # sqldb = start_your_engine(sys.argv[1],sys.argv[2], sys.argv[2:])
+        except:  # there should an error message but not tested which one...
             pass
 
     create_default_tables()
