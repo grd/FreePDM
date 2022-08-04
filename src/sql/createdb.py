@@ -10,7 +10,7 @@ from sql import SQLUser, SQLRole, SQLProject, SQLItem, SQLModel, SQLDocument, SQ
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
-from typing import NewType, Optional
+from typing import NewType, Optional, Union
 
 Base = declarative_base()
 
@@ -21,7 +21,7 @@ class CreateDb(Base):
     def __init__(self):
         pass
 
-    def make_url(self, drivername: str, username: str, password: str, host: str, port: int, database_name: str) -> str:
+    def make_url(self, drivername: str, username: Optional[str], password:  Optional[str], host: Optional[str], port: Optional[int], database_name: Optional[str]):
         """
         Create new url
 
@@ -57,8 +57,7 @@ class CreateDb(Base):
         self.host = host
         self.port = port
         self.database_name = database_name
-        create_url = URL()
-        new_url = create_url.create(self.drivername, self.username, self.password, self.host, self.port, self.database_name)
+        new_url = URL.create(self.drivername, self.username, self.password, self.host, self.port, self.database_name)
         return(new_url)
 
     # https://docs.sqlalchemy.org/en/14/tutorial/dbapi_transactions.html#committing-changes
@@ -188,7 +187,7 @@ class CreateSQLiteDb(CreateDb):  # Alles in een file of beter te splitsen?
         super(CreateSQLiteDb, self).__init__()
         print("SQLite")
 
-    def start_engine(self, url: str, encoding: str, echo: bool, future: bool):
+    def start_engine(self, url: Union[str | sqlalchemy.engine.url.URL], encoding: str, echo: bool, future: bool):
         """
         Start SQLite engine.
         Note: SQLite engine is not default developement database. 
