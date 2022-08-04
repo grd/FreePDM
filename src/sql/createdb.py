@@ -104,7 +104,7 @@ class CreateMySQLDb(CreateDb):  # Alles in een file of beter te splitsen?
             SQLAlchemy 2.0 up style Engine, Connection (Introduced in SQLAlchemy 1.4).
 
         dialect [string] : If other SQL python libraies are used this can be set.
-            Optional parameter. 
+            Optional parameter.
         """
         self.url = url
         self.encoding = encoding
@@ -156,7 +156,7 @@ class CreatePostgreSQLDb(CreateDb):
             SQLAlchemy 2.0 up style Engine, Connection (Introduced in SQLAlchemy 1.4).
 
         dialect [string] : If other SQL python libraies are used this can be set.
-            Optional parameter. 
+            Optional parameter.
         """
         self.url = url
         self.encoding = encoding
@@ -177,6 +177,7 @@ class CreatePostgreSQLDb(CreateDb):
             engine = create_engine(self.url, echo=self.echo, future=self.future)
         else:
             pass
+        return(engine)
 
 
 class CreateSQLiteDb(CreateDb):  # Alles in een file of beter te splitsen?
@@ -214,6 +215,7 @@ class CreateSQLiteDb(CreateDb):  # Alles in een file of beter te splitsen?
         # https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls
         # exampleurl: "sqlite+pysqlite:///:memory:"
         engine = create_engine(self.url, echo=self.echo, future=self.future)  # start from memory
+        return(engine)
 
 
 def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[str] = ',', **vargs):
@@ -237,7 +239,7 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
     **vargs:
         Other parameters are parsed trough
     """
-    url_list = urls_string.split(split)
+    url_list = url_string.split(split)
     if len(url_list) == 1:
         print("Complete url received.")
         url = url_list
@@ -290,13 +292,13 @@ if __name__ == "__main__":
         sqldb = start_your_engine(sys.argv[1], "postgresql")
     elif len(sys.argv) == 3:
         # Choose own SQL Engine
-        sqldb = start_your_engine(sys.argv[1],sys.argv[2])
+        sqldb = start_your_engine(sys.argv[1], sys.argv[2])
     else:
         # pass all parameters trough
         try:
-            raise NotADirectoryError("Parsing argumenets is not implemented yet.")
+            raise NotImplementedError("Parsing argumenets is not implemented yet.")
             # sqldb = start_your_engine(sys.argv[1],sys.argv[2], sys.argv[2:])
-        except:  # there should an erro message but not tested
+        except:  # there should an error message but not tested which one...
             pass
 
     create_default_tables()
