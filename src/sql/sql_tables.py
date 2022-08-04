@@ -100,21 +100,21 @@ class SQLDocument(Base):
     # document_path = Column(String)  # should belongs to same path as described in item
 
 
-class SQLModelMaterial(Base):
+class SQLMaterial(Base):
     """Class with SQL Material properties"""
     __tablename__ = 'materials'
 
-    modelmat_id = Column(Integer, primary_key=True)
-    model_material = Column(String(32))
-    model_finish = Column(String(32))
-    model_mass = Column(Float)
-    model_mass_unit = Column(Enum)  # TODO: Create Enum list
-    model_volume = Column(Float)  # TODO: From CAD file
-    model_volume_unit = Column(Enum)  # TODO: Create Enum list
-    model_weight = Column(Float)  # model_mass * model_volume
-    model_weight_unit = Column(Enum)  # TODO: Create Enum list
-    model_surface_area = Column(Float)
-    model_surface_area_unit = Column(Enum)  # TODO: Create Enum list
+    material_id = Column(Integer, primary_key=True)
+    material_name= Column(String(32))
+    material_finish = Column(String(32))
+    material_mass = Column(Float)
+    material_mass_unit = Column(Enum)  # TODO: Create Enum list
+    material_volume = Column(Float)  # TODO: From CAD file
+    material_volume_unit = Column(Enum)  # TODO: Create Enum list
+    material_weight = Column(Float)  # material_mass * material_volume
+    material_weight_unit = Column(Enum)  # TODO: Create Enum list
+    material_surface_area = Column(Float)
+    material_surface_area_unit = Column(Enum)  # TODO: Create Enum list
     model_number = Column(Integer, ForeignKey('models.model_number'), nullable=False)
 
 
