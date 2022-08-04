@@ -82,7 +82,7 @@ class CreateMySQLDb(CreateDb):  # Alles in een file of beter te splitsen?
         print("MySQL")
         super(CreateMySQLDb, self).__init__()
 
-    def start_engine(self, url: str, encoding: str, echo: bool, future: bool, dialect: Optional[str]):
+    def start_engine(self, url: Union[str | URL], encoding: str, echo: bool, future: bool, dialect: Optional[str]):
         """
         Start MySQL engine.
         Note: MySQL engine is not default developement database. 
@@ -135,7 +135,7 @@ class CreatePostgreSQLDb(CreateDb):
         print("PostgreSQL")
         super(CreatePostgreSQLDb, self).__init__()
 
-    def start_engine(self, url: str, encoding: str, echo: bool, future: bool, dialect: Optional[str]):
+    def start_engine(self, url: Union[str | URL], encoding: str, echo: bool, future: bool, dialect: Optional[str]):
         """
         Start PostgreSQL engine.
 
@@ -187,10 +187,10 @@ class CreateSQLiteDb(CreateDb):  # Alles in een file of beter te splitsen?
         super(CreateSQLiteDb, self).__init__()
         print("SQLite")
 
-    def start_engine(self, url: Union[str | sqlalchemy.engine.url.URL], encoding: str, echo: bool, future: bool):
+    def start_engine(self, url: Union[str | URL], encoding: str, echo: bool, future: bool):
         """
         Start SQLite engine.
-        Note: SQLite engine is not default developement database. 
+        Note: SQLite engine is not default developement database.
 
         Parameters
         ----------
@@ -239,38 +239,67 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
         Other parameters are parsed trough
     """
     url_list = url_string.split(split)
-    if len(url_list) == 1:
-        print("Complete url received.")
-        url = url_list
-    elif len(url_list) == 6:
-        print("Url shall be created")
-        psql_engine = CreatePostgreSQLDb()
-        url = psql_engine.make_url(url_list[0], url_list[1], url_list[2], url_list[3], url_list[4], int(url_list[5]))
-        dialect = None
-        # if dialect is part of the url...
-    elif len(url_list) == 7:
-        # list including dialect
-        url_dialect = url_list[0] + '+' + url_list[6]
-        url = psql_engine.make_url(url_dialect, url_list[1], url_list[2], url_list[3], int(url_list[4]), url_list[5])
-        dialect = url_list[6]
-    else:
-        raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
 
-    # Something goes wrong here
-    # Now there are two instances of the same class created. One for the url and on for createing the db.
     if (db_type == "mysql") or (db_type == "MySQL"):
-        msql = CreateMySQLDb()
-        msql.start_engine(url, dialect=dialect, **vargs)
-        return(msql)
-        pass
-    elif (db_type == "postgresql") or (db_type == "PostgresSQL"):
-        psql = CreatePostgreSQLDb()
-        psql.start_engine(url, dialect=dialect, **vargs)
-        return(psql)  # Not sure if returning this is required
+        msql_engine = CreateMySQLDb()
+        if len(url_list) == 1:
+            print("Complete url received.")
+            new_url = url_list[0]
+        elif len(url_list) == 6:
+            print("Url shall be created")
+            new_url = msql_engine.make_url(url_list[0], url_list[1], url_list[2], url_list[3], url_list[4], int(url_list[5]))
+            dialect = None
+            # if dialect is part of the url...
+        elif len(url_list) == 7:
+            # list including dialect
+            url_dialect = url_list[0] + '+' + url_list[6]
+            new_url = msql_engine.make_url(url_dialect, url_list[1], url_list[2], url_list[3], int(url_list[4]), url_list[5])
+            dialect = url_list[6]
+        else:
+            raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
+
+        msql_engine.start_engine(new_url, dialect=dialect, **vargs)
+        return(msql_engine)
+    elif (db_type == None) or (db_type == "postgresql") or (db_type == "PostgresSQL"):
+        psql_engine = CreatePostgreSQLDb()
+        if len(url_list) == 1:
+            print("Complete url received.")
+            new_url = url_list[0]
+        elif len(url_list) == 6:
+            print("Url shall be created")
+            new_url = psql_engine.make_url(url_list[0], url_list[1], url_list[2], url_list[3], url_list[4], int(url_list[5]))
+            dialect = None
+            # if dialect is part of the url...
+        elif len(url_list) == 7:
+            # list including dialect
+            url_dialect = url_list[0] + '+' + url_list[6]
+            new_url = psql_engine.make_url(url_dialect, url_list[1], url_list[2], url_list[3], int(url_list[4]), url_list[5])
+            dialect = url_list[6]
+        else:
+            raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
+
+        psql_engine.start_engine(new_url, dialect=dialect, **vargs)
+        return(psql_engine)  # Not sure if returning this is required
     elif (db_type == "sqlite") or (db_type == "SQLite"):
-        sqli = CreateSQLiteDb()
-        sqli.start_engine(url, **vargs)
-        return(sqli)
+        sqli_engine = CreateSQLiteDb()
+        if len(url_list) == 1:
+            print("Complete url received.")
+            new_url = url_list[0]
+        elif len(url_list) == 6:
+            print("Url shall be created")
+            new_url = sqli_engine.make_url(url_list[0], url_list[1], url_list[2], url_list[3], url_list[4], int(url_list[5]))
+            dialect = None
+            # if dialect is part of the url...
+        elif len(url_list) == 7:
+            # list including dialect
+            url_dialect = url_list[0] + '+' + url_list[6]
+            new_url = sqli_engine.make_url(url_dialect, url_list[1], url_list[2], url_list[3], int(url_list[4]), url_list[5])
+            dialect = url_list[6]
+        else:
+            raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
+
+        sqli_engine.start_engine(url, **vargs)
+        return(sqli_engine)
     else:
         raise ValueError("{} Is not a Valif input for 'db_type'.".format(db_type))
 
