@@ -45,8 +45,12 @@ class EditItem(QDialog):
         self.ui.unitEdit.setReadOnly(True)
         self.ui.saveButton.clicked.connect(self.saveButton)
         self.ui.okButton.clicked.connect(self.pushOkButton)
-        if os.access(self.file, os.R_OK) == True:
-            self.ui.okButton.setEnabled(False)
+        # self.ui.done(self.done)
+
+        # When file is read-only don't activate the Ok button
+        # Unfortunately this doesn't work for mine OS (Xbuntu)
+        # if os.access(self.file, os.R_OK) == True:
+            # self.ui.okButton.setEnabled(False)
 
         self.ui.nameEdit.setText(self.idm.documentProperties["Label"])
         self.ui.dateEdit.setText(self.idm.documentProperties["CreationDate"])
@@ -61,6 +65,9 @@ class EditItem(QDialog):
     
     def pushOkButton(self):
         self.ui.hide()
+
+    # def done(self):
+    #     self.ui.hide()
 
 
 
