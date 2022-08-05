@@ -20,5 +20,5 @@ setup(name='freePDM-Server',
       maintainer_email="",
       url="https://github.com/grd/FreePDM",
       description="Backend for FreePDM",
-      install_requires=['SQLAlchemy', 'sqlalchemy-utils'],
+      install_requires=['SQLAlchemy', 'sqlalchemy-utils', 'psycopg2', 'typing'],  # Front end software currently ingored here.
       include_package_data=True)
