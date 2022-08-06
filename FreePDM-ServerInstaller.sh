@@ -542,6 +542,7 @@ fi
 
 printf "The following SQL server shall be installed: $sqlserver.\n"
 
+# Configure Repositories and install
 case $sqlserverc in
 	1)
 		# MySQL
@@ -633,6 +634,12 @@ else
 	printf "$packages already installed \n"
 fi
 
+# install Python libraries
+printf "Install Python SQL packages"
+# https://stackoverflow.com/questions/1471994/what-is-setup-py
+python3 setup_server.py install
+
+# Configure SQL Server
 printf "configure $sqlserver.\n"
 
 case $sqlserverc in
