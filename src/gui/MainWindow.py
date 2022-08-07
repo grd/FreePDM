@@ -70,7 +70,7 @@ class MainWindow(QMainWindow):
             self.load_data()
 
         # Edit FC Item
-        if item == 'FCStd':
+        if item == 'FCStd' or item == 'A2-Assy' or item == 'A3-Assy'or item == 'A4-Assy':
             part = self.ui.tableWorkspace.item(row, 1).text()
             part = os.path.abspath(os.path.join(self.current_directory, part))
             part = EditItem(part)
