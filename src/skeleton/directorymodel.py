@@ -57,7 +57,13 @@ class DirectoryModel(object):
         for file in file_list:
             size = str(os.path.getsize(self.full_path(file)))
             if file.endswith(".FCStd"):
-                self.directoryList.append({'nr': str(nr), 'filename': file, 'type': 'FCStd', 'size': size})
+                item = ItemDataModel(self.full_path(file))
+                if 'Assembly' in item.documentProperties:
+                    type = item.documentProperties['Assembly']
+                else:
+                    type = 'FCStd'
+                self.directoryList.append({'nr': str(nr), 'filename': file, 'type': type, 'size': size})
+                    
                 nr += 1
             else:
                 self.directoryList.append({'nr': str(nr), 'filename': file, 'type': 'File', 'size': size})

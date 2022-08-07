@@ -15,7 +15,7 @@ from PySide2.QtUiTools import QUiLoader
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'skeleton'))
 
 from directorymodel import DirectoryModel
-from EditItem import EditItem
+from .EditItem import EditItem
 
 
 class MainWindow(QMainWindow):

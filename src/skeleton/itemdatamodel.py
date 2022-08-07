@@ -83,19 +83,19 @@ class ItemDataModel():
 
         element = root.find(".//Property[@name='a2p_Version']/String")
         if element is not None:
-            self.documentProperties["Assembly-A2P"] = element.attrib.get('value')
+            self.documentProperties["Assembly"] = 'A2-Assy'
 
         element = root.find(".//Property[@name='Proxy']/Python")
         if element is not None:
             a3assy = element.attrib.get('module')
             if a3assy == 'freecad.asm3.assembly':
-                self.documentProperties["Assembly-A3"] = 'A3-Assy'
+                self.documentProperties["Assembly"] = 'A3-Assy'
 
         element = root.find(".//Property[@name='SolverId']/String")
         if element is not None:
             a4assy = element.attrib.get('value')
             if a4assy == 'Asm4EE':
-                self.documentProperties["Assembly-A4"] = 'A4-Assy'
+                self.documentProperties["Assembly"] = 'A4-Assy'
 
     def getFileName(self):
         return(self.fileName)

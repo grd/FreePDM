@@ -50,7 +50,7 @@ class EditItem(QDialog):
         # When file is read-only don't activate the Ok button
         # Unfortunately this doesn't work for mine OS (Xbuntu)
         # if os.access(self.file, os.R_OK) == True:
-            # self.ui.okButton.setEnabled(False)
+            # self.ui.saveButton.setEnabled(False)
 
         self.ui.nameEdit.setText(self.idm.documentProperties["Label"])
         self.ui.dateEdit.setText(self.idm.documentProperties["CreationDate"])
