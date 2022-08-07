@@ -12,6 +12,9 @@ import sql_enum
 from typing import NewType, Optional
 
 Base = declarative_base()
+# https://dataedo.com/kb/data-glossary/what-is-metadata
+# https://www.geeksforgeeks.org/difference-between-data-and-metadata/
+# https://www.geeksforgeeks.org/metadata-in-dbms-and-its-types/
 
 
 class SQLUser(Base):

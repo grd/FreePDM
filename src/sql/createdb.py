@@ -13,6 +13,9 @@ from sqlalchemy.engine import URL
 from typing import NewType, Optional, Union
 
 Base = declarative_base()
+# https://dataedo.com/kb/data-glossary/what-is-metadata
+# https://www.geeksforgeeks.org/difference-between-data-and-metadata/
+# https://www.geeksforgeeks.org/metadata-in-dbms-and-its-types/
 
 
 class CreateDb(Base):
