@@ -53,9 +53,9 @@ class MainWindow(QMainWindow):
         self.ui.tableWorkspace.verticalHeader().setVisible(False)
         self.ui.tableWorkspace.setColumnWidth(0, 30)
         self.ui.tableWorkspace.setSelectionBehavior(QTableWidget.SelectRows)
-        # self.ui.tableWorkspace.selectionModel().selectionChanged.connect(self.on_selectionChanged)
+        # self.ui.tableWorkspace.selectionModel().selectionChanged.connect(self.on_selection_changed)
         self.ui.tableWorkspace.doubleClicked.connect(self.file_double_clicked)
-        # self.ui.buttonCheckOutButton('Check In', clicked=self.retrieveCheckButtonValues)
+        # self.ui.buttonCheckOutButton('Check In', clicked=self.retrieve_check_button_values)
 
     # deal with doubleclick
     def file_double_clicked(self, event):
@@ -82,13 +82,13 @@ class MainWindow(QMainWindow):
   
 
     # deal with checkbox click on a field
-    def retrieveCheckButtonValues(self):
+    def retrieve_check_button_values(self):
         for row in range(self.ui.tableWidget.rowCount()):
             if self.ui.tableWorkspace.item(row, 0).checkState() == Qt.CheckState.Checked:
                 print("selected row: ", row)
 
     # deal with the rows
-    def on_selectionChanged(self, selected, deselected):
+    def on_selection_changed(self, selected, deselected):
         for ix in selected.indexes():
             print('Selected Cell Location Row: {0}, Column: {1}'.format(ix.row(), ix.column()))
 
