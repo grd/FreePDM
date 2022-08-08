@@ -54,11 +54,11 @@ class MainWindow(QMainWindow):
         self.ui.tableWorkspace.setColumnWidth(0, 30)
         self.ui.tableWorkspace.setSelectionBehavior(QTableWidget.SelectRows)
         # self.ui.tableWorkspace.selectionModel().selectionChanged.connect(self.on_selectionChanged)
-        self.ui.tableWorkspace.doubleClicked.connect(self.fileDoubleClicked)
+        self.ui.tableWorkspace.doubleClicked.connect(self.file_double_clicked)
         # self.ui.buttonCheckOutButton('Check In', clicked=self.retrieveCheckButtonValues)
 
     # deal with doubleclick
-    def fileDoubleClicked(self, event):
+    def file_double_clicked(self, event):
         row = event.row()
         item = self.ui.tableWorkspace.item(row, 5).text()
         # print('item = ', item)

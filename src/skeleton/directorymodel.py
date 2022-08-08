@@ -21,12 +21,12 @@ class DirectoryModel(object):
                                "version": "0",
                                "type": "Dir or File",
                                "size": "file size"}]
-        self.getDirList(withParentDirectory)
+        self.get_dir_list(withParentDirectory)
 
     def full_path(self, file):
         return (self.directory + '/' + file)
 
-    def getDirList(self, withParentDirectory):
+    def get_dir_list(self, withParentDirectory):
         dir_list = os.listdir(self.directory)
         dir_list.sort()
         directory_list = []
@@ -58,8 +58,8 @@ class DirectoryModel(object):
             size = str(os.path.getsize(self.full_path(file)))
             if file.endswith(".FCStd"):
                 item = ItemDataModel(self.full_path(file))
-                if 'Assembly' in item.documentProperties:
-                    type = item.documentProperties['Assembly']
+                if 'Assembly' in item.document_properties:
+                    type = item.document_properties['Assembly']
                 else:
                     type = 'FCStd'
                 self.directoryList.append({'nr': str(nr), 'filename': file, 'type': type, 'size': size})
@@ -78,11 +78,14 @@ class DirectoryModel(object):
     def size(self):
         return(len(self.directoryList))
 
-# TODO:
-#   What kind of FC files do you want to see?
-#   Do you want to see the history of the files?
-#   def filter(self):
+    #   What kind of FC files do you want to see?
+    #   Do you want to see the history of the files?
+    def filter(self):
+        pass
 
-# TODO:
-#   Purge stored versions of files. All up to number
-#   def purge(number):
+    #   Purge stored versions of files. All up to number
+    def purge(number):
+        pass
+
+    def save_item_as(source, dest):
+        pass

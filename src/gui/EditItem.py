@@ -43,8 +43,8 @@ class EditItem(QDialog):
         self.ui.dateEdit.setReadOnly(True)
         self.ui.weightEdit.setReadOnly(True)
         self.ui.unitEdit.setReadOnly(True)
-        self.ui.saveButton.clicked.connect(self.saveButton)
-        self.ui.okButton.clicked.connect(self.pushOkButton)
+        self.ui.saveButton.clicked.connect(self.save_button)
+        self.ui.okButton.clicked.connect(self.push_ok_button)
         # self.ui.done(self.done)
 
         # When file is read-only don't activate the Ok button
@@ -52,18 +52,18 @@ class EditItem(QDialog):
         # if os.access(self.file, os.R_OK) == True:
             # self.ui.saveButton.setEnabled(False)
 
-        self.ui.nameEdit.setText(self.idm.documentProperties["Label"])
-        self.ui.dateEdit.setText(self.idm.documentProperties["CreationDate"])
-        if 'Unit' in self.idm.documentProperties:
-            self.ui.unitEdit.setText(self.idm.documentProperties['Unit'])
-        if "thumbnail" in self.idm.documentProperties:
+        self.ui.nameEdit.setText(self.idm.document_properties["Label"])
+        self.ui.dateEdit.setText(self.idm.document_properties["CreationDate"])
+        if 'Unit' in self.idm.document_properties:
+            self.ui.unitEdit.setText(self.idm.document_properties['Unit'])
+        if "thumbnail" in self.idm.document_properties:
             pixmap = QtGui.QPixmap(self.idm.thumbnail)
-            self.ui.lbl.setPixmap(pixmap.scaled(256, 256))  # , QtCore.Qt.KeepAspectRatio , QtCore.Qt.SmoothTransformation))
+            self.ui.lbl.setPixmap(pixmap.scaled(256, 256))
 
-    def saveButton(self):
+    def save_button(self):
         self.ui.hide()
     
-    def pushOkButton(self):
+    def push_ok_button(self):
         self.ui.hide()
 
     # def done(self):
@@ -74,7 +74,12 @@ class EditItem(QDialog):
 def main():
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)
-    mainwindow = EditItem("/home/user/temp/part-inches.FCStd")
+    # Opening a FCStd file with the command line
+    if len(sys.argv) == 2:
+        fcfile = sys.argv[1]
+    else:
+        fcfile = ''
+    mainwindow = EditItem(fcfile)
     mainwindow.ui.show()
     sys.exit(app.exec_())
 
