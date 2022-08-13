@@ -123,7 +123,7 @@ elif [[ $setconf == "write" ]]; then
 			;;
 		4)
 			printf "What MariaDB version do you want to install? (1 - 2)\n
-1 - MariaDB Enterprice Edition(default)
+1 - MariaDB Enterprise Edition(default)
 2 - MariaDB Community Edition\n"
 
 			read mariadbedition
@@ -597,7 +597,7 @@ case $sqlserverc in
 
 		case $mariadbedition in
 			1 )
-				# Enterprice Edition
+				# Enterprise Edition
 				wget https://dlm.mariadb.com/enterprise-release-helpers/mariadb_es_repo_setup
 
 				echo "cfcd35671125d657a212d92b93be7b1f4ad2fda58dfa8b5ab4b601bf3afa4eae  mariadb_es_repo_setup" | sha256sum -c -

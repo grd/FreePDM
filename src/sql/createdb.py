@@ -38,7 +38,7 @@ class CreateDb(Base):
             password.
 
         host [str] :
-            host adress. For example localhost
+            host address. For example localhost
 
         port [int] :
             SQL port.
@@ -74,7 +74,7 @@ class CreateDb(Base):
         pass
 
 
-class CreateMySQLDb(CreateDb):  # Alles in een file of beter te splitsen?
+class CreateMySQLDb(CreateDb):  # Everything in a file or better to split it?
     """Feed Forward of generic SQL functions to MySQL"""
     # https://docs.sqlalchemy.org/en/14/core/engines.html#mysql
 
@@ -85,7 +85,7 @@ class CreateMySQLDb(CreateDb):  # Alles in een file of beter te splitsen?
     def start_engine(self, url: Union[str | URL], encoding: str, echo: bool, future: bool, dialect: Optional[str]):
         """
         Start MySQL engine.
-        Note: MySQL engine is not default developement database. 
+        Note: MySQL engine is not default development database. 
 
         Parameters
         ----------
@@ -102,7 +102,7 @@ class CreateMySQLDb(CreateDb):  # Alles in een file of beter te splitsen?
         future [bool] : Future proof style
             SQLAlchemy 2.0 up style Engine, Connection (Introduced in SQLAlchemy 1.4).
 
-        dialect [string] : If other SQL python libraies are used this can be set.
+        dialect [string] : If other SQL python libraries are used this can be set.
             Optional parameter.
         """
         self.url = url
@@ -154,7 +154,7 @@ class CreatePostgreSQLDb(CreateDb):
         future [bool] : Future proof style
             SQLAlchemy 2.0 up style Engine, Connection (Introduced in SQLAlchemy 1.4).
 
-        dialect [string] : If other SQL python libraies are used this can be set.
+        dialect [string] : If other SQL python libraries are used this can be set.
             Optional parameter.
         """
         self.url = url
@@ -179,7 +179,7 @@ class CreatePostgreSQLDb(CreateDb):
         return(engine)
 
 
-class CreateSQLiteDb(CreateDb):  # Alles in een file of beter te splitsen?
+class CreateSQLiteDb(CreateDb):  # Everything in a file or better to split it?
     """Feed Forward of generic SQL functions to SQLite"""
     # https://docs.sqlalchemy.org/en/14/core/engines.html#sqlite
 
@@ -190,7 +190,7 @@ class CreateSQLiteDb(CreateDb):  # Alles in een file of beter te splitsen?
     def start_engine(self, url: Union[str | URL], encoding: str, echo: bool, future: bool):
         """
         Start SQLite engine.
-        Note: SQLite engine is not default developement database.
+        Note: SQLite engine is not default development database.
 
         Parameters
         ----------
@@ -219,24 +219,24 @@ class CreateSQLiteDb(CreateDb):  # Alles in een file of beter te splitsen?
 
 def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[str] = ',', **vargs):
     """
-    Start your choosen engine
+    Start your chosen engine
 
     Parameters
     ----------
 
     prefered_engine [str] :
-        What sql engine is prefered to use.
+        What sql engine is preferred to use.
 
     url [str]:
-        url for databasse. This can be a single string but also a list of parameters (, seperated).
-        This list conatain the following information: drivername; username; password; host; port; database_name.
+        url for database. This can be a single string but also a list of parameters (comma-separated).
+        This list contain the following information: drivername; username; password; host; port; database_name.
         TODO: add dialect as optional value
 
     split [str]:
-        split string in list (Optional). default value is ','.
+        split string in list (Optional). Default value is ','.
 
     **vargs:
-        Other parameters are parsed trough
+        Other parameters are parsed through
     """
     url_list = url_string.split(split)
 
@@ -301,7 +301,7 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
         sqli_engine.start_engine(url, **vargs)
         return(sqli_engine)
     else:
-        raise ValueError("{} Is not a Valif input for 'db_type'.".format(db_type))
+        raise ValueError("{} Is not a Valid input for 'db_type'.".format(db_type))
 
 
 def create_default_tables():
@@ -312,17 +312,17 @@ if __name__ == "__main__":
     import sys
 
     # at least two variables required: filename; url_to_database.
-    # if more variables need to be added it is always: filenname; database_type; url_to_database; **vargs
+    # if more variables need to be added it is always: filename; database_type; url_to_database; **vargs
     if len(sys.argv) == 1:
         raise ValueError("Not enough parameters added")
     elif len(sys.argv) == 2:
-        # default SQL engine choosen: PostgreSQL
+        # default SQL engine chosen: PostgreSQL
         sqldb = start_your_engine(sys.argv[1], "postgresql")
     elif len(sys.argv) == 3:
         # Choose own SQL Engine
         sqldb = start_your_engine(sys.argv[1], sys.argv[2])
     else:
-        # pass all parameters trough
+        # pass all parameters through
         try:
             raise NotImplementedError("Parsing argumenets is not implemented yet.")
             # sqldb = start_your_engine(sys.argv[1],sys.argv[2], sys.argv[2:])
