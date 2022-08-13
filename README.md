@@ -6,7 +6,7 @@
 
 # FreePDM
 
-A PDM for FreeCAD aka *"The poor man's PDM*".
+A PDM for FreeCAD.
 
 A PDM is a Product Data Management system. Per [wikipedia](https://en.wikipedia.org/wiki/Product_data_management): 
 
@@ -17,11 +17,7 @@ A PDM is a Product Data Management system. Per [wikipedia](https://en.wikipedia.
 [FreeCAD](https://www.freecad.org) is a free libre opensource cross-platform Computer Aided Design (CAD) software. 
 
 ## Background
-This is going to be my first attempt to make a PDM. And it is going to be in Python.
-
-Yeah. It's a bit scary.
-
-The initial idea is to make a Skeleton (model), GUI, a MVC and an Admin module. The GUI is based on pySide. I need to make a WB.
+The initial idea is to make a Skeleton (model), GUI and an Admin module. The GUI is based on PySide2.
 
 ### Previous attempts made at creating a FOSS PDM
 * [OpenPLM](https://github.com/cadracks-project/openplm) (abandoned)
