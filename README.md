@@ -1,24 +1,39 @@
 # FreePDM
-A PDM for FreeCAD
 
+A PDM for FreeCAD AKA *"The poor man's PDM*".
+
+A PDM is a Product Data Management system. Per [wikipedia](https://en.wikipedia.org/wiki/Product_data_management): 
+
+> Product data management (PDM) should not be confused with product information management (PIM). PDM is the name of a business function within product lifecycle management (PLM) that is denotes the management and publication of product data. 
+
+>In software engineering, this is known as version control. The goals of product data management include ensuring all stakeholders share a common understanding, that confusion during the execution of the processes is minimized, and that the highest standards of quality controls are maintained. 
+
+[FreeCAD](https://www.freecad.org) is a free libre opensource cross-platform Computer Aided Design (CAD) software. 
+
+## Background
 This is going to be my first attempt to make a PDM. And it is going to be in Python.
 
 Yeah. It's a bit scary.
 
 The initial idea is to make a Skeleton (model), GUI, a MVC and an Admin module. The GUI is based on pySide. I need to make a WB.
 
-Looking at previous attempts to make a PDM:
-* https://github.com/cadracks-project/openplm (but FreePDM is going to be a "poor man's" PDM. You can compare it with SolidWorks PDM. Nothing fancy. That all brokes down sooner or later)
-* https://forum.freecad.org/viewtopic.php?f=22&t=63794
-* 
+### Previous attempts made at creating a FOSS PDM
+* [OpenPLM](https://github.com/cadracks-project/openplm) (abandoned)
+* German users on the FreeCAD forum attempted a PDM (see FreeCAD [forum thread](https://forum.freecad.org/viewtopic.php?f=22&t=63794))
+ 
 
-Also interesting:
-* https://github.com/furti/FreeCAD-Reporting
-* The fcinfo macro for measure weight of a model
+Relevant:
+* The FreeCAD [Reporting workbench](https://github.com/furti/FreeCAD-Reporting) addon that uses SQL to extract information out of a FreeCAD document.
+* The [fcinfo](https://wiki.freecad.org/Macro_FCInfo) macro for measuring the weight of a model.
 
 
-## The Concept list: 
-The concept list is: [Concept of Design](ConceptOfDesign/README.md)
+## Concept
 
-## The Workflow:
-The Workflow: [Workflow](ConceptOfDesign/FreePDM_02-Workflows/README.md)
+Proposed [concept](ConceptOfDesign/README.md) of design.
+
+## Workflow
+
+Proposed [workflow](ConceptOfDesign/FreePDM_02-Workflows/README.md).
+
+## Licence
+MIT [LICENSE](LICENSE)
