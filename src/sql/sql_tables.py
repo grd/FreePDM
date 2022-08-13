@@ -58,7 +58,7 @@ class SQLProject(Base):
     project_name = Column(String(32))
     project_status = Column(Enum(sql_enum.ProjectState))
     Project_date_start = Column(Date)
-    Project_date_finish = Column(Date)  # TODO check finsh date is after start date
+    Project_date_finish = Column(Date)  # TODO check finish date is after start date
     project_path = Column(String)
 
     def __repr__(self):
@@ -80,7 +80,7 @@ class SQLItem(Base):
     item_path = Column(String)
     # TODO: get image from Model. If there is no fileimage add default empty image.
     item_preview = Column(LargeBinary)  # Change when no image is available
-    # item should be able to exist in multiple projects. but need a singel store location
+    # item should be able to exist in multiple projects. but need a single store location
     project_id = Column(Integer, ForeignKey('projects.project_number'), nullable=False)
     purchasing_id = Column(Integer, ForeignKey('purchasing.purchasing_id'))
 
@@ -183,7 +183,7 @@ class SQLPurchase(Base):
     __tablename__ = 'purchasing'
 
     purchasing_id = Column(Integer, primary_key=True)
-    purchasing_source = Column(Boolean)  # Repesent Buy OR Manufacture
+    purchasing_source = Column(Boolean)  # Represent Buy OR Manufacture
     # Optionally Enum
     purchasing_tracebility = Column(Enum(sql_enum.TracebilityState))
     # Represent list: Lot, Lot And Serial Number, Serial Number, Not traced

@@ -108,7 +108,7 @@ class ItemDataModel():
     def save(self):
         pass
 
-    def add_variable(location, name, variabele):
+    def add_variable(location, name, variable):
         pass
 
     def rename_item(source, dest):
