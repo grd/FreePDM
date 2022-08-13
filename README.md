@@ -1,6 +1,12 @@
+<center> 
+
+![FreePDM-logo](assets/FreePDM-logo.png)
+
+</center> 
+
 # FreePDM
 
-A PDM for FreeCAD AKA *"The poor man's PDM*".
+A PDM for FreeCAD aka *"The poor man's PDM*".
 
 A PDM is a Product Data Management system. Per [wikipedia](https://en.wikipedia.org/wiki/Product_data_management): 
 
