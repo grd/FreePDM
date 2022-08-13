@@ -260,7 +260,7 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
 
         msql_engine.start_engine(new_url, dialect=dialect, **vargs)
         return(msql_engine)
-    elif (db_type == None) or (db_type == "postgresql") or (db_type == "PostgresSQL"):
+    elif (db_type is None) or (db_type == "postgresql") or (db_type == "PostgresSQL"):
         psql_engine = CreatePostgreSQLDb()
         if len(url_list) == 1:
             print("Complete url received.")
