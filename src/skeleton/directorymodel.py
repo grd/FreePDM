@@ -8,7 +8,8 @@ from itemdatamodel import ItemDataModel
 
 # the file types
 types = ('Directory', 'Assembly A2P', 'Assembly A3', 'Assembly A4', 
-         'Drawing', 'Part', 'Object', 'FC document', 'FC old', 'Other')
+         'Drawing', 'Part', 'Group', 'ConfTable', 'Object', 
+         'FC document', 'FC old', 'Other')
 
 # The directorymodel is a list of files that can be used inside a GUI
 class DirectoryModel(object):
@@ -24,7 +25,7 @@ class DirectoryModel(object):
         self.get_dir_list(withParentDirectory)
 
     def full_path(self, file):
-        return (self.directory + '/' + file)
+        return os.path.join(self.directory, file)
 
     def get_dir_list(self, withParentDirectory):
         dir_list = os.listdir(self.directory)
@@ -56,14 +57,21 @@ class DirectoryModel(object):
             nr += 1
         for file in file_list:
             size = str(os.path.getsize(self.full_path(file)))
-            if file.endswith(".FCStd"):
-                item = ItemDataModel(self.full_path(file))
-                if 'Assembly' in item.document_properties:
-                    type = item.document_properties['Assembly']
-                else:
-                    type = 'FCStd'
+            if ".FCStd" in file:
+                if file.endswith(".FCStd"):
+                    item = ItemDataModel(self.full_path(file))
+                    if 'Assembly' in item.document_properties:
+                        type = item.document_properties['Assembly']
+                    else:
+                        type = 'FCStd'
+                else: 
+                    str1 = file[file.index('.FCStd')+6:]
+                    if str1.isdigit(): 
+                        # versioned FCStd file
+                        type = 'FC old'
+                    else: # TODO: Check for other versioned file types
+                        type = 'Other'
                 self.directoryList.append({'nr': str(nr), 'filename': file, 'type': type, 'size': size})
-                    
                 nr += 1
             else:
                 self.directoryList.append({'nr': str(nr), 'filename': file, 'type': 'File', 'size': size})
