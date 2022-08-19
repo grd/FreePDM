@@ -115,7 +115,8 @@ class ItemDataModel():
         pass
 
 # The following classes contains methods that deal with
-# the following items: Object, Part, Assembly 2P, 3, 4 and drawings
+# the following items: Object, Part, Group, ConfigurationTable, 
+#                      Assembly 2P, 3, 4 and drawings
 
 class ItemTemplate:
     pass
@@ -124,6 +125,12 @@ class ItemObject:
     pass
 
 class ItemPart:
+    pass
+
+class ItemGroup:
+    pass
+
+class ItemConfigurationTable:
     pass
 
 class ItemAssemblyA4:
