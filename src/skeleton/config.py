@@ -4,6 +4,7 @@
 """
 
 import os
+from os.path import exists
 import configparser
 import appdirs
 
@@ -26,30 +27,52 @@ config_name = os.path.join(config_dir, 'FreePDM.conf')
 ###
 
 startup_directory = ''
-filter = ''
+filter = 0
 log_file = ''
 log_level = ''
 fast_loading_dir =  ''
 
+###
+### filter flags
+###
+show_fc_files_only = 1
+show_versioned_fc_files = 2
+show_all_files = 4
+
 
 def read():
+    global startup_directory
+    global filter
+    global log_file
+    global log_level
+    global fast_loading_dir
+
     config = configparser.ConfigParser()
     config.read(config_name)
 
     # reading variables from section: 'DEFAULT'
     startup_directory = config['DEFAULT']['startup_directory']
-    filter =            config['DEFAULT']['filter']
+    filter =        int(config['DEFAULT']['filter'])
     log_file =          config['DEFAULT']['log_file']
     log_level =         config['DEFAULT']['log_levle']
     fast_loading_dir =  config['DEFAULT']['fast_loading_dir']
 
 def write():
+    global startup_directory
+    global filter
+    global log_file
+    global log_level
+    global fast_loading_dir
+
     config = configparser.ConfigParser()
     config['DEFAULT']['startup_directory'] = startup_directory
-    config['DEFAULT']['filter'] = filter
+    config['DEFAULT']['filter'] = str(filter)
     config['DEFAULT']['log_file'] = log_file
     config['DEFAULT']['log_levle'] = log_level
     config['DEFAULT']['fast_loading_dir'] = fast_loading_dir
+
+    if not os.path.exists(config_dir):
+        os.makedirs(config_dir)
 
     with open(config_name, 'w') as configfile:
         config.write(configfile)

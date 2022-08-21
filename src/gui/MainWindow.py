@@ -12,10 +12,12 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWid
 from PySide2.QtCore import QFile, Qt
 from PySide2.QtUiTools import QUiLoader
 
+from .EditItem import EditItem
+from .filter import *
+
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'skeleton'))
 
 from directorymodel import DirectoryModel
-from .EditItem import EditItem
 
 
 class MainWindow(QMainWindow):
@@ -56,6 +58,11 @@ class MainWindow(QMainWindow):
         # self.ui.tableWorkspace.selectionModel().selectionChanged.connect(self.on_selection_changed)
         self.ui.tableWorkspace.doubleClicked.connect(self.file_double_clicked)
         # self.ui.buttonCheckOutButton('Check In', clicked=self.retrieve_check_button_values)
+        self.ui.buttonFilter.clicked.connect(self.set_filter)
+
+    def set_filter(self):
+        filter_dialog()
+        self.load_data()
 
     # deal with doubleclick
     def file_double_clicked(self, event):
