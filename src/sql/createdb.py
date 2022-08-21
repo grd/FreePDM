@@ -114,15 +114,15 @@ class CreateMySQLDb(CreateDb):  # Everything in a file or better to split it?
         if (self.dialect == "default") or (self.dialect is None):
             # Installing via `FreePDM-ServerInstaller.sh` installs default engine
             # default
-            engine = create_engine(self.url, echo=self.echo, future=self.future)
+            self.engine = create_engine(self.url, echo=self.echo, future=self.future)
             pass
         elif (self.dialect == "mysqlclient") or (self.dialect == "mysqldb"):
             # mysqlclient (a maintained fork of MySQL-Python)
-            engine = create_engine(self.url, echo=self.echo, future=self.future)
+            self.engine = create_engine(self.url, echo=self.echo, future=self.future)
             pass
         elif (self.dialect == "PyMySQL") or (self.dialect == "pymysql"):
             # PyMySQL
-            engine = create_engine(self.url, echo=self.echo, future=self.future)
+            self.engine = create_engine(self.url, echo=self.echo, future=self.future)
         else:
             pass
 
@@ -165,18 +165,17 @@ class CreatePostgreSQLDb(CreateDb):
         # https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls
         if (self.dialect == "default") or (self.dialect is None):
             # default
-            engine = create_engine(self.url, echo=self.echo, future=self.future)
+            self.engine = create_engine(self.url, echo=self.echo, future=self.future)
             pass
         elif self.dialect == "psycopg2":
             # psycopg2
-            engine = create_engine(self.url, echo=self.echo, future=self.future)
+            self.engine = create_engine(self.url, echo=self.echo, future=self.future)
             pass
         elif self.dialect == "pg8000":
             # pg8000
-            engine = create_engine(self.url, echo=self.echo, future=self.future)
+            self.engine = create_engine(self.url, echo=self.echo, future=self.future)
         else:
             pass
-        return(engine)
 
 
 class CreateSQLiteDb(CreateDb):  # Everything in a file or better to split it?
@@ -213,8 +212,8 @@ class CreateSQLiteDb(CreateDb):  # Everything in a file or better to split it?
         self.future = future
         # https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls
         # exampleurl: "sqlite+pysqlite:///:memory:"
-        engine = create_engine(self.url, echo=self.echo, future=self.future)  # start from memory
-        return(engine)
+        self.engine = create_engine(self.url, echo=self.echo, future=self.future)  # start from memory
+
 
 
 def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[str] = ',', **vargs):
@@ -298,7 +297,7 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
         else:
             raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
 
-        sqli_engine.start_engine(url, **vargs)
+        sqli_engine.start_engine(new_url, **vargs)
         return(sqli_engine)
     else:
         raise ValueError("{} Is not a Valid input for 'db_type'.".format(db_type))
