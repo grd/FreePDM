@@ -65,8 +65,7 @@ class DirectoryModel(object):
                     else:
                         type = 'FCStd'
                 else: 
-                    str1 = file[file.index('.FCStd')+6:]
-                    if str1.isdigit(): 
+                    if file[file.index('.FCStd')+6:].isdigit(): 
                         # versioned FCStd file
                         type = 'FC old'
                     else: # TODO: Check for other versioned file types
@@ -91,7 +90,7 @@ class DirectoryModel(object):
     def filter(self):
         pass
 
-    #   Purge stored versions of files. All up to number
+    #   Purge stored versions of files.
     def purge(number):
         pass
 
