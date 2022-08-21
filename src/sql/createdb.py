@@ -5,7 +5,7 @@
     :license:   MIT License.
 """
 
-from sql import SQLUser, SQLRole, SQLProject, SQLItem, SQLModel, SQLDocument, SQLModelMaterial, SQLHistory, SQLPurchase, SQLManufacturer, SQLVendor
+from sql_tables import SQLUser, SQLRole, SQLProject, SQLItem, SQLModel, SQLDocument, SQLModelMaterial, SQLHistory, SQLPurchase, SQLManufacturer, SQLVendor
 
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import create_engine
@@ -70,6 +70,7 @@ class CreateDb(Base):
 
     def create_tables(self):
         """create tables for database"""
+        # https://docs.sqlalchemy.org/en/14/orm/session_basics.html#id1
         pass
 
     def add_columns_to_table(self):
