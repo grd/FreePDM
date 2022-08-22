@@ -91,8 +91,11 @@ class DirectoryModel(object):
         pass
 
     #   Purge stored versions of files.
-    def purge(number):
+    def purge(self, number):
+        self.number = number
         pass
 
-    def save_item_as(source, dest):
+    def save_item_as(self, source, dest):
+        self.source = source
+        self.dest = dest
         pass

@@ -11,7 +11,7 @@ from sqlalchemy import create_engine
 from sqlalchemy import MetaData
 from sqlalchemy import Table
 from sqlalchemy.engine import URL
-from typing import NewType, Optional, Union
+from typing import Optional, Union
 # Table classes
 from sql_tables import SQLUser, SQLRole, SQLProject, SQLItem, SQLModel, SQLDocument, SQLMaterial, SQLHistory, SQLPurchase, SQLManufacturer, SQLVendor
 

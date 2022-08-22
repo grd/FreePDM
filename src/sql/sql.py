@@ -6,7 +6,7 @@
 """
 
 from sqlalchemy.orm import declarative_base
-from typing import NewType, Optional
+# from typing import Optional
 
 Base = declarative_base()
 

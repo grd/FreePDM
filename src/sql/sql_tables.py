@@ -5,13 +5,12 @@
     :license:   MIT License.
 """
 
-from sqlalchemy.orm import declarative_base
+# https://stackoverflow.com/questions/54118182/sqlalchemy-not-creating-tables
+from sql import Base
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Boolean, Integer, Float, String, Date, Enum, LargeBinary
 import sql_enum
-from typing import NewType, Optional
 
-Base = declarative_base()
 # https://dataedo.com/kb/data-glossary/what-is-metadata
 # https://www.geeksforgeeks.org/difference-between-data-and-metadata/
 # https://www.geeksforgeeks.org/metadata-in-dbms-and-its-types/
