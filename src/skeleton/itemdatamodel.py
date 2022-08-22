@@ -5,10 +5,10 @@
 
 # Getting file info from Document.xml that is stored within each FC file
 
-from fileinput import filename
+# from fileinput import filename  # not used
 from hashlib import blake2b
 import defusedxml.ElementTree as et
-from tempfile import tempdir
+# from tempfile import tempdir  # not used
 import tempfile
 import os
 import zipfile
@@ -108,10 +108,15 @@ class ItemDataModel():
     def save(self):
         pass
 
-    def add_variable(location, name, variable):
+    def add_variable(self, location, name, variable):
+        self.location = location
+        self.name = name
+        self.variable = variable
         pass
 
-    def rename_item(source, dest):
+    def rename_item(self, source, dest):
+        self.source = source
+        self.dest = dest
         pass
 
 # The following classes contains methods that deal with

@@ -5,14 +5,22 @@
     :license:   MIT License.
 """
 
-from sql import SQLUser, SQLRole, SQLProject, SQLItem, SQLModel, SQLDocument, SQLModelMaterial, SQLHistory, SQLPurchase, SQLManufacturer, SQLVendor
-
-from sqlalchemy.orm import declarative_base
+from sql import Base
+from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
+from sqlalchemy import MetaData
+from sqlalchemy import Table
 from sqlalchemy.engine import URL
-from typing import NewType, Optional, Union
+from typing import Optional, Union
+# Table classes
+from sql_tables import SQLUser, SQLRole, SQLProject, SQLItem, SQLModel, SQLDocument, SQLMaterial, SQLHistory, SQLPurchase, SQLManufacturer, SQLVendor
 
-Base = declarative_base()
+
+# Base = declarative_base()
+# https://dataedo.com/kb/data-glossary/what-is-metadata
+# https://www.geeksforgeeks.org/difference-between-data-and-metadata/
+# https://www.geeksforgeeks.org/metadata-in-dbms-and-its-types/
+metadata_obj = MetaData()
 
 
 class CreateDb(Base):
@@ -60,19 +68,6 @@ class CreateDb(Base):
         new_url = URL.create(self.drivername, self.username, self.password, self.host, self.port, self.database_name)
         return(new_url)
 
-    # https://docs.sqlalchemy.org/en/14/tutorial/dbapi_transactions.html#committing-changes
-    def create_db(self):
-        """create database"""
-        pass
-
-    def create_tables(self):
-        """create tables for database"""
-        pass
-
-    def add_columns_to_table(self):
-        """add columns to table"""
-        pass
-
 
 class CreateMySQLDb(CreateDb):  # Everything in a file or better to split it?
     """Feed Forward of generic SQL functions to MySQL"""
@@ -114,15 +109,16 @@ class CreateMySQLDb(CreateDb):  # Everything in a file or better to split it?
         if (self.dialect == "default") or (self.dialect is None):
             # Installing via `FreePDM-ServerInstaller.sh` installs default engine
             # default
-            engine = create_engine(self.url, echo=self.echo, future=self.future)
-            pass
+            self.engine = create_engine(self.url, echo=self.echo, future=self.future)
+            return(self.engine)
         elif (self.dialect == "mysqlclient") or (self.dialect == "mysqldb"):
             # mysqlclient (a maintained fork of MySQL-Python)
-            engine = create_engine(self.url, echo=self.echo, future=self.future)
-            pass
+            self.engine = create_engine(self.url, echo=self.echo, future=self.future)
+            return(self.engine)
         elif (self.dialect == "PyMySQL") or (self.dialect == "pymysql"):
             # PyMySQL
-            engine = create_engine(self.url, echo=self.echo, future=self.future)
+            self.engine = create_engine(self.url, echo=self.echo, future=self.future)
+            return(self.engine)
         else:
             pass
 
@@ -165,18 +161,18 @@ class CreatePostgreSQLDb(CreateDb):
         # https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls
         if (self.dialect == "default") or (self.dialect is None):
             # default
-            engine = create_engine(self.url, echo=self.echo, future=self.future)
-            pass
+            self.engine = create_engine(self.url, echo=self.echo, future=self.future)
+            return(self.engine)
         elif self.dialect == "psycopg2":
             # psycopg2
-            engine = create_engine(self.url, echo=self.echo, future=self.future)
-            pass
+            self.engine = create_engine(self.url, echo=self.echo, future=self.future)
+            return(self.engine)
         elif self.dialect == "pg8000":
             # pg8000
-            engine = create_engine(self.url, echo=self.echo, future=self.future)
+            self.engine = create_engine(self.url, echo=self.echo, future=self.future)
+            return(self.engine)
         else:
             pass
-        return(engine)
 
 
 class CreateSQLiteDb(CreateDb):  # Everything in a file or better to split it?
@@ -213,8 +209,8 @@ class CreateSQLiteDb(CreateDb):  # Everything in a file or better to split it?
         self.future = future
         # https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls
         # exampleurl: "sqlite+pysqlite:///:memory:"
-        engine = create_engine(self.url, echo=self.echo, future=self.future)  # start from memory
-        return(engine)
+        self.engine = create_engine(self.url, echo=self.echo, future=self.future)  # start from memory
+        return(self.engine)
 
 
 def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[str] = ',', **vargs):
@@ -298,14 +294,39 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
         else:
             raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
 
-        sqli_engine.start_engine(url, **vargs)
+        sqli_engine.start_engine(new_url, **vargs)
         return(sqli_engine)
     else:
         raise ValueError("{} Is not a Valid input for 'db_type'.".format(db_type))
 
 
-def create_default_tables():
-    pass
+def create_default_tables(engine: str):
+    """
+    Create default set of tables
+    Tables are defined in sql_tables.py
+
+    Parameters
+    ----------
+
+    Engine [Str]:
+        Used Engine for creating tables
+
+    TODO: Add additional classes later on
+    """
+    # https://stackoverflow.com/questions/54118182/sqlalchemy-not-creating-tables
+    Base.metadata.create_all(bind=engine)
+    user_table = Table("user_accounts", metadata_obj, autoload_with=engine)
+    role_table = Table("user_roles", metadata_obj, autoload_with=engine)
+    project_table = Table("projects", metadata_obj, autoload_with=engine)
+    item_table = Table("items", metadata_obj, autoload_with=engine)
+    model_table = Table("models", metadata_obj, autoload_with=engine)
+    document_table = Table("documents", metadata_obj, autoload_with=engine)
+    material_table = Table("materials", metadata_obj, autoload_with=engine)
+    history_table = Table("history", metadata_obj, autoload_with=engine)
+    purchase_table = Table("purchasing", metadata_obj, autoload_with=engine)
+    manufacturer_table = Table("manufacturers", metadata_obj, autoload_with=engine)
+    vendor_table = Table("vendors", metadata_obj, autoload_with=engine)
+    return(user_table, role_table, project_table, item_table, model_table, document_table, material_table, history_table, purchase_table, manufacturer_table, vendor_table)
 
 
 if __name__ == "__main__":
@@ -323,10 +344,12 @@ if __name__ == "__main__":
         sqldb = start_your_engine(sys.argv[1], sys.argv[2])
     else:
         # pass all parameters through
-        try:
-            raise NotImplementedError("Parsing argumenets is not implemented yet.")
-            # sqldb = start_your_engine(sys.argv[1],sys.argv[2], sys.argv[2:])
-        except:  # there should an error message but not tested which one...
-            pass
+        raise NotImplementedError("Parsing argumenets is not implemented yet.")
+        # sqldb = start_your_engine(sys.argv[1],sys.argv[2], sys.argv[2:])
+        # This could be used for creation of additional tables
 
-    create_default_tables()
+    tables = create_default_tables(sqldb)
+    for table in tables:
+        print(table)
+        for key in table.c.keys():
+            print(key)

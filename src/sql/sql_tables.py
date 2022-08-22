@@ -5,18 +5,20 @@
     :license:   MIT License.
 """
 
-from sqlalchemy.orm import declarative_base
+# https://stackoverflow.com/questions/54118182/sqlalchemy-not-creating-tables
+from sql import Base
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Boolean, Integer, Float, String, Date, Enum, LargeBinary
 import sql_enum
-from typing import NewType, Optional
 
-Base = declarative_base()
+# https://dataedo.com/kb/data-glossary/what-is-metadata
+# https://www.geeksforgeeks.org/difference-between-data-and-metadata/
+# https://www.geeksforgeeks.org/metadata-in-dbms-and-its-types/
 
 
 class SQLUser(Base):
     """Class with default SQL User properties"""
-    __tablename__ = 'user_account'
+    __tablename__ = 'user_accounts'
 
     user_id = Column(Integer, primary_key=True)
     user_name = Column(String(30))
@@ -37,7 +39,7 @@ class SQLUser(Base):
 
 class SQLRole(Base):
     """Class with default SQL Role properties"""
-    __tablename__ = 'roles'
+    __tablename__ = 'user_roles'
 
     role_id = Column(Integer, primary_key=True)
     role_name = Column(String(32))
