@@ -40,6 +40,11 @@ show_versioned_fc_files = 2
 show_all_files = 4
 
 
+def get_filter(filtertype):
+    global filter
+    return filter & filtertype == filtertype
+
+
 def read():
     global startup_directory
     global filter

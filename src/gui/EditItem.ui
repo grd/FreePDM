@@ -269,7 +269,7 @@
     <string>Ok</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="saveButton">
+  <widget class="QPushButton" name="cancelButton">
    <property name="geometry">
     <rect>
      <x>460</x>
@@ -279,7 +279,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Save</string>
+    <string>Cancel</string>
    </property>
   </widget>
   <widget class="QComboBox" name="partCombo">

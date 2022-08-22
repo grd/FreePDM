@@ -12,7 +12,7 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWid
 from PySide2.QtCore import QFile, Qt
 from PySide2.QtUiTools import QUiLoader
 
-from .EditItem import EditItem
+from .EditItem import *
 from .filter import *
 
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'skeleton'))
@@ -45,7 +45,7 @@ class MainWindow(QMainWindow):
         self.ui.setWindowTitle("FreePDM")  # Done in ui file
         # self.ui.setWindowIcon(QtGui.QIcon(os.fspath(Path(__file__).resolve().parents[1] / "ui/logos/O_logo-32x32.png")))  # Probably done in ui file OSX don't show icon
         self.ui.show()
-        ui_file.close()
+
         self.ui.tableWorkspace.setColumnWidth(0, 10)
         self.ui.tableWorkspace.setColumnWidth(1, 150)
         self.ui.tableWorkspace.setColumnWidth(2, 200)
@@ -68,7 +68,6 @@ class MainWindow(QMainWindow):
     def file_double_clicked(self, event):
         row = event.row()
         item = self.ui.tableWorkspace.item(row, 5).text()
-        # print('item = ', item)
 
         # Change directory
         if item == 'Directory':
@@ -80,11 +79,8 @@ class MainWindow(QMainWindow):
         if item == 'FCStd' or item == 'A2-Assy' or item == 'A3-Assy'or item == 'A4-Assy':
             part = self.ui.tableWorkspace.item(row, 1).text()
             part = os.path.abspath(os.path.join(self.current_directory, part))
-            part = EditItem(part)
-            part.ui.show()
-            part.ui.exec_()
+            edit_item_dialog(part)
             self.load_data()
-            self.ui.show()
  
   
 
