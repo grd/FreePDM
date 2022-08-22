@@ -36,9 +36,7 @@ fast_loading_dir =  ''
 ### filter flags
 ###
 show_fc_files_only = 1
-show_versioned_fc_files = 2
-show_all_files = 4
-
+hide_versioned_fc_files = 2
 
 def get_filter(filtertype):
     global filter

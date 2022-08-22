@@ -32,7 +32,7 @@ class DirectoryModel(object):
     def get_dir_list(self, withParentDirectory):
         # get the filter types
         fc_files = conf.get_filter(conf.show_fc_files_only)
-        versioned_files = conf.get_filter(conf.show_versioned_fc_files)
+        versioned_files = conf.get_filter(conf.hide_versioned_fc_files)
 
         dir_list = os.listdir(self.directory)
         dir_list.sort()
