@@ -68,20 +68,6 @@ class CreateDb(Base):
         new_url = URL.create(self.drivername, self.username, self.password, self.host, self.port, self.database_name)
         return(new_url)
 
-    # https://docs.sqlalchemy.org/en/14/tutorial/dbapi_transactions.html#committing-changes
-    def create_db(self):
-        """create database"""
-        pass
-
-    def create_tables(self):
-        """create tables for database"""
-        # https://docs.sqlalchemy.org/en/14/orm/session_basics.html#id1
-        pass
-
-    def add_columns_to_table(self):
-        """add columns to table"""
-        pass
-
 
 class CreateMySQLDb(CreateDb):  # Everything in a file or better to split it?
     """Feed Forward of generic SQL functions to MySQL"""
@@ -135,7 +121,6 @@ class CreateMySQLDb(CreateDb):  # Everything in a file or better to split it?
             return(self.engine)
         else:
             pass
-        
 
 
 class CreatePostgreSQLDb(CreateDb):
@@ -226,7 +211,6 @@ class CreateSQLiteDb(CreateDb):  # Everything in a file or better to split it?
         # exampleurl: "sqlite+pysqlite:///:memory:"
         self.engine = create_engine(self.url, echo=self.echo, future=self.future)  # start from memory
         return(self.engine)
-
 
 
 def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[str] = ',', **vargs):
@@ -320,13 +304,13 @@ def create_default_tables(engine: str):
     """
     Create default set of tables
     Tables are defined in sql_tables.py
-    
+
     Parameters
     ----------
-    
+
     Engine [Str]:
         Used Engine for creating tables
-    
+
     TODO: Add additional classes later on
     """
     # https://stackoverflow.com/questions/54118182/sqlalchemy-not-creating-tables
@@ -360,11 +344,9 @@ if __name__ == "__main__":
         sqldb = start_your_engine(sys.argv[1], sys.argv[2])
     else:
         # pass all parameters through
-        try:
-            raise NotImplementedError("Parsing argumenets is not implemented yet.")
-            # sqldb = start_your_engine(sys.argv[1],sys.argv[2], sys.argv[2:])
-        except:  # there should an error message but not tested which one...
-            pass
+        raise NotImplementedError("Parsing argumenets is not implemented yet.")
+        # sqldb = start_your_engine(sys.argv[1],sys.argv[2], sys.argv[2:])
+        # This could be used for creation of additional tables
 
     tables = create_default_tables(sqldb)
     for table in tables:
