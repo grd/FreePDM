@@ -316,11 +316,33 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
         raise ValueError("{} Is not a Valid input for 'db_type'.".format(db_type))
 
 
-def create_default_tables(engine):
+def create_default_tables(engine: str):
+    """
+    Create default set of tables
+    Tables are defined in sql_tables.py
+    
+    Parameters
+    ----------
+    
+    Engine [Str]:
+        Used Engine for creating tables
+    
+    TODO: Add additional classes later on
+    """
     # https://stackoverflow.com/questions/54118182/sqlalchemy-not-creating-tables
     Base.metadata.create_all(bind=engine)
-    user_table = Table("user_account", metadata_obj, autoload_with=engine)
-    pass
+    user_table = Table("user_accounts", metadata_obj, autoload_with=engine)
+    role_table = Table("user_roles", metadata_obj, autoload_with=engine)
+    project_table = Table("projects", metadata_obj, autoload_with=engine)
+    item_table = Table("items", metadata_obj, autoload_with=engine)
+    model_table = Table("models", metadata_obj, autoload_with=engine)
+    document_table = Table("documents", metadata_obj, autoload_with=engine)
+    material_table = Table("materials", metadata_obj, autoload_with=engine)
+    history_table = Table("history", metadata_obj, autoload_with=engine)
+    purchase_table = Table("purchasing", metadata_obj, autoload_with=engine)
+    manufacturer_table = Table("manufacturers", metadata_obj, autoload_with=engine)
+    vendor_table = Table("vendors", metadata_obj, autoload_with=engine)
+    return(user_table, role_table, project_table, item_table, model_table, document_table, material_table, history_table, purchase_table, manufacturer_table, vendor_table)
 
 
 if __name__ == "__main__":
@@ -344,4 +366,8 @@ if __name__ == "__main__":
         except:  # there should an error message but not tested which one...
             pass
 
-    create_default_tables(sqldb)
+    tables = create_default_tables(sqldb)
+    for table in tables:
+        print(table)
+        for key in table.c.keys():
+            print(key)
