@@ -5,12 +5,14 @@
     :license:   MIT License.
 """
 
-from sql_tables import SQLUser, SQLRole, SQLProject, SQLItem, SQLModel, SQLDocument, SQLModelMaterial, SQLHistory, SQLPurchase, SQLManufacturer, SQLVendor
-
 from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 from typing import NewType, Optional, Union
+# Table classes
+from sql_tables import SQLUser, SQLRole, SQLProject, SQLItem, SQLModel, SQLDocument, SQLMaterial, SQLHistory, SQLPurchase, SQLManufacturer, SQLVendor
+
 
 Base = declarative_base()
 # https://dataedo.com/kb/data-glossary/what-is-metadata
@@ -119,16 +121,18 @@ class CreateMySQLDb(CreateDb):  # Everything in a file or better to split it?
             # Installing via `FreePDM-ServerInstaller.sh` installs default engine
             # default
             self.engine = create_engine(self.url, echo=self.echo, future=self.future)
-            pass
+            return(self.engine)
         elif (self.dialect == "mysqlclient") or (self.dialect == "mysqldb"):
             # mysqlclient (a maintained fork of MySQL-Python)
             self.engine = create_engine(self.url, echo=self.echo, future=self.future)
-            pass
+            return(self.engine)
         elif (self.dialect == "PyMySQL") or (self.dialect == "pymysql"):
             # PyMySQL
             self.engine = create_engine(self.url, echo=self.echo, future=self.future)
+            return(self.engine)
         else:
             pass
+        
 
 
 class CreatePostgreSQLDb(CreateDb):
@@ -170,14 +174,15 @@ class CreatePostgreSQLDb(CreateDb):
         if (self.dialect == "default") or (self.dialect is None):
             # default
             self.engine = create_engine(self.url, echo=self.echo, future=self.future)
-            pass
+            return(self.engine)
         elif self.dialect == "psycopg2":
             # psycopg2
             self.engine = create_engine(self.url, echo=self.echo, future=self.future)
-            pass
+            return(self.engine)
         elif self.dialect == "pg8000":
             # pg8000
             self.engine = create_engine(self.url, echo=self.echo, future=self.future)
+            return(self.engine)
         else:
             pass
 
@@ -217,6 +222,7 @@ class CreateSQLiteDb(CreateDb):  # Everything in a file or better to split it?
         # https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls
         # exampleurl: "sqlite+pysqlite:///:memory:"
         self.engine = create_engine(self.url, echo=self.echo, future=self.future)  # start from memory
+        return(self.engine)
 
 
 
@@ -307,7 +313,7 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
         raise ValueError("{} Is not a Valid input for 'db_type'.".format(db_type))
 
 
-def create_default_tables():
+def create_default_tables(engine):
     pass
 
 
@@ -332,4 +338,4 @@ if __name__ == "__main__":
         except:  # there should an error message but not tested which one...
             pass
 
-    create_default_tables()
+    create_default_tables(sqldb)
