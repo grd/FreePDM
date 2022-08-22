@@ -5,19 +5,22 @@
     :license:   MIT License.
 """
 
-from sqlalchemy.orm import declarative_base
+from sql import Base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
+from sqlalchemy import MetaData
+from sqlalchemy import Table
 from sqlalchemy.engine import URL
 from typing import NewType, Optional, Union
 # Table classes
 from sql_tables import SQLUser, SQLRole, SQLProject, SQLItem, SQLModel, SQLDocument, SQLMaterial, SQLHistory, SQLPurchase, SQLManufacturer, SQLVendor
 
 
-Base = declarative_base()
+# Base = declarative_base()
 # https://dataedo.com/kb/data-glossary/what-is-metadata
 # https://www.geeksforgeeks.org/difference-between-data-and-metadata/
 # https://www.geeksforgeeks.org/metadata-in-dbms-and-its-types/
+metadata_obj = MetaData()
 
 
 class CreateDb(Base):
@@ -314,6 +317,9 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
 
 
 def create_default_tables(engine):
+    # https://stackoverflow.com/questions/54118182/sqlalchemy-not-creating-tables
+    Base.metadata.create_all(bind=engine)
+    user_table = Table("user_account", metadata_obj, autoload_with=engine)
     pass
 
 
