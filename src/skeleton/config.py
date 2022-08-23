@@ -22,9 +22,9 @@ config_dir = appdirs.user_config_dir(appname)
 config_name = os.path.join(config_dir, 'FreePDM.conf')
 
 
-###
-### Variables
-###
+#
+# Variables
+#
 
 startup_directory = ''
 filter = 0
@@ -32,9 +32,9 @@ log_file = ''
 log_level = ''
 fast_loading_dir =  ''
 
-###
-### filter flags
-###
+#
+# filter flags
+#
 show_fc_files_only = 1
 hide_versioned_fc_files = 2
 
