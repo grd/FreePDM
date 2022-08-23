@@ -6,7 +6,6 @@
 """
 
 from sql import Base
-from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from sqlalchemy import MetaData
 from sqlalchemy import Table

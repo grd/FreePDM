@@ -99,9 +99,9 @@ class DirectoryModel(object):
     #   Purge stored versions of files.
     def purge(self, number):
         self.number = number
-        pass
+        raise NotImplementedError("The function 'purge' is not implemented yet.")
 
     def save_item_as(self, source, dest):
         self.source = source
         self.dest = dest
-        pass
+        raise NotImplementedError("The function 'save_item_as' is not implemented yet.")

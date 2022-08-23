@@ -4,7 +4,6 @@
 """
 
 import os
-from os.path import exists
 import configparser
 import appdirs
 
@@ -23,9 +22,9 @@ config_dir = appdirs.user_config_dir(appname)
 config_name = os.path.join(config_dir, 'FreePDM.conf')
 
 
-###
-### Variables
-###
+#
+# Variables
+#
 
 startup_directory = ''
 filter = 0
@@ -33,16 +32,16 @@ log_file = ''
 log_level = ''
 fast_loading_dir =  ''
 
-###
-### filter flags
-###
+#
+# filter flags
+#
 show_fc_files_only = 1
 hide_versioned_fc_files = 2
+
 
 def get_filter(filter_flag):
     global filter
     return filter & filter_flag == filter_flag
-
 
 
 def read():
@@ -57,10 +56,11 @@ def read():
 
     # reading variables from section: 'DEFAULT'
     startup_directory = config['DEFAULT']['startup_directory']
-    filter =        int(config['DEFAULT']['filter'])
-    log_file =          config['DEFAULT']['log_file']
-    log_level =         config['DEFAULT']['log_levle']
-    fast_loading_dir =  config['DEFAULT']['fast_loading_dir']
+    filter = int(config['DEFAULT']['filter'])  # filter is internal variable. not sure if overwriding is a good idea
+    log_file = config['DEFAULT']['log_file']
+    log_level = config['DEFAULT']['log_levle']
+    fast_loading_dir = config['DEFAULT']['fast_loading_dir']
+
 
 def write():
     global startup_directory
@@ -78,7 +78,6 @@ def write():
 
     with open(config_name, 'w') as configfile:
         config.write(configfile)
-
 
 
 # create the new directory if it doesn't exist
