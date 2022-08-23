@@ -4,7 +4,6 @@
 """
 
 import os
-from os.path import exists
 import configparser
 import appdirs
 
@@ -39,10 +38,10 @@ fast_loading_dir =  ''
 show_fc_files_only = 1
 hide_versioned_fc_files = 2
 
+
 def get_filter(filter_flag):
     global filter
     return filter & filter_flag == filter_flag
-
 
 
 def read():
@@ -62,6 +61,7 @@ def read():
     log_level =         config['DEFAULT']['log_levle']
     fast_loading_dir =  config['DEFAULT']['fast_loading_dir']
 
+
 def write():
     global startup_directory
     global filter
@@ -78,7 +78,6 @@ def write():
 
     with open(config_name, 'w') as configfile:
         config.write(configfile)
-
 
 
 # create the new directory if it doesn't exist

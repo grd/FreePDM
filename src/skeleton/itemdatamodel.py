@@ -112,12 +112,14 @@ class ItemDataModel():
         self.location = location
         self.name = name
         self.variable = variable
-        pass
+        raise NotImplementedError("The function 'add_variable' is not implemented yet.")
 
     def rename_item(self, source, dest):
         self.source = source
         self.dest = dest
-        pass
+        raise NotImplementedError("The function 'rename' is not implemented yet.")
+        # COMMENT: Is renameing of an item somthing that should be part of the (SQL )backend?
+
 
 # The following classes contains methods that deal with
 # the following items: Object, Part, Group, ConfigurationTable, 
