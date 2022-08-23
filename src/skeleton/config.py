@@ -56,7 +56,7 @@ def read():
 
     # reading variables from section: 'DEFAULT'
     startup_directory = config['DEFAULT']['startup_directory']
-    filter = int(config['DEFAULT']['filter'])
+    filter = int(config['DEFAULT']['filter'])  # filter is internal variable. not sure if overwriding is a good idea
     log_file = config['DEFAULT']['log_file']
     log_level = config['DEFAULT']['log_levle']
     fast_loading_dir = config['DEFAULT']['fast_loading_dir']
