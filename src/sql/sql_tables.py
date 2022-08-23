@@ -7,6 +7,7 @@
 
 # https://stackoverflow.com/questions/54118182/sqlalchemy-not-creating-tables
 from sql import Base
+from sqlalchemy.orm import relationship
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Boolean, Integer, Float, String, Date, Enum, LargeBinary
 import sql_enum
@@ -27,9 +28,15 @@ class SQLUser(Base):
     user_full_name = Column(String)
     user_email_adress = Column(String, nullable=False)  # TODO: change to mail address
     user_phonenumber = Column(Integer)  # TODO: add phonenumber property
-    # user_role = []  # TODO: add List of roles
     user_department = Column(String)  # Enum optionally
     # user_aliases = []  # TODO: What to do with aliases
+
+    # relationships with other tables
+    roles = relationship("SQLRole", secondary="user_role_link", back_populates="users")
+    projects = relationship("SQLProjects", secondary="user_project_link", back_populates="users")
+    items = relationship("SQLItem", back_populates="user")
+    models = relationship("SQLModel", back_populates="user")
+    documents = relationship("SQLDocument", back_populates="user")
 
     def __repr__(self):
         # Fstrings are better ?
@@ -39,11 +46,15 @@ class SQLUser(Base):
 
 class SQLRole(Base):
     """Class with default SQL Role properties"""
-    __tablename__ = 'user_roles'
+    __tablename__ = 'roles'
 
     role_id = Column(Integer, primary_key=True)
     role_name = Column(String(32))
     # TODO: add privileges - Also how to
+
+    # relationships with other tables
+    U_id = Column(Integer, ForeignKey("SQLUser.user_id"))
+    users = relationship("SQLUser", secondary="user_role_link", back_populates="roles")
 
     def __repr__(self):
         # Fstrings are better ?
@@ -51,22 +62,53 @@ class SQLRole(Base):
         return(f"SQLRole(role_id={self.role_id!r}, role_name={self.role_name!r})")
 
 
+class UserRoleLink(Base):
+    """Association Table between user and project"""
+    # https://www.pythoncentral.io/sqlalchemy-association-tables/
+    __tablename__ = "user_role_link"
+
+    user_id = Column("user_id", ForeignKey("user_accounts.user_id"), primary_key=True)
+    role_id = Column("role_id", ForeignKey("roles.role_id"), primary_key=True)
+
+    def __repr__(self):
+        # Fstrings are better ?
+        # https://realpython.com/python-f-strings/
+        return(f"User Role Association Table(user_id={self.user_id!r}, role_id={self.role_id!r})")
+
+
 class SQLProject(Base):
     """Class with default SQL Role properties"""
     __tablename__ = 'projects'
 
     project_id = Column(Integer, primary_key=True)
-    project_number = Column(Integer)  # this can come another source as the Db so not same as project_id
+    project_number = Column(Integer, nullable=False)  # this can come another source as the Db so not same as project_id
     project_name = Column(String(32))
     project_status = Column(Enum(sql_enum.ProjectState))
     Project_date_start = Column(Date)
     Project_date_finish = Column(Date)  # TODO check finish date is after start date
     project_path = Column(String)
 
+    # relationships with other tables
+    users = relationship("SQLUsers", secondary="user_project_link", back_populates="projects")
+
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
         return(f"SQLProject(project_id={self.project_id!r}, project_number={self.project_number!r}, project_name={self.project_name!r}, project_status={self.project_status!r}, project_date_start={self.project_date_start!r}, project_date_finish={self.project_date_finish!r}, project_path={self.project_path!r})")
+
+
+class UserProjectLink(Base):
+    """Association Table between User and Project"""
+    # https://www.pythoncentral.io/sqlalchemy-association-tables/
+    __tablename__ = "user_project_link"
+
+    user_id = Column("user_id", ForeignKey("user_accounts.user_id"), primary_key=True)
+    project_id = Column("project_id", ForeignKey("projects.project_id"), primary_key=True)
+
+    def __repr__(self):
+        # Fstrings are better ?
+        # https://realpython.com/python-f-strings/
+        return(f"User Project Association Table(user_id={self.user_id!r}, project_id={self.project_id!r})")
 
 
 class SQLItem(Base):
@@ -83,14 +125,34 @@ class SQLItem(Base):
     # TODO: get image from Model. If there is no fileimage add default empty image.
     item_preview = Column(LargeBinary)  # Change when no image is available
     # item should be able to exist in multiple projects. but need a single store location
+
+    # relationships with other tables
+    user_id = Column(Integer, ForeignKey("user_account.user_id"))
+    user = relationship("SQLUser", back_populates="items")
     project_id = Column(Integer, ForeignKey('projects.project_number'), nullable=False)
-    purchasing_id = Column(Integer, ForeignKey('purchasing.purchasing_id'))
+    models = relationship("SQLModel", back_populates="item")
+    documents = relationship("SQLDocument", back_populates="item")
+    Material = relationship("SQLMaterial", back_populates="item", uselist=False)
+    purchasing = relationship("SQLPurchasing", back_populates="", uselist=False)
 
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
         # ignore cross columns
         return(f"SQLItem(item_id={self.item_id!r}, tem_number={self.item_number!r}, item_name={self.item_name!r}, item_description={self.item_description!r}, item_full_description={self.item_full_description!r}, item_number_linked_files={self.item_number_linked_files!r}, item_path={self.item_path!r}, item_preview={self.item_preview!r})")
+
+
+class ProjectItemLink(Base):
+    """Association Table between Project and Item"""
+    __tablename__ = "Project_item_link"
+
+    project_id = Column("project_id", ForeignKey("projects.project_id", primary_key=True))
+    item_id = Column("item_id", ForeignKey("items.item_id"),primary_key=True)
+
+    def __repr__(self):
+        # Fstrings are better ?
+        # https://realpython.com/python-f-strings/
+        return(f"Project Item Association Table(project_id={self.project_id!r}, item_id={self.item_id!r})")
 
 
 class SQLModel(Base):
@@ -107,6 +169,13 @@ class SQLModel(Base):
     model_ext = Column(String(253), nullable=False)  # Total limit of filename and extension is 255
     # model_path = Column(String)  # should belongs to same path as described in item
     model_preview = Column(LargeBinary)  # Change when no image is available
+
+    # relationships with other tables
+    user_id = Column(Integer, ForeignKey("user_account.user_id"))
+    user = relationship("SQLUser", back_populates="models")
+    item_id = Column(Integer, ForeignKey("items.item_id"))
+    item = relationship("SQLItem", back_populates="models")
+    material = relationship("SQLMaterial", back_populates="model", uselist=False)
 
     def __repr__(self):
         # Fstrings are better ?
@@ -127,6 +196,12 @@ class SQLDocument(Base):
     # Auto calculate extension
     document_ext = Column(String(253), nullable=False)  # Total limit of filename and extension is 255
     # document_path = Column(String)  # should belongs to same path as described in item
+
+    # relationships with other tables
+    user_id = Column(Integer, ForeignKey("user_account.user_id"))
+    user = relationship("SQLUser", back_populates="documents")
+    item_id = Column(Integer, ForeignKey("items.item_id"))
+    item = relationship("SQLItem", back_populates="models")
 
     def __repr__(self):
         # Fstrings are better ?
@@ -149,7 +224,12 @@ class SQLMaterial(Base):
     material_weight_unit = Column(Enum(sql_enum.WeightUnit))
     material_surface_area = Column(Float)
     material_surface_area_unit = Column(Enum(sql_enum.AreaUnit))
-    model_number = Column(Integer, ForeignKey('models.model_number'), nullable=False)
+
+    # relationships with other tables
+    model_id = Column(Integer, ForeignKey('models.model_id'))
+    model = relationship("SQLModel", back_populates="material")
+    item_id = Column(Integer, ForeignKey('items.item_id'))
+    item = relationship("SQLItem", back_populates="material")
 
     def __repr__(self):
         # Fstrings are better ?
@@ -168,11 +248,13 @@ class SQLHistory(Base):
     history_date_last_edit = Column(Date)
     history_last_edit_by = Column(String)
     history_checked_out_by = Column(String)
+    # TODO: Create Complex revisions (Example: Date, major.minor, major.letter_minor)
     history_revision_state = Column(Enum(sql_enum.RevisionState))
     history_revision_number = Column(Integer)  # Maybe other format
-    # TODO: Create Complex revisions (Example: Date, major.minor, major.letter_minor)
     history_stored_number = Column(Integer)  # last store version iterator
     # TODO: Every stored version in the database should be traceble
+
+    # relationships with other tables
 
     def __repr__(self):
         # Fstrings are better ?
@@ -189,8 +271,14 @@ class SQLPurchase(Base):
     # Optionally Enum
     purchasing_tracebility = Column(Enum(sql_enum.TracebilityState))
     # Represent list: Lot, Lot And Serial Number, Serial Number, Not traced
+
+    # relationships with other tables
+    item_id = Column(Integer, ForeignKey("items.item_id"))
+    item = relationship("SQLItems", back_populates="purchasing")
     manufacturer_id = Column(Integer, ForeignKey('manufacturers.manufacturer_id'))
+    manufacturers = relationship("SQLManufacturer", back_populates="purchasing")
     vendor_id = Column(Integer, ForeignKey('vendors.vendor_id'))
+    vendors = relationship("SQLVendors", back_populates="purchasing")
 
     def __repr__(self):
         # Fstrings are better ?
@@ -206,6 +294,10 @@ class SQLManufacturer(Base):
     manufacturer_name = Column(String(32))
     # TODO: Add manufacturer address
 
+    # relationships with other tables
+    purchasing_id = Column(Integer, ForeignKey("purchasing.purchasing_id"))
+    purchasing = relationship("SQLPurchase", back_populates="manufacturers")
+
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
@@ -219,6 +311,10 @@ class SQLVendor(Base):
     vendor_id = Column(Integer, primary_key=True)
     vendor_name = Column(String(32))
     # TODO: Add manufacturer address
+
+    # relationships with other tables
+    vpurchasing_id = Column(Integer, ForeignKey("purchasing.purchasing_id"))
+    vpurchasing = relationship("SQLPurchase", back_populates="vendors")
 
     def __repr__(self):
         # Fstrings are better ?
