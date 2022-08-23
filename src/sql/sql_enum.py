@@ -6,7 +6,6 @@
 """
 
 import enum
-from sqlalchemy import Enum
 
 
 class ProjectState(enum.Enum):

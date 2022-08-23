@@ -284,13 +284,13 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
         elif len(url_list) == 6:
             print("Url shall be created")
             new_url = sqli_engine.make_url(url_list[0], url_list[1], url_list[2], url_list[3], url_list[4], int(url_list[5]))
-            dialect = None
+            # dialect = None  # not needed? remove later
             # if dialect is part of the url...
         elif len(url_list) == 7:
             # list including dialect
             url_dialect = url_list[0] + '+' + url_list[6]
             new_url = sqli_engine.make_url(url_dialect, url_list[1], url_list[2], url_list[3], int(url_list[4]), url_list[5])
-            dialect = url_list[6]
+            # dialect = url_list[6]  # not needed ? remove later
         else:
             raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
 
