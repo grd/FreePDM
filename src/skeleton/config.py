@@ -22,6 +22,7 @@ appname = 'FreePDM'
 config_dir = appdirs.user_config_dir(appname)
 config_name = os.path.join(config_dir, 'FreePDM.conf')
 
+
 ###
 ### Variables
 ###
@@ -38,9 +39,10 @@ fast_loading_dir =  ''
 show_fc_files_only = 1
 hide_versioned_fc_files = 2
 
-def get_filter(filtertype):
+def get_filter(filter_flag):
     global filter
-    return filter & filtertype == filtertype
+    return filter & filter_flag == filter_flag
+
 
 
 def read():
@@ -74,8 +76,15 @@ def write():
     config['DEFAULT']['log_levle'] = log_level
     config['DEFAULT']['fast_loading_dir'] = fast_loading_dir
 
-    if not os.path.exists(config_dir):
-        os.makedirs(config_dir)
-
     with open(config_name, 'w') as configfile:
         config.write(configfile)
+
+
+
+# create the new directory if it doesn't exist
+if not os.path.exists(config_dir):
+    os.makedirs(config_dir)
+
+# create a new config file when it doesn't exist
+if not os.path.isfile(config_name):
+    write()

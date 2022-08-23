@@ -96,11 +96,6 @@ class DirectoryModel(object):
     def size(self):
         return(len(self.directoryList))
 
-    #   What kind of FC files do you want to see?
-    #   Do you want to see the history of the files?
-    def filter(self):
-        pass
-
     #   Purge stored versions of files.
     def purge(self, number):
         self.number = number

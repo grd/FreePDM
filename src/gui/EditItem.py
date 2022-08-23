@@ -40,7 +40,7 @@ class EditItem(QDialog):
 
         print('File ' + self.file + ' write has access ' + str(os.access(self.file, os.W_OK)))
         # if os.access(self.file, os.W_OK) == True:
-        #     self.ui.okButton.setEnabled(False)
+        #     self.ui.buttonBox.Ok.setEnabled(False)
 
         self.ui.nameEdit.setText(self.idm.document_properties["Label"])
         self.ui.dateEdit.setText(self.idm.document_properties["CreationDate"])
