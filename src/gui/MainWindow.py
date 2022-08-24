@@ -74,7 +74,7 @@ class MainWindow(QMainWindow):
 
     def popup_purge(self, i):
         print(i.text())
-        TODO: Delete the files...
+        # TODO: Delete the files...
 
     def set_filter(self):
         filter_dialog()
