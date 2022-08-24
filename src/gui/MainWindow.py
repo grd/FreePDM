@@ -8,7 +8,7 @@ from pathlib import Path
 import sys
 
 from PySide2 import QtCore, QtWidgets, QtGui
-from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem
+from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QMessageBox
 from PySide2.QtCore import QFile, Qt
 from PySide2.QtUiTools import QUiLoader
 
@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
         # Some change below based on https://pythonprogramming.net/basic-gui-pyqt-tutorial/
         self.ui.setWindowTitle("FreePDM")  # Done in ui file
         # self.ui.setWindowIcon(QtGui.QIcon(os.fspath(Path(__file__).resolve().parents[1] / "ui/logos/O_logo-32x32.png")))  # Probably done in ui file OSX don't show icon
-        self.ui.show()
+        # self.ui.show()
 
         self.ui.tableWorkspace.setColumnWidth(0, 10)
         self.ui.tableWorkspace.setColumnWidth(1, 150)
@@ -59,6 +59,22 @@ class MainWindow(QMainWindow):
         self.ui.tableWorkspace.doubleClicked.connect(self.file_double_clicked)
         # self.ui.buttonCheckOutButton('Check In', clicked=self.retrieve_check_button_values)
         self.ui.buttonFilter.clicked.connect(self.set_filter)
+        self.ui.buttonPurge.clicked.connect(self.purge)
+
+    def purge(self):
+        msg = QMessageBox()
+        msg.setWindowTitle("Purge")
+        msg.setText("Purging means deleting old FreeCAD files.")
+        msg.setInformativeText("Are you sure you want to delete {} files?")
+        msg.setIcon(QMessageBox.Question)
+        msg.setStandardButtons(QMessageBox.Cancel|QMessageBox.Ok)
+        msg.setDefaultButton(QMessageBox.Cancel)
+        msg.buttonClicked.connect(self.popup_purge)
+        x = msg.exec_()
+
+    def popup_purge(self, i):
+        print(i.text())
+        TODO: Delete the files...
 
     def set_filter(self):
         filter_dialog()
@@ -142,6 +158,7 @@ def main():
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)
     widget = MainWindow()
+    widget.ui.show()
     sys.exit(app.exec_())
 
 
