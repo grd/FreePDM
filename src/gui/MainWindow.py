@@ -44,7 +44,6 @@ class MainWindow(QMainWindow):
         # Some change below based on https://pythonprogramming.net/basic-gui-pyqt-tutorial/
         self.ui.setWindowTitle("FreePDM")  # Done in ui file
         # self.ui.setWindowIcon(QtGui.QIcon(os.fspath(Path(__file__).resolve().parents[1] / "ui/logos/O_logo-32x32.png")))  # Probably done in ui file OSX don't show icon
-        # self.ui.show()
 
         self.ui.tableWorkspace.setColumnWidth(0, 10)
         self.ui.tableWorkspace.setColumnWidth(1, 150)
@@ -60,21 +59,6 @@ class MainWindow(QMainWindow):
         # self.ui.buttonCheckOutButton('Check In', clicked=self.retrieve_check_button_values)
         self.ui.buttonFilter.clicked.connect(self.set_filter)
         self.ui.buttonPurge.clicked.connect(self.purge)
-
-    def purge(self):
-        msg = QMessageBox()
-        msg.setWindowTitle("Purge")
-        msg.setText("Purging means deleting old FreeCAD files.")
-        msg.setInformativeText("Are you sure you want to delete {} files?")
-        msg.setIcon(QMessageBox.Question)
-        msg.setStandardButtons(QMessageBox.Cancel|QMessageBox.Ok)
-        msg.setDefaultButton(QMessageBox.Cancel)
-        msg.buttonClicked.connect(self.popup_purge)
-        x = msg.exec_()
-
-    def popup_purge(self, i):
-        print(i.text())
-        # TODO: Delete the files...
 
     def set_filter(self):
         filter_dialog()
@@ -115,11 +99,11 @@ class MainWindow(QMainWindow):
             print('Deselected Cell Location Row: {0}, Column: {1}'.format(ix.row(), ix.column()))
 
     def load_data(self):
-        dirmodel = DirectoryModel(self.current_directory, self.root_directory != self.current_directory)
+        self.dirmodel = DirectoryModel(self.current_directory, self.root_directory != self.current_directory)
         row = 0
-        self.ui.tableWorkspace.setRowCount(dirmodel.size())
+        self.ui.tableWorkspace.setRowCount(self.dirmodel.size())
         # https://stackoverflow.com/questions/39511181/python-add-checkbox-to-every-row-in-qtablewidget
-        for item in dirmodel.directoryList:
+        for item in self.dirmodel.directoryList:
             checkb = QTableWidgetItem("")
             checkb.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
             checkb.setCheckState(Qt.CheckState.Unchecked)
@@ -152,6 +136,27 @@ class MainWindow(QMainWindow):
             size.setFlags(size.flags() ^ Qt.ItemIsEditable)
             self.ui.tableWorkspace.setItem(row, 6, size)
             row += 1
+
+        if len(self.dirmodel.purge_list) == 0:
+            self.ui.buttonPurge.setEnabled(False)
+        else:
+            self.ui.buttonPurge.setEnabled(True)
+
+
+    def purge(self):
+        msg = QMessageBox()
+        msg.setWindowTitle("Purge")
+        msg.setText("Purging means deleting old FreeCAD files.")
+        msg.setInformativeText("Are you sure you want to delete {} files?".format(len(self.dirmodel.purge_list)))
+        msg.setIcon(QMessageBox.Question)
+        msg.setStandardButtons(QMessageBox.Cancel|QMessageBox.Ok)
+        msg.setDefaultButton(QMessageBox.Cancel)
+        msg.buttonClicked.connect(self.popup_purge)
+        x = msg.exec_()
+
+    def popup_purge(self, i):
+        if i.text() == '&OK':
+         self.dirmodel.purge()
 
 
 def main():

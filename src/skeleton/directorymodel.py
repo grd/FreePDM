@@ -16,6 +16,7 @@ types = ('Directory', 'Assembly A2P', 'Assembly A3', 'Assembly A4',
 class DirectoryModel(object):
     def __init__(self, directory, withParentDirectory = True):  # '..'
         conf.read()
+        self.purge_list = list()
         self.directory = directory
         self.directoryList = [{"nr": "number",
                                "filename": "File name",
@@ -25,7 +26,7 @@ class DirectoryModel(object):
                                "type": "Dir or File",
                                "size": "file size"}]
         self.get_dir_list(withParentDirectory)
-
+ 
     def full_path(self, file):
         return os.path.join(self.directory, file)
 
@@ -71,8 +72,9 @@ class DirectoryModel(object):
                     else:
                         type = 'FCStd'
                 else: 
+                    # versioned FCStd file
                     if file[file.index('.FCStd')+6:].isdigit(): 
-                        # versioned FCStd file
+                        self.purge_list.append(self.full_path(file))
                         if versioned_files: # Filter out the versioned files
                             continue
                         type = 'FC old'
@@ -96,10 +98,10 @@ class DirectoryModel(object):
     def size(self):
         return(len(self.directoryList))
 
-    #   Purge stored versions of files.
-    def purge(self, number):
-        self.number = number
-        raise NotImplementedError("The function 'purge' is not implemented yet.")
+    # Purge stored versions of FreeCAD files.
+    def purge(self):
+        for i in self.purge_list:
+            os.remove(i)
 
     def save_item_as(self, source, dest):
         self.source = source
