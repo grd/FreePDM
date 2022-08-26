@@ -11,7 +11,7 @@ from sqlalchemy.orm import declarative_base
 Base = declarative_base()
 
 
-class SQL(Base):
+class SQL():
     """Generic SQL"""
     # https://docs.python.org/3/library/typing.html#typing.NamedTuple
 
