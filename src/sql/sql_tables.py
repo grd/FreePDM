@@ -53,7 +53,7 @@ class SQLRole(Base):
     # TODO: add privileges - Also how to
 
     # relationships with other tables
-    U_id = Column(Integer, ForeignKey("SQLUser.user_id"))
+    user_id = Column(Integer, ForeignKey("user_accounts.user_id"))
     users = relationship("SQLUser", secondary="user_role_link", back_populates="roles")
 
     def __repr__(self):
@@ -127,7 +127,7 @@ class SQLItem(Base):
     # item should be able to exist in multiple projects. but need a single store location
 
     # relationships with other tables
-    user_id = Column(Integer, ForeignKey("user_account.user_id"))
+    user_id = Column(Integer, ForeignKey("user_accounts.user_id"))
     user = relationship("SQLUser", back_populates="items")
     project_id = Column(Integer, ForeignKey('projects.project_number'), nullable=False)
     models = relationship("SQLModel", back_populates="item")
@@ -146,8 +146,8 @@ class ProjectItemLink(Base):
     """Association Table between Project and Item"""
     __tablename__ = "Project_item_link"
 
-    project_id = Column("project_id", ForeignKey("projects.project_id", primary_key=True))
-    item_id = Column("item_id", ForeignKey("items.item_id"),primary_key=True)
+    project_id = Column("project_id", ForeignKey("projects.project_id"), primary_key=True)
+    item_id = Column("item_id", ForeignKey("items.item_id"), primary_key=True)
 
     def __repr__(self):
         # Fstrings are better ?
@@ -171,7 +171,7 @@ class SQLModel(Base):
     model_preview = Column(LargeBinary)  # Change when no image is available
 
     # relationships with other tables
-    user_id = Column(Integer, ForeignKey("user_account.user_id"))
+    user_id = Column(Integer, ForeignKey("user_accounts.user_id"))
     user = relationship("SQLUser", back_populates="models")
     item_id = Column(Integer, ForeignKey("items.item_id"))
     item = relationship("SQLItem", back_populates="models")
@@ -198,7 +198,7 @@ class SQLDocument(Base):
     # document_path = Column(String)  # should belongs to same path as described in item
 
     # relationships with other tables
-    user_id = Column(Integer, ForeignKey("user_account.user_id"))
+    user_id = Column(Integer, ForeignKey("user_accounts.user_id"))
     user = relationship("SQLUser", back_populates="documents")
     item_id = Column(Integer, ForeignKey("items.item_id"))
     item = relationship("SQLItem", back_populates="models")

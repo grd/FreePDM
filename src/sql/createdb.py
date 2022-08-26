@@ -9,6 +9,7 @@ from sql import Base
 from sqlalchemy import create_engine
 from sqlalchemy import MetaData
 from sqlalchemy import Table
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.engine import URL
 from typing import Optional, Union
 # Table classes
@@ -21,8 +22,7 @@ from sql_tables import SQLUser, SQLRole, SQLProject, SQLItem, SQLModel, SQLDocum
 # https://www.geeksforgeeks.org/metadata-in-dbms-and-its-types/
 metadata_obj = MetaData()
 
-
-class CreateDb(Base):
+class CreateDb():
     """Create database"""
 
     def __init__(self):
@@ -76,7 +76,7 @@ class CreateMySQLDb(CreateDb):  # Everything in a file or better to split it?
         print("MySQL")
         super(CreateMySQLDb, self).__init__()
 
-    def start_engine(self, url: Union[str | URL], encoding: str, echo: bool, future: bool, dialect: Optional[str]):
+    def start_engine(self, url: Union[str, URL], encoding: Optional[str], echo: Optional[bool], future: Optional[bool], dialect: Optional[str]):
         """
         Start MySQL engine.
         Note: MySQL engine is not default development database. 
@@ -130,7 +130,7 @@ class CreatePostgreSQLDb(CreateDb):
         print("PostgreSQL")
         super(CreatePostgreSQLDb, self).__init__()
 
-    def start_engine(self, url: Union[str | URL], encoding: str, echo: bool, future: bool, dialect: Optional[str]):
+    def start_engine(self, url: Union[str, URL], echo: Optional[bool], encoding: Optional[str], future: Optional[bool], dialect: Optional[str]):
         """
         Start PostgreSQL engine.
 
@@ -160,15 +160,15 @@ class CreatePostgreSQLDb(CreateDb):
         # https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls
         if (self.dialect == "default") or (self.dialect is None):
             # default
-            self.engine = create_engine(self.url, echo=self.echo, future=self.future)
+            self.engine = create_engine(self.url, echo=self.echo, encoding=self.encoding, future=self.future)
             return(self.engine)
         elif self.dialect == "psycopg2":
             # psycopg2
-            self.engine = create_engine(self.url, echo=self.echo, future=self.future)
+            self.engine = create_engine(self.url, echo=self.echo, encoding=self.encoding, future=self.future)
             return(self.engine)
         elif self.dialect == "pg8000":
             # pg8000
-            self.engine = create_engine(self.url, echo=self.echo, future=self.future)
+            self.engine = create_engine(self.url, echo=self.echo, encoding=self.encoding, future=self.future)
             return(self.engine)
         else:
             pass
@@ -182,7 +182,7 @@ class CreateSQLiteDb(CreateDb):  # Everything in a file or better to split it?
         super(CreateSQLiteDb, self).__init__()
         print("SQLite")
 
-    def start_engine(self, url: Union[str | URL], encoding: str, echo: bool, future: bool):
+    def start_engine(self, url: Union[str, URL], encoding: Optional[str], echo: Optional[bool], future: Optional[bool]):
         """
         Start SQLite engine.
         Note: SQLite engine is not default development database.
@@ -208,7 +208,7 @@ class CreateSQLiteDb(CreateDb):  # Everything in a file or better to split it?
         self.future = future
         # https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls
         # exampleurl: "sqlite+pysqlite:///:memory:"
-        self.engine = create_engine(self.url, echo=self.echo, future=self.future)  # start from memory
+        self.engine = create_engine(self.url, echo=self.echo, encoding=self.encoding,future=self.future)  # start from memory
         return(self.engine)
 
 
@@ -236,10 +236,11 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
     url_list = url_string.split(split)
 
     if (db_type == "mysql") or (db_type == "MySQL"):
-        msql_engine = CreateMySQLDb()
+        msql = CreateMySQLDb()
         if len(url_list) == 1:
             print("Complete url received.")
             new_url = url_list[0]
+            dialect = None
         elif len(url_list) == 6:
             print("Url shall be created")
             new_url = msql_engine.make_url(url_list[0], url_list[1], url_list[2], url_list[3], url_list[4], int(url_list[5]))
@@ -253,13 +254,14 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
         else:
             raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
 
-        msql_engine.start_engine(new_url, dialect=dialect, **vargs)
+        msql_engine = msql.start_engine(new_url, dialect=dialect)
         return(msql_engine)
     elif (db_type is None) or (db_type == "postgresql") or (db_type == "PostgresSQL"):
-        psql_engine = CreatePostgreSQLDb()
+        psql = CreatePostgreSQLDb()
         if len(url_list) == 1:
             print("Complete url received.")
             new_url = url_list[0]
+            dialect = None
         elif len(url_list) == 6:
             print("Url shall be created")
             new_url = psql_engine.make_url(url_list[0], url_list[1], url_list[2], url_list[3], url_list[4], int(url_list[5]))
@@ -273,10 +275,10 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
         else:
             raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
 
-        psql_engine.start_engine(new_url, dialect=dialect, **vargs)
+        psql_engine = psql.start_engine(new_url, dialect=dialect, encoding='utf-8', echo=False, future=True)
         return(psql_engine)  # Not sure if returning this is required
     elif (db_type == "sqlite") or (db_type == "SQLite"):
-        sqli_engine = CreateSQLiteDb()
+        sqli = CreateSQLiteDb()
         if len(url_list) == 1:
             print("Complete url received.")
             new_url = url_list[0]
@@ -293,7 +295,7 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
         else:
             raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
 
-        sqli_engine.start_engine(new_url, **vargs)
+        sqli_engine = sqli.start_engine(new_url, **vargs)
         return(sqli_engine)
     else:
         raise ValueError("{} Is not a Valid input for 'db_type'.".format(db_type))
@@ -313,28 +315,42 @@ def create_default_tables(engine: str):
     TODO: Add additional classes later on
     """
     # https://stackoverflow.com/questions/54118182/sqlalchemy-not-creating-tables
-    Base.metadata.create_all(bind=engine)
-    user_table = Table("user_accounts", metadata_obj, autoload_with=engine)
-    role_table = Table("user_roles", metadata_obj, autoload_with=engine)
-    project_table = Table("projects", metadata_obj, autoload_with=engine)
-    item_table = Table("items", metadata_obj, autoload_with=engine)
-    model_table = Table("models", metadata_obj, autoload_with=engine)
-    document_table = Table("documents", metadata_obj, autoload_with=engine)
-    material_table = Table("materials", metadata_obj, autoload_with=engine)
+    session = sessionmaker()
+    session.configure(bind=engine)
+    Base.metadata.create_all(engine)
+
+    #user_table = Table("user_accounts", metadata_obj, autoload_with=engine)
+    #role_table = Table("user_roles", metadata_obj, autoload_with=engine)
+    #project_table = Table("projects", metadata_obj, autoload_with=engine)
+    #item_table = Table("items", metadata_obj, autoload_with=engine)
+    #model_table = Table("models", metadata_obj, autoload_with=engine)
+    #document_table = Table("documents", metadata_obj, autoload_with=engine)
+    #material_table = Table("materials", metadata_obj, autoload_with=engine)
     history_table = Table("history", metadata_obj, autoload_with=engine)
-    purchase_table = Table("purchasing", metadata_obj, autoload_with=engine)
-    manufacturer_table = Table("manufacturers", metadata_obj, autoload_with=engine)
-    vendor_table = Table("vendors", metadata_obj, autoload_with=engine)
-    return(user_table, role_table, project_table, item_table, model_table, document_table, material_table, history_table, purchase_table, manufacturer_table, vendor_table)
+    #purchase_table = Table("purchasing", metadata_obj, autoload_with=engine)
+    #manufacturer_table = Table("manufacturers", metadata_obj, autoload_with=engine)
+    #vendor_table = Table("vendors", metadata_obj, autoload_with=engine)
+    #return(user_table, role_table, project_table, item_table, model_table, document_table, material_table, history_table, purchase_table, manufacturer_table, vendor_table)
 
 
 if __name__ == "__main__":
     import sys
 
+    print(len(sys.argv))
+
     # at least two variables required: filename; url_to_database.
-    # if more variables need to be added it is always: filename; database_type; url_to_database; **vargs
+    # if more variables need to be added it is always: filename; database_type; url_to_database; **var
     if len(sys.argv) == 1:
-        raise ValueError("Not enough parameters added")
+        # raise ValueError("Not enough parameters added")
+        # means run from IDE
+        username = "freepdm"
+        password = "pgMaster4Test!"
+        dbname = "postgres"
+
+        url = "postgresql://" + username + ":" + password +"@localhost/" + dbname
+
+        # sqldb = start_your_engine(sys.argv[1], "postgresql")
+        sqldb = start_your_engine(url, "postgresql")
     elif len(sys.argv) == 2:
         # default SQL engine chosen: PostgreSQL
         sqldb = start_your_engine(sys.argv[1], "postgresql")
