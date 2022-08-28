@@ -13,7 +13,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.engine import URL
 from typing import Optional, Union
 # Table classes
-from sql_tables import SQLUser, SQLRole, SQLProject, SQLItem, SQLModel, SQLDocument, SQLMaterial, SQLHistory, SQLPurchase, SQLManufacturer, SQLVendor
+from sql_tables import SQLHistory
+# from sql_tables import SQLUser, SQLRole, SQLProject, SQLItem, SQLModel, SQLDocument, SQLMaterial, SQLHistory, SQLPurchase, SQLManufacturer, SQLVendor
+
 
 
 # Base = declarative_base()
@@ -319,18 +321,19 @@ def create_default_tables(engine: str):
     session.configure(bind=engine)
     Base.metadata.create_all(engine)
 
-    #user_table = Table("user_accounts", metadata_obj, autoload_with=engine)
-    #role_table = Table("user_roles", metadata_obj, autoload_with=engine)
-    #project_table = Table("projects", metadata_obj, autoload_with=engine)
-    #item_table = Table("items", metadata_obj, autoload_with=engine)
-    #model_table = Table("models", metadata_obj, autoload_with=engine)
-    #document_table = Table("documents", metadata_obj, autoload_with=engine)
-    #material_table = Table("materials", metadata_obj, autoload_with=engine)
+    # user_table = Table("user_accounts", metadata_obj, autoload_with=engine)
+    # role_table = Table("user_roles", metadata_obj, autoload_with=engine)
+    # project_table = Table("projects", metadata_obj, autoload_with=engine)
+    # item_table = Table("items", metadata_obj, autoload_with=engine)
+    # model_table = Table("models", metadata_obj, autoload_with=engine)
+    # document_table = Table("documents", metadata_obj, autoload_with=engine)
+    # material_table = Table("materials", metadata_obj, autoload_with=engine)
     history_table = Table("history", metadata_obj, autoload_with=engine)
-    #purchase_table = Table("purchasing", metadata_obj, autoload_with=engine)
-    #manufacturer_table = Table("manufacturers", metadata_obj, autoload_with=engine)
-    #vendor_table = Table("vendors", metadata_obj, autoload_with=engine)
-    #return(user_table, role_table, project_table, item_table, model_table, document_table, material_table, history_table, purchase_table, manufacturer_table, vendor_table)
+    # purchase_table = Table("purchasing", metadata_obj, autoload_with=engine)
+    # manufacturer_table = Table("manufacturers", metadata_obj, autoload_with=engine)
+    # vendor_table = Table("vendors", metadata_obj, autoload_with=engine)
+    # return(user_table, role_table, project_table, item_table, model_table, document_table, material_table, history_table, purchase_table, manufacturer_table, vendor_table)
+    return(history_table)
 
 
 if __name__ == "__main__":
@@ -345,7 +348,7 @@ if __name__ == "__main__":
         # means run from IDE
         username = "freepdm"
         password = "pgMaster4Test!"
-        dbname = "postgres"
+        dbname = "freepdm"
 
         url = "postgresql://" + username + ":" + password +"@localhost/" + dbname
 

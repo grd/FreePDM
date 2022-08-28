@@ -129,11 +129,11 @@ class SQLItem(Base):
     # relationships with other tables
     user_id = Column(Integer, ForeignKey("user_accounts.user_id"))
     user = relationship("SQLUser", back_populates="items")
-    project_id = Column(Integer, ForeignKey('projects.project_number'), nullable=False)
+    project_id = Column(Integer, ForeignKey('projects.project_id'))
     models = relationship("SQLModel", back_populates="item")
     documents = relationship("SQLDocument", back_populates="item")
     Material = relationship("SQLMaterial", back_populates="item", uselist=False)
-    purchasing = relationship("SQLPurchasing", back_populates="", uselist=False)
+    purchasing = relationship("SQLPurchasing", back_populates="item", uselist=False)
 
     def __repr__(self):
         # Fstrings are better ?
@@ -160,7 +160,7 @@ class SQLModel(Base):
     __tablename__ = 'models'
 
     model_id = Column(Integer, primary_key=True)
-    model_number = Column(Integer, ForeignKey('items.item_number'))
+    model_number = Column(Integer)  # or should this be a string?
     model_name = Column(String(32))
     model_description = Column(String(32))
     model_full_description = Column(String)
@@ -188,7 +188,7 @@ class SQLDocument(Base):
     __tablename__ = 'documents'
 
     document_id = Column(Integer, primary_key=True)
-    document_number = Column(Integer, ForeignKey('items.item_number'), nullable=False)
+    document_number = Column(Integer)  # or should this be a string?
     document_name = Column(String(32))
     document_description = Column(String(32))
     document_full_description = Column(String)
