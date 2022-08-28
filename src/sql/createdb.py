@@ -81,7 +81,7 @@ class CreateMySQLDb(CreateDb):  # Everything in a file or better to split it?
     def start_engine(self, url: Union[str, URL], encoding: Optional[str], echo: Optional[bool], future: Optional[bool], dialect: Optional[str]):
         """
         Start MySQL engine.
-        Note: MySQL engine is not default development database. 
+        Note: MySQL engine is not default development database.
 
         Parameters
         ----------
@@ -256,7 +256,7 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
         else:
             raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
 
-        msql_engine = msql.start_engine(new_url, dialect=dialect)
+        msql_engine = msql.start_engine(new_url, dialect=dialect, encoding='utf-8', echo=False, future=True)
         return(msql_engine)
     elif (db_type is None) or (db_type == "postgresql") or (db_type == "PostgresSQL"):
         psql = CreatePostgreSQLDb()
@@ -297,7 +297,7 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
         else:
             raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
 
-        sqli_engine = sqli.start_engine(new_url, **vargs)
+        sqli_engine = sqli.start_engine(new_url, encoding='utf-8', echo=False, future=True)
         return(sqli_engine)
     else:
         raise ValueError("{} Is not a Valid input for 'db_type'.".format(db_type))
@@ -321,19 +321,18 @@ def create_default_tables(engine: str):
     session.configure(bind=engine)
     Base.metadata.create_all(engine)
 
-    # user_table = Table("user_accounts", metadata_obj, autoload_with=engine)
-    # role_table = Table("user_roles", metadata_obj, autoload_with=engine)
-    # project_table = Table("projects", metadata_obj, autoload_with=engine)
-    # item_table = Table("items", metadata_obj, autoload_with=engine)
-    # model_table = Table("models", metadata_obj, autoload_with=engine)
-    # document_table = Table("documents", metadata_obj, autoload_with=engine)
-    # material_table = Table("materials", metadata_obj, autoload_with=engine)
+    user_table = Table("user_accounts", metadata_obj, autoload_with=engine)
+    role_table = Table("user_roles", metadata_obj, autoload_with=engine)
+    project_table = Table("projects", metadata_obj, autoload_with=engine)
+    item_table = Table("items", metadata_obj, autoload_with=engine)
+    model_table = Table("models", metadata_obj, autoload_with=engine)
+    document_table = Table("documents", metadata_obj, autoload_with=engine)
+    material_table = Table("materials", metadata_obj, autoload_with=engine)
     history_table = Table("history", metadata_obj, autoload_with=engine)
-    # purchase_table = Table("purchasing", metadata_obj, autoload_with=engine)
-    # manufacturer_table = Table("manufacturers", metadata_obj, autoload_with=engine)
-    # vendor_table = Table("vendors", metadata_obj, autoload_with=engine)
-    # return(user_table, role_table, project_table, item_table, model_table, document_table, material_table, history_table, purchase_table, manufacturer_table, vendor_table)
-    return(history_table)
+    purchase_table = Table("purchasing", metadata_obj, autoload_with=engine)
+    manufacturer_table = Table("manufacturers", metadata_obj, autoload_with=engine)
+    vendor_table = Table("vendors", metadata_obj, autoload_with=engine)
+    return(user_table, role_table, project_table, item_table, model_table, document_table, material_table, history_table, purchase_table, manufacturer_table, vendor_table)
 
 
 if __name__ == "__main__":
