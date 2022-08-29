@@ -13,7 +13,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.engine import URL
 from typing import Optional, Union
 # Table classes
-from sql_tables import SQLHistory
+from pdm_tables import SQLHistory
 # from sql_tables import SQLUser, SQLRole, SQLProject, SQLItem, SQLModel, SQLDocument, SQLMaterial, SQLHistory, SQLPurchase, SQLManufacturer, SQLVendor
 
 
