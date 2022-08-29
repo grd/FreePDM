@@ -72,7 +72,7 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
 
     elif (db_type is None) or (db_type == "postgresql") or (db_type == "PostgresSQL"):
         psql = DataBasePostgreSQL()
- 
+
         if len(url_list) == 1:
             print("Complete url received.")
             new_url = url_list[0]
@@ -165,7 +165,7 @@ if __name__ == "__main__":
         password = "PsqlPassword123!"  # remove password. this one only for developement purposes in VM!
         dbname = "freepdm"
 
-        url = "postgresql://" + username + ":" + password +"@localhost/" + dbname
+        url = "postgresql://" + username + ":" + password + "@localhost/" + dbname
 
         # sqldb = start_your_engine(sys.argv[1], "postgresql")
         sqldb = start_your_engine(url, "postgresql")

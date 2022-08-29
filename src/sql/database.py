@@ -121,6 +121,7 @@ class DataBaseMySQL(DatabaseGen):  # Everything in a file or better to split it?
         else:
             pass
 
+
 class DataBasePostgreSQL(DatabaseGen):
     """Feed Forward of generic SQL functions to PostgeSQL"""
     # https://docs.sqlalchemy.org/en/14/core/engines.html#postgresql
