@@ -5,7 +5,7 @@
     :license:   MIT License.
 """
 
-from sql import Base
+from database import Base
 from sqlalchemy import create_engine
 from sqlalchemy import MetaData
 from sqlalchemy import Table

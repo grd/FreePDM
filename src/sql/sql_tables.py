@@ -6,7 +6,7 @@
 """
 
 # https://stackoverflow.com/questions/54118182/sqlalchemy-not-creating-tables
-from sql import Base
+from database import Base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Boolean, Integer, Float, String, Date, Enum, LargeBinary
