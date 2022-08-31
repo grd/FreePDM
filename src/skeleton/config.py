@@ -21,17 +21,6 @@ appname = 'FreePDM'
 config_dir = appdirs.user_config_dir(appname)
 config_name = os.path.join(config_dir, 'FreePDM.conf')
 
-
-#
-# Variables
-#
-
-startup_directory = ''
-filter = 0
-log_file = ''
-log_level = ''
-fast_loading_dir =  ''
-
 #
 # filter flags
 #
@@ -39,45 +28,42 @@ show_fc_files_only = 1
 hide_versioned_fc_files = 2
 
 
-def get_filter(filter_flag):
-    global filter
-    return filter & filter_flag == filter_flag
+class conf():
+    def __init__(self):
+        self.startup_directory = ''
+        self.filter = 0
+        self.log_file = ''
+        self.log_level = ''
+        self.fast_loading_dir =  ''
+
+    def get_filter(self, filter_flag):
+        return self.filter & filter_flag == filter_flag
+
+    def set_filter(self, filter_flag):
+        self.filter = self.filter | filter_flag
+
+    def read(self):
+        config = configparser.ConfigParser()
+        config.read(config_name)
+
+        # reading variables from section: 'DEFAULT'
+        self.startup_directory = config['DEFAULT']['startup_directory']
+        self.filter = int(config['DEFAULT']['filter'])
+        self.log_file = config['DEFAULT']['log_file']
+        self.log_level = config['DEFAULT']['log_levle']
+        self.fast_loading_dir = config['DEFAULT']['fast_loading_dir']
 
 
-def read():
-    global startup_directory
-    global filter
-    global log_file
-    global log_level
-    global fast_loading_dir
+    def write(self):
+        config = configparser.ConfigParser()
+        config['DEFAULT']['startup_directory'] = self.startup_directory
+        config['DEFAULT']['filter'] = str(self.filter)
+        config['DEFAULT']['log_file'] = self.log_file
+        config['DEFAULT']['log_levle'] = self.log_level
+        config['DEFAULT']['fast_loading_dir'] = self.fast_loading_dir
 
-    config = configparser.ConfigParser()
-    config.read(config_name)
-
-    # reading variables from section: 'DEFAULT'
-    startup_directory = config['DEFAULT']['startup_directory']
-    filter = int(config['DEFAULT']['filter'])  # filter is internal variable. not sure if overwriding is a good idea
-    log_file = config['DEFAULT']['log_file']
-    log_level = config['DEFAULT']['log_levle']
-    fast_loading_dir = config['DEFAULT']['fast_loading_dir']
-
-
-def write():
-    global startup_directory
-    global filter
-    global log_file
-    global log_level
-    global fast_loading_dir
-
-    config = configparser.ConfigParser()
-    config['DEFAULT']['startup_directory'] = startup_directory
-    config['DEFAULT']['filter'] = str(filter)
-    config['DEFAULT']['log_file'] = log_file
-    config['DEFAULT']['log_levle'] = log_level
-    config['DEFAULT']['fast_loading_dir'] = fast_loading_dir
-
-    with open(config_name, 'w') as configfile:
-        config.write(configfile)
+        with open(config_name, 'w') as configfile:
+            config.write(configfile)
 
 
 # create the new directory if it doesn't exist
@@ -86,4 +72,5 @@ if not os.path.exists(config_dir):
 
 # create a new config file when it doesn't exist
 if not os.path.isfile(config_name):
-    write()
+    c = conf()
+    c.write()

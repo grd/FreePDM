@@ -5,7 +5,7 @@
 
 import os
 from itemdatamodel import ItemDataModel
-import config as conf
+import config
 
 # the file types
 types = ('Directory', 'Assembly A2P', 'Assembly A3', 'Assembly A4', 
@@ -15,7 +15,8 @@ types = ('Directory', 'Assembly A2P', 'Assembly A3', 'Assembly A4',
 # The directorymodel is a list of files that can be used inside a GUI
 class DirectoryModel(object):
     def __init__(self, directory, withParentDirectory = True):  # '..'
-        conf.read()
+        self.conf = config.conf()
+        self.conf.read()
         self.purge_list = list()
         self.directory = directory
         self.directoryList = [{"nr": "number",
@@ -32,8 +33,8 @@ class DirectoryModel(object):
 
     def get_dir_list(self, withParentDirectory):
         # get the filter types
-        fc_files = conf.get_filter(conf.show_fc_files_only)
-        versioned_files = conf.get_filter(conf.hide_versioned_fc_files)
+        fc_files = self.conf.get_filter(config.show_fc_files_only)
+        versioned_files = self.conf.get_filter(config.hide_versioned_fc_files)
 
         dir_list = os.listdir(self.directory)
         dir_list.sort()

@@ -8,7 +8,7 @@ import PySide2.QtWidgets as qtw
 from PySide2.QtWidgets import QDialog
 
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'skeleton'))
-import config as conf
+import config
 
 class FilterDialog(QDialog):
     def __init__(self):
@@ -44,24 +44,25 @@ class FilterDialog(QDialog):
         self.hide_versioned_fc_files.setText(QCoreApplication.translate("Dialog", u"Hide versioned FreeCAD files", None))
 
     def retrieve_data(self):
-        conf.read()
+        self.conf = config.conf()
+        self.conf.read()
 
-        state = Qt.Checked if conf.get_filter(conf.show_fc_files_only) else Qt.Unchecked
+        state = Qt.Checked if self.conf.get_filter(config.show_fc_files_only) else Qt.Unchecked
         self.show_fc_files_only.setCheckState(state)
 
-        state = Qt.Checked if conf.get_filter(conf.hide_versioned_fc_files) else Qt.Unchecked
+        state = Qt.Checked if self.conf.get_filter(config.hide_versioned_fc_files) else Qt.Unchecked
         self.hide_versioned_fc_files.setCheckState(state)
 
     def store_data(self):
-        conf.filter = 0
+        self.conf.filter = 0
         if self.show_fc_files_only.isChecked() == True:
-            conf.filter = conf.filter | conf.show_fc_files_only
+            self.conf.set_filter(config.show_fc_files_only)
         if self.hide_versioned_fc_files.isChecked() == True:
-            conf.filter = conf.filter | conf.hide_versioned_fc_files            
-        conf.write()
+            self.conf.set_filter(config.hide_versioned_fc_files)
+        self.conf.write()
 
 
 def filter_dialog():
-    filter = FilterDialog()
-    if filter.exec_() == 1: # Ok button pushed
-        filter.store_data()
+    filter_dlg = FilterDialog()
+    if filter_dlg.exec_() == 1: # Ok button pushed
+        filter_dlg.store_data()
