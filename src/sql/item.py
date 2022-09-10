@@ -67,6 +67,7 @@ class Model():
         # is FC able to reload when model is changed?
         raise NotImplementedError("Function get_version is not implemented yet")
 
+
 # When inheritance not everything. Do i need a base class?
 class Document():
     """Document related Class"""
@@ -74,3 +75,71 @@ class Document():
 
     def __init__(self):
         print("Generic Document")
+
+
+# Probably a new file
+class OwnerStates():  # Acces States
+    """ Item / Model / Document Ownership states Class"""
+    # Can all checkin options performed from a central class?
+
+    def __init__(self):
+        print("Generic OwnerStates")
+
+    def check_in(self, objects):
+        """Check in Items, Models, Documents"""
+        # check if new item?
+        # create copy (for Model, Document) and add copy to DataBase
+        raise NotImplementedError("Function check_in is not implemented yet")
+
+    def check_out(self, objects):
+        """Check in Items, Models, Documents"""
+        # check latest version (only for Models and Documents)
+        # check if checked-out by other user
+        raise NotImplementedError("Function check_out is not implemented yet")
+
+    def check_in_check_out(self, objects):
+        """Check in Items, Models, Documents"""
+        # check if new item?
+        # create copy (for Model, Document) and add copy to DataBase
+        #
+        # checkout checks are not needed
+        raise NotImplementedError("Function check_in_check_out is not implemented yet")
+
+
+class ReleaseStates():
+    """Item / Model /Document release states Class"""
+
+    def __init__(self):
+        print("Generic Release States from ")
+
+    def chnge_release_state(self):
+        """new Item, Model, Document"""
+        # All new items, models, documents have state new - untill they are checked in.
+        raise NotImplementedError("Function new is not implemented yet")
+
+    def new(self, objects):
+        """new Item, Model, Document"""
+        # All new items, models, documents have state new - untill they are checked in.
+        raise NotImplementedError("Function new is not implemented yet")
+
+    def prototype(self, objects):
+        """prototype Item, Model, Document"""
+        # All items, models, documents get state prototype on first checkin - untill they are released.
+        raise NotImplementedError("Function prototype is not implemented yet")
+
+    def release(self, objects):
+        """Check in Items, Models, Documents"""
+        # All items, models, documents get state release after  - untill they are released.
+        raise NotImplementedError("Function check_in_check_out is not implemented yet")
+
+    def not_for_new(self, objects):
+        """Check in Items, Models, Documents"""
+        # check latest version (only for Models and Documents)
+        # check if checked-out by other user
+        raise NotImplementedError("Function check_out is not implemented yet")
+
+    def depreciated(self, objects):
+        """Check in Items, Models, Documents"""
+        # check latest version (only for Models and Documents)
+        # check if checked-out by other user
+        raise NotImplementedError("Function check_out is not implemented yet")
