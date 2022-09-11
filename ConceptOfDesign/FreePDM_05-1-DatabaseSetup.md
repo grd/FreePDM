@@ -99,8 +99,10 @@ Historical Attributes
 
 Revision state:
 
-- New Item
-- Revised
+- New( Item)
+- Concept
+- Revised / Revision
+- work
 - Not for new Projects
 - Depreciated
 
