@@ -21,6 +21,7 @@ from PySide2 import QtGui
 class ItemDataModel():
     def __init__(self, filename):  # filename is also imported so change
         self.file_name = filename
+        print(self.file_name)
         self.xml_document = None
         self.thumbnail = None
         self.document_properties = {}
@@ -101,12 +102,26 @@ class ItemDataModel():
 
         # parsing the rest of the document
     
+        # Objects:
+
+        Objects = root.find("./Objects")
+
+        for att in Objects:
+            if att.tag == "Object":
+                type_name = att.attrib["type"] 
+                if type_name == "PartDesign::Body": print(att.attrib["name"])
+                elif type_name == "App::Part": print(att.attrib["name"])
+                elif type_name == "Part::FeaturePython": print(att.attrib["name"]) # A2P en A3 assy
+                elif type_name == "App::DocumentObjectGroup": print(att.attrib["name"]) #A4 assy
+                else: print("Object Type = " + type_name + " Name = " + att.attrib["name"])
+        
+        # ObjectData:
+
         ObjectData = root.find("./ObjectData")
         
         for Object in ObjectData:
             FileObjects = []
             object_name = Object.attrib['name']
-            print("object_name = " + object_name)
             if object_name == 'Body':
                 properties = Object.find("Properties")
                 lbl = properties.find(".//Property[@name='Label']/String")
@@ -116,7 +131,7 @@ class ItemDataModel():
                 FileObjects.append({'name': object_name, 'label': label, 'label2': label2})
 
                 self.document_properties["Objects"].append(FileObjects)
-        print(self.document_properties["Objects"])
+        # print(self.document_properties["Objects"])
 
 
     def get_file_name(self):
