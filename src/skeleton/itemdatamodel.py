@@ -96,6 +96,29 @@ class ItemDataModel():
             if a4assy == 'Asm4EE':
                 self.document_properties["Assembly"] = 'A4-Assy'
 
+
+        self.document_properties["Objects"] = []
+
+        # parsing the rest of the document
+    
+        ObjectData = root.find("./ObjectData")
+        
+        for Object in ObjectData:
+            FileObjects = []
+            object_name = Object.attrib['name']
+            print("object_name = " + object_name)
+            if object_name == 'Body':
+                properties = Object.find("Properties")
+                lbl = properties.find(".//Property[@name='Label']/String")
+                label = lbl.attrib['value']
+                lbl2 = properties.find(".//Property[@name='Label2']/String")
+                label2 = lbl2.attrib['value']
+                FileObjects.append({'name': object_name, 'label': label, 'label2': label2})
+
+                self.document_properties["Objects"].append(FileObjects)
+        print(self.document_properties["Objects"])
+
+
     def get_file_name(self):
         return(self.file_name)
 
@@ -151,4 +174,3 @@ class ItemAssemblyA2:
 
 class ItemDrawing:
     pass
-

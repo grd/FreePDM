@@ -16,8 +16,8 @@
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>530</x>
-     <y>30</y>
+     <x>540</x>
+     <y>70</y>
      <width>81</width>
      <height>91</height>
     </rect>
@@ -26,7 +26,7 @@
     <enum>Qt::Vertical</enum>
    </property>
    <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Save</set>
    </property>
   </widget>
   <widget class="QLineEdit" name="descriptionEdit">
@@ -72,27 +72,37 @@
     <string>Description</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="file_name">
    <property name="geometry">
     <rect>
      <x>30</x>
      <y>30</y>
-     <width>81</width>
+     <width>601</width>
      <height>17</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
    </property>
    <property name="text">
     <string>Name</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_4">
+  <widget class="QLabel" name="user_name">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>190</y>
-     <width>91</width>
-     <height>17</height>
+     <x>400</x>
+     <y>260</y>
+     <width>231</width>
+     <height>20</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
    </property>
    <property name="text">
     <string>User Name</string>
@@ -121,16 +131,6 @@
     </rect>
    </property>
   </widget>
-  <widget class="QLineEdit" name="userNameEdit">
-   <property name="geometry">
-    <rect>
-     <x>140</x>
-     <y>190</y>
-     <width>211</width>
-     <height>25</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QComboBox" name="partCombo">
    <property name="geometry">
     <rect>
@@ -141,14 +141,19 @@
     </rect>
    </property>
   </widget>
-  <widget class="QLabel" name="label_5">
+  <widget class="QLabel" name="date_of_creation">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>230</y>
-     <width>91</width>
-     <height>17</height>
+     <x>400</x>
+     <y>300</y>
+     <width>231</width>
+     <height>20</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
    </property>
    <property name="text">
     <string>Date of Creation</string>
@@ -165,16 +170,6 @@
    </property>
    <property name="text">
     <string>Material</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="dateEdit">
-   <property name="geometry">
-    <rect>
-     <x>140</x>
-     <y>230</y>
-     <width>211</width>
-     <height>25</height>
-    </rect>
    </property>
   </widget>
   <widget class="QComboBox" name="materialCombo">
@@ -213,11 +208,14 @@
   <widget class="QLabel" name="lbl">
    <property name="geometry">
     <rect>
-     <x>420</x>
-     <y>250</y>
-     <width>171</width>
-     <height>161</height>
+     <x>400</x>
+     <y>350</y>
+     <width>130</width>
+     <height>130</height>
     </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Box</enum>
    </property>
    <property name="text">
     <string/>
@@ -257,16 +255,6 @@
    </property>
    <property name="text">
     <string>Part</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="nameEdit">
-   <property name="geometry">
-    <rect>
-     <x>140</x>
-     <y>30</y>
-     <width>211</width>
-     <height>25</height>
-    </rect>
    </property>
   </widget>
   <widget class="QLineEdit" name="unitEdit">
@@ -316,6 +304,25 @@
    </property>
    <property name="text">
     <string>Surface Finish</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="company_name">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>220</y>
+     <width>231</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <italic>false</italic>
+    </font>
+   </property>
+   <property name="text">
+    <string>CompanyName</string>
    </property>
   </widget>
  </widget>

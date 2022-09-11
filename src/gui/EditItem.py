@@ -32,9 +32,6 @@ class EditItem(QDialog):
         self.ui = loader.load(ui_file, self)
         self.ui.setWindowTitle("Edit Item")
 
-        self.ui.nameEdit.setReadOnly(True)
-        self.ui.userNameEdit.setReadOnly(True)
-        self.ui.dateEdit.setReadOnly(True)
         self.ui.weightEdit.setReadOnly(True)
         self.ui.unitEdit.setReadOnly(True)
 
@@ -42,13 +39,17 @@ class EditItem(QDialog):
         # if os.access(self.file, os.W_OK) == True:
         #     self.ui.buttonBox.Ok.setEnabled(False)
 
-        self.ui.nameEdit.setText(self.idm.document_properties["Label"])
-        self.ui.dateEdit.setText(self.idm.document_properties["CreationDate"])
         if 'Unit' in self.idm.document_properties:
             self.ui.unitEdit.setText(self.idm.document_properties['Unit'])
         if "thumbnail" in self.idm.document_properties:
             pixmap = QtGui.QPixmap(self.idm.thumbnail)
             self.ui.lbl.setPixmap(pixmap.scaled(256, 256))
+
+        self.ui.file_name.setText(file)
+        self.ui.company_name.setText(self.idm.document_properties["Company"])
+        self.ui.user_name.setText(self.idm.document_properties["CreatedBy"])
+        self.ui.date_of_creation.setText(self.idm.document_properties["CreationDate"])
+
 
     def store_data(self):
         pass
