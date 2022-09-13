@@ -26,12 +26,12 @@ class DirectoryModel(object):
                                "version": "0",
                                "type": "Dir or File",
                                "size": "file size"}]
-        self.get_dir_list(withParentDirectory)
+        self.set_dir_list(withParentDirectory)
  
-    def full_path(self, file):
+    def full_path(self, file: str) -> str:
         return os.path.join(self.directory, file)
 
-    def get_dir_list(self, withParentDirectory):
+    def set_dir_list(self, withParentDirectory):
         # get the filter types
         fc_files = self.conf.get_filter(config.show_fc_files_only)
         versioned_files = self.conf.get_filter(config.hide_versioned_fc_files)
@@ -96,7 +96,7 @@ class DirectoryModel(object):
         else:
             self.directoryList.pop(0)
 
-    def size(self):
+    def size(self) -> int:
         return(len(self.directoryList))
 
     # Purge stored versions of FreeCAD files.

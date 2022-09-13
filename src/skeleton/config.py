@@ -6,6 +6,7 @@
 import os
 import configparser
 import appdirs
+from typing import NewType
 
 # Reading and writing the configuration file.
 # The location of the file is: [prefix location]/FreePDM/FreePDM.conf
@@ -21,6 +22,9 @@ appname = 'FreePDM'
 config_dir = appdirs.user_config_dir(appname)
 config_name = os.path.join(config_dir, 'FreePDM.conf')
 
+# filter type
+Filter = NewType('Filter', int)
+
 #
 # filter flags
 #
@@ -31,12 +35,12 @@ hide_versioned_fc_files = 2
 class conf():
     def __init__(self):
         self.startup_directory = ''
-        self.filter = 0
+        self.filter: Filter = 0
         self.log_file = ''
         self.log_level = ''
         self.fast_loading_dir =  ''
 
-    def get_filter(self, filter_flag):
+    def get_filter(self, filter_flag) -> Filter:
         return self.filter & filter_flag == filter_flag
 
     def set_filter(self, filter_flag):
