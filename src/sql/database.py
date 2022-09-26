@@ -10,17 +10,24 @@ from sqlalchemy import create_engine
 from sqlalchemy import engine
 from sqlalchemy import MetaData
 # from sqlalchemy import Table
-# from sqlalchemy.orm import Session
-# from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker
 from typing import Optional, Union, Literal
 
 
 Base = declarative_base()
 
-# https://dataedo.com/kb/data-glossary/what-is-metadata
-# https://www.geeksforgeeks.org/difference-between-data-and-metadata/
-# https://www.geeksforgeeks.org/metadata-in-dbms-and-its-types/
+# Sessions / Connetions:
+# - https://docs.sqlalchemy.org/en/14/orm/session_api.html#session-and-sessionmaker
+# - https://www.fullstackpython.com/sqlalchemy-orm-session-examples.html
+# - https://stackoverflow.com/questions/12223335/sqlalchemy-creating-vs-reusing-a-session
+Session = sessionmaker()
+
+# Metadata:
+# - https://dataedo.com/kb/data-glossary/what-is-metadata
+# - https://www.geeksforgeeks.org/difference-between-data-and-metadata/
+# - https://www.geeksforgeeks.org/metadata-in-dbms-and-its-types/
 metadata_obj = MetaData()
+
 
 
 class DatabaseGen():
@@ -58,7 +65,7 @@ class DatabaseGen():
         Returns
         -------
 
-        url [str]
+        url [URL object]
         """
         self.drivername = drivername
         self.username = username
@@ -68,20 +75,6 @@ class DatabaseGen():
         self.database_name = database_name
         new_url = engine.URL.create(self.drivername, self.username, self.password, self.host, self.port, self.database_name)
         return(new_url)
-
-    def connect_db(self):
-        """Connect to database"""
-        # https://docs.sqlalchemy.org/en/14/tutorial/dbapi_transactions.html
-        # Use Connect or use sessions?
-        raise NotImplementedError("Function connect_db is not implemented yet")
-
-    # def connect_db(self):
-    #     """Connect to database"""
-    #     # https://docs.sqlalchemy.org/en/14/tutorial/dbapi_transactions.html
-    #     # https://stackoverflow.com/questions/66437071/when-to-use-session-maker-and-when-to-use-session-in-sqlalchemy
-    #     # https://docs.sqlalchemy.org/en/14/orm/session_api.html
-    #     # Use Connect or use sessions?
-    #     raise NotImplementedError("Function connect_db is not implemented yet")
 
     def create_db(self):
         """Create new database"""

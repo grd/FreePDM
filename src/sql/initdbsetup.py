@@ -6,19 +6,16 @@
 """
 
 from database import Base
+from database import Session
 from database import DataBaseMySQL, DataBasePostgreSQL, DataBaseSQLite
 from sqlalchemy.engine import Engine
 from sqlalchemy import MetaData
 from sqlalchemy import Table
-from sqlalchemy.orm import sessionmaker
 from typing import Optional
 # Table classes
-from pdm_tables import SQLHistory
-# from sql_tables import SQLUser, SQLRole, SQLProject, SQLItem, SQLModel, SQLDocument, SQLMaterial, SQLHistory, SQLPurchase, SQLManufacturer, SQLVendor
+from pdm_tables import SQLUser, SQLRole, SQLProject, SQLItem, SQLModel, SQLDocument, SQLMaterial, SQLHistory, SQLPurchase, SQLManufacturer, SQLVendor
 
 
-
-# Base = declarative_base()
 # https://dataedo.com/kb/data-glossary/what-is-metadata
 # https://www.geeksforgeeks.org/difference-between-data-and-metadata/
 # https://www.geeksforgeeks.org/metadata-in-dbms-and-its-types/
@@ -120,7 +117,7 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
         raise ValueError("{} Is not a Valid input for 'db_type'.".format(db_type))
 
 
-def create_default_tables(engine: str):
+def create_default_tables(engine: Engine):
     """
     Create default set of tables
     Tables are defined in sql_tables.py
@@ -134,8 +131,7 @@ def create_default_tables(engine: str):
     TODO: Add additional classes later on
     """
     # https://stackoverflow.com/questions/54118182/sqlalchemy-not-creating-tables
-    session = sessionmaker()
-    session.configure(bind=engine)
+    Session.configure(bind=engine)
     Base.metadata.create_all(engine)
 
     user_table = Table("user_accounts", metadata_obj, autoload_with=engine)
