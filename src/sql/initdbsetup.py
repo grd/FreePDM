@@ -7,6 +7,7 @@
 
 from database import Base
 from database import DataBaseMySQL, DataBasePostgreSQL, DataBaseSQLite
+from sqlalchemy.engine import Engine
 from sqlalchemy import MetaData
 from sqlalchemy import Table
 from sqlalchemy.orm import sessionmaker
@@ -24,7 +25,7 @@ from pdm_tables import SQLHistory
 metadata_obj = MetaData()
 
 
-def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[str] = ',', **vargs):
+def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[str] = ',', **vargs) -> Engine:
     """
     Start your chosen engine
 

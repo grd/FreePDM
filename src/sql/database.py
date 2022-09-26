@@ -7,7 +7,7 @@
 
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import create_engine
-from sqlalchemy.engine import URL
+from sqlalchemy import engine
 from sqlalchemy import MetaData
 # from sqlalchemy import Table
 # from sqlalchemy.orm import Session
@@ -30,7 +30,7 @@ class DatabaseGen():
     def __init__(self):
         print("Generic DataBase")
 
-    def make_url(self, drivername: str, username: Optional[str], password:  Optional[str], host: Optional[str], port: Optional[int], database_name: Optional[str]):
+    def make_url(self, drivername: str, username: Optional[str], password:  Optional[str], host: Optional[str], port: Optional[int], database_name: Optional[str]) -> engine.URL:
         """
         Create new url
 
@@ -66,7 +66,7 @@ class DatabaseGen():
         self.host = host
         self.port = port
         self.database_name = database_name
-        new_url = URL.create(self.drivername, self.username, self.password, self.host, self.port, self.database_name)
+        new_url = engine.URL.create(self.drivername, self.username, self.password, self.host, self.port, self.database_name)
         return(new_url)
 
     def connect_db(self):
@@ -91,7 +91,7 @@ class DatabaseGen():
     # def create_db(self):
     #     """Create new database"""
     #     # https://stackoverflow.com/questions/6506578/how-to-create-a-new-database-using-sqlalchemy
-        
+
     #     raise NotImplementedError("Function create_db is not implemented yet")
 
     def create_table(self):
@@ -116,7 +116,7 @@ class DataBaseMySQL(DatabaseGen):  # Everything in a file or better to split it?
         print("MySQL")
         super(DataBaseMySQL, self).__init__()
 
-    def start_engine(self, url: Union[str, URL], encoding: Optional[str], echo: Union[bool, Literal['debug'], None], future: Optional[bool], dialect: Optional[str]):
+    def start_engine(self, url: Union[str, engine.URL], encoding: Optional[str], echo: Union[bool, Literal['debug'], None], future: Optional[bool], dialect: Optional[str]) -> engine.Engine:
         """
         Start MySQL engine.
         Note: MySQL engine is not default development database.
@@ -177,7 +177,7 @@ class DataBasePostgreSQL(DatabaseGen):
         print("PostgreSQL")
         super(DataBasePostgreSQL, self).__init__()
 
-    def start_engine(self, url: Union[str, URL], encoding: Optional[str], echo: Union[bool, Literal['debug'], None], future: Optional[bool], dialect: Optional[str]):
+    def start_engine(self, url: Union[str, engine.URL], encoding: Optional[str], echo: Union[bool, Literal['debug'], None], future: Optional[bool], dialect: Optional[str]) -> engine.Engine:
         """
         Start PostgreSQL engine.
 
@@ -239,7 +239,7 @@ class DataBaseSQLite(DatabaseGen):  # Everything in a file or better to split it
         super(DataBaseSQLite, self).__init__()
         print("SQLite")
 
-    def start_engine(self, url: Union[str, URL], encoding: Optional[str], echo: Union[bool, Literal['debug'], None], future: Optional[bool]):
+    def start_engine(self, url: Union[str, engine.URL], encoding: Optional[str], echo: Union[bool, Literal['debug'], None], future: Optional[bool]) -> engine.Engine:
         """
         Start SQLite engine.
         Note: SQLite engine is not default development database.
