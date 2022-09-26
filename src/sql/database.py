@@ -12,7 +12,7 @@ from sqlalchemy import MetaData
 # from sqlalchemy import Table
 # from sqlalchemy.orm import Session
 # from sqlalchemy.orm import sessionmaker
-from typing import Optional, Union
+from typing import Optional, Union, Literal
 
 
 Base = declarative_base()
@@ -166,7 +166,7 @@ class DataBaseMySQL(DatabaseGen):  # Everything in a file or better to split it?
             self.engine = create_engine(self.url, echo=self.echo, future=self.future)
             return(self.engine)
         else:
-            pass
+            raise ValueError("{} not accepted value for dialect".format(self.dialect))
 
 
 class DataBasePostgreSQL(DatabaseGen):
@@ -228,7 +228,7 @@ class DataBasePostgreSQL(DatabaseGen):
             self.engine = create_engine(self.url, echo=self.echo, encoding=self.encoding, future=self.future)
             return(self.engine)
         else:
-            pass
+            raise ValueError("{} not accepted value for dialect".format(self.dialect))
 
 
 class DataBaseSQLite(DatabaseGen):  # Everything in a file or better to split it?
@@ -266,6 +266,9 @@ class DataBaseSQLite(DatabaseGen):  # Everything in a file or better to split it
 
         if self.echo is None:
             self.echo = False
+
+        if self.encoding is None:
+            self.encoding = "utf-8"
 
         if self.future is None:
             self.future = True
