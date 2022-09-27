@@ -13,7 +13,17 @@ from sqlalchemy import MetaData
 from sqlalchemy import Table
 from typing import Optional
 # Table classes
-from pdm_tables import SQLUser, SQLRole, SQLProject, SQLItem, SQLModel, SQLDocument, SQLMaterial, SQLHistory, SQLPurchase, SQLManufacturer, SQLVendor
+from pdm_tables import User
+from pdm_tables import Role
+from pdm_tables import Project
+from pdm_tables import Item
+from pdm_tables import Model
+from pdm_tables import Document
+from pdm_tables import Material
+from pdm_tables import History
+from pdm_tables import Purchase
+from pdm_tables import Manufacturer
+from pdm_tables import Vendor
 
 
 # https://dataedo.com/kb/data-glossary/what-is-metadata
