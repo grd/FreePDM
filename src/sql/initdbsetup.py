@@ -13,17 +13,17 @@ from sqlalchemy import MetaData
 from sqlalchemy import Table
 from typing import Optional
 # Table classes
-from pdm_tables import User
-from pdm_tables import Role
-from pdm_tables import Project
-from pdm_tables import Item
-from pdm_tables import Model
-from pdm_tables import Document
-from pdm_tables import Material
-from pdm_tables import History
-from pdm_tables import Purchase
-from pdm_tables import Manufacturer
-from pdm_tables import Vendor
+from pdm_tables import PdmUser
+from pdm_tables import PdmRole
+from pdm_tables import PdmProject
+from pdm_tables import PdmItem
+from pdm_tables import PdmModel
+from pdm_tables import PdmDocument
+from pdm_tables import PdmMaterial
+from pdm_tables import PdmHistory
+from pdm_tables import PdmPurchase
+from pdm_tables import PdmManufacturer
+from pdm_tables import PdmVendor
 
 
 # https://dataedo.com/kb/data-glossary/what-is-metadata

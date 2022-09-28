@@ -17,7 +17,7 @@ import pdm_enum
 # https://www.geeksforgeeks.org/metadata-in-dbms-and-its-types/
 
 
-class User(Base):
+class PdmUser(Base):
     """Class with default SQL User properties"""
     __tablename__ = 'users'
 
@@ -32,19 +32,19 @@ class User(Base):
     # user_aliases = []  # TODO: What to do with aliases
 
     # relationships with other tables
-    roles = relationship("Role", secondary="user_role_link", back_populates="users")
-    projects = relationship("Projects", secondary="user_project_link", back_populates="users")
-    items = relationship("Item", back_populates="user")
-    models = relationship("Model", back_populates="user")
-    documents = relationship("Document", back_populates="user")
+    roles = relationship("PdmRole", secondary="user_role_link", back_populates="users")
+    projects = relationship("PdmProjects", secondary="user_project_link", back_populates="users")
+    items = relationship("PdmItem", back_populates="user")
+    models = relationship("PdmModel", back_populates="user")
+    documents = relationship("PdmDocument", back_populates="user")
 
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
-        return f"User(user_id={self.user_id!r}, user_name={self.user_name!r}, user_first_name={self.user_first_name!r}, user_last_name={self.user_last_name!r}, user_full_name={self.user_full_name!r}, user_email_adress={self.user_email_adress!r}, user_phonenumber={self.user_phonenumber!r}, user_department={self.user_department!r})"
+        return f"PdmUser(user_id={self.user_id!r}, user_name={self.user_name!r}, user_first_name={self.user_first_name!r}, user_last_name={self.user_last_name!r}, user_full_name={self.user_full_name!r}, user_email_adress={self.user_email_adress!r}, user_phonenumber={self.user_phonenumber!r}, user_department={self.user_department!r})"
 
 
-class Role(Base):
+class PdmRole(Base):
     """Class with default SQL Role properties"""
     __tablename__ = 'roles'
 
@@ -54,15 +54,15 @@ class Role(Base):
 
     # relationships with other tables
     user_id = Column(Integer, ForeignKey("user_accounts.user_id"))
-    users = relationship("User", secondary="user_role_link", back_populates="roles")
+    users = relationship("PdmUser", secondary="user_role_link", back_populates="roles")
 
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
-        return(f"Role(role_id={self.role_id!r}, role_name={self.role_name!r})")
+        return(f"PdmRole(role_id={self.role_id!r}, role_name={self.role_name!r})")
 
 
-class UserRoleLink(Base):
+class PdmUserRoleLink(Base):
     """Association Table between user and project"""
     # https://www.pythoncentral.io/sqlalchemy-association-tables/
     __tablename__ = "user_role_link"
@@ -73,10 +73,10 @@ class UserRoleLink(Base):
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
-        return(f"User Role Association Table(user_id={self.user_id!r}, role_id={self.role_id!r})")
+        return(f"Pdm User Role Association Table(user_id={self.user_id!r}, role_id={self.role_id!r})")
 
 
-class Project(Base):
+class PdmProject(Base):
     """Class with default SQL Role properties"""
     __tablename__ = 'projects'
 
@@ -89,15 +89,15 @@ class Project(Base):
     project_path = Column(String)
 
     # relationships with other tables
-    users = relationship("Users", secondary="user_project_link", back_populates="projects")
+    users = relationship("PdmUsers", secondary="user_project_link", back_populates="projects")
 
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
-        return(f"Project(project_id={self.project_id!r}, project_number={self.project_number!r}, project_name={self.project_name!r}, project_status={self.project_status!r}, project_date_start={self.project_date_start!r}, project_date_finish={self.project_date_finish!r}, project_path={self.project_path!r})")
+        return(f"PdmProject(project_id={self.project_id!r}, project_number={self.project_number!r}, project_name={self.project_name!r}, project_status={self.project_status!r}, project_date_start={self.project_date_start!r}, project_date_finish={self.project_date_finish!r}, project_path={self.project_path!r})")
 
 
-class UserProjectLink(Base):
+class PdmUserProjectLink(Base):
     """Association Table between User and Project"""
     # https://www.pythoncentral.io/sqlalchemy-association-tables/
     __tablename__ = "user_project_link"
@@ -108,10 +108,10 @@ class UserProjectLink(Base):
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
-        return(f"User Project Association Table(user_id={self.user_id!r}, project_id={self.project_id!r})")
+        return(f"Pdm User Project Association Table(user_id={self.user_id!r}, project_id={self.project_id!r})")
 
 
-class Item(Base):
+class PdmItem(Base):
     """Class with SQL Item properties"""
     __tablename__ = 'items'
 
@@ -128,21 +128,21 @@ class Item(Base):
 
     # relationships with other tables
     user_id = Column(Integer, ForeignKey("user_accounts.user_id"))
-    user = relationship("User", back_populates="items")
+    user = relationship("PdmUser", back_populates="items")
     project_id = Column(Integer, ForeignKey('projects.project_id'), nullable=False)
-    models = relationship("Model", back_populates="item")
-    documents = relationship("Document", back_populates="item")
-    Material = relationship("Material", back_populates="item", uselist=False)
-    purchasing = relationship("Purchasing", back_populates="item", uselist=False)
+    models = relationship("PdmModel", back_populates="item")
+    documents = relationship("PdmDocument", back_populates="item")
+    Material = relationship("PdmMaterial", back_populates="item", uselist=False)
+    purchasing = relationship("PdmPurchasing", back_populates="item", uselist=False)
 
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
         # ignore cross columns
-        return(f"Item(item_id={self.item_id!r}, tem_number={self.item_number!r}, item_name={self.item_name!r}, item_description={self.item_description!r}, item_full_description={self.item_full_description!r}, item_number_linked_files={self.item_number_linked_files!r}, item_path={self.item_path!r}, item_preview={self.item_preview!r})")
+        return(f"PdmItem(item_id={self.item_id!r}, tem_number={self.item_number!r}, item_name={self.item_name!r}, item_description={self.item_description!r}, item_full_description={self.item_full_description!r}, item_number_linked_files={self.item_number_linked_files!r}, item_path={self.item_path!r}, item_preview={self.item_preview!r})")
 
 
-class ProjectItemLink(Base):
+class PdmProjectItemLink(Base):
     """Association Table between Project and Item"""
     __tablename__ = "Project_item_link"
 
@@ -152,10 +152,10 @@ class ProjectItemLink(Base):
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
-        return(f"Project Item Association Table(project_id={self.project_id!r}, item_id={self.item_id!r})")
+        return(f"Pdm Project Item Association Table(project_id={self.project_id!r}, item_id={self.item_id!r})")
 
 
-class Model(Base):
+class PdmModel(Base):
     """Class with SQL Item properties"""
     __tablename__ = 'models'
 
@@ -172,18 +172,18 @@ class Model(Base):
 
     # relationships with other tables
     user_id = Column(Integer, ForeignKey("user_accounts.user_id"))
-    user = relationship("User", back_populates="models")
+    user = relationship("PdmUser", back_populates="models")
     item_id = Column(Integer, ForeignKey("items.item_id"))
-    item = relationship("Item", back_populates="models")
-    material = relationship("Material", back_populates="model", uselist=False)
+    item = relationship("PdmItem", back_populates="models")
+    material = relationship("PdmMaterial", back_populates="model", uselist=False)
 
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
-        return(f"Model(model_id={self.model_id!r}, model_number={self.model_number!r}, model_name={self.model_name!r}, model_description={self.model_description!r}, model_full_description={self.model_full_description!r}, model_filename={self.model_filename!r}, model_ext={self.model_ext!r}, model_preview={self.model_preview!r})")
+        return(f"PdmModel(model_id={self.model_id!r}, model_number={self.model_number!r}, model_name={self.model_name!r}, model_description={self.model_description!r}, model_full_description={self.model_full_description!r}, model_filename={self.model_filename!r}, model_ext={self.model_ext!r}, model_preview={self.model_preview!r})")
 
 
-class Document(Base):
+class PdmDocument(Base):
     """Class with SQL Item properties"""
     __tablename__ = 'documents'
 
@@ -199,17 +199,17 @@ class Document(Base):
 
     # relationships with other tables
     user_id = Column(Integer, ForeignKey("user_accounts.user_id"))
-    user = relationship("User", back_populates="documents")
+    user = relationship("PdmUser", back_populates="documents")
     item_id = Column(Integer, ForeignKey("items.item_id"))
-    item = relationship("Item", back_populates="models")
+    item = relationship("PdmItem", back_populates="models")
 
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
-        return(f"Document(document_id={self.document_id!r}, document_number={self.document_number!r}, document_name={self.document_name!r}, document_description={self.document_description!r}, document_full_description={self.document_full_description!r}, document_filename={self.document_filename!r}, document_ext={self.document_ext!r})")
+        return(f"PdmDocument(document_id={self.document_id!r}, document_number={self.document_number!r}, document_name={self.document_name!r}, document_description={self.document_description!r}, document_full_description={self.document_full_description!r}, document_filename={self.document_filename!r}, document_ext={self.document_ext!r})")
 
 
-class Material(Base):
+class PdmMaterial(Base):
     """Class with SQL Material properties"""
     __tablename__ = 'materials'
 
@@ -227,18 +227,18 @@ class Material(Base):
 
     # relationships with other tables
     model_id = Column(Integer, ForeignKey('models.model_id'))
-    model = relationship("Model", back_populates="material")
+    model = relationship("PdmModel", back_populates="material")
     item_id = Column(Integer, ForeignKey('items.item_id'))
-    item = relationship("Item", back_populates="material")
+    item = relationship("PdmItem", back_populates="material")
 
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
-        return(f"Material(material_id={self.material_id!r}, material_name={self.material_name!r}, material_finish={self.material_finsh!r}, material_mass={self.material_mass!r}, material_mass_unit={self.material_mass_unit!r}, material_volume={self.material_volume!r}, material_volume_unit={self.material_volume_unit!r}, material_weight={self.material_weight!r}, material_weight_unit={self.material_weight_unit!r}, material_surface_area={self.material_surface_area!r}, material_surface_area_unit={self.material_surface_area_unit})")
+        return(f"PdmMaterial(material_id={self.material_id!r}, material_name={self.material_name!r}, material_finish={self.material_finsh!r}, material_mass={self.material_mass!r}, material_mass_unit={self.material_mass_unit!r}, material_volume={self.material_volume!r}, material_volume_unit={self.material_volume_unit!r}, material_weight={self.material_weight!r}, material_weight_unit={self.material_weight_unit!r}, material_surface_area={self.material_surface_area!r}, material_surface_area_unit={self.material_surface_area_unit})")
 
 
 # TODO: A histric item / Model / Document can  have a foreign key to all of those tables.
-class History(Base):
+class PdmHistory(Base):
     """Class with SQL History properties"""
     __tablename__ = 'history'
 
@@ -259,10 +259,10 @@ class History(Base):
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
-        return(f"History( history_id={self.history_id!r}, history_date_created={self.history_date_created!r}, history_created_by={self.history_created_by!r}, history_date_last_edit={self.history_date_last_edit!r}, history_last_edit_by={self.history_last_edit_by!r}, history_checked_out_by={self.history_checked_out_by!r}, history_revision_state={self.history_revision_state!r}, history_revision_number={self.history_revision_number!r}, history_stored_number={self.history_stored_number!r})")
+        return(f"PdmHistory(history_id={self.history_id!r}, history_date_created={self.history_date_created!r}, history_created_by={self.history_created_by!r}, history_date_last_edit={self.history_date_last_edit!r}, history_last_edit_by={self.history_last_edit_by!r}, history_checked_out_by={self.history_checked_out_by!r}, history_revision_state={self.history_revision_state!r}, history_revision_number={self.history_revision_number!r}, history_stored_number={self.history_stored_number!r})")
 
 
-class Purchase(Base):
+class PdmPurchase(Base):
     """Class with SQL purchasing properties"""
     __tablename__ = 'purchasing'
 
@@ -274,19 +274,19 @@ class Purchase(Base):
 
     # relationships with other tables
     item_id = Column(Integer, ForeignKey("items.item_id"))
-    item = relationship("Items", back_populates="purchasing")
+    item = relationship("PdmItems", back_populates="purchasing")
     manufacturer_id = Column(Integer, ForeignKey('manufacturers.manufacturer_id'))
-    manufacturers = relationship("Manufacturer", back_populates="purchasing")
+    manufacturers = relationship("PdmManufacturer", back_populates="purchasing")
     vendor_id = Column(Integer, ForeignKey('vendors.vendor_id'))
-    vendors = relationship("Vendors", back_populates="purchasing")
+    vendors = relationship("PdmVendors", back_populates="purchasing")
 
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
-        return(f"Purchase(purchasing_id={self.purchasing_id!r}, purchasing_source={self.purchasing_source!r}, purchasing_tracebility={self.purchasing_tracebility!r})")
+        return(f"PdmPurchase(purchasing_id={self.purchasing_id!r}, purchasing_source={self.purchasing_source!r}, purchasing_tracebility={self.purchasing_tracebility!r})")
 
 
-class Manufacturer(Base):
+class PdmManufacturer(Base):
     """Class with SQL Manufacturing properties"""
     __tablename__ = 'manufacturers'
 
@@ -296,15 +296,15 @@ class Manufacturer(Base):
 
     # relationships with other tables
     purchasing_id = Column(Integer, ForeignKey("purchasing.purchasing_id"))
-    purchasing = relationship("Purchase", back_populates="manufacturers")
+    purchasing = relationship("PdmPurchase", back_populates="manufacturers")
 
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
-        return(f"Manufacturer(manufacturer_id={self.manufacturer_id!r}, manufacturer_name={self.manufacturer_name!r})")
+        return(f"PdmManufacturer(manufacturer_id={self.manufacturer_id!r}, manufacturer_name={self.manufacturer_name!r})")
 
 
-class Vendor(Base):
+class PdmVendor(Base):
     """Class with SQL Vendor properties"""
     __tablename__ = 'vendors'
 
@@ -314,9 +314,9 @@ class Vendor(Base):
 
     # relationships with other tables
     vpurchasing_id = Column(Integer, ForeignKey("purchasing.purchasing_id"))
-    vpurchasing = relationship("Purchase", back_populates="vendors")
+    vpurchasing = relationship("PdmPurchase", back_populates="vendors")
 
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
-        return(f"Vendor(vendor_id={self.vendor_id!r}, vendor_name={self.vendor_name!r})")
+        return(f"PdmVendor(vendor_id={self.vendor_id!r}, vendor_name={self.vendor_name!r})")
