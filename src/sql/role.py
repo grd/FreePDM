@@ -10,6 +10,7 @@ from database import DatabaseGen
 import typing
 
 
+# https://www.osohq.com/post/sqlalchemy-role-rbac-basics
 class Role(DatabaseGen):
     """Class for genrating Roles"""
 

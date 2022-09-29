@@ -81,7 +81,7 @@ class Item():
         else:
             return(str(self.number))
 
-
+    # https://stackoverflow.com/questions/73887390/handle-multiple-users-login-database-with-sqlalchemy
     def create_item(self, project: str, path: str, number: Optional[str], name: Optional[str], description: Optional[str], full_description: Optional[str]) -> None:
         """
         Create new item
