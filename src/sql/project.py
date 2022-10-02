@@ -9,9 +9,7 @@ from database import Base
 from database import Session
 from pdm_tables import PdmProject
 from pdm_enum import ProjectState
-from item import Item
 from sqlalchemy import Date
-from sqlalchemy import Enum
 from typing import Optional, Union
 
 
@@ -28,9 +26,9 @@ class Project():
         """Get id with Project number"""
         raise NotImplementedError("Function get_id is not implemented yet")
 
-    def create_project_number(self, number: Union[str, int], ndigits: Optional[int]) -> str:
+    def create_number(self, number: Union[str, int], ndigits: Optional[int]) -> str:
         """
-        Create new project number
+        Create new Project number
 
         Parameters
         ----------
@@ -50,10 +48,28 @@ class Project():
         self.number = number
         self.ndigits = ndigits
 
-        call_item = Item()
-        proj_nr = call_item.create_number(number, ndigits)
+        # TODO: load defaults for ndigits
+        if self.ndigits is None:
+            raise ValueError("Value for 'ndigits' can't be None.")
 
-        return(proj_nr)
+        self.number = int(self.number)
+        self.number += 1
+
+        # https://thecodingbot.com/count-the-number-of-digits-in-an-integer-python4-ways/
+        if self.ndigits != -1:
+            counter = 0
+            num = self.number
+            while (num):
+                counter += 1
+                num = int(num / 10)
+
+            leading_zeros = ""
+            for digit in range(self.ndigits - counter):
+                leading_zeros += "0"
+
+            return(leading_zeros + str(self.number))
+        else:
+            return(str(self.number))
 
     def create_project(self, number: Optional[str], name: Optional[str], status: Optional[ProjectState], date_start: Optional[Date], date_finish: Optional[Date], path: str):
         """

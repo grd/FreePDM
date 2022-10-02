@@ -39,9 +39,9 @@ class Item():
     def __init__(self):
         print("Generic Item")
 
-    def create_number(self, number: Union[str, int], ndigits: Optional[int]) -> str:
+    def create_item_number(self, number: Union[str, int], ndigits: Optional[int]) -> str:
         """
-        Create new Item number
+        Create new project number
 
         Parameters
         ----------
@@ -61,28 +61,10 @@ class Item():
         self.number = number
         self.ndigits = ndigits
 
-        # TODO: load defaults for ndigits
-        if self.ndigits is None:
-            raise ValueError("Value for 'ndigits' can't be None.")
+        call_proj = Project()
+        item_nr = call_item.create_number(number, ndigits)
 
-        self.number = int(self.number)
-        self.number += 1
-
-        # https://thecodingbot.com/count-the-number-of-digits-in-an-integer-python4-ways/
-        if self.ndigits != -1:
-            counter = 0
-            num = self.number
-            while (num):
-                counter += 1
-                num = int(num / 10)
-
-            leading_zeros = ""
-            for digit in range(self.ndigits - counter):
-                leading_zeros += "0"
-
-            return(leading_zeros + str(self.number))
-        else:
-            return(str(self.number))
+        return(item_nr)
 
     # https://stackoverflow.com/questions/73887390/handle-multiple-users-login-database-with-sqlalchemy
     def create_item(self, project: str, path: str, number: Optional[str], name: Optional[str], description: Optional[str], full_description: Optional[str]) -> None:
