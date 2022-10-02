@@ -12,6 +12,7 @@ class ProjectState(enum.Enum):
     """Class with enumeration of the Project state"""
 
     # https://www.indeed.com/career-advice/career-development/project-statuses
+    new = "New"
     upcoming = "Upcoming"
     pending = "Pending"
     notstarted = "Not Started"

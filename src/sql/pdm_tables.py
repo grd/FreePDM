@@ -81,7 +81,7 @@ class PdmProject(Base):
     __tablename__ = 'projects'
 
     project_id = Column(Integer, primary_key=True)
-    project_number = Column(Integer, nullable=False)  # this can come another source as the Db so not same as project_id
+    project_number = Column(String(16), nullable=False)  # this can come another source as the Db so not same as project_id
     project_name = Column(String(32))
     project_status = Column(Enum(pdm_enum.ProjectState))
     Project_date_start = Column(Date)

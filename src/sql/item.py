@@ -7,6 +7,9 @@
 
 from database import Base
 from database import Session
+from project import Project
+
+# Tables
 from pdm_tables import PdmUser
 from pdm_tables import PdmRole
 from pdm_tables import PdmProject
@@ -104,7 +107,7 @@ class Item():
 
         No return - new object created in SQL database ?
         """
-        self.project = project
+        self.project = project  # User works on current project
         self.path = path  # TODO: create path automatically
         self.number = number
         self.name = name
@@ -125,8 +128,10 @@ class Item():
         if self.full_description is None:
             self.full_description = ""
 
+        proj = Project()
+        self.project_id = proj.get_id(self.project)
         # self.project_id = Select()  # get project id based on project number / project name
-        new_item = PdmItem(item_number=self.number, item_name=self.name, item_description=self.description, item_full_description=self.full_description, path=self.path, project_id=self.project)
+        new_item = PdmItem(item_number=self.number, item_name=self.name, item_description=self.description, item_full_description=self.full_description, path=self.path, project_id=self.project_id)
 
         # TODO: Import Engine - From where?
         Session.configure(bind=engine, future=True)
