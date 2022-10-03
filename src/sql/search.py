@@ -5,9 +5,9 @@
     :license:   MIT License.
 """
 
-from sqlalchemy.orm import sessionmaker
+# from sqlalchemy.orm import sessionmaker
 from database import Base
-import typing
+# import typing
 
 
 # Basically searching in the SQL database requires a coonetcion to the database too.
@@ -39,6 +39,8 @@ class Search():
         - Search keys etc
         """
         print(help_text)
+        return(help_text)
+
 
 class SearchItem():
     """Search for projects"""
