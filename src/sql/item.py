@@ -9,18 +9,18 @@ from database import Base
 from database import Session
 from project import Project
 
-# Tables
-from pdm_tables import PdmUser
-from pdm_tables import PdmRole
-from pdm_tables import PdmProject
+# Tables - All currently unused tables are commented out switch when using
+# from pdm_tables import PdmUser
+# from pdm_tables import PdmRole
+# from pdm_tables import PdmProject
 from pdm_tables import PdmItem
-from pdm_tables import PdmModel
-from pdm_tables import PdmDocument
-from pdm_tables import PdmMaterial
-from pdm_tables import PdmHistory
-from pdm_tables import PdmPurchase
-from pdm_tables import PdmManufacturer
-from pdm_tables import PdmVendor
+# from pdm_tables import PdmModel
+# from pdm_tables import PdmDocument
+# from pdm_tables import PdmMaterial
+# from pdm_tables import PdmHistory
+# from pdm_tables import PdmPurchase
+# from pdm_tables import PdmManufacturer
+# from pdm_tables import PdmVendor
 # from sqlalchemy import select
 # from collections.abc import Sequence
 from typing import Optional, Union
@@ -62,7 +62,7 @@ class Item():
         self.ndigits = ndigits
 
         call_proj = Project()
-        item_nr = call_item.create_number(number, ndigits)
+        item_nr = call_proj.create_number(number, ndigits)
 
         return(item_nr)
 
