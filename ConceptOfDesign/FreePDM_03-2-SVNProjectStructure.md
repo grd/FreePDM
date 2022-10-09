@@ -101,4 +101,87 @@ Of course there are points where systems are stacked above each other / are desi
 There should be thought how the CAD files could be retrieved and used later on!  
 Projects are not removed completely because there is some need for ECN numbers, roles during the release proces etc. **The main point is there is no dedicated project management tools inside it!**
 
+#### File system
+
+There are three file systems that should be supported. All depended on the preferred workflow.  
+These are shown below.
+
+<!--@Kunda1 thanks for pointing to mermaid-->
+**Separated Folder for drawings:**
+
+```mermaid
+  graph TD;
+    A{{File System}} --> B(System 1);
+    A{{File System}} --> C(System 2);
+    A{{File System}} --> D(System ...);
+    A{{File System}} --> E(System N);
+    C --> F(CAD Folder);
+    C --> G(Drawing Folder);
+    C --> H(Documents Folder);
+    C --> I(Optional Other Folders);
+    F --- J[CAD files 1 ... N];
+    F --- J[CAD files 1 ... N];
+    F -.- J[CAD files 1 ... N];
+    F --- J[CAD files 1 ... N];
+    G --- K[Drawing file 1 .. N];
+    G --- K[Drawing file 1 .. N];
+    G -.- K[Drawing file 1 .. N];
+    G --- K[Drawing file 1 .. N];
+    H --- L[Document 1 .. N];
+    H --- L[Document 1 .. N];
+    H -.- L[Document 1 .. N];
+    H --- L[Document 1 .. N];
+```
+
+**Drawings Folder subfolder for CAD files:**
+
+```mermaid
+  graph TD;
+    A{{File System}} --> B(System 1);
+    A{{File System}} --> C(System 2);
+    A{{File System}} --> D(System ...);
+    A{{File System}} --> E(System N);
+    C --> F(CAD Folder);
+    C --> H(Documents Folder);
+    C --> I(Optional Other Folders);
+    F --> G(Drawing Folder);
+    F --- J[CAD files 1 ... N];
+    F --- J[CAD files 1 ... N];
+    F -.- J[CAD files 1 ... N];
+    F --- J[CAD files 1 ... N];
+    G --- K[Drawing file 1 .. N];
+    G --- K[Drawing file 1 .. N];
+    G -.- K[Drawing file 1 .. N];
+    G --- K[Drawing file 1 .. N];
+    H --- L[Document 1 .. N];
+    H --- L[Document 1 .. N];
+    H -.- L[Document 1 .. N];
+    H --- L[Document 1 .. N];
+```
+
+**Drawings added in CAD files folder:**
+
+```mermaid
+  graph TD;
+    A{{File System}} --> B(System 1);
+    A{{File System}} --> C(System 2);
+    A{{File System}} --> D(System ...);
+    A{{File System}} --> E(System N);
+    C --> F(CAD Folder);
+    C --> H(Documents Folder);
+    C --> I(Optional Other Folders);
+    F --- J[CAD files 1 ... N];
+    F --- J[CAD files 1 ... N];
+    F -.- J[CAD files 1 ... N];
+    F --- J[CAD files 1 ... N];
+    F --- K[Drawing file 1 .. N];
+    F --- K[Drawing file 1 .. N];
+    F -.- K[Drawing file 1 .. N];
+    F --- K[Drawing file 1 .. N];
+    H --- L[Document 1 .. N];
+    H --- L[Document 1 .. N];
+    H -.- L[Document 1 .. N];
+    H --- L[Document 1 .. N];
+```
+
 [<< Previous Chapter](FreePDM_03-1-Attributes.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_03-3-DBVersioningUpd.md)
