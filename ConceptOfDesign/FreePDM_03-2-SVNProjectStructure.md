@@ -184,4 +184,42 @@ These are shown below.
     H --- L[Document 1 .. N];
 ```
 
+More complex structures could also be possible.
+It is important to think how it is possible to achieve this!  
+An example:
+
+```mermaid
+  graph TD;
+    A{{File System}} --> B(System 1);
+    A{{File System}} --> C(System 2);
+    A{{File System}} --> D(System ...);
+    A{{File System}} --> E(System N);
+    C --> F(Software Design);
+    C --> G(Electrical Design);
+    C --> H(Mechanical Design);
+    C --> I(...);
+    H --> J(Concepts);
+    H --> K(Detailed Design);
+    H --> L(Documentation);
+    H --> M(...);
+    J --- N[CAD - Concept 1 ... N];
+    J --- N[CAD - Concept 1 ... N];
+    J -.- N[CAD - Concept 1 ... N];
+    J --- N[CAD - Concept 1 ... N];
+    K --- O[CAD files 1 ... N];
+    K --- O[CAD files 1 ... N];
+    K -.- O[CAD files 1 ... N];
+    K --- O[CAD files 1 ... N];
+    K ----P(Drawings);
+    K ----Q(FEM anaysis);
+    P --- R[Drawing file 1 .. N];
+    P --- R[Drawing file 1 .. N];
+    P -.- R[Drawing file 1 .. N];
+    P --- R[Drawing file 1 .. N];
+    L --- S[Document 1 .. N];
+    L --- S[Document 1 .. N];
+    L -.- S[Document 1 .. N];
+    L --- S[Document 1 .. N];
+```
+
 [<< Previous Chapter](FreePDM_03-1-Attributes.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_03-3-DBVersioningUpd.md)
