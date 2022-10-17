@@ -81,12 +81,6 @@ class DatabaseGen():
         # https://stackoverflow.com/questions/6506578/how-to-create-a-new-database-using-sqlalchemy
         raise NotImplementedError("Function create_db is not implemented yet")
 
-    # def create_db(self):
-    #     """Create new database"""
-    #     # https://stackoverflow.com/questions/6506578/how-to-create-a-new-database-using-sqlalchemy
-
-    #     raise NotImplementedError("Function create_db is not implemented yet")
-
     def create_table(self):
         """Create new Table"""
         raise NotImplementedError("Function create_table is not implemented yet")

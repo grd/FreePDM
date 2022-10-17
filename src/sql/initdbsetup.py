@@ -12,18 +12,18 @@ from sqlalchemy.engine import Engine
 from sqlalchemy import MetaData
 from sqlalchemy import Table
 from typing import Optional
-# Table classes
-from pdm_tables import PdmUser
-from pdm_tables import PdmRole
-from pdm_tables import PdmProject
-from pdm_tables import PdmItem
-from pdm_tables import PdmModel
-from pdm_tables import PdmDocument
-from pdm_tables import PdmMaterial
-from pdm_tables import PdmHistory
-from pdm_tables import PdmPurchase
-from pdm_tables import PdmManufacturer
-from pdm_tables import PdmVendor
+# Table classes - Test if it still works if all tables are commented out
+# from pdm_tables import PdmUser
+# from pdm_tables import PdmRole
+# from pdm_tables import PdmProject
+# from pdm_tables import PdmItem
+# from pdm_tables import PdmModel
+# from pdm_tables import PdmDocument
+# from pdm_tables import PdmMaterial
+# from pdm_tables import PdmHistory
+# from pdm_tables import PdmPurchase
+# from pdm_tables import PdmManufacturer
+# from pdm_tables import PdmVendor
 
 
 # https://dataedo.com/kb/data-glossary/what-is-metadata

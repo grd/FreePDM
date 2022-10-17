@@ -89,4 +89,137 @@ I added another topic that looks like a bit more an issue to git than svn and th
 - [individual file locking git](https://stackoverflow.com/questions/13662255/is-there-a-way-to-lock-individual-files-or-directories-on-fork-when-using-git)
 - [Private git](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-private-git-server-on-a-vps)
 
+### _Update during developement 2022-10-06_
+
+The info above describe the project and the effect it have on the creation of a system.
+A project can be there for the creation of a system.
+But the creation of a system can exist out of multiple projects.  
+When implementing projects what has to be added to regarding project management etc?
+So the combination of those arguments made that the design of this system changes.
+The project level will be **replaced** by a system level regarding file storing.
+Of course there are points where systems are stacked above each other / are designed by another developer.
+There should be thought how the CAD files could be retrieved and used later on!  
+Projects are not removed completely because there is some need for ECN numbers, roles during the release proces etc. **The main point is there is no dedicated project management tools inside it!**
+
+#### File system
+
+There are three file systems that should be supported. All depended on the preferred workflow.  
+These are shown below.
+
+<!--@Kunda1 thanks for pointing to mermaid-->
+**Separated Folder for drawings:**
+
+```mermaid
+  graph TD;
+    A{{File System}} --> B(System 1);
+    A{{File System}} --> C(System 2);
+    A{{File System}} --> D(System ...);
+    A{{File System}} --> E(System N);
+    C --> F(CAD Folder);
+    C --> G(Drawing Folder);
+    C --> H(Documents Folder);
+    C --> I(Optional Other Folders);
+    F --- J[CAD files 1 ... N];
+    F --- J[CAD files 1 ... N];
+    F -.- J[CAD files 1 ... N];
+    F --- J[CAD files 1 ... N];
+    G --- K[Drawing file 1 .. N];
+    G --- K[Drawing file 1 .. N];
+    G -.- K[Drawing file 1 .. N];
+    G --- K[Drawing file 1 .. N];
+    H --- L[Document 1 .. N];
+    H --- L[Document 1 .. N];
+    H -.- L[Document 1 .. N];
+    H --- L[Document 1 .. N];
+```
+
+**Drawings Folder subfolder for CAD files:**
+
+```mermaid
+  graph TD;
+    A{{File System}} --> B(System 1);
+    A{{File System}} --> C(System 2);
+    A{{File System}} --> D(System ...);
+    A{{File System}} --> E(System N);
+    C --> F(CAD Folder);
+    C --> H(Documents Folder);
+    C --> I(Optional Other Folders);
+    F --> G(Drawing Folder);
+    F --- J[CAD files 1 ... N];
+    F --- J[CAD files 1 ... N];
+    F -.- J[CAD files 1 ... N];
+    F --- J[CAD files 1 ... N];
+    G --- K[Drawing file 1 .. N];
+    G --- K[Drawing file 1 .. N];
+    G -.- K[Drawing file 1 .. N];
+    G --- K[Drawing file 1 .. N];
+    H --- L[Document 1 .. N];
+    H --- L[Document 1 .. N];
+    H -.- L[Document 1 .. N];
+    H --- L[Document 1 .. N];
+```
+
+**Drawings added in CAD files folder:**
+
+```mermaid
+  graph TD;
+    A{{File System}} --> B(System 1);
+    A{{File System}} --> C(System 2);
+    A{{File System}} --> D(System ...);
+    A{{File System}} --> E(System N);
+    C --> F(CAD Folder);
+    C --> H(Documents Folder);
+    C --> I(Optional Other Folders);
+    F --- J[CAD files 1 ... N];
+    F --- J[CAD files 1 ... N];
+    F -.- J[CAD files 1 ... N];
+    F --- J[CAD files 1 ... N];
+    F --- K[Drawing file 1 .. N];
+    F --- K[Drawing file 1 .. N];
+    F -.- K[Drawing file 1 .. N];
+    F --- K[Drawing file 1 .. N];
+    H --- L[Document 1 .. N];
+    H --- L[Document 1 .. N];
+    H -.- L[Document 1 .. N];
+    H --- L[Document 1 .. N];
+```
+
+More complex structures could also be possible.
+It is important to think how it is possible to achieve this!  
+An example:
+
+```mermaid
+  graph TD;
+    A{{File System}} --> B(System 1);
+    A{{File System}} --> C(System 2);
+    A{{File System}} --> D(System ...);
+    A{{File System}} --> E(System N);
+    C --> F(Software Design);
+    C --> G(Electrical Design);
+    C --> H(Mechanical Design);
+    C --> I(...);
+    H --> J(Concepts);
+    H --> K(Detailed Design);
+    H --> L(Documentation);
+    H --> M(...);
+    J --- N[CAD - Concept 1 ... N];
+    J --- N[CAD - Concept 1 ... N];
+    J -.- N[CAD - Concept 1 ... N];
+    J --- N[CAD - Concept 1 ... N];
+    K --- O[CAD files 1 ... N];
+    K --- O[CAD files 1 ... N];
+    K -.- O[CAD files 1 ... N];
+    K --- O[CAD files 1 ... N];
+    K ----P(Drawings);
+    K ----Q(FEM anaysis);
+    P --- R[Drawing file 1 .. N];
+    P --- R[Drawing file 1 .. N];
+    P -.- R[Drawing file 1 .. N];
+    P --- R[Drawing file 1 .. N];
+    L --- S[Document 1 .. N];
+    L --- S[Document 1 .. N];
+    L -.- S[Document 1 .. N];
+    L --- S[Document 1 .. N];
+```
+
 [<< Previous Chapter](FreePDM_03-1-Attributes.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_03-3-DBVersioningUpd.md)
