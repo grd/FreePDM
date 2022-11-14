@@ -14,7 +14,7 @@ from typing import Optional, Union
 
 
 # Basically searching in the SQL database requires a coonetcion to the database too.
-# Is it than a sub-class or better to reqest acces to a class or has this class a interface too?
+# Is it than a sub-class or better to request access to a class or has this class a interface too?
 class Project():
     """Project related Class"""
     # https://docs.sqlalchemy.org/en/14/orm/session_basics.html
@@ -79,7 +79,7 @@ class Project():
         ----------
 
         project [str] : Project number or name
-            Project name or project number have to be a string for use whit leading zeros.
+            Project name or project number have to be a string for use with leading zeros.
 
         path [str] : path
             Path to folder where related models and documents are stored.

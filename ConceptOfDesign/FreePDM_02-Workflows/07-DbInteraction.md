@@ -67,7 +67,7 @@ After finishing the edits:
 A user wants to release an Item (basically the CAD model, CAD drawing, database Item, and other documentation): 
 
 1. The database needs to checked what files are already released
-1. Fullfil the Engineerings Change Process (not described, but basically a set of checks)
+1. Fulfill the Engineerings Change Process (not described, but basically a set of checks)
 3. Database Change all Attributes that are affected to a higher revision number.
 4. Database Change all Attributes that are affected to a _Release_ state.
 5. The affected database items are locked AND the affected files (file locations) are locked for _All_ users.
@@ -93,4 +93,4 @@ A user wants to change an previously released Item. For example, a CAD file.
 
 - This step should also work for a whole module / assembly structure.
 
-[<< Previous Chapter](06-DbShape.md) | [Content Table](README.md) | [Next Chapter >>](08-DevelopementBuilds.md)
+[<< Previous Chapter](06-DbShape.md) | [Content Table](README.md) | [Next Chapter >>](08-DevelopmentBuilds.md)

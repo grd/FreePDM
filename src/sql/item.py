@@ -75,7 +75,7 @@ class Item():
         ----------
 
         project [str] : Project number or name
-            Project name or project number have to be a string for use whit leading zeros.
+            Project name or project number have to be a string for use with leading zeros.
 
         path [str] : path
             Path to folder where related models and documents are stored.
@@ -198,7 +198,7 @@ class Document():
 
 
 # Probably a new file
-class OwnerStates():  # Acces States
+class OwnerStates():  # Access States
     """ Item / Model / Document Ownership states Class"""
     # Can all checkin options performed from a central class?
 
@@ -234,22 +234,22 @@ class ReleaseStates():
 
     def chnge_release_state(self):
         """new Item, Model, Document"""
-        # All new items, models, documents have state new - untill they are checked in.
+        # All new items, models, documents have state new - until they are checked in.
         raise NotImplementedError("Function new is not implemented yet")
 
     def new(self, objects):
         """new Item, Model, Document"""
-        # All new items, models, documents have state new - untill they are checked in.
+        # All new items, models, documents have state new - until they are checked in.
         raise NotImplementedError("Function new is not implemented yet")
 
     def prototype(self, objects):
         """prototype Item, Model, Document"""
-        # All items, models, documents get state prototype on first checkin - untill they are released.
+        # All items, models, documents get state prototype on first checkin - until they are released.
         raise NotImplementedError("Function prototype is not implemented yet")
 
     def release(self, objects):
         """Check in Items, Models, Documents"""
-        # All items, models, documents get state release after  - untill they are released.
+        # All items, models, documents get state release after  - until they are released.
         raise NotImplementedError("Function check_in_check_out is not implemented yet")
 
     def not_for_new(self, objects):

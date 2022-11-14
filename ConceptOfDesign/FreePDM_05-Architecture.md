@@ -284,7 +284,7 @@ More information about workflows can be found in [UIInteractionFC](FreePDM_02-Wo
 Within _FreeCAD_ Some functionality need to be added so that the files can be _Checked-In_ or _Checked-Out_ from a _Menu_ or a _FileObject_.  
 On the other hand _FreeCAD_ Needs Access to the File location, without any interactions between the different workspaces!
 
-### _Update during developement 2022-10-06_
+### _Update during development 2022-10-06_
 
 Current Implementation ignores the LDAP server.
 Still it looks like best method for the future.

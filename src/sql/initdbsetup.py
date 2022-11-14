@@ -170,7 +170,7 @@ if __name__ == "__main__":
         # raise ValueError("Not enough parameters added")
         # means run from IDE
         username = "freepdm"
-        password = "PsqlPassword123!"  # remove password. this one only for developement purposes in VM!
+        password = "PsqlPassword123!"  # remove password. this one only for development purposes in VM!
         dbname = "freepdm"
 
         url = "postgresql://" + username + ":" + password + "@localhost/" + dbname
