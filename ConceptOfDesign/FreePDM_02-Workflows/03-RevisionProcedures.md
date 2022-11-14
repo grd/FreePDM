@@ -22,7 +22,7 @@ Now we can start a procedure (can be self-defined) that checks the item(s) etc..
   - grd: To be honest, I don't know but I think that is possible. I looked at some videos that showed that it's possible. But I also talked to Yorik and he said that he liked `git` as well. So database should be independent of which kind of database you use.
 - If this procedure is initiated within FreeCAD it should be possible to directly open the created part. This could also be two feature (`Create new item` AND `Create & Open new item`).
   - grd: I don't know. We are gonna find out.
-- There should be a method added that there are multuple people who can check out simultaneously 
+- There should be a method added that there are multiple people who can check out simultaneously 
    - grd: I don't think so. Check out yes. But when the file is checked out the file is locked for everyone else. And checking in, that should be done with the person who checked it out. 
 
 ### Workflow 2

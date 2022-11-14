@@ -165,7 +165,7 @@ class ItemDataModel():
         self.source = source
         self.dest = dest
         raise NotImplementedError("The function 'rename' is not implemented yet.")
-        # COMMENT: Is renameing of an item somthing that should be part of the (SQL )backend?
+        # COMMENT: Is renaming of an item something that should be part of the (SQL) backend?
 
     def is_assembly(self) -> bool: 
         return self.document_properties["Assembly"] != None

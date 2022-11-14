@@ -11,7 +11,7 @@ from database import Base
 
 
 # Basically searching in the SQL database requires a coonetcion to the database too.
-# Is it than a sub-class or better to reqest acces to a class or has this class a interface too?
+# Is it than a sub-class or better to request access to a class or has this class a interface too?
 class Search():
     """Search class"""
     # https://docs.sqlalchemy.org/en/14/orm/session_basics.html
