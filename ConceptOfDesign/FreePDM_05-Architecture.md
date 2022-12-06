@@ -292,4 +292,26 @@ But also it adds an extra layer of complexity at the current stage!
 Another note is added about projects see [SVN Project Structure](FreePDM_03-2-SVNProjectStructure.md)
 
 
-[<< Previous Chapter](FFreePDM_04-Requirements.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_05-1-DatabaseSetup.md)
+### Users and User Interaction _Update during development 2022-12-06_
+
+An important Architecture part that is forgotten to describe is _User Interaction_.
+The part how Users interact with the software is written on high level in [FreePDM_02-Workflows](FreePDM_02-Workflows.md).  
+The problem with this is that it currently ignores:
+
+- What users have acces to what information.
+- What Users have when Roles / Rights for:
+  - What projects
+  - Libraries
+  - ...
+- Is it possible to handle multiple organisations(where users have different roles per organisation)?
+- etc
+
+Now a database System structure is created in Libre office Draw. A lot of tables are drawn. With the use of arrows there are relations are shown between the different attributes. The green tables are the tables that are used first the others are implemented later.
+For testing purposes the initial two roles are:
+
+- Engineer (The engineer can do everything)
+- Viewer (Can only view information)
+
+Be aware that this is a subset of all (future )existing tables. In [DatabaseSetup](FreePDM_05-1-DatabaseSetup.md) there are listed a lot more but these are not important to this example.
+
+[<< Previous Chapter](FreePDM_04-Requirements.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_05-1-DatabaseSetup.md)
