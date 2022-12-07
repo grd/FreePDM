@@ -5,13 +5,13 @@
     :license:   MIT License.
 """
 
-from database import DatabaseGen
+from general import GeneralDb
 # from database import Base  # uncemment if needed
 import typing
 
 
 # https://www.osohq.com/post/sqlalchemy-role-rbac-basics
-class Role(DatabaseGen):
+class Role(GeneralDb):
     """Class for generating Roles"""
 
     def __init__(self):
@@ -26,7 +26,7 @@ class Role(DatabaseGen):
         print("existing role deleted")
 
 
-class User(DatabaseGen):
+class User(GeneralDb):
     """Class for generating users
     Users are Aliases for roles in SQL see: https://www.postgresql.org/docs/14/sql-createuser.html
     """

@@ -6,11 +6,11 @@
 """
 
 # https://stackoverflow.com/questions/54118182/sqlalchemy-not-creating-tables
-from database import Base
+from base import Base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Boolean, Integer, Float, String, Date, Enum, LargeBinary
-import pdm_enum
+import default_enum
 
 # https://dataedo.com/kb/data-glossary/what-is-metadata
 # https://www.geeksforgeeks.org/difference-between-data-and-metadata/
