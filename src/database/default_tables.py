@@ -53,27 +53,13 @@ class PdmRole(Base):
     # TODO: add privileges - Also how to
 
     # relationships with other tables
-    user_id = Column(Integer, ForeignKey("user_accounts.user_id"))
+    user_id = Column(Integer, ForeignKey("users.user_id"))
     users = relationship("PdmUser", secondary="user_role_link", back_populates="roles")
 
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
         return(f"PdmRole(role_id={self.role_id!r}, role_name={self.role_name!r})")
-
-
-class PdmUserRoleLink(Base):
-    """Association Table between user and project"""
-    # https://www.pythoncentral.io/sqlalchemy-association-tables/
-    __tablename__ = "user_role_link"
-
-    user_id = Column("user_id", ForeignKey("user_accounts.user_id"), primary_key=True)
-    role_id = Column("role_id", ForeignKey("roles.role_id"), primary_key=True)
-
-    def __repr__(self):
-        # Fstrings are better ?
-        # https://realpython.com/python-f-strings/
-        return(f"Pdm User Role Association Table(user_id={self.user_id!r}, role_id={self.role_id!r})")
 
 
 class PdmProject(Base):
@@ -97,20 +83,6 @@ class PdmProject(Base):
         return(f"PdmProject(project_id={self.project_id!r}, project_number={self.project_number!r}, project_name={self.project_name!r}, project_status={self.project_status!r}, project_date_start={self.project_date_start!r}, project_date_finish={self.project_date_finish!r}, project_path={self.project_path!r})")
 
 
-class PdmUserProjectLink(Base):
-    """Association Table between User and Project"""
-    # https://www.pythoncentral.io/sqlalchemy-association-tables/
-    __tablename__ = "user_project_link"
-
-    user_id = Column("user_id", ForeignKey("user_accounts.user_id"), primary_key=True)
-    project_id = Column("project_id", ForeignKey("projects.project_id"), primary_key=True)
-
-    def __repr__(self):
-        # Fstrings are better ?
-        # https://realpython.com/python-f-strings/
-        return(f"Pdm User Project Association Table(user_id={self.user_id!r}, project_id={self.project_id!r})")
-
-
 class PdmItem(Base):
     """Class with SQL Item properties"""
     __tablename__ = 'items'
@@ -127,7 +99,7 @@ class PdmItem(Base):
     # item should be able to exist in multiple projects. but need a single store location
 
     # relationships with other tables
-    user_id = Column(Integer, ForeignKey("user_accounts.user_id"))
+    user_id = Column(Integer, ForeignKey("users.user_id"))
     user = relationship("PdmUser", back_populates="items")
     project_id = Column(Integer, ForeignKey('projects.project_id'), nullable=False)
     models = relationship("PdmModel", back_populates="item")
@@ -140,19 +112,6 @@ class PdmItem(Base):
         # https://realpython.com/python-f-strings/
         # ignore cross columns
         return(f"PdmItem(item_id={self.item_id!r}, tem_number={self.item_number!r}, item_name={self.item_name!r}, item_description={self.item_description!r}, item_full_description={self.item_full_description!r}, item_number_linked_files={self.item_number_linked_files!r}, item_path={self.item_path!r}, item_preview={self.item_preview!r})")
-
-
-class PdmProjectItemLink(Base):
-    """Association Table between Project and Item"""
-    __tablename__ = "Project_item_link"
-
-    project_id = Column("project_id", ForeignKey("projects.project_id"), primary_key=True)
-    item_id = Column("item_id", ForeignKey("items.item_id"), primary_key=True)
-
-    def __repr__(self):
-        # Fstrings are better ?
-        # https://realpython.com/python-f-strings/
-        return(f"Pdm Project Item Association Table(project_id={self.project_id!r}, item_id={self.item_id!r})")
 
 
 class PdmModel(Base):
@@ -171,7 +130,7 @@ class PdmModel(Base):
     model_preview = Column(LargeBinary)  # Change when no image is available
 
     # relationships with other tables
-    user_id = Column(Integer, ForeignKey("user_accounts.user_id"))
+    user_id = Column(Integer, ForeignKey("users.user_id"))
     user = relationship("PdmUser", back_populates="models")
     item_id = Column(Integer, ForeignKey("items.item_id"))
     item = relationship("PdmItem", back_populates="models")
@@ -320,3 +279,47 @@ class PdmVendor(Base):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
         return(f"PdmVendor(vendor_id={self.vendor_id!r}, vendor_name={self.vendor_name!r})")
+
+#
+# relationships with other tables
+#
+
+class PdmUserRoleLink(Base):
+    """Association Table between user and project"""
+    # https://www.pythoncentral.io/sqlalchemy-association-tables/
+    __tablename__ = "user_role_link"
+
+    user_id = Column("user_id", ForeignKey("users.user_id"), primary_key=True)
+    role_id = Column("role_id", ForeignKey("roles.role_id"), primary_key=True)
+
+    def __repr__(self):
+        # Fstrings are better ?
+        # https://realpython.com/python-f-strings/
+        return(f"Pdm User Role Association Table(user_id={self.user_id!r}, role_id={self.role_id!r})")
+
+
+class PdmUserProjectLink(Base):
+    """Association Table between User and Project"""
+    # https://www.pythoncentral.io/sqlalchemy-association-tables/
+    __tablename__ = "user_project_link"
+
+    user_id = Column("user_id", ForeignKey("users.user_id"), primary_key=True)
+    project_id = Column("project_id", ForeignKey("projects.project_id"), primary_key=True)
+
+    def __repr__(self):
+        # Fstrings are better ?
+        # https://realpython.com/python-f-strings/
+        return(f"Pdm User Project Association Table(user_id={self.user_id!r}, project_id={self.project_id!r})")
+
+
+class PdmProjectItemLink(Base):
+    """Association Table between Project and Item"""
+    __tablename__ = "Project_item_link"
+
+    project_id = Column("project_id", ForeignKey("projects.project_id"), primary_key=True)
+    item_id = Column("item_id", ForeignKey("items.item_id"), primary_key=True)
+
+    def __repr__(self):
+        # Fstrings are better ?
+        # https://realpython.com/python-f-strings/
+        return(f"Pdm Project Item Association Table(project_id={self.project_id!r}, item_id={self.item_id!r})")
