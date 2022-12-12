@@ -6,6 +6,7 @@
 """
 
 # https://stackoverflow.com/questions/54118182/sqlalchemy-not-creating-tables
+# https://docs.sqlalchemy.org/en/14/orm/basic_relationships.html
 from base import Base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, ForeignKey
@@ -18,7 +19,7 @@ import default_enum
 
 
 class PdmDocument(Base):
-    """Class with SQL Item properties"""
+    """Class with SQL Document properties"""
     __tablename__ = 'documents'
 
     document_id = Column(Integer, primary_key=True)
@@ -32,9 +33,9 @@ class PdmDocument(Base):
     # document_path = Column(String)  # should belongs to same path as described in item
 
     # relationships with other tables
-    user_id = Column(Integer, ForeignKey("user_accounts.user_id"))
+    user_id = Column(Integer, ForeignKey("users.user_id"))  # One to One
     user = relationship("PdmUser", back_populates="documents")
-    item_id = Column(Integer, ForeignKey("items.item_id"))
+    item_id = Column(Integer, ForeignKey("items.item_id"))  # Many to One
     item = relationship("PdmItem", back_populates="models")
 
     def __repr__(self):
@@ -84,19 +85,39 @@ class PdmItem(Base):
     # item should be able to exist in multiple projects. but need a single store location
 
     # relationships with other tables
-    user_id = Column(Integer, ForeignKey("users.user_id"))
-    user = relationship("PdmUser", back_populates="items")
-    project_id = Column(Integer, ForeignKey('projects.project_id'), nullable=False)
-    models = relationship("PdmModel", back_populates="item")
-    documents = relationship("PdmDocument", back_populates="item")
-    Material = relationship("PdmMaterial", back_populates="item", uselist=False)
-    purchasing = relationship("PdmPurchasing", back_populates="item", uselist=False)
+    user_id = Column(Integer, ForeignKey("users.user_id"))  # Many to one
+    user = relationship("PdmUser", back_populates="items")  # Many to Many
+    product_id = Column(Integer, ForeignKey('products.product_id'), nullable=False)  # Many to Many
+    # One Item can have many Models OR Documenets
+    models = relationship("PdmModel", back_populates="item")  # One to Many
+    documents = relationship("PdmDocument", back_populates="item")  # One to Many
+    Material = relationship("PdmMaterial", back_populates="item", uselist=False)  # One to one
+    # One item can have one material otherwise it is another Item...
+    purchasing = relationship("PdmPurchasing", back_populates="item", uselist=False)  # Many to Many
 
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
         # ignore cross columns
         return(f"PdmItem(item_id={self.item_id!r}, tem_number={self.item_number!r}, item_name={self.item_name!r}, item_description={self.item_description!r}, item_full_description={self.item_full_description!r}, item_number_linked_files={self.item_number_linked_files!r}, item_path={self.item_path!r}, item_preview={self.item_preview!r})")
+
+
+class PdmLibrary(Base):
+    """Class with default SQL Library properties"""
+    __tablename__ = 'libraries'
+
+    library_id = Column(Integer, primary_key=True)
+    library_name = Column(String(32))
+    library_status = Column(Enum(pdm_enum.ProjectState))
+    library_path = Column(String)
+
+    # relationships with other tables
+    libraries = relationship("PdmLibrary", secondary="user_library_product_link", back_populates="libraries")  # Many to Many
+
+    def __repr__(self):
+        # Fstrings are better ?
+        # https://realpython.com/python-f-strings/
+        return(f"PdmProduct(product_id={self.product_id!r}, product_name={self.product_name!r}, product_status={self.product_status!r}, product_path={self.product_path!r})")
 
 
 class PdmManufacturer(Base):
@@ -108,8 +129,8 @@ class PdmManufacturer(Base):
     # TODO: Add manufacturer address
 
     # relationships with other tables
-    purchasing_id = Column(Integer, ForeignKey("purchasing.purchasing_id"))
-    purchasing = relationship("PdmPurchase", back_populates="manufacturers")
+    purchasing_id = Column(Integer, ForeignKey("purchasing.purchasing_id"))  # Many to Many
+    purchasing = relationship("PdmPurchase", back_populates="manufacturers")  # Many to Many
 
     def __repr__(self):
         # Fstrings are better ?
@@ -134,9 +155,9 @@ class PdmMaterial(Base):
     material_surface_area_unit = Column(Enum(pdm_enum.AreaUnit))
 
     # relationships with other tables
-    model_id = Column(Integer, ForeignKey('models.model_id'))
+    model_id = Column(Integer, ForeignKey('models.model_id'))  # Many to Many
     model = relationship("PdmModel", back_populates="material")
-    item_id = Column(Integer, ForeignKey('items.item_id'))
+    item_id = Column(Integer, ForeignKey('items.item_id'))  # Many to Many
     item = relationship("PdmItem", back_populates="material")
 
     def __repr__(self):
@@ -146,7 +167,7 @@ class PdmMaterial(Base):
 
 
 class PdmModel(Base):
-    """Class with SQL Item properties"""
+    """Class with SQL Model properties"""
     __tablename__ = 'models'
 
     model_id = Column(Integer, primary_key=True)
@@ -161,11 +182,11 @@ class PdmModel(Base):
     model_preview = Column(LargeBinary)  # Change when no image is available
 
     # relationships with other tables
-    user_id = Column(Integer, ForeignKey("users.user_id"))
+    user_id = Column(Integer, ForeignKey("users.user_id"))  # One to One
     user = relationship("PdmUser", back_populates="models")
-    item_id = Column(Integer, ForeignKey("items.item_id"))
+    item_id = Column(Integer, ForeignKey("items.item_id"))  # Many to One
     item = relationship("PdmItem", back_populates="models")
-    material = relationship("PdmMaterial", back_populates="model", uselist=False)
+    material = relationship("PdmMaterial", back_populates="model", uselist=False)  # Many to Many
 
     def __repr__(self):
         # Fstrings are better ?
@@ -173,8 +194,61 @@ class PdmModel(Base):
         return(f"PdmModel(model_id={self.model_id!r}, model_number={self.model_number!r}, model_name={self.model_name!r}, model_description={self.model_description!r}, model_full_description={self.model_full_description!r}, model_filename={self.model_filename!r}, model_ext={self.model_ext!r}, model_preview={self.model_preview!r})")
 
 
+class PdmOrganization(Base):
+    """Class with default SQL organizations properties"""
+    __tablename__ = 'organizations'
+
+    organization_id = Column(Integer, primary_key=True)
+    organization_name = Column(String(32))
+
+    # relationships with other tables
+    users = relationship("PdmUsers", secondary="user_role_organization_link", back_populates="organizations")  # One to One to Many OR One to Many to Many
+    products = relationship("PdmProducts", secondary="product_project_link", back_populates="projects")  # Many to Many
+
+    def __repr__(self):
+        # Fstrings are better ?
+        # https://realpython.com/python-f-strings/
+        return(f"PdmOrganization(organization_id={self.organization_id!r}, organization_name={self.organization_name!r})")
+
+
+class PdmPermission(Base):
+    """Class with default SQL Permission properties"""
+    __tablename__ = 'permissions'
+
+    permission_id = Column(Integer, primary_key=True)
+    permission_name = Column(String(32))
+    # TODO: add privileges - Also how to
+
+    # relationships with other tables
+    role_id = Column(Integer, ForeignKey("roles.role_id"))  # Many to Many
+    roles = relationship("PdmRole", secondary="role_permission_link", back_populates="roles")  # Many to Many
+
+    def __repr__(self):
+        # Fstrings are better ?
+        # https://realpython.com/python-f-strings/
+        return(f"PdmPermission(permission_id={self.permission_id!r}, role_name={self.permission_name!r})")
+
+
+class PdmProduct(Base):
+    """Class with default SQL Product properties"""
+    __tablename__ = 'products'
+
+    product_id = Column(Integer, primary_key=True)
+    product_name = Column(String(32))
+    product_status = Column(Enum(pdm_enum.ProjectState))
+    product_path = Column(String)
+
+    # relationships with other tables
+    organization_id = relationship("PdmOrganization", secondary="product_organization_link", back_populates="organizations")  # Many to Many
+
+    def __repr__(self):
+        # Fstrings are better ?
+        # https://realpython.com/python-f-strings/
+        return(f"PdmProduct(product_id={self.product_id!r}, product_name={self.product_name!r}, product_status={self.product_status!r}, product_path={self.product_path!r})")
+
+
 class PdmProject(Base):
-    """Class with default SQL Role properties"""
+    """Class with default SQL Project properties"""
     __tablename__ = 'projects'
 
     project_id = Column(Integer, primary_key=True)
@@ -183,15 +257,15 @@ class PdmProject(Base):
     project_status = Column(Enum(pdm_enum.ProjectState))
     Project_date_start = Column(Date)
     Project_date_finish = Column(Date)  # TODO check finish date is after start date
-    project_path = Column(String)
+    # project_path = Column(String)
 
     # relationships with other tables
-    users = relationship("PdmUsers", secondary="user_project_link", back_populates="projects")
+    users = relationship("PdmUsers", secondary="user_project_link", back_populates="projects")  # Many to Many
 
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
-        return(f"PdmProject(project_id={self.project_id!r}, project_number={self.project_number!r}, project_name={self.project_name!r}, project_status={self.project_status!r}, project_date_start={self.project_date_start!r}, project_date_finish={self.project_date_finish!r}, project_path={self.project_path!r})")
+        return(f"PdmProject(project_id={self.project_id!r}, project_number={self.project_number!r}, project_name={self.project_name!r}, project_status={self.project_status!r}, project_date_start={self.project_date_start!r}, project_date_finish={self.project_date_finish!r})")
 
 
 class PdmPurchase(Base):
@@ -205,11 +279,11 @@ class PdmPurchase(Base):
     # Represent list: Lot, Lot And Serial Number, Serial Number, Not traced
 
     # relationships with other tables
-    item_id = Column(Integer, ForeignKey("items.item_id"))
+    item_id = Column(Integer, ForeignKey("items.item_id"))  # Many to Many
     item = relationship("PdmItems", back_populates="purchasing")
-    manufacturer_id = Column(Integer, ForeignKey('manufacturers.manufacturer_id'))
+    manufacturer_id = Column(Integer, ForeignKey('manufacturers.manufacturer_id'))  # Many to Many
     manufacturers = relationship("PdmManufacturer", back_populates="purchasing")
-    vendor_id = Column(Integer, ForeignKey('vendors.vendor_id'))
+    vendor_id = Column(Integer, ForeignKey('vendors.vendor_id'))  # Many to Many
     vendors = relationship("PdmVendors", back_populates="purchasing")
 
     def __repr__(self):
@@ -227,8 +301,10 @@ class PdmRole(Base):
     # TODO: add privileges - Also how to
 
     # relationships with other tables
-    user_id = Column(Integer, ForeignKey("users.user_id"))
-    users = relationship("PdmUser", secondary="user_role_link", back_populates="roles")
+    # One User can have one role in one organization
+    # But every User can have multiple roles dependend of the organization
+    user_id = Column(Integer, ForeignKey("users.user_id"))  # Many to Many to Many?
+    users = relationship("PdmUser", secondary="user_role_organization_link", back_populates="roles")  # One to One to Many OR One to Many to Many
 
     def __repr__(self):
         # Fstrings are better ?
@@ -246,16 +322,18 @@ class PdmUser(Base):
     user_last_name = Column(String(30))
     user_full_name = Column(String)
     user_email_adress = Column(String, nullable=False)  # TODO: change to mail address
+    # password = Column(String, nullable=False)  # Password need to be hashed otherwise don't addd
     user_phonenumber = Column(Integer)  # TODO: add phonenumber property
     user_department = Column(String)  # Enum optionally
     # user_aliases = []  # TODO: What to do with aliases
 
     # relationships with other tables
-    roles = relationship("PdmRole", secondary="user_role_link", back_populates="users")
-    projects = relationship("PdmProjects", secondary="user_project_link", back_populates="users")
-    items = relationship("PdmItem", back_populates="user")
-    models = relationship("PdmModel", back_populates="user")
-    documents = relationship("PdmDocument", back_populates="user")
+    roles = relationship("PdmRole", secondary="user_role_organization_link", back_populates="users")  # One to One to Many OR One to Many to Many
+    projects = relationship("PdmProjects", secondary="user_project_link", back_populates="users")  # Many to Many
+    # One user can Check-Out Many Items, Models, documents
+    items = relationship("PdmItem", back_populates="user")  # One to Many
+    models = relationship("PdmModel", back_populates="user")  # One to Many
+    documents = relationship("PdmDocument", back_populates="user")  # One to Many
 
     def __repr__(self):
         # Fstrings are better ?
@@ -272,8 +350,8 @@ class PdmVendor(Base):
     # TODO: Add manufacturer address
 
     # relationships with other tables
-    vpurchasing_id = Column(Integer, ForeignKey("purchasing.purchasing_id"))
-    vpurchasing = relationship("PdmPurchase", back_populates="vendors")
+    vpurchasing_id = Column(Integer, ForeignKey("purchasing.purchasing_id"))  # Many to Many
+    vpurchasing = relationship("PdmPurchase", back_populates="vendors")  # Many to Many
 
     def __repr__(self):
         # Fstrings are better ?
@@ -284,17 +362,48 @@ class PdmVendor(Base):
 # relationships with other tables
 #
 
-class PdmProjectItemLink(Base):
-    """Association Table between Project and Item"""
-    __tablename__ = "Project_item_link"
+class PdmProductLibraryItemLink(Base):
+    """Association Table between Product, Library and Item"""
+    __tablename__ = "Product_library_item_link"
 
-    project_id = Column("project_id", ForeignKey("projects.project_id"), primary_key=True)
+    # TODO: Check if this is right method
+    # Every Item belongs to a Product OR a Library
+    product_id = Column("product_id", ForeignKey("products.product_id"), primary_key=True)
+    library_id = Column("library_id", ForeignKey("libraries.library_id"), primary_key=True)
     item_id = Column("item_id", ForeignKey("items.item_id"), primary_key=True)
 
     def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
-        return(f"Pdm Project Item Association Table(project_id={self.project_id!r}, item_id={self.item_id!r})")
+        return(f"Pdm Library Product Item Association Table(library_id={self.library_id!r}, product_id={self.product_id!r}, item_id={self.item_id!r})")
+
+
+class PdmProductOrganizationLink(Base):
+    """Association Table between User and Project"""
+    # https://www.pythoncentral.io/sqlalchemy-association-tables/
+    __tablename__ = "product_organization_link"
+
+    product_id = Column("product_id", ForeignKey("products.product_id"), primary_key=True)
+    project_id = Column("Organization_id", ForeignKey("organizations.organization_id"), primary_key=True)
+
+    def __repr__(self):
+        # Fstrings are better ?
+        # https://realpython.com/python-f-strings/
+        return(f"Pdm Product Organization Association Table(product_id={self.product_id!r}, organization_id={self.organization_id!r})")
+
+
+class PdmRolePermissionLink(Base):
+    """Association Table between Role and Permissions"""
+    # https://www.pythoncentral.io/sqlalchemy-association-tables/
+    __tablename__ = "user_role_link"
+
+    role_id = Column("role_id", ForeignKey("roles.role_id"), primary_key=True)
+    permission_id = Column("permission_id", ForeignKey("permissions.permission_id"), primary_key=True)
+
+    def __repr__(self):
+        # Fstrings are better ?
+        # https://realpython.com/python-f-strings/
+        return(f"Pdm User Role Association Table(user_id={self.role_id!r}, role_id={self.permission_id!r})")
 
 
 class PdmUserProjectLink(Base):
@@ -311,15 +420,19 @@ class PdmUserProjectLink(Base):
         return(f"Pdm User Project Association Table(user_id={self.user_id!r}, project_id={self.project_id!r})")
 
 
-class PdmUserRoleLink(Base):
-    """Association Table between user and project"""
+class PDMUserRoleOrganizationLink(Base):
+    """Association Table between User and Project"""
     # https://www.pythoncentral.io/sqlalchemy-association-tables/
-    __tablename__ = "user_role_link"
+    __tablename__ = "user_role_organization_link"
 
+    # TODO: Check if this is right method
+    # Every Have a Role Within a Organization. A user can be part of multple organizations. So One to One to Many
+    # Can a user have different roles dependend on for example project? initial not good idea.
     user_id = Column("user_id", ForeignKey("users.user_id"), primary_key=True)
     role_id = Column("role_id", ForeignKey("roles.role_id"), primary_key=True)
+    organization_id = Column("organization_id", ForeignKey("organizations.organization_id"), primary_key=True)
 
-    def __repr__(self):
+        def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
-        return(f"Pdm User Role Association Table(user_id={self.user_id!r}, role_id={self.role_id!r})")
+        return(f"Pdm User Role Organization Association Table(user_id={self.user_id!r}, role_id={self.role_id!r}), organization_id={self.organization_id!r})")
