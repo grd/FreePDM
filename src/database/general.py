@@ -7,9 +7,10 @@
 
 from base import Base
 from base import Session
-from base import engine
 from base import metadata_obj
-# from sqlalchemy.engine import Engine
+from sqlalchemy import create_engine
+from sqlalchemy.engine import URL
+from sqlalchemy.engine import Engine
 # from sqlalchemy import Table
 from typing import Optional, Union, Literal
 
@@ -21,7 +22,7 @@ class GeneralDb():
     def __init__(self):
         print("Generic DataBase")
 
-    def make_url(self, drivername: str, username: Optional[str], password:  Optional[str], host: Optional[str], port: Optional[int], database_name: Optional[str]) -> engine.URL:
+    def make_url(self, drivername: str, username: Optional[str], password:  Optional[str], host: Optional[str], port: Optional[int], database_name: Optional[str]) -> URL:
         """
         Create new url
 
@@ -57,8 +58,8 @@ class GeneralDb():
         self.host = host
         self.port = port
         self.database_name = database_name
-        new_url = engine.URL.create(self.drivername, self.username, self.password, self.host, self.port, self.database_name)
-        return(new_url)
+        new_url = URL.create(self.drivername, self.username, self.password, self.host, self.port, self.database_name)
+        return (new_url)
 
     def create_db(self):
         """Create new database"""
@@ -85,9 +86,9 @@ class MySQLDb(GeneralDb):  # Everything in a file or better to split it?
 
     def __init__(self):
         print("MySQL")
-        super(DataBaseMySQL, self).__init__()
+        super(MySQLDb, self).__init__()
 
-    def start_engine(self, url: Union[str, engine.URL], encoding: Optional[str], echo: Union[bool, Literal['debug'], None], future: Optional[bool], dialect: Optional[str]) -> engine.Engine:
+    def start_engine(self, url: Union[str, URL], encoding: Optional[str], echo: Union[bool, Literal['debug'], None], future: Optional[bool], dialect: Optional[str]) -> Engine:
         """
         Start MySQL engine.
         Note: MySQL engine is not default development database.
@@ -127,15 +128,15 @@ class MySQLDb(GeneralDb):  # Everything in a file or better to split it?
             # Installing via `FreePDM-ServerInstaller.sh` installs default engine
             # default
             self.engine = create_engine(self.url, echo=self.echo, future=self.future)
-            return(self.engine)
+            return (self.engine)
         elif (self.dialect == "mysqlclient") or (self.dialect == "mysqldb"):
             # mysqlclient (a maintained fork of MySQL-Python)
             self.engine = create_engine(self.url, echo=self.echo, future=self.future)
-            return(self.engine)
+            return (self.engine)
         elif (self.dialect == "PyMySQL") or (self.dialect == "pymysql"):
             # PyMySQL
             self.engine = create_engine(self.url, echo=self.echo, future=self.future)
-            return(self.engine)
+            return (self.engine)
         else:
             raise ValueError("{} not accepted value for dialect".format(self.dialect))
 
@@ -146,9 +147,9 @@ class PostgreSQLDb(GeneralDb):
 
     def __init__(self):
         print("PostgreSQL")
-        super(DataBasePostgreSQL, self).__init__()
+        super(PostgreSQLDb, self).__init__()
 
-    def start_engine(self, url: Union[str, engine.URL], encoding: Optional[str], echo: Union[bool, Literal['debug'], None], future: Optional[bool], dialect: Optional[str]) -> engine.Engine:
+    def start_engine(self, url: Union[str, URL], encoding: Optional[str], echo: Union[bool, Literal['debug'], None], future: Optional[bool], dialect: Optional[str]) -> Engine:
         """
         Start PostgreSQL engine.
 
@@ -189,15 +190,15 @@ class PostgreSQLDb(GeneralDb):
         if (self.dialect == "default") or (self.dialect is None):
             # default
             self.engine = create_engine(self.url, echo=self.echo, encoding=self.encoding, future=self.future)
-            return(self.engine)
+            return (self.engine)
         elif self.dialect == "psycopg2":
             # psycopg2
             self.engine = create_engine(self.url, echo=self.echo, encoding=self.encoding, future=self.future)
-            return(self.engine)
+            return (self.engine)
         elif self.dialect == "pg8000":
             # pg8000
             self.engine = create_engine(self.url, echo=self.echo, encoding=self.encoding, future=self.future)
-            return(self.engine)
+            return (self.engine)
         else:
             raise ValueError("{} not accepted value for dialect".format(self.dialect))
 
@@ -207,10 +208,10 @@ class SQLiteDb(GeneralDb):  # Everything in a file or better to split it?
     # https://docs.sqlalchemy.org/en/14/core/engines.html#sqlite
 
     def __init__(self):
-        super(DataBaseSQLite, self).__init__()
+        super(SQLiteDb, self).__init__()
         print("SQLite")
 
-    def start_engine(self, url: Union[str, engine.URL], encoding: Optional[str], echo: Union[bool, Literal['debug'], None], future: Optional[bool]) -> engine.Engine:
+    def start_engine(self, url: Union[str, URL], encoding: Optional[str], echo: Union[bool, Literal['debug'], None], future: Optional[bool]) -> Engine:
         """
         Start SQLite engine.
         Note: SQLite engine is not default development database.
@@ -247,4 +248,4 @@ class SQLiteDb(GeneralDb):  # Everything in a file or better to split it?
         # https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls
         # exampleurl: "sqlite+pysqlite:///:memory:"
         self.engine = create_engine(self.url, echo=self.echo, encoding=self.encoding, future=self.future)  # start from memory
-        return(self.engine)
+        return (self.engine)

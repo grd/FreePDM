@@ -41,20 +41,21 @@ def create_default_tables(engine: Engine):
     """
     # https://stackoverflow.com/questions/54118182/sqlalchemy-not-creating-tables
     Session.configure(bind=engine)
-    Base.metadata.create_all(engine)
+    Base.metadata.create_all(engine)  # <!-- check error: type: has no attribute "metadata"
 
-    user_table = Table("user_accounts", metadata_obj, autoload_with=engine)
-    role_table = Table("user_roles", metadata_obj, autoload_with=engine)
-    project_table = Table("projects", metadata_obj, autoload_with=engine)
+    user_table = Table("users", metadata_obj, autoload_with=engine)
+    # role_table = Table("roles", metadata_obj, autoload_with=engine)
+    # project_table = Table("projects", metadata_obj, autoload_with=engine)
     item_table = Table("items", metadata_obj, autoload_with=engine)
     model_table = Table("models", metadata_obj, autoload_with=engine)
     document_table = Table("documents", metadata_obj, autoload_with=engine)
-    material_table = Table("materials", metadata_obj, autoload_with=engine)
-    history_table = Table("history", metadata_obj, autoload_with=engine)
-    purchase_table = Table("purchasing", metadata_obj, autoload_with=engine)
-    manufacturer_table = Table("manufacturers", metadata_obj, autoload_with=engine)
-    vendor_table = Table("vendors", metadata_obj, autoload_with=engine)
-    return(user_table, role_table, project_table, item_table, model_table, document_table, material_table, history_table, purchase_table, manufacturer_table, vendor_table)
+    # material_table = Table("materials", metadata_obj, autoload_with=engine)
+    # history_table = Table("history", metadata_obj, autoload_with=engine)
+    # purchase_table = Table("purchasing", metadata_obj, autoload_with=engine)
+    # manufacturer_table = Table("manufacturers", metadata_obj, autoload_with=engine)
+    # vendor_table = Table("vendors", metadata_obj, autoload_with=engine)
+    # return (user_table, role_table, project_table, item_table, model_table, document_table, material_table, history_table, purchase_table, manufacturer_table, vendor_table)
+    return ()
 
 
 if __name__ == "__main__":

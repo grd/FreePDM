@@ -56,7 +56,7 @@ class PdmHistory(Base):
     history_last_edit_by = Column(String)
     history_checked_out_by = Column(String)
     # TODO: Create Complex revisions (Example: Date, major.minor, major.letter_minor)
-    history_revision_state = Column(Enum(pdm_enum.RevisionState))
+    history_revision_state = Column(Enum(default_enum.RevisionState))
     history_revision_number = Column(Integer)  # Maybe other format
     history_stored_number = Column(Integer)  # last store version iterator
     # TODO: Every stored version in the database should be traceble
@@ -108,7 +108,7 @@ class PdmLibrary(Base):
 
     library_id = Column(Integer, primary_key=True)
     library_name = Column(String(32))
-    library_status = Column(Enum(pdm_enum.ProjectState))
+    library_status = Column(Enum(default_enum.ProjectState))
     library_path = Column(String)
 
     # relationships with other tables
@@ -146,13 +146,13 @@ class PdmMaterial(Base):
     material_name = Column(String(32))
     material_finish = Column(String(32))
     material_density = Column(Float)
-    material_density_unit = Column(Enum(pdm_enum.DensityUnit))
+    material_density_unit = Column(Enum(default_enum.DensityUnit))
     material_volume = Column(Float)  # TODO: From CAD file
-    material_volume_unit = Column(Enum(pdm_enum.VolumeUnit))
+    material_volume_unit = Column(Enum(default_enum.VolumeUnit))
     material_weight = Column(Float)  # material_density * material_volume
-    material_weight_unit = Column(Enum(pdm_enum.WeightUnit))
+    material_weight_unit = Column(Enum(default_enum.WeightUnit))
     material_surface_area = Column(Float)
-    material_surface_area_unit = Column(Enum(pdm_enum.AreaUnit))
+    material_surface_area_unit = Column(Enum(default_enum.AreaUnit))
 
     # relationships with other tables
     model_id = Column(Integer, ForeignKey('models.model_id'))  # Many to Many
@@ -235,7 +235,7 @@ class PdmProduct(Base):
 
     product_id = Column(Integer, primary_key=True)
     product_name = Column(String(32))
-    product_status = Column(Enum(pdm_enum.ProjectState))
+    product_status = Column(Enum(default_enum.ProjectState))
     product_path = Column(String)
 
     # relationships with other tables
@@ -254,7 +254,7 @@ class PdmProject(Base):
     project_id = Column(Integer, primary_key=True)
     project_number = Column(String(16), nullable=False)  # this can come another source as the Db so not same as project_id
     project_name = Column(String(32))
-    project_status = Column(Enum(pdm_enum.ProjectState))
+    project_status = Column(Enum(default_enum.ProjectState))
     Project_date_start = Column(Date)
     Project_date_finish = Column(Date)  # TODO check finish date is after start date
     # project_path = Column(String)
@@ -275,7 +275,7 @@ class PdmPurchase(Base):
     purchasing_id = Column(Integer, primary_key=True)
     purchasing_source = Column(Boolean)  # Represent Buy OR Manufacture
     # Optionally Enum
-    purchasing_tracebility = Column(Enum(pdm_enum.TracebilityState))
+    purchasing_tracebility = Column(Enum(default_enum.TracebilityState))
     # Represent list: Lot, Lot And Serial Number, Serial Number, Not traced
 
     # relationships with other tables
@@ -432,7 +432,7 @@ class PDMUserRoleOrganizationLink(Base):
     role_id = Column("role_id", ForeignKey("roles.role_id"), primary_key=True)
     organization_id = Column("organization_id", ForeignKey("organizations.organization_id"), primary_key=True)
 
-        def __repr__(self):
+    def __repr__(self):
         # Fstrings are better ?
         # https://realpython.com/python-f-strings/
         return(f"Pdm User Role Organization Association Table(user_id={self.user_id!r}, role_id={self.role_id!r}), organization_id={self.organization_id!r})")
