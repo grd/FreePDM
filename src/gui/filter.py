@@ -2,13 +2,14 @@ import sys
 import os
 from pathlib import Path
 
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-import PySide2.QtWidgets as qtw
-from PySide2.QtWidgets import QDialog
+from PySide2.QtCore import *  # type: ignore
+from PySide2.QtGui import *  # type: ignore
+import PySide2.QtWidgets as qtw  # type: ignore
+from PySide2.QtWidgets import QDialog  # type: ignore
 
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'skeleton'))
-import config
+import config  # type: ignore
+
 
 class FilterDialog(QDialog):
     def __init__(self):
