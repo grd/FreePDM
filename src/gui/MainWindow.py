@@ -8,11 +8,11 @@ from pathlib import Path
 import sys
 
 from PySide2 import QtCore, QtWidgets, QtGui
-from PySide2.QtWidgets import QMainWindow, QTableWidget, QTableWidgetItem, QMessageBox
+from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QMessageBox
 from PySide2.QtCore import Qt
 
-from .EditItem import EditItem, edit_item_dialog
-from .filter import FilterDialog, filter_dialog
+from .EditItem import edit_item_dialog
+from .filter import filter_dialog
 from . import authenticate
 
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'skeleton'))
@@ -22,7 +22,6 @@ from directorymodel import DirectoryModel
 
 # class Ui_MainWindow(object):
 class Ui_MainWindow(object):
-        
 
     def setup_ui(self, MainWindow):
         self.root_directory = os.path.expanduser('~')
@@ -101,6 +100,7 @@ class Ui_MainWindow(object):
         self.tableWorkspace.setHorizontalHeaderItem(6, item)
         self.gridLayout.addWidget(self.tableWorkspace, 2, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
+
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 817, 22))
         self.menubar.setObjectName("menubar")
@@ -266,7 +266,7 @@ class Ui_MainWindow(object):
 
 def main():
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
-    app = QtWidgets.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     ex = Ui_MainWindow()
     w = QMainWindow()
     ex.setup_ui(w)
