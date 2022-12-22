@@ -11,7 +11,6 @@ from base import metadata_obj
 from main import start_your_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy import Table
-from typing import Optional
 # Table classes - Test if it still works if all tables are commented out
 # from default_tables import PdmUser
 # from default_tables import PdmRole
