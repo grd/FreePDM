@@ -8,19 +8,21 @@ from pathlib import Path
 import sys
 
 from PySide2 import QtCore, QtWidgets, QtGui
-from PySide2.QtWidgets import QMainWindow, QTableWidget, QTableWidgetItem, QMessageBox
+from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QMessageBox
 from PySide2.QtCore import Qt
 
-from .EditItem import *
-from .filter import *
+from .EditItem import edit_item_dialog
+from .filter import filter_dialog
+from . import authenticate
 
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'skeleton'))
 
 from directorymodel import DirectoryModel
 
 
-
+# class Ui_MainWindow(object):
 class Ui_MainWindow(object):
+
     def setup_ui(self, MainWindow):
         self.root_directory = os.path.expanduser('~')
         if len(sys.argv) == 2:
@@ -28,40 +30,56 @@ class Ui_MainWindow(object):
         print("self.root_directory = ", self.root_directory)
         self.current_directory = self.root_directory
 
+        # main window
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(817, 600)
+        
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
-        self.layoutButtonbar = QtWidgets.QHBoxLayout()
-        self.layoutButtonbar.setObjectName("layoutButtonbar")
+
+        # Login Bar
+        self.layoutLoginBar = QtWidgets.QHBoxLayout()
+        self.layoutLoginBar.setObjectName("layoutLoginBar")
+        self.loginSpacer = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.layoutLoginBar.addItem(self.loginSpacer)
+        self.buttonLogin = QtWidgets.QPushButton(self.centralwidget)
+        self.buttonLogin.setObjectName("buttonLogin")
+        self.layoutLoginBar.addWidget(self.buttonLogin)
+        self.gridLayout.addLayout(self.layoutLoginBar, 0, 0, 1, 1)
+
+        # Button Bar
+        self.layoutButtonBar = QtWidgets.QHBoxLayout()
+        self.layoutButtonBar.setObjectName("layoutButtonBar")
         self.buttonCheckIn = QtWidgets.QPushButton(self.centralwidget)
         self.buttonCheckIn.setObjectName("buttonCheckIn")
-        self.layoutButtonbar.addWidget(self.buttonCheckIn)
+        self.layoutButtonBar.addWidget(self.buttonCheckIn)
         self.buttonCheckOut = QtWidgets.QPushButton(self.centralwidget)
         self.buttonCheckOut.setObjectName("buttonCheckOut")
-        self.layoutButtonbar.addWidget(self.buttonCheckOut)
+        self.layoutButtonBar.addWidget(self.buttonCheckOut)
         self.buttonCheckInOut = QtWidgets.QPushButton(self.centralwidget)
         self.buttonCheckInOut.setObjectName("buttonCheckInOut")
-        self.layoutButtonbar.addWidget(self.buttonCheckInOut)
+        self.layoutButtonBar.addWidget(self.buttonCheckInOut)
         self.lineCI2P = QtWidgets.QFrame(self.centralwidget)
         self.lineCI2P.setFrameShape(QtWidgets.QFrame.VLine)
         self.lineCI2P.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.lineCI2P.setObjectName("lineCI2P")
-        self.layoutButtonbar.addWidget(self.lineCI2P)
+        self.layoutButtonBar.addWidget(self.lineCI2P)
         self.buttonPurge = QtWidgets.QPushButton(self.centralwidget)
         self.buttonPurge.setObjectName("buttonPurge")
-        self.layoutButtonbar.addWidget(self.buttonPurge)
+        self.layoutButtonBar.addWidget(self.buttonPurge)
         self.buttonFilter = QtWidgets.QPushButton(self.centralwidget)
         self.buttonFilter.setObjectName("buttonFilter")
-        self.layoutButtonbar.addWidget(self.buttonFilter)
+        self.layoutButtonBar.addWidget(self.buttonFilter)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.layoutButtonbar.addItem(spacerItem)
+        self.layoutButtonBar.addItem(spacerItem)
         self.buttonSearch = QtWidgets.QPushButton(self.centralwidget)
         self.buttonSearch.setObjectName("buttonSearch")
-        self.layoutButtonbar.addWidget(self.buttonSearch)
-        self.gridLayout.addLayout(self.layoutButtonbar, 0, 0, 1, 1)
+        self.layoutButtonBar.addWidget(self.buttonSearch)
+        self.gridLayout.addLayout(self.layoutButtonBar, 1, 0, 1, 1)
+
+        # Grid / Table
         self.tableWorkspace = QtWidgets.QTableWidget(self.centralwidget)
         self.tableWorkspace.setObjectName("tableWorkspace")
         self.tableWorkspace.setColumnCount(7)
@@ -80,8 +98,9 @@ class Ui_MainWindow(object):
         self.tableWorkspace.setHorizontalHeaderItem(5, item)
         item = QtWidgets.QTableWidgetItem()
         self.tableWorkspace.setHorizontalHeaderItem(6, item)
-        self.gridLayout.addWidget(self.tableWorkspace, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.tableWorkspace, 2, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
+
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 817, 22))
         self.menubar.setObjectName("menubar")
@@ -102,17 +121,20 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        self.buttonPurge.clicked.connect(self.purge)
+        # Login Bar
+        self.buttonLogin.clicked.connect(self.login)
 
-        self.tableWorkspace.setSelectionBehavior(QTableWidget.SelectRows)
-        # self.ui.tableWorkspace.selectionModel().selectionChanged.connect(self.on_selection_changed)
-        self.tableWorkspace.doubleClicked.connect(self.file_double_clicked)
+        # Button Bar
         # self.ui.buttonCheckOutButton('Check In', clicked=self.retrieve_check_button_values)
         self.buttonFilter.clicked.connect(self.set_filter)
         self.buttonPurge.clicked.connect(self.purge)
 
-        self.load_data()
+        # Grid / Table
+        self.tableWorkspace.setSelectionBehavior(QTableWidget.SelectRows)
+        # self.ui.tableWorkspace.selectionModel().selectionChanged.connect(self.on_selection_changed)
+        self.tableWorkspace.doubleClicked.connect(self.file_double_clicked)
 
+        self.load_data()
 
     def load_data(self):
         self.dirmodel = DirectoryModel(self.current_directory, self.root_directory != self.current_directory)
@@ -158,6 +180,9 @@ class Ui_MainWindow(object):
         else:
             self.buttonPurge.setEnabled(True)
 
+    def login(self):
+        """Function to start authenticating proces"""
+        authenticate.authenticate_dialog()
 
     def purge(self):
         msg = QMessageBox()
@@ -165,7 +190,7 @@ class Ui_MainWindow(object):
         msg.setText("Purging means deleting old FreeCAD files.")
         msg.setInformativeText("Are you sure you want to delete {} files?".format(len(self.dirmodel.purge_list)))
         msg.setIcon(QMessageBox.Question)
-        msg.setStandardButtons(QMessageBox.Cancel|QMessageBox.Ok)
+        msg.setStandardButtons(QMessageBox.Cancel | QMessageBox.Ok)
         msg.setDefaultButton(QMessageBox.Cancel)
         msg.buttonClicked.connect(self.popup_purge)
         x = msg.exec_()
@@ -174,16 +199,20 @@ class Ui_MainWindow(object):
         if i.text() == '&OK':
          self.dirmodel.purge()
 
-    
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        # Main window
+        MainWindow.setWindowTitle(_translate("MainWindow", "FreePDM"))
+        # Login bar
+        self.buttonLogin.setText(_translate("MainWindow", "Login"))
+        # Button bar
         self.buttonCheckIn.setText(_translate("MainWindow", "Check In"))
         self.buttonCheckOut.setText(_translate("MainWindow", "Check Out"))
         self.buttonCheckInOut.setText(_translate("MainWindow", "Check In/Out"))
         self.buttonPurge.setText(_translate("MainWindow", "Purge"))
         self.buttonFilter.setText(_translate("MainWindow", "Filter"))
         self.buttonSearch.setText(_translate("MainWindow", "Search"))
+        # Grid / Table
         item = self.tableWorkspace.horizontalHeaderItem(1)
         item.setText(_translate("MainWindow", "Name"))
         item = self.tableWorkspace.horizontalHeaderItem(2)
@@ -196,7 +225,6 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Type"))
         item = self.tableWorkspace.horizontalHeaderItem(6)
         item.setText(_translate("MainWindow", "Size"))
-
 
     def set_filter(self):
         filter_dialog()
@@ -219,8 +247,7 @@ class Ui_MainWindow(object):
             part = os.path.abspath(os.path.join(self.current_directory, part))
             edit_item_dialog(part)
             self.load_data()
- 
-  
+
 
     # deal with checkbox click on a field
     def retrieve_check_button_values(self):
@@ -237,15 +264,15 @@ class Ui_MainWindow(object):
             print('Deselected Cell Location Row: {0}, Column: {1}'.format(ix.row(), ix.column()))
 
 
-
 def main():
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
-    app = QtWidgets.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     ex = Ui_MainWindow()
     w = QMainWindow()
     ex.setup_ui(w)
     w.show()
     sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     mainw = main()

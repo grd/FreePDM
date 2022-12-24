@@ -5,11 +5,12 @@
     :license:   MIT License.
 """
 
-from database import Base
-from database import Session
-from database import DataBaseMySQL, DataBasePostgreSQL, DataBaseSQLite
+from base import Base
+from base import Session
+from base import metadata_obj
+from general import MySQLDb, PostgreSQLDb, SQLiteDb
 from sqlalchemy.engine import Engine
-from sqlalchemy import MetaData
+# from sqlalchemy import MetaData
 from sqlalchemy import Table
 from typing import Optional
 # Table classes - Test if it still works if all tables are commented out
@@ -57,7 +58,7 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
     url_list = url_string.split(split)
 
     if (db_type == "mysql") or (db_type == "MySQL"):
-        msql = DataBaseMySQL()
+        msql = MySQLDb()
 
         if len(url_list) == 1:
             print("Complete url received.")
@@ -80,7 +81,7 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
         return(msql_engine)
 
     elif (db_type is None) or (db_type == "postgresql") or (db_type == "PostgresSQL"):
-        psql = DataBasePostgreSQL()
+        psql = PostgreSQLDb()
 
         if len(url_list) == 1:
             print("Complete url received.")
@@ -103,7 +104,7 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
         return(psql_engine)  # Not sure if returning this is required
 
     elif (db_type == "sqlite") or (db_type == "SQLite"):
-        sqli = DataBaseSQLite()
+        sqli = SQLiteDb()
 
         if len(url_list) == 1:
             print("Complete url received.")
@@ -126,37 +127,6 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
 
     else:
         raise ValueError("{} Is not a Valid input for 'db_type'.".format(db_type))
-
-
-def create_default_tables(engine: Engine):
-    """
-    Create default set of tables
-    Tables are defined in sql_tables.py
-
-    Parameters
-    ----------
-
-    Engine [Str]:
-        Used Engine for creating tables
-
-    TODO: Add additional classes later on
-    """
-    # https://stackoverflow.com/questions/54118182/sqlalchemy-not-creating-tables
-    Session.configure(bind=engine)
-    Base.metadata.create_all(engine)
-
-    user_table = Table("user_accounts", metadata_obj, autoload_with=engine)
-    role_table = Table("user_roles", metadata_obj, autoload_with=engine)
-    project_table = Table("projects", metadata_obj, autoload_with=engine)
-    item_table = Table("items", metadata_obj, autoload_with=engine)
-    model_table = Table("models", metadata_obj, autoload_with=engine)
-    document_table = Table("documents", metadata_obj, autoload_with=engine)
-    material_table = Table("materials", metadata_obj, autoload_with=engine)
-    history_table = Table("history", metadata_obj, autoload_with=engine)
-    purchase_table = Table("purchasing", metadata_obj, autoload_with=engine)
-    manufacturer_table = Table("manufacturers", metadata_obj, autoload_with=engine)
-    vendor_table = Table("vendors", metadata_obj, autoload_with=engine)
-    return(user_table, role_table, project_table, item_table, model_table, document_table, material_table, history_table, purchase_table, manufacturer_table, vendor_table)
 
 
 if __name__ == "__main__":
@@ -189,8 +159,4 @@ if __name__ == "__main__":
         # sqldb = start_your_engine(sys.argv[1],sys.argv[2], sys.argv[2:])
         # This could be used for creation of additional tables
 
-    tables = create_default_tables(sqldb)
-    for table in tables:
-        print(table)
-        for key in table.c.keys():
-            print(key)
+    # get existing tables?

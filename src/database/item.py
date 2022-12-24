@@ -5,22 +5,22 @@
     :license:   MIT License.
 """
 
-from database import Base
-from database import Session
+from base import Base
+from base import Session
 from project import Project
 
 # Tables - All currently unused tables are commented out switch when using
-# from pdm_tables import PdmUser
-# from pdm_tables import PdmRole
-# from pdm_tables import PdmProject
-from pdm_tables import PdmItem
-# from pdm_tables import PdmModel
-# from pdm_tables import PdmDocument
-# from pdm_tables import PdmMaterial
-# from pdm_tables import PdmHistory
-# from pdm_tables import PdmPurchase
-# from pdm_tables import PdmManufacturer
-# from pdm_tables import PdmVendor
+# from default_tables import PdmUser
+# from default_tables import PdmRole
+# from default_tables import PdmProject
+from default_tables import PdmItem
+# from default_tables import PdmModel
+# from default_tables import PdmDocument
+# from default_tables import PdmMaterial
+# from default_tables import PdmHistory
+# from default_tables import PdmPurchase
+# from default_tables import PdmManufacturer
+# from default_tables import PdmVendor
 # from sqlalchemy import select
 # from collections.abc import Sequence
 from typing import Optional, Union
@@ -165,7 +165,7 @@ class Model():
         # -> For new Item
         #    -> With new item also create item
         raise NotImplementedError("Function create_model is not implemented yet")
-        
+
     def remove_model(self):
         """Remove existing model"""
         # check if model is new (local == no state)

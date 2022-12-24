@@ -5,14 +5,14 @@
     :license:   MIT License.
 """
 
-from database import DatabaseGen
+from general import GeneralDb
 # from database import Base  # uncemment if needed
 import typing
 
 
 # https://www.osohq.com/post/sqlalchemy-role-rbac-basics
-class Role(DatabaseGen):
-    """Class for generating Roles"""
+class Role(GeneralDb):
+    """Class for genrating Roles"""
 
     def __init__(self):
         print("creating role")
@@ -26,7 +26,7 @@ class Role(DatabaseGen):
         print("existing role deleted")
 
 
-class User(DatabaseGen):
+class User(GeneralDb):
     """Class for generating users
     Users are Aliases for roles in SQL see: https://www.postgresql.org/docs/14/sql-createuser.html
     """
@@ -47,3 +47,28 @@ class User(DatabaseGen):
     def remove_user_from_ldap(self, user_id: int, username: str):
         """Delete existing user"""
         print("existing user deleted")
+
+
+# role -> permissions mapping
+# See: https://www.osohq.com/academy/role-based-access-control-rbac
+role_permissions = {
+    # first implement only:
+    # - General activities
+    # - CADUser
+    # all other options are added later!
+
+    # General activeties
+    "General": ["Read Documents", "Read Items", "Read Models"],
+
+    # CADUser
+    "CadUser": ["Check-In", "Check-Out", "Create Document", "Create Item", "Create Model"],
+
+    # SuperUser
+    "SuperUser": ["Delete Document", "Delete Item", "Delete Model"],  # User activities plus
+
+    # ProjectLeader
+    "ProjectLeader": ["Create Project", "Add User to Project", "Remove User from Project"],
+
+    # Admin
+    "Admin": ["Create User", "Delete User", "Create Database"]
+    }

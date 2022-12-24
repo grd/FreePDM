@@ -5,10 +5,11 @@
     :license:   MIT License.
 """
 
-from database import Base
-from database import Session
-from pdm_tables import PdmProject
-from pdm_enum import ProjectState
+from base import Base
+from base import Session
+from base import import metadata_obj
+from default_tables import PdmProject
+from default_enum import ProjectState
 from sqlalchemy import Date
 from typing import Optional, Union
 
@@ -133,7 +134,7 @@ class Project():
                 Session.rollback()
             finally:
                 Session.close()
-        
+
         # raise NotImplementedError("Function create_project is not implemented yet")
 
     def remove_project(self):

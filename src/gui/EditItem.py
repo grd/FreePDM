@@ -50,12 +50,15 @@ class EditItem(QDialog):
         self.ui.user_name.setText(self.idm.document_properties["CreatedBy"])
         self.ui.date_of_creation.setText(self.idm.document_properties["CreationDate"])
 
-
     def store_data(self):
         pass
 
 
 def edit_item_dialog(item):
     edit = EditItem(item)
-    if edit.ui.exec_() == 1: # Ok button pushed
+    if edit.ui.exec_() == 1:  # Ok button pushed
         edit.store_data()
+
+# if __name__ == "__main__":
+#     # just for testing
+#     edit_item_dialog()

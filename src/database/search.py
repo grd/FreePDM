@@ -6,7 +6,7 @@
 """
 
 # from sqlalchemy.orm import sessionmaker
-from database import Base
+from base import Base
 # import typing
 
 
