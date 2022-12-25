@@ -124,7 +124,27 @@ class ItemDataModel():
         # Objects:
 
         Objects = root.find("./Objects")
+        
+        for att in Objects:
+            if att.tag == "Object":
+                type_name = att.attrib["type"] 
+                if type_name == "App::FeaturePython":
+                    if att.attrib["name"] == "Properties":
+                        self.read_properties()
 
+        # element = root.find(".//Property[@name='Comment']/String")
+        # self.document_properties["Comment"] = element.attrib.get('value')
+
+        #   <Property name="LastModifiedDate" type="App::PropertyString" status="16777217">
+        #     <String value="2022-11-21T13:03:46Z"/>
+        # </Property>
+       
+        # element = root.find(".//Property[@name='a2p_Version']/String")
+        # if element is not None:
+        #     self.document_properties["Assembly"] = 'A2-Assy'
+
+  
+            
         # for att in Objects:
         #     if att.tag == "Object":
         #         type_name = att.attrib["type"] 
@@ -141,8 +161,24 @@ class ItemDataModel():
         #         elif type_name[0:10] == "PartDesign": continue
         #         elif type_name[0:8] == "Sketcher": continue
         #         else: print("Object Type = " + type_name + " Name = " + att.attrib["name"])
-        
 
+    def read_properties(self):
+        root = et.fromstring(self.xml_document)
+   
+        items1 = []
+        list1 = root.findall(".//Property[@group='Prop']")
+        for child in list1:
+            items1.append(child.attrib["name"])
+        
+        items2 = []
+        list2 = root.findall(".//Property[@group='Prop']/String")
+        for child in list2:
+            items2.append(child.attrib.get("value"))
+
+        for x in range(len(items1)):
+            self.document_properties[items1[x]] = items2[x]
+ 
+ 
     def get_file_name(self) -> str:
         return(self.file_name)
 
