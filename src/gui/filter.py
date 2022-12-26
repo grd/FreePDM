@@ -6,6 +6,7 @@ from PySide2 import QtCore  # type: ignore
 from PySide2 import QtGui  # type: ignore
 import PySide2.QtWidgets as qtw  # type: ignore
 from PySide2.QtWidgets import QDialog  # type: ignore
+from PySide2.QtCore import Qt
 
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'skeleton'))
 import config  # type: ignore
@@ -30,6 +31,10 @@ class FilterDialog(QDialog):
         self.hide_versioned_fc_files.setObjectName("hide_versioned_fc_files")  # Python3 default unicode
         self.hide_versioned_fc_files.setGeometry(QtCore.QRect(80, 50, 250, 17))
 
+        self.show_logging = qtw.QCheckBox(self)
+        self.show_logging.setObjectName("show_logging")  # Python3 default unicode
+        self.show_logging.setGeometry(QtCore.QRect(80, 80, 250, 17))
+
         self.retranslate_ui()
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
@@ -43,6 +48,7 @@ class FilterDialog(QDialog):
         self.setWindowTitle(QtCore.QCoreApplication.translate("Filter Dialog", "Filter Dialog", None))  # Python3 default unicode
         self.show_fc_files_only.setText(QtCore.QCoreApplication.translate("Dialog", "Show FreeCAD files only", None))  # Python3 default unicode
         self.hide_versioned_fc_files.setText(QtCore.QCoreApplication.translate("Dialog", "Hide versioned FreeCAD files", None))  # Python3 default unicode
+        self.show_logging.setText(QtCore.QCoreApplication.translate("Dialog", "Show logging output from the terminal", None))  # Python3 default unicode
 
     def retrieve_data(self):
         self.conf = config.conf()

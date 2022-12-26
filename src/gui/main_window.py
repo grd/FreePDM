@@ -4,20 +4,18 @@
 """
 
 import os
-from pathlib import Path
 import sys
+import logging
 
 from PySide2 import QtCore, QtWidgets, QtGui
 from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QMessageBox
 from PySide2.QtCore import Qt
 
-from .EditItem import edit_item_dialog
-from .filter import filter_dialog
+from src.gui.edit_item import edit_item_dialog
+from src.gui.filter import filter_dialog
 from . import authenticate
 
-sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'skeleton'))
-
-from directorymodel import DirectoryModel
+from src.skeleton.directorymodel import DirectoryModel
 
 
 # class Ui_MainWindow(object):
@@ -233,7 +231,9 @@ class Ui_MainWindow(object):
     # deal with doubleclick
     def file_double_clicked(self, event):
         row = event.row()
+        print("row = " + str(row))
         item = self.tableWorkspace.item(row, 5).text()
+        print("Item = " + item)
 
         # Change directory
         if item == 'Directory':
@@ -243,6 +243,7 @@ class Ui_MainWindow(object):
 
         # Edit FC Item
         if item == 'FCStd' or item == 'A2-Assy' or item == 'A3-Assy'or item == 'A4-Assy':
+            print("Edit part: " + part)
             part = self.tableWorkspace.item(row, 1).text()
             part = os.path.abspath(os.path.join(self.current_directory, part))
             edit_item_dialog(part)

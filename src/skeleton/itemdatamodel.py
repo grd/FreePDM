@@ -8,11 +8,11 @@
 # from fileinput import filename  # not used
 from hashlib import blake2b
 import defusedxml.ElementTree as et
-# from tempfile import tempdir  # not used
 import tempfile
 import os
 import zipfile
 from typing import TypedDict
+import logging
 
 from PySide2 import QtGui
 
@@ -131,20 +131,7 @@ class ItemDataModel():
                 if type_name == "App::FeaturePython":
                     if att.attrib["name"] == "Properties":
                         self.read_properties()
-
-        # element = root.find(".//Property[@name='Comment']/String")
-        # self.document_properties["Comment"] = element.attrib.get('value')
-
-        #   <Property name="LastModifiedDate" type="App::PropertyString" status="16777217">
-        #     <String value="2022-11-21T13:03:46Z"/>
-        # </Property>
-       
-        # element = root.find(".//Property[@name='a2p_Version']/String")
-        # if element is not None:
-        #     self.document_properties["Assembly"] = 'A2-Assy'
-
-  
-            
+             
         # for att in Objects:
         #     if att.tag == "Object":
         #         type_name = att.attrib["type"] 

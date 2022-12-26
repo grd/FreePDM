@@ -12,9 +12,7 @@ from PySide2.QtWidgets import QDialog
 from PySide2.QtCore import QFile
 from PySide2.QtUiTools import QUiLoader
 
-sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'skeleton'))
-
-from itemdatamodel import ItemDataModel
+from src.skeleton.itemdatamodel import ItemDataModel
 
 
 class EditItem(QDialog):
@@ -25,7 +23,7 @@ class EditItem(QDialog):
         self.idm = ItemDataModel(self.file)
 
         loader = QUiLoader()
-        path = os.fspath(Path(__file__).resolve().parents[1] / "gui/EditItem.ui")
+        path = os.fspath(Path(__file__).resolve().parents[1] / "gui/edit_item.ui")
         print(path)
         ui_file = QFile(path)
         ui_file.open(QFile.ReadOnly)

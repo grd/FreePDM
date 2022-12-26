@@ -23,7 +23,7 @@ class Authenticate(QDialog):
         super(Authenticate, self).__init__()
 
         loader = QUiLoader()
-        path = os.fspath(Path(__file__).resolve().parents[1] / "gui/Authenticate.ui")
+        path = os.fspath(Path(__file__).resolve().parents[1] / "gui/authenticate.ui")
         print(path)
         ui_file = QFile(path)
         ui_file.open(QFile.ReadOnly)
