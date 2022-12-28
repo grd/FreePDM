@@ -35,6 +35,10 @@ class FilterDialog(QDialog):
         self.show_logging.setObjectName("show_logging")  # Python3 default unicode
         self.show_logging.setGeometry(QtCore.QRect(80, 80, 250, 17))
 
+        self.show_log_file = qtw.QCheckBox(self)
+        self.show_log_file.setObjectName("show_logging")  # Python3 default unicode
+        self.show_log_file.setGeometry(QtCore.QRect(80, 80, 250, 17))
+
         self.retranslate_ui()
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
@@ -49,6 +53,7 @@ class FilterDialog(QDialog):
         self.show_fc_files_only.setText(QtCore.QCoreApplication.translate("Dialog", "Show FreeCAD files only", None))  # Python3 default unicode
         self.hide_versioned_fc_files.setText(QtCore.QCoreApplication.translate("Dialog", "Hide versioned FreeCAD files", None))  # Python3 default unicode
         self.show_logging.setText(QtCore.QCoreApplication.translate("Dialog", "Show logging output from the terminal", None))  # Python3 default unicode
+        self.show_log_file.setText(QtCore.QCoreApplication.translate("Dialog", "Or log it into the file: ", None))  # Python3 default unicode
 
     def retrieve_data(self):
         self.conf = config.conf()

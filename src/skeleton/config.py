@@ -7,6 +7,7 @@ import os
 import configparser
 import appdirs
 from typing import NewType
+import logging
 
 # Reading and writing the configuration file.
 # The location of the file is: [prefix location]/FreePDM/FreePDM.conf
@@ -36,8 +37,8 @@ class conf():
     def __init__(self):
         self.startup_directory = ''
         self.filter: Filter = 0
-        self.log_file = ''
-        self.log_level = ''
+        self.log_file = ""
+        self.logging_is_on = "False"
         self.fast_loading_dir =  ''
 
     def get_filter(self, filter_flag) -> Filter:
@@ -54,7 +55,9 @@ class conf():
         self.startup_directory = config['DEFAULT']['startup_directory']
         self.filter = int(config['DEFAULT']['filter'])
         self.log_file = config['DEFAULT']['log_file']
-        self.log_level = config['DEFAULT']['log_levle']
+        self.logging_is_on = config['DEFAULT']['logging_is_on']
+        if self.logging_is_on == "True":
+            logging.basicConfig(logging.DEBUG)
         self.fast_loading_dir = config['DEFAULT']['fast_loading_dir']
 
 
@@ -63,7 +66,7 @@ class conf():
         config['DEFAULT']['startup_directory'] = self.startup_directory
         config['DEFAULT']['filter'] = str(self.filter)
         config['DEFAULT']['log_file'] = self.log_file
-        config['DEFAULT']['log_levle'] = self.log_level
+        config['DEFAULT']['logging_is_on'] = self.logging_is_on
         config['DEFAULT']['fast_loading_dir'] = self.fast_loading_dir
 
         with open(config_name, 'w') as configfile:
