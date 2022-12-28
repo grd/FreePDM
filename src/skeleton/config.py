@@ -22,6 +22,7 @@ import logging
 appname = 'FreePDM'
 config_dir = appdirs.user_config_dir(appname)
 config_name = os.path.join(config_dir, 'FreePDM.conf')
+print("config_name = " + config_name)
 
 # filter type
 Filter = NewType('Filter', int)
@@ -31,6 +32,9 @@ Filter = NewType('Filter', int)
 #
 show_fc_files_only = 1
 hide_versioned_fc_files = 2
+
+# basic log level
+# logging.basicConfig(level=logging.DEBUG)
 
 
 class conf():
@@ -56,8 +60,6 @@ class conf():
         self.filter = int(config['DEFAULT']['filter'])
         self.log_file = config['DEFAULT']['log_file']
         self.logging_is_on = config['DEFAULT']['logging_is_on']
-        if self.logging_is_on == "True":
-            logging.basicConfig(logging.DEBUG)
         self.fast_loading_dir = config['DEFAULT']['fast_loading_dir']
 
 
@@ -81,4 +83,3 @@ if not os.path.exists(config_dir):
 if not os.path.isfile(config_name):
     c = conf()
     c.write()
-

@@ -1,7 +1,9 @@
 # FreePDM
 A PDM for FreeCAD
 
-The Admin page
+The Admin page. 
+
+To be honest, I think that a separate Admin panel needs to be there, apart from FreePDM.
 
 Todo:
 - [ ] Add login screen
