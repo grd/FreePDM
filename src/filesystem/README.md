@@ -9,3 +9,4 @@ Todo:
 - [ ] Hashing of files
 
 For the rest, look into [skeleton](../skeleton/README.md)
+

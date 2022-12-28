@@ -11,5 +11,3 @@ Todo:
 - [ ] Allow to make different numbering scheme's
 - [ ] Allow to make different version types (this also depends on the data database)
 - [ ] Add logging
-
-

@@ -11,8 +11,5 @@ Todo:
 - [x] Show a list of files
 - [ ] Dealing with projects (creating, modifying, closing, re-opening)
 - [ ] Add a search button
-- [ ] Add all the things done in the skeleton (such as edit text strings, show versions, edit versions etc.)
-
-
-
+- [ ] Add all the things done in the [skeleton](../skeleton/README.md)
 

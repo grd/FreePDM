@@ -81,3 +81,4 @@ if not os.path.exists(config_dir):
 if not os.path.isfile(config_name):
     c = conf()
     c.write()
+
