@@ -243,7 +243,6 @@ class Ui_MainWindow(object):
 
         # Edit FC Item
         if item == 'FCStd' or item == 'A2-Assy' or item == 'A3-Assy'or item == 'A4-Assy':
-            print("Edit part: " + part)
             part = self.tableWorkspace.item(row, 1).text()
             part = os.path.abspath(os.path.join(self.current_directory, part))
             edit_item_dialog(part)
