@@ -22,7 +22,6 @@ import logging
 appname = 'FreePDM'
 config_dir = appdirs.user_config_dir(appname)
 config_name = os.path.join(config_dir, 'FreePDM.conf')
-print("config_name = " + config_name)
 
 # filter type
 Filter = NewType('Filter', int)

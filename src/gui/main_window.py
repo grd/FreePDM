@@ -25,7 +25,6 @@ class Ui_MainWindow(object):
         self.root_directory = os.path.expanduser('~')
         if len(sys.argv) == 2:
             self.root_directory = sys.argv[1]
-        print("self.root_directory = ", self.root_directory)
         self.current_directory = self.root_directory
 
         # main window
@@ -224,6 +223,7 @@ class Ui_MainWindow(object):
         item = self.tableWorkspace.horizontalHeaderItem(6)
         item.setText(_translate("MainWindow", "Size"))
 
+
     def set_filter(self):
         filter_dialog()
         self.load_data()
@@ -231,9 +231,7 @@ class Ui_MainWindow(object):
     # deal with doubleclick
     def file_double_clicked(self, event):
         row = event.row()
-        print("row = " + str(row))
         item = self.tableWorkspace.item(row, 5).text()
-        print("Item = " + item)
 
         # Change directory
         if item == 'Directory':
