@@ -178,7 +178,7 @@ class Ui_MainWindow(object):
             self.buttonPurge.setEnabled(True)
 
     def login(self):
-        """Function to start authenticating proces"""
+        """Function to start authenticating process"""
         authenticate.authenticate_dialog()
 
     def purge(self):

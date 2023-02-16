@@ -60,7 +60,7 @@ class Authenticate(QDialog):
         """Connect authentication"""
         # TODO: Connect to server
         # If connect can be applied than
-        # - set properety
+        # - set property
         # - activater Apply
         # Else
         # - Show labReturnMessage - Connection failed

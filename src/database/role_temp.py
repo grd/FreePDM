@@ -12,7 +12,7 @@ import typing
 
 # https://www.osohq.com/post/sqlalchemy-role-rbac-basics
 class Role(GeneralDb):
-    """Class for genrating Roles"""
+    """Class for generating Roles"""
 
     def __init__(self):
         print("creating role")

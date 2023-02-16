@@ -171,8 +171,8 @@ First the standard _Framework_s:
 There is a big difference between the packages above.
 Nginx is probably the most difficult one. Not technically but it has a difficult interaction between the open source package and the paid(don't know if it is closed source) version.
 For example there is no way how to find out what _Database_ types are by default available.  
-Apache, Nginx and Lighttpd have the possibility to work together with an ldap _Database_.
-Bu also now it is unknown if the [Nginx](https://www.nginx.com/blog/nginx-plus-authenticate-users/) has this by default
+Apache, Nginx, and Lighttpd have the possibility to work together with an ldap _Database_.
+Although now it is unknown if [Nginx](https://www.nginx.com/blog/nginx-plus-authenticate-users/) has this by default.
 
 Python _Framework_s:
 
@@ -298,7 +298,7 @@ An important Architecture part that is forgotten to describe is _User Interactio
 The part how Users interact with the software is written on high level in [FreePDM_02-Workflows](FreePDM_02-Workflows.md).  
 The problem with this is that it currently ignores:
 
-- What users have acces to what information.
+- What users have access to what information.
 - What Users have when Roles / Rights for:
   - What projects
   - Libraries

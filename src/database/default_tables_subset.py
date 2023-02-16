@@ -63,7 +63,7 @@ class PdmItem(Base):
     user_id = Column(Integer, ForeignKey("users.user_id"))  # Many to one
     user = relationship("PdmUser", back_populates="items")  # Many to Many
     product_id = Column(Integer, ForeignKey('products.product_id'), nullable=False)  # Many to Many
-    # One Item can have many Models OR Documenets
+    # One Item can have many Models OR Documents
     models = relationship("PdmModel", back_populates="item")  # One to Many
     documents = relationship("PdmDocument", back_populates="item")  # One to Many
     # Material = relationship("PdmMaterial", back_populates="item", uselist=False)  # One to one
@@ -186,7 +186,7 @@ class PdmRole(Base):
 
     # relationships with other tables
     # One User can have one role in one organization
-    # But every User can have multiple roles dependend of the organization
+    # But every User can have multiple roles dependent of the organization
     user_id = Column(Integer, ForeignKey("users.user_id"))  # Many to Many to Many?
     users = relationship("PdmUser", secondary="user_role_organization_link", back_populates="roles")  # One to One to Many OR One to Many to Many
 
@@ -206,7 +206,7 @@ class PdmUser(Base):
     user_last_name = Column(String(30))
     user_full_name = Column(String)
     user_email_adress = Column(String, nullable=False)  # TODO: change to mail address
-    # password = Column(String, nullable=False)  # Password need to be hashed otherwise don't addd
+    # password = Column(String, nullable=False)  # Password need to be hashed otherwise don't add
     user_phonenumber = Column(Integer)  # TODO: add phonenumber property
     user_department = Column(String)  # Enum optionally
     # user_aliases = []  # TODO: What to do with aliases
@@ -278,8 +278,8 @@ class PDMUserRoleOrganizationLink(Base):
     __tablename__ = "user_role_organization_link"
 
     # TODO: Check if this is right method
-    # Every Have a Role Within a Organization. A user can be part of multple organizations. So One to One to Many
-    # Can a user have different roles dependend on for example project? initial not good idea.
+    # Every Have a Role Within a Organization. A user can be part of multiple organizations. So One to One to Many
+    # Can a user have different roles dependent on for example project? initial not good idea.
     user_id = Column("user_id", ForeignKey("users.user_id"), primary_key=True)
     role_id = Column("role_id", ForeignKey("roles.role_id"), primary_key=True)
     organization_id = Column("organization_id", ForeignKey("organizations.organization_id"), primary_key=True)
