@@ -6,15 +6,15 @@ The Filesystem is a major part of FreePDM. It is primarily a storage of files th
 TheFilesystem class containes all the things that are needed to manipulate files inside the PDM. Essentially it is a storage of files.
 
 ## Import / Export of files
-`Filesystem.import` allowes to import a file or files inside the PDM. When you import a file the meta-data also gets imported. The local files remain untouched. When you import a file or files you need to set a directory and a description. The new file inside the PDM gets a revision number automatically.
+`Filesystem.import` allows to import a file or files inside the PDM. When you import a file the meta-data also gets imported. The local files remain untouched. When you import a file or files you need to set a directory and a description. The new file inside the PDM gets a revision number automatically.
 
-`Filesystem.export` allowes to export a file of files to a certain directory.
+`Filesystem.export` allows to export a file of files to a certain directory.
 
 ## Revision of files
 `Filesystem.revision` sets a file of files to a new level that is according to the previous file or files. It allows to automatically generates PDF and STEP/STL files.
 
 ## Opening a revisioned file
-`Filesystem.openrevisionend` allowes to export a revisoned file (an older version of a file). We all make mistakes so opening an older file can be crucial.
+`Filesystem.openrevisionend` allows to export a revisoned file (an older version of a file). We all make mistakes so opening an older file can be crucial.
 
 ## Check-out / Check-in
 `Filesystem.checkoutfile` locks a file so that others can't accidentally check-in a different file.
