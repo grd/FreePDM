@@ -36,7 +36,7 @@ TBD
 - [ ] Allow importing and exporting of files
 - [ ] Hashing of files
 - [ ] Partnumbering (both inside the Filesystem and in local files itself). This also means renaming of files and where used. The "where used" functionality can only be used inside the PDM because FreeCAD doesn't have such a feature.
-- [ ] Dealing with other info (such as LidbreOffice files and other media)
+- [ ] Dealing with other info (such as LibreOffice files and other media)
 - [ ] Replacing files in assemblies. Both into the Filesystem and the local files. This also relies on renaming of files.
 - [ ] Copying files (incl. it's dependencies. Everything below and drawings, all optional). When it's not put into the Filesystem.
 - [ ] Dealing with versions and releases.
