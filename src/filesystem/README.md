@@ -9,8 +9,9 @@ The Filesystem is a major part of FreePDM. It is primarily a storage of files th
 TheFilesystem class containes all the things that are needed to manipulate files inside the PDM.
 
 ## Import / Export of files
-[code]Filesystem.import[/code] allowes to import a file or files inside the PDM. When you import a file the meta-data also gets imported. The local files remain untouched.
-[code]Filesystem.export[/code] allowes to export a file of files to a certain directory.
+`Filesystem.import` allowes to import a file or files inside the PDM. When you import a file the meta-data also gets imported. The local files remain untouched.
+
+`Filesystem.export` allowes to export a file of files to a certain directory.
 
 ## Revision of files
 
