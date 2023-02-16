@@ -14,21 +14,21 @@ TheFilesystem class containes all the things that are needed to manipulate files
 `Filesystem.revision` sets a file of files to a new level that is according to the previous file or files. It allows to automatically generates PDF and STEP/STL files.
 
 ## Opening a revisioned file
-We all make mistakes so opening an older file can be crusial. That is why you can open a file with `Filesystem.openrevisionend`.
+`Filesystem.openrevisionend` allowes to export a revisoned file (an older version of a file). We all make mistakes so opening an older file can be crucial.
 
 ## Check-out / Check-in
-`Filesystem.checkout`
+`Filesystem.checkoutfile` locks a file so that others can't accidentally check-in a different file.
 
-'Filesystem.checkin`
+`Filesystem.checkinfile`removes the locking but also uploads the file to the PDM. You need to write a description of what you did.
 
 ## Renaming of file
-`Filesystem.renamefile` can be used to rename a file or files, for instance when he or she wants to use a file with a specified numbering system.
+`Filesystem.renamefile` can be used to rename a file, for instance when he or she wants to use a file with a specified numbering system.
 
 ## Moving files
 `Filesystem.movefile` can be used to move a file to a different directory.
 
 ## Access control
-TBD
+Not written yet.
 
 
 ## Todo:
