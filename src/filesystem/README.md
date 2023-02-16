@@ -1,6 +1,3 @@
-# FreePDM
-A PDM for FreeCAD
-
 # The Filesystem page
 
 The Filesystem is a major part of FreePDM. It is primarily a storage of files that are immutable. The primary goals are to import / export files, moving files, the revision of files, renaming of files, and all with access control. To make this happening you want to check-out and check-in of files, so that others know that you checked out a file and can't check-out the file without notifying you. The filesystem use directories, just like ordinary directories, to organize the files. The storage of files allows that you can also open a previous file. For access control an admin account needs to be used. He or she needs extra privileges, for instance when someone left and that guy checked out a file, then the admin needs to be able to fix that. The admin also sets the rules for the (automatic) renaming of files for instance and the things thet need to be make when someone changed a revision, such as to automatically generate a PDF for a drawing or generate STEP/STL files.
@@ -24,10 +21,11 @@ We all make mistakes so opening an older file can be crusial. That is why you ca
 
 'Filesystem.checkin`
 
-## Renaming of files
-
+## Renaming of file
+`Filesystem.renamefile` can be used to rename a file or files, for instance when he or she wants to use a file with a specified numbering system.
 
 ## Moving files
+`Filesystem.movefile` can be used to move a file to a different directory.
 
 ## Access control
 TBD
