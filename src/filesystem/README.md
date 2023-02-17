@@ -6,9 +6,9 @@ The Filesystem is a major part of FreePDM. It is primarily a storage of files th
 TheFilesystem class containes all the things that are needed to manipulate files inside the PDM. Essentially it is a storage of files.
 
 ## Connecting and disconnect
-`Filesystem.connect(str)` connects to the remote Filesystem with str.
+`Filesystem.connect()` connects to the remote Filesystem. It uses `sshfs`. In the config file you need to have a `server_directory=server:/path/to/vault` which points to to the directory of the storage and you need to have write access.
 
-`Filesystem.disconnect` disconnect the Filesystem.
+`Filesystem.disconnect()` disconnect the Filesystem.
 
 ## Import / Export of files
 `Filesystem.import` allows to import a file or files inside the PDM. When you import a file the meta-data also gets imported. The local files remain untouched. When you import a file or files you need to set a directory and a description. The new file inside the PDM gets a revision number automatically.
