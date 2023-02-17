@@ -1,9 +1,14 @@
 # The Filesystem page
 
-The Filesystem is a major part of FreePDM. It is primarily a storage of files that are immutable. The primary goals are to import / export files, moving files, the revision of files, renaming of files, and all with access control. To make this happening you want to check-out and check-in of files, so that others know that you checked out a file and can't check-out the file without notifying you. The filesystem use directories, just like ordinary directories, to organize the files. The storage of files allows that you can also open a previous file. For access control an admin account needs to be used. He or she needs extra privileges, for instance when someone left and that guy checked out a file, then the admin needs to be able to fix that. The admin also sets the rules for the (automatic) renaming of files for instance and the things thet need to be make when someone changed a revision, such as to automatically generate a PDF for a drawing or generate STEP/STL files.
+The Filesystem is a major part of FreePDM. It is primarily a storage of files that are stored into the server. The primary goals are to import / export files, moving files, the revision of files, renaming of files, and all with access control. To make this happening you want to check-out and check-in of files, so that others know that you checked out a file and can't check-out the file without notifying you. The filesystem use directories, just like ordinary directories, to organize the files. The storage of files allows that you can also open a previous file. For access control an admin account needs to be used. He or she needs extra privileges, for instance when someone left and that guy checked out a file, then the admin needs to be able to fix that. The admin also sets the rules for the (automatic) renaming of files for instance and the things thet need to be make when someone changed a revision, such as to automatically generate a PDF for a drawing or generate STEP/STL files.
 
 ## The Filesystem class
 TheFilesystem class containes all the things that are needed to manipulate files inside the PDM. Essentially it is a storage of files.
+
+## Connecting and disconnect
+`Filesystem.connect(str)` connects to the remote Filesystem with str.
+
+`Filesystem.disconnect` disconnect the Filesystem.
 
 ## Import / Export of files
 `Filesystem.import` allows to import a file or files inside the PDM. When you import a file the meta-data also gets imported. The local files remain untouched. When you import a file or files you need to set a directory and a description. The new file inside the PDM gets a revision number automatically.
