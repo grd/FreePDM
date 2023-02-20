@@ -12,7 +12,6 @@ import tempfile
 import os
 import zipfile
 from typing import TypedDict
-import logging
 
 from PySide2 import QtGui
 
@@ -116,7 +115,6 @@ class ItemDataModel():
                 self.document_properties["Objects"] = a4_assy.get_external_item_list()
                 print(str(self.export_BOM()))
 
-
         self.document_properties["Objects"] = []
 
         # parsing the rest of the document
@@ -132,22 +130,24 @@ class ItemDataModel():
                     if att.attrib["name"] == "Properties":
                         self.read_properties()
              
-        # for att in Objects:
-        #     if att.tag == "Object":
-        #         type_name = att.attrib["type"] 
-        #         if type_name == "PartDesign::Body": print("Object Type = " + type_name + " Name = " + att.attrib["name"])
-        #         elif type_name == "App::Part": print("Object Type = " + type_name + " Name = " + att.attrib["name"])
-        #         elif type_name == "Part::FeaturePython": print("Object Type = " + type_name + " Name = " + att.attrib["name"]) # A2P en A3 assy
-        #         elif type_name == "App::DocumentObjectGroup": # A4 assy
-        #             print("Object Type = " + type_name + " Name = " + att.attrib["name"])
-        #             a4_assy = ItemAssemblyA4(self.xml_document)
-        #             self.document_properties["Objects"] = a4_assy.get_external_item_list()
-        #             print("Object list = " + str(self.document_properties["Objects"]))
-        #             break
-        #         elif type_name[0:3] == "App": continue
-        #         elif type_name[0:10] == "PartDesign": continue
-        #         elif type_name[0:8] == "Sketcher": continue
-        #         else: print("Object Type = " + type_name + " Name = " + att.attrib["name"])
+        for att in Objects:
+            if att.tag == "Object":
+                type_name = att.attrib["type"] 
+                if type_name == "PartDesign::Body": print("Object Type = " + type_name + " Name = " + att.attrib["name"])
+                elif type_name == "App::Part": print("Object Type = " + type_name + " Name = " + att.attrib["name"])
+                elif type_name == "Part::FeaturePython": print("Object Type = " + type_name + " Name = " + att.attrib["name"]) # A2P en A3 assy
+                elif type_name == "App::DocumentObjectGroup": # A4 assy
+                    print("Object Type = " + type_name + " Name = " + att.attrib["name"])
+                    a4_assy = ItemAssemblyA4(self.xml_document)
+                    self.document_properties["Objects"] = a4_assy.get_external_item_list()
+                    print("Object list = " + str(self.document_properties["Objects"]))
+                    break
+                elif type_name[0:3] == "App": continue
+                elif type_name[0:10] == "PartDesign": continue
+                elif type_name[0:8] == "Sketcher": continue
+                else: print("Object Type = " + type_name + " Name = " + att.attrib["name"])
+
+        print(self.document_properties)
 
     def read_properties(self):
         root = et.fromstring(self.xml_document)

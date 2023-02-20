@@ -6,31 +6,31 @@ The Filesystem is a major part of FreePDM. It is primarily a storage of files th
 TheFilesystem class containes all the things that are needed to manipulate files inside the PDM. Essentially it is a storage of files.
 
 ## Connecting and disconnect
-`Filesystem.connect()` connects to the remote Filesystem. It uses `sshfs`. In the config file you need to have a `server_directory=server:/path/to/vault` which points to to the directory of the storage and you need to have write access.
+`connect()` connects to the remote Filesystem. It uses `sshfs`. In the config file you need to have a `server_directory=server:/path/to/vault` which points to to the directory of the storage and you need to have write access.
 
-`Filesystem.disconnect()` disconnect the Filesystem.
+`disconnect()` disconnects the Filesystem.
 
 ## Import / Export of files
-`Filesystem.import` allows to import a file or files inside the PDM. When you import a file the meta-data also gets imported. The local files remain untouched. When you import a file or files you need to set a directory and a description. The new file inside the PDM gets a revision number automatically.
+`import_file(fname, dest_dir)` import a file or files inside the PDM. When you import a file the meta-data also gets imported. The local files remain untouched. When you import a file or files you need to set a directory and a description. The new file inside the PDM gets a revision number automatically.
 
-`Filesystem.export` allows to export a file of files to a certain directory.
+`export_file(fname, dest_dir)` export a file to a local directory.
 
 ## Revision of files
-`Filesystem.revision` sets a file of files to a new level that is according to the previous file or files. It allows to automatically generates PDF and STEP/STL files.
-
-## Opening a revisioned file
-`Filesystem.openrevisionend` allows to export a revisoned file (an older version of a file). We all make mistakes so opening an older file can be crucial.
+`revision_file(fname)` increments a file revision number.
 
 ## Check-out / Check-in
-`Filesystem.checkoutfile` locks a file so that others can't accidentally check-in a different file.
+`checkout_file(fname)` locks a file so that others can't accidentally check-in a different file.
 
-`Filesystem.checkinfile`removes the locking but also uploads the file to the PDM. You need to write a description of what you did.
+`checkin_file(fname, descr)`removes the locking but also uploads the file to the PDM. You need to write a description of what you did.
 
 ## Renaming of file
-`Filesystem.renamefile` can be used to rename a file, for instance when he or she wants to use a file with a specified numbering system.
+`rename_file(fname)` rename a file, for instance when he or she wants to use a file with a specified numbering system.
 
 ## Moving files
-`Filesystem.movefile` can be used to move a file to a different directory.
+`move_file(fname, dest_dir)` moves a file to a different directory.
+
+## Directory
+`create_directory(dir_name)`creates a directory.
 
 ## Access control
 Not written yet.
