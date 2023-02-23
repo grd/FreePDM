@@ -43,6 +43,9 @@ class conf():
         self.log_file = ""
         self.logging_is_on = "False"
         self.fast_loading_dir =  ''
+        self.server_pdm_name: str = None     # The URL to the server
+        self.server_pdm_username: str = None # User login name
+        self.server_pdm_path: str = None     # Path to the PDM
 
     def get_filter(self, filter_flag) -> Filter:
         return self.filter & filter_flag == filter_flag
@@ -60,6 +63,9 @@ class conf():
         self.log_file = config['DEFAULT']['log_file']
         self.logging_is_on = config['DEFAULT']['logging_is_on']
         self.fast_loading_dir = config['DEFAULT']['fast_loading_dir']
+        self.server_pdm_name = config['DEFAULT']['server_name']
+        self.server_pdm_username = config['DEFAULT']['server_pdm_name']
+        self.server_pmd_path = config['DEFAULT']['server_pdm_path']
 
 
     def write(self):
@@ -69,6 +75,9 @@ class conf():
         config['DEFAULT']['log_file'] = self.log_file
         config['DEFAULT']['logging_is_on'] = self.logging_is_on
         config['DEFAULT']['fast_loading_dir'] = self.fast_loading_dir
+        config['DEFAULT']['server_name'] = self.server_pdm_name
+        config['DEFAULT']['server_pdm_name'] = self.server_pdm_username
+        config['DEFAULT']['server_pdm_path'] = self.server_pdm_path
 
         with open(config_name, 'w') as configfile:
             config.write(configfile)

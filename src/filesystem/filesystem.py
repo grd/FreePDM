@@ -5,14 +5,34 @@
     :license:   MIT License.
 """
 
-from sshfs import SSHFileSystem
+import os
+import sys
+from pathlib import Path
+import pysftp
+from PySide2.QtWidgets import QDialog  # type: ignore
+from PySide2.QtCore import QFile  # type: ignore
+from PySide2.QtUiTools import QUiLoader  # type: ignore
+
+sys.path.append('../')
+import skeleton.config as conf
 
 
 class FileSystem():
     """File System related Class"""
 
+    _server_pdm_name: str = None
+    _server_pdm_username: str = None
+    _server_pdm_path: str = None
+    _fs = None
+    _user: str = None
+    _passwd: str = None
+
     def init(self):
         print("Generic File System")
+        self._server_pdm_name = conf.server_pdm_name
+        self._server_pdm_user = conf.server_pdm_user_name
+        self._server_pdm_path = conf.server_pdm_path
+
 
     def create_folder(self):
         """Create new folder"""
@@ -22,28 +42,33 @@ class FileSystem():
         # create folder for item
         raise NotImplementedError("Function create_folder is not implemented yet")
 
-    def create_file_idx(self):
+    def create_file_idx(self): 
         """Create file copy"""
         # create copy of file with index: for example 12345678.FCStd.2
         raise NotImplementedError("Function create_file_copy is not implemented yet")
 
-    def connect(self):
-        """Create a new connection to the server"""
-        # create a new connection to the server with SSHFS
-        # 
-        # # Connect with a password
-        # fs = SSHFileSystem(
-        #     '127.0.0.1',
-        #     username='sam',
-        #     password='fishing'
+    def connect(self): # TODO: also make it work with logging in with a passkey
+        loader = QUiLoader()
+        path = os.fspath(Path(__file__).resolve().parents[1] / "gui/authenticate.ui")
+        print(path)
+        ui_file = QFile(path)
+        ui_file.open(QFile.ReadOnly)
+        self.ui = loader.load(ui_file, self)
+        self.ui.exec()
+
+        # """Create a new connection to the server with SSHFS"""
+        # self._fs = pysftp.Connection(
+        #     self._server_pdm_name,
+        #     username=self._user,
+        #     password=self._passwd
         # )
-        raise NotImplementedError("Function connect is not implemented yet")
+        # self._fs.cd(self._server_pdm_path)
 
     def disconnect(self):
         """Disconnects the connection"""
-        raise NotImplementedError("Function disconnect is not implemented yet")
+        self._fs.close()
 
-    def import_file(self, fname, dest_dir):
+    def import_file(self, fname, dest_dir, descr):
         """import a file inside the PDM. When you import a 
         file the meta-data also gets imported. The local files remain untouched. 
         When you import a file or files you need to set a directory and a description. 
@@ -72,11 +97,13 @@ class FileSystem():
         """rename a file, for instance when he or she wants to use a file 
         with a specified numbering system."""
         raise NotImplementedError("Function rename_file is not implemented yet")
+        # TODO: This can be a bit tricky
 
     def move_file(self, fname, dest_dir):
         """moves a file to a different directory."""
         raise NotImplementedError("Function move_file is not implemented yet")
+        # TODO: This can be a bit tricky
 
     def create_directory(self, dir_name):
         """creates a directory."""
-        raise NotImplementedError("Function create_directory is not implemented yet")
+        self._fs.mkdir(dir_name)

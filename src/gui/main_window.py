@@ -16,6 +16,7 @@ from src.gui.filter import filter_dialog
 from . import authenticate
 
 from src.skeleton.directorymodel import DirectoryModel
+from src.filesystem import filesystem
 
 
 # class Ui_MainWindow(object):
