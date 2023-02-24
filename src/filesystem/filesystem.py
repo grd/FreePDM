@@ -48,21 +48,13 @@ class FileSystem():
         raise NotImplementedError("Function create_file_copy is not implemented yet")
 
     def connect(self): # TODO: also make it work with logging in with a passkey
-        loader = QUiLoader()
-        path = os.fspath(Path(__file__).resolve().parents[1] / "gui/authenticate.ui")
-        print(path)
-        ui_file = QFile(path)
-        ui_file.open(QFile.ReadOnly)
-        self.ui = loader.load(ui_file, self)
-        self.ui.exec()
-
-        # """Create a new connection to the server with SSHFS"""
-        # self._fs = pysftp.Connection(
-        #     self._server_pdm_name,
-        #     username=self._user,
-        #     password=self._passwd
-        # )
-        # self._fs.cd(self._server_pdm_path)
+        """Create a new connection to the server with SSHFS"""
+        self._fs = pysftp.Connection(
+            self._server_pdm_name,
+            username=self._user,
+            password=self._passwd
+        )
+        self._fs.cd(self._server_pdm_path)
 
     def disconnect(self):
         """Disconnects the connection"""
@@ -97,12 +89,12 @@ class FileSystem():
         """rename a file, for instance when he or she wants to use a file 
         with a specified numbering system."""
         raise NotImplementedError("Function rename_file is not implemented yet")
-        # TODO: This can be a bit tricky
+        # TODO: This can be a bit tricky because of the multiple files that are involved, besides the file name extensions that are ending with '.FCStd.#x'
 
     def move_file(self, fname, dest_dir):
         """moves a file to a different directory."""
         raise NotImplementedError("Function move_file is not implemented yet")
-        # TODO: This can be a bit tricky
+        # TODO: This can be a bit tricky because of the multiple files that are involved, besides the file name extensions that are ending with '.FCStd.#x'
 
     def create_directory(self, dir_name):
         """creates a directory."""
