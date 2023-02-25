@@ -31,9 +31,13 @@
 
 ## [Requirements](FreePDM_04-Requirements.md)
 
-## [Roadmap](FreePDM_05-Roadmap.md)
+## [Architecture](FreePDM_05-Architecture.md)
 
-## [TestFiles](FreePDM_06-TestFiles.md)
+## [Database Setup](FreePDM_05-1-DatabaseSetup.md)
+
+## [Roadmap](FreePDM_06-Roadmap.md)
+
+## [TestFiles](FreePDM_07-TestFiles.md)
 
 ## [Database Setup](FreePDM_07-DatabaseSetup.md)
 
