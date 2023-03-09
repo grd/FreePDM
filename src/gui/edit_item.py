@@ -6,13 +6,14 @@
 import os
 from pathlib import Path
 import sys
+sys.path.append('/..')
 
 from PySide2 import QtGui
 from PySide2.QtWidgets import QDialog
 from PySide2.QtCore import QFile
 from PySide2.QtUiTools import QUiLoader
 
-from src.skeleton.itemdatamodel import ItemDataModel
+from skeleton.itemdatamodel import ItemDataModel
 
 
 class EditItem(QDialog):

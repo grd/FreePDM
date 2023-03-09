@@ -6,17 +6,23 @@
 import os
 import sys
 import logging
+from pathlib import Path
+
 
 from PySide2 import QtCore, QtWidgets, QtGui
 from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QMessageBox
 from PySide2.QtCore import Qt
 
-from src.gui.edit_item import edit_item_dialog
-from src.gui.filter import filter_dialog
-from . import authenticate
+sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
+print(sys.path)
+# import edit_item 
+# from filter import filter_dialog
 
-from src.skeleton.directorymodel import DirectoryModel
-from src.filesystem import filesystem
+# from . import authenticate
+import gui.authenticate
+
+from skeleton.directorymodel import DirectoryModel
+import filesystem.filesystem
 
 
 # class Ui_MainWindow(object):

@@ -4,8 +4,8 @@
 """
 
 import os
-from itemdatamodel import ItemDataModel
-import config
+from skeleton.itemdatamodel import ItemDataModel
+from skeleton.config import *
 
 # the file types
 types = ('Directory', 'Assembly A2P', 'Assembly A3', 'Assembly A4', 
@@ -15,7 +15,7 @@ types = ('Directory', 'Assembly A2P', 'Assembly A3', 'Assembly A4',
 # The directorymodel is a list of files that can be used inside a GUI
 class DirectoryModel(object):
     def __init__(self, directory, withParentDirectory = True):  # '..'
-        self.conf = config.conf()
+        self.conf = conf()
         self.conf.read()
         self.purge_list = list()
         self.directory = directory
@@ -33,8 +33,8 @@ class DirectoryModel(object):
 
     def set_dir_list(self, withParentDirectory):
         # get the filter types
-        fc_files = self.conf.get_filter(config.show_fc_files_only)
-        versioned_files = self.conf.get_filter(config.hide_versioned_fc_files)
+        fc_files = self.conf.get_filter(show_fc_files_only)
+        versioned_files = self.conf.get_filter(hide_versioned_fc_files)
 
         dir_list = os.listdir(self.directory)
         dir_list.sort()
