@@ -60,7 +60,7 @@ class FileSystem():
         """Disconnects the connection"""
         self._fs.close()
 
-    def import_file(self, fname, dest_dir, descr):
+    def import_new_file(self, fname, dest_dir, descr, long_descr=None):
         """import a file inside the PDM. When you import a 
         file the meta-data also gets imported. The local files remain untouched. 
         When you import a file or files you need to set a directory and a description. 
@@ -79,7 +79,7 @@ class FileSystem():
         """locks a file so that others can't accidentally check-in a different file."""
         raise NotImplementedError("Function checkout_file is not implemented yet")
 
-    def checkin_file(self, fname, descr):
+    def checkin_file(self, fname, descr, long_descr=None):
         """removes the locking but also uploads the file to the PDM. 
         You need to write a description of what you did."""
         raise NotImplementedError("Function checkin_file is not implemented yet")
@@ -89,12 +89,12 @@ class FileSystem():
         """rename a file, for instance when he or she wants to use a file 
         with a specified numbering system."""
         raise NotImplementedError("Function rename_file is not implemented yet")
-        # TODO: This can be a bit tricky because of the multiple files that are involved, besides the file name extensions that are ending with '.FCStd.#x'
+        # TODO: This can be a bit tricky because of the multiple files and users that are involved, besides the file name extensions that are ending with '.FCStd.#x'
 
     def move_file(self, fname, dest_dir):
         """moves a file to a different directory."""
         raise NotImplementedError("Function move_file is not implemented yet")
-        # TODO: This can be a bit tricky because of the multiple files that are involved, besides the file name extensions that are ending with '.FCStd.#x'
+        # TODO: This can be a bit tricky because of the multiple files and users that are involved, besides the file name extensions that are ending with '.FCStd.#x'
 
     def create_directory(self, dir_name):
         """creates a directory."""

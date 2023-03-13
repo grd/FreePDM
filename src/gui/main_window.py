@@ -14,7 +14,6 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWid
 from PySide2.QtCore import Qt
 
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
-print(sys.path)
 # import edit_item 
 # from filter import filter_dialog
 

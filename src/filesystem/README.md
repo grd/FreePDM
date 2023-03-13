@@ -11,7 +11,7 @@ TheFilesystem class containes all the things that are needed to manipulate files
 `disconnect()` disconnects the Filesystem.
 
 ## Import / Export of files
-`import_file(fname, dest_dir)` import a file or files inside the PDM. When you import a file the meta-data also gets imported. The local files remain untouched. When you import a file or files you need to set a directory and a description. The new file inside the PDM gets a revision number automatically.
+`import_file(fname, dest_dir, descr, long_descr=None)` import a file or files inside the PDM. When you import a file the meta-data also gets imported. The local files remain untouched. When you import a file or files you need to set a directory and a description. The new file inside the PDM gets a revision number automatically.
 
 `export_file(fname, dest_dir)` export a file to a local directory.
 
@@ -21,7 +21,7 @@ TheFilesystem class containes all the things that are needed to manipulate files
 ## Check-out / Check-in
 `checkout_file(fname)` locks a file so that others can't accidentally check-in a different file.
 
-`checkin_file(fname, descr)`removes the locking but also uploads the file to the PDM. You need to write a description of what you did.
+`checkin_file(fname, descr, long_descr=None)`removes the locking but also uploads the file to the PDM. You need to write a description of what you did.
 
 ## Renaming of file
 `rename_file(fname)` rename a file, for instance when he or she wants to use a file with a specified numbering system.
