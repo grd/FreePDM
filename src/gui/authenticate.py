@@ -14,7 +14,7 @@ from PySide2.QtWidgets import QDialog  # type: ignore
 from PySide2.QtCore import QFile  # type: ignore
 from PySide2.QtUiTools import QUiLoader  # type: ignore
 
-sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'authenticate'))
+# sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'authenticate'))
 # import
 
 
