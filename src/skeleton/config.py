@@ -43,9 +43,9 @@ class conf():
         self.log_file = ""
         self.logging_is_on = "False"
         self.fast_loading_dir =  ''
-        self.server_pdm_name: str = None     # The URL to the server
-        self.server_pdm_username: str = None # User login name
-        self.server_pdm_path: str = None     # Path to the PDM
+        self.server_pdm_name: str = ""     # The URL to the server
+        self.server_pdm_username: str = "" # User login name
+        self.server_pdm_path: str = ""     # Path to the PDM
 
     def get_filter(self, filter_flag) -> Filter:
         return self.filter & filter_flag == filter_flag
