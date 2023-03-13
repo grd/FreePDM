@@ -17,7 +17,7 @@ sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
 # import edit_item 
 # from filter import filter_dialog
 
-# from . import authenticate
+from . import authenticate
 import gui.authenticate
 
 from skeleton.directorymodel import DirectoryModel
