@@ -6,7 +6,7 @@
 import os
 from pathlib import Path
 import sys
-sys.path.append('/..')
+sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
 
 from PySide2 import QtGui
 from PySide2.QtWidgets import QDialog

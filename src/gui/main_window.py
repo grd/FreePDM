@@ -14,11 +14,9 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWid
 from PySide2.QtCore import Qt
 
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
-# import edit_item 
-# from filter import filter_dialog
-
-from . import authenticate
-import gui.authenticate
+from gui.edit_item import *
+from gui.filter import filter_dialog
+from gui.authenticate import *
 
 from skeleton.directorymodel import DirectoryModel
 from filesystem.filesystem import FileSystem
@@ -28,7 +26,7 @@ from filesystem.filesystem import FileSystem
 class Ui_MainWindow(object):
 
     def setup_ui(self, MainWindow):
-        self._fs = None # the connection to the server
+        self._fs = FileSystem() # the connection to the server
         self.root_directory = os.path.expanduser('~')
         if len(sys.argv) == 2:
             self.root_directory = sys.argv[1]
@@ -186,7 +184,7 @@ class Ui_MainWindow(object):
 
     def login(self):
         """Function to start authenticating proces"""
-        self._fs = authenticate.authenticate_dialog()
+        self._fs = authenticate_dialog()
 
     def purge(self):
         msg = QMessageBox()
