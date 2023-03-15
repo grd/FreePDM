@@ -21,13 +21,14 @@ from . import authenticate
 import gui.authenticate
 
 from skeleton.directorymodel import DirectoryModel
-import filesystem.filesystem
+from filesystem.filesystem import FileSystem
 
 
 # class Ui_MainWindow(object):
 class Ui_MainWindow(object):
 
     def setup_ui(self, MainWindow):
+        self._fs = None # the connection to the server
         self.root_directory = os.path.expanduser('~')
         if len(sys.argv) == 2:
             self.root_directory = sys.argv[1]
@@ -185,7 +186,7 @@ class Ui_MainWindow(object):
 
     def login(self):
         """Function to start authenticating proces"""
-        authenticate.authenticate_dialog()
+        self._fs = authenticate.authenticate_dialog()
 
     def purge(self):
         msg = QMessageBox()

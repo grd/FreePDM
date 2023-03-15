@@ -13,25 +13,20 @@ from PySide2.QtWidgets import QDialog  # type: ignore
 from PySide2.QtCore import QFile  # type: ignore
 from PySide2.QtUiTools import QUiLoader  # type: ignore
 
-sys.path.append('../')
-import skeleton.config as conf
+sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
+from skeleton.config import conf
 
 
 class FileSystem():
     """File System related Class"""
 
-    _server_pdm_name: str = None
-    _server_pdm_username: str = None
-    _server_pdm_path: str = None
-    _fs = None
-    _user: str = None
-    _passwd: str = None
-
-    def init(self):
+    def __init__(self):
         print("Generic File System")
-        self._server_pdm_name = conf.server_pdm_name
-        self._server_pdm_user = conf.server_pdm_user_name
-        self._server_pdm_path = conf.server_pdm_path
+        # self.server_pdm_name = conf.get_pdm_name()
+        # self.server_pdm_path = conf.get_pdm_path()
+        self._sftp = None
+        self._user = ""
+        self._passwd = ""
 
 
     def create_folder(self):
@@ -47,18 +42,30 @@ class FileSystem():
         # create copy of file with index: for example 12345678.FCStd.2
         raise NotImplementedError("Function create_file_copy is not implemented yet")
 
-    def connect(self): # TODO: also make it work with logging in with a passkey
+    def connect(self, server, user, passwd): # TODO: also make it work with logging in with a passkey
         """Create a new connection to the server with SSHFS"""
-        self._fs = pysftp.Connection(
-            self._server_pdm_name,
-            username=self._user,
-            password=self._passwd
-        )
-        self._fs.cd(self._server_pdm_path)
+        # print("server = " + server + ", user = " + user + ", passwd = " + passwd)
+        self.server_pdm_name = server
+        self._user = user
+        self._passwd = passwd
 
-    def disconnect(self):
+        try:
+            self._sftp = pysftp.Connection(
+                self.server_pdm_name, username=self._user, password=self._passwd
+        )
+        except:
+            # TODO: fill the exeptions in. They are located at: 
+            # https://pysftp.readthedocs.io/en/release_0.2.9/pysftp.html
+            print("something went wrong")
+
+        print(self._sftp.listdir())
+        # self._sftp.cd(self._server_pdm_path)
+        # print(self._sftp.getcwd())
+
+
+    def close(self):
         """Disconnects the connection"""
-        self._fs.close()
+        self._sftp.close()
 
     def import_new_file(self, fname, dest_dir, descr, long_descr=None):
         """import a file inside the PDM. When you import a 
@@ -98,4 +105,9 @@ class FileSystem():
 
     def create_directory(self, dir_name):
         """creates a directory."""
-        self._fs.mkdir(dir_name)
+        self._sftp.mkdir(dir_name)
+
+    def exists(self):
+        """ check wheter there is a connection."""
+        return self._sftp.exists(self.server_pdm_name)
+

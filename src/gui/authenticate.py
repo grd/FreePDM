@@ -14,13 +14,15 @@ from PySide2.QtWidgets import QDialog  # type: ignore
 from PySide2.QtCore import QFile  # type: ignore
 from PySide2.QtUiTools import QUiLoader  # type: ignore
 
-# sys.path.append(os.fspath(Path(__file__).resolve().parents[1] / 'authenticate'))
-# import
+sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
+from filesystem.filesystem import FileSystem as fs
 
 
 class Authenticate(QDialog):
     def __init__(self):
         super(Authenticate, self).__init__()
+
+        self.fs = fs()
 
         loader = QUiLoader()
         path = os.fspath(Path(__file__).resolve().parents[1] / "gui/authenticate.ui")
@@ -29,7 +31,6 @@ class Authenticate(QDialog):
         ui_file.open(QFile.ReadOnly)
         self.ui = loader.load(ui_file, self)
         self.ui.setGeometry(400, 300, 400, 300)
-        self.ui.setWindowTitle("Database Authentication")
         # self.ui.setModal(False)
         # self.ui.setWindowModality(QtCore.Qt.WindowModality(0))
         self.ui.buttonApply.setEnabled(False)
@@ -59,12 +60,19 @@ class Authenticate(QDialog):
     def connect_auth(self):
         """Connect authentication"""
         # TODO: Connect to server
-        # If connect can be applied than
+        # If connect can be applied then:
         # - set properety
         # - activater Apply
         # Else
         # - Show labReturnMessage - Connection failed
-        pass
+
+        server = self.ui.lEditServerPath.text()
+        user = self.ui.lEditUserName.text()
+        password = self.ui.lEditPassword.text()
+
+        self.fs.connect(server, user, password)
+
+        self.ui.close()
 
     def apply_auth(self):
         """Apply authentication"""
@@ -76,6 +84,11 @@ def authenticate_dialog():
     """Start Login / Authentication dialog"""
     print("dialog is running")
     auth = Authenticate()
+    if auth.fs.exists():
+
+        return auth.fs
+    else:
+        return None
 
 
 if __name__ == "__main__":

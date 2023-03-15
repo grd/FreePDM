@@ -38,14 +38,19 @@ hide_versioned_fc_files = 2
 
 class conf():
     def __init__(self):
-        self.startup_directory = ''
+        self.startup_directory = ""
         self.filter: Filter = 0
         self.log_file = ""
         self.logging_is_on = "False"
-        self.fast_loading_dir =  ''
-        self.server_pdm_name: str = ""     # The URL to the server
-        self.server_pdm_username: str = "" # User login name
-        self.server_pdm_path: str = ""     # Path to the PDM
+        self.fast_loading_dir =  ""
+        self.server_pdm_name = ""     # The URL to the server
+        self.server_pdm_path = ""     # Path to the PDM
+
+    def get_pdm_name(self):
+        return self.server_pdm_name
+    
+    def get_pdm_path(self):
+        return self.server_pdm_path
 
     def get_filter(self, filter_flag) -> Filter:
         return self.filter & filter_flag == filter_flag
@@ -64,7 +69,6 @@ class conf():
         self.logging_is_on = config['DEFAULT']['logging_is_on']
         self.fast_loading_dir = config['DEFAULT']['fast_loading_dir']
         self.server_pdm_name = config['DEFAULT']['server_name']
-        self.server_pdm_username = config['DEFAULT']['server_pdm_name']
         self.server_pmd_path = config['DEFAULT']['server_pdm_path']
 
 
@@ -76,7 +80,6 @@ class conf():
         config['DEFAULT']['logging_is_on'] = self.logging_is_on
         config['DEFAULT']['fast_loading_dir'] = self.fast_loading_dir
         config['DEFAULT']['server_name'] = self.server_pdm_name
-        config['DEFAULT']['server_pdm_name'] = self.server_pdm_username
         config['DEFAULT']['server_pdm_path'] = self.server_pdm_path
 
         with open(config_name, 'w') as configfile:
