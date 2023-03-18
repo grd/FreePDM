@@ -98,7 +98,17 @@ class FileSystem():
 
     def check_latest_file_version(self, fname, dir):
         """ returns the latest version number of a file or -1 when the file doesn't exist."""
-        pass
+        """list the sorted directories and latest files only"""
+        prevdir = self.sftp.pwd
+        self.sftp.chdir(dir)
+        file_list = self.sftp.listdir(dir)
+        result = -1
+        for file in file_list:
+            file1, ext1 = os.path.splitext(file)
+            if fname == file1:
+                result = int(ext1[1:])
+        self.sftp.chdir(prevdir)
+        return result
 
     def revision_file(self, fname):
         """increments a file revision number."""
@@ -130,3 +140,4 @@ if __name__ == "__main__":
     fs.connect("10.0.0.11", "user1", "passwd1")
     fs.sftp.cwd("/vault/TestFiles2")
     print(fs.ls())
+    print("checking file number: " + str(fs.check_latest_file_version("0003.FCStd", "/vault/TestFiles2")))
