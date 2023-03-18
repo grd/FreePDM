@@ -8,12 +8,16 @@ TheFilesystem class containes all the things that are needed to manipulate files
 ## Connecting and disconnect
 `connect()` connects to the remote Filesystem. It uses `sftp`. In the config file you need to have a `server_directory=server:/path/to/vault` which points to to the directory of the storage and you need to have write access.
 
-`disconnect()` disconnects the Filesystem.
-
 ## Import / Export of files
 `import_file(fname, dest_dir, descr, long_descr=None)` import a file or files inside the PDM. When you import a file the meta-data also gets imported. The local files remain untouched. When you import a file or files you need to set a directory and a description. The new file inside the PDM gets a revision number automatically.
 
 `export_file(fname, dest_dir)` export a file to a local directory.
+
+## List a directory
+`ls(dir="")` list a sorted directory of only the latest files. All files in the PDM needs a version number, starting with 1.
+
+## Check the latest version of a file (for adding another one)
+`check_latest_file_version(self, fname, dir)`
 
 ## Revision of files
 `revision_file(fname)` increments a file revision number.
@@ -28,9 +32,6 @@ TheFilesystem class containes all the things that are needed to manipulate files
 
 ## Moving files
 `move_file(fname, dest_dir)` moves a file to a different directory.
-
-## Directory
-`create_directory(dir_name)`creates a directory.
 
 ## Access control
 Not written yet.

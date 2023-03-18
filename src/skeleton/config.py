@@ -43,14 +43,8 @@ class conf():
         self.log_file = ""
         self.logging_is_on = "False"
         self.fast_loading_dir =  ""
-        self.server_pdm_name = ""     # The URL to the server
-        self.server_pdm_path = ""     # Path to the PDM
-
-    def get_pdm_name(self):
-        return self.server_pdm_name
-    
-    def get_pdm_path(self):
-        return self.server_pdm_path
+        self.server_name = ""     # The URL to the server
+        self.server_path = ""     # Path to the PDM
 
     def get_filter(self, filter_flag) -> Filter:
         return self.filter & filter_flag == filter_flag
@@ -68,8 +62,8 @@ class conf():
         self.log_file = config['DEFAULT']['log_file']
         self.logging_is_on = config['DEFAULT']['logging_is_on']
         self.fast_loading_dir = config['DEFAULT']['fast_loading_dir']
-        self.server_pdm_name = config['DEFAULT']['server_name']
-        self.server_pmd_path = config['DEFAULT']['server_pdm_path']
+        self.server_name = config['DEFAULT']['server_name']
+        self.server_path = config['DEFAULT']['server_path']
 
 
     def write(self):
@@ -79,18 +73,19 @@ class conf():
         config['DEFAULT']['log_file'] = self.log_file
         config['DEFAULT']['logging_is_on'] = self.logging_is_on
         config['DEFAULT']['fast_loading_dir'] = self.fast_loading_dir
-        config['DEFAULT']['server_name'] = self.server_pdm_name
-        config['DEFAULT']['server_pdm_path'] = self.server_pdm_path
+        config['DEFAULT']['server_name'] = self.server_name
+        config['DEFAULT']['server_path'] = self.server_path
 
         with open(config_name, 'w') as configfile:
             config.write(configfile)
 
 
 # create the new directory if it doesn't exist
-if not os.path.exists(config_dir):
+if not os.path.isdir(config_dir):
     os.makedirs(config_dir)
 
 # create a new config file when it doesn't exist
 if not os.path.isfile(config_name):
     c = conf()
     c.write()
+    print("Created file: " + config_name)

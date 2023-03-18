@@ -22,9 +22,8 @@ class FileSystem():
 
     def __init__(self):
         print("Generic File System")
-        # self.server_pdm_name = conf.get_pdm_name()
-        # self.server_pdm_path = conf.get_pdm_path()
-        self._sftp = None
+        self.conf = conf()
+        self.conf.read()
         self._user = ""
         self._passwd = ""
 
@@ -50,7 +49,7 @@ class FileSystem():
         self._passwd = passwd
 
         try:
-            self._sftp = pysftp.Connection(
+            self.sftp = pysftp.Connection(
                 self.server_pdm_name, username=self._user, password=self._passwd
         )
         except:
@@ -58,25 +57,48 @@ class FileSystem():
             # https://pysftp.readthedocs.io/en/release_0.2.9/pysftp.html
             print("something went wrong")
 
-        print(self._sftp.listdir())
-        # self._sftp.cd(self._server_pdm_path)
-        # print(self._sftp.getcwd())
+        self.sftp.cwd("/vault")
+        return self.sftp
 
-
-    def close(self):
-        """Disconnects the connection"""
-        self._sftp.close()
 
     def import_new_file(self, fname, dest_dir, descr, long_descr=None):
         """import a file inside the PDM. When you import a 
         file the meta-data also gets imported. The local files remain untouched. 
         When you import a file or files you need to set a directory and a description. 
         The new file inside the PDM gets a revision number automatically."""
+        
         raise NotImplementedError("Function import_file is not implemented yet")
 
     def export_file(self, fname, dest_dir):
         """export a file to a local directory."""
         raise NotImplementedError("Function export_file is not implemented yet")
+    
+    def ls(self, dir=""):
+        """list the sorted directories and latest files only"""
+        prevdir = self.sftp.pwd
+        self.sftp.chdir(dir)
+        file_list = self.sftp.listdir(dir)
+        ret_file_list = []
+        for idx, file in enumerate(file_list):
+            if self.sftp.isdir(file):
+                ret_file_list.append(file)
+            if self.sftp.isfile(file):
+                if idx < len(file_list) + 1:
+                    file1, ext1 = os.path.splitext(file)
+                    file2, ext2 = os.path.splitext(file_list[idx+1])
+                    if file1 == file2:
+                        i = int(ext1[1:])
+                        j = int(ext2[1:])
+                        if i + 1 != j:
+                            ret_file_list.append(file)
+                    else:
+                        ret_file_list.append(file) # Adding latest file in dir
+        self.sftp.chdir(prevdir)
+        return ret_file_list
+
+    def check_latest_file_version(self, fname, dir):
+        """ returns the latest version number of a file or -1 when the file doesn't exist."""
+        pass
 
     def revision_file(self, fname):
         """increments a file revision number."""
@@ -103,11 +125,8 @@ class FileSystem():
         raise NotImplementedError("Function move_file is not implemented yet")
         # TODO: This can be a bit tricky because of the multiple files and users that are involved, besides the file name extensions that are ending with '.FCStd.#x'
 
-    def create_directory(self, dir_name):
-        """creates a directory."""
-        self._sftp.mkdir(dir_name)
-
-    def exists(self):
-        """ check wheter there is a connection."""
-        return self._sftp.exists(self.server_pdm_name)
-
+if __name__ == "__main__":
+    fs = FileSystem()
+    fs.connect("10.0.0.11", "user1", "passwd1")
+    fs.sftp.cwd("/vault/TestFiles2")
+    print(fs.ls())
