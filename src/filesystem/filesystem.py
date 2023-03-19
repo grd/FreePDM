@@ -57,6 +57,8 @@ class FileSystem():
             print("something went wrong")
 
         self.sftp.cwd("/vault")
+        print("Connected to: " + self.conf.server_name)
+        print("Vault directory: " + self.conf.server_path)
         return self.sftp
 
 
