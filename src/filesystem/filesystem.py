@@ -21,7 +21,6 @@ class FileSystem():
     """File System related Class"""
 
     def __init__(self):
-        print("Generic File System")
         self.conf = conf()
         self.conf.read()
         self._user = ""
@@ -73,28 +72,27 @@ class FileSystem():
         """export a file to a local directory."""
         raise NotImplementedError("Function export_file is not implemented yet")
     
+
     def ls(self, dir=""):
-        """list the sorted directories and latest files only"""
+        """list the sorted directories and filtered the latest files only"""
         prevdir = self.sftp.pwd
         self.sftp.chdir(dir)
         file_list = self.sftp.listdir(dir)
-        ret_file_list = []
-        for idx, file in enumerate(file_list):
-            if self.sftp.isdir(file):
-                ret_file_list.append(file)
-            if self.sftp.isfile(file):
-                if idx < len(file_list) + 1:
-                    file1, ext1 = os.path.splitext(file)
-                    file2, ext2 = os.path.splitext(file_list[idx+1])
-                    if file1 == file2:
-                        i = int(ext1[1:])
-                        j = int(ext2[1:])
-                        if i + 1 != j:
-                            ret_file_list.append(file)
-                    else:
-                        ret_file_list.append(file) # Adding latest file in dir
+        index = len(file_list)
+        while index > 0:
+            index = index - 1
+            if self.sftp.isdir(file_list[index]):
+                continue
+            file, ext = os.path.splitext(file_list[index])
+            number = int(ext[1:])
+            while number > 1:
+                index = index - 1
+                file1, ext1 = os.path.splitext(file_list[index])
+                if file == file1:
+                    file_list.pop(index)
+                    number = number - 1
         self.sftp.chdir(prevdir)
-        return ret_file_list
+        return file_list
 
     def check_latest_file_version(self, fname, dir):
         """ returns the latest version number of a file or -1 when the file doesn't exist."""
@@ -104,6 +102,8 @@ class FileSystem():
         file_list = self.sftp.listdir(dir)
         result = -1
         for file in file_list:
+            if self.sftp.isdir(file):
+                continue
             file1, ext1 = os.path.splitext(file)
             if fname == file1:
                 result = int(ext1[1:])
@@ -141,3 +141,6 @@ if __name__ == "__main__":
     fs.sftp.cwd("/vault/TestFiles2")
     print(fs.ls())
     print("checking file number: " + str(fs.check_latest_file_version("0003.FCStd", "/vault/TestFiles2")))
+    print("checking file number: " + str(fs.check_latest_file_version("v0.FCStd", "/vault/TestFiles2")))
+    print("checking file number: " + str(fs.check_latest_file_version("bla.FCStd", "/vault/TestFiles2")))
+    
