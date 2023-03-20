@@ -13,6 +13,9 @@ TheFilesystem class containes all the things that are needed to manipulate files
 
 `export_file(fname, dest_dir)` export a file to a local directory.
 
+## Create a directory
+`mkdir(dname)` Creates a new directory inside the current directory, with the correct uid and gid.
+
 ## List a directory
 `ls(dir="")` list a sorted directory of only the latest files. All files in the PDM needs a version number, starting with 1.
 

@@ -68,7 +68,11 @@ class FileSystem():
     def export_file(self, fname, dest_dir):
         """export a file to a local directory."""
         raise NotImplementedError("Function export_file is not implemented yet")
-    
+
+    def mkdir(dname):
+        """Creates a new directory inside the current directory."""
+        # Note: chown(uid en gid)
+        pass
 
     def ls(self, dir):
         """list the sorted directories and filtered the latest files only"""
@@ -91,12 +95,10 @@ class FileSystem():
         self.sftp.chdir(prevdir)
         return file_list
 
-    def check_latest_file_version(self, fname, dir):
-        """ returns the latest version number of a file or -1 when the file doesn't exist."""
-        """list the sorted directories and latest files only"""
-        prevdir = self.sftp.pwd
-        self.sftp.chdir(dir)
-        file_list = self.sftp.listdir(dir)
+    def check_latest_file_version(self, fname):
+        """ returns the latest version number of a file in the current
+        directory or -1 when the file doesn't exist."""
+        file_list = self.sftp.listdir()
         result = -1
         for file in file_list:
             if self.sftp.isdir(file):
@@ -104,12 +106,23 @@ class FileSystem():
             file1, ext1 = os.path.splitext(file)
             if fname == file1:
                 result = int(ext1[1:])
-        self.sftp.chdir(prevdir)
         return result
 
     def revision_file(self, fname):
         """copy a file and increments revision number."""
-        raise NotImplementedError("Function revision is not implemented yet")
+        self.sftp.get(fname)
+        file, ext = os.path.splitext(fname)
+        ext_int = int(ext[1:])
+        ext_int += 1
+        new_file = file + "." + str(ext_int)
+        os.rename(fname, new_file)
+        self.sftp.put(new_file)
+        self.sftp.chown(remotepath=new_file, uid=1002, gid=1001)
+        # TODO: The uid and gid needs to come from somewhere. ATM it is fixed, which is wrong.
+        # But for the working it is essential.
+        os.remove(new_file)
+
+
 
     def checkout_file(self, fname):
         """locks a file so that others can't accidentally check-in a different file."""
@@ -137,6 +150,10 @@ if __name__ == "__main__":
     fs.connect("10.0.0.11", "user1", "passwd1")
     fs.sftp.cwd("/vault/TestFiles2")
     print(fs.ls("/vault/TestFiles2"))
-    print("checking file number: " + str(fs.check_latest_file_version("0003.FCStd", "/vault/TestFiles2")))
-    print("checking file number: " + str(fs.check_latest_file_version("v0.FCStd", "/vault/TestFiles2")))
-    print("checking file number: " + str(fs.check_latest_file_version("bla.FCStd", "/vault/TestFiles2")))
+    print("checking file number: " + str(fs.check_latest_file_version("0003.FCStd")))
+    print("checking file number: " + str(fs.check_latest_file_version("v0.FCStd")))
+    print("checking file number: " + str(fs.check_latest_file_version("non_existing_file.FCStd")))
+    rev = fs.check_latest_file_version("0003.FCStd")
+    new_file = "0003.FCStd" + "." + str(rev)
+    fs.revision_file(new_file)
+    print("checking file number: " + str(fs.check_latest_file_version("0003.FCStd")))
