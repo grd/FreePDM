@@ -84,11 +84,12 @@ def authenticate_dialog():
     """Start Login / Authentication dialog"""
     print("dialog is running")
     auth = Authenticate()
-    if auth.fs.exists():
+    return auth.fs
+    # if auth.fs.exists():
 
-        return auth.fs
-    else:
-        return None
+    #     return auth.fs
+    # else:
+    #     return None
 
 
 if __name__ == "__main__":
