@@ -9,13 +9,9 @@ import os
 import sys
 from pathlib import Path
 import pysftp
-from PySide2.QtWidgets import QDialog  # type: ignore
-from PySide2.QtCore import QFile  # type: ignore
-from PySide2.QtUiTools import QUiLoader  # type: ignore
 
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
 from skeleton.config import conf
-
 
 class FileSystem():
     """File System related Class"""
@@ -64,10 +60,9 @@ class FileSystem():
 
     def import_new_file(self, fname, dest_dir, descr, long_descr=None):
         """import a file inside the PDM. When you import a 
-        file the meta-data also gets imported. The local files remain untouched. 
-        When you import a file or files you need to set a directory and a description. 
+        file the meta-data also gets imported, which means uploaded to the server.
+        When you import a file or files you are placing the new file in the current directory. 
         The new file inside the PDM gets a revision number automatically."""
-        
         raise NotImplementedError("Function import_file is not implemented yet")
 
     def export_file(self, fname, dest_dir):
@@ -75,7 +70,7 @@ class FileSystem():
         raise NotImplementedError("Function export_file is not implemented yet")
     
 
-    def ls(self, dir=""):
+    def ls(self, dir):
         """list the sorted directories and filtered the latest files only"""
         prevdir = self.sftp.pwd
         self.sftp.chdir(dir)
@@ -113,7 +108,7 @@ class FileSystem():
         return result
 
     def revision_file(self, fname):
-        """increments a file revision number."""
+        """copy a file and increments revision number."""
         raise NotImplementedError("Function revision is not implemented yet")
 
     def checkout_file(self, fname):
@@ -141,8 +136,7 @@ if __name__ == "__main__":
     fs = FileSystem()
     fs.connect("10.0.0.11", "user1", "passwd1")
     fs.sftp.cwd("/vault/TestFiles2")
-    print(fs.ls())
+    print(fs.ls("/vault/TestFiles2"))
     print("checking file number: " + str(fs.check_latest_file_version("0003.FCStd", "/vault/TestFiles2")))
     print("checking file number: " + str(fs.check_latest_file_version("v0.FCStd", "/vault/TestFiles2")))
     print("checking file number: " + str(fs.check_latest_file_version("bla.FCStd", "/vault/TestFiles2")))
-    

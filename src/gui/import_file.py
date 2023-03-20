@@ -31,27 +31,36 @@ class ImportFile(QDialog):
 
         # button clicked
         self.ui.file_button.clicked.connect(self.file_button)
+        self.ui.remove_file.clicked.connect(self.remove_file)
         self.ui.buttonBox.accepted.connect(self.apply_file)
         self.ui.buttonBox.rejected.connect(self.cancel_file)
 
         self.ui.exec()
 
+    def remove_file(self):
+        # TODO: Also ask whether to remove the backup file(s)
+        print("pressed")
+
+        
     def cancel_file(self):
         """Cancel file import"""
+        print("cancel button pushed")
         self.ui.close()
 
     def file_button(self):
         """Select the file"""
-        dlg = QFileDialog()
+        dlg = QFileDialog(self)
         dlg.setFileMode(QFileDialog.AnyFile)
-        # dlg.setFilter("Text files (*.txt)")
+        dlg.setNameFilters(["FreeCAD files (*.FCStd)", "All files (*.*)"])
+        dlg.selectNameFilter("FreeCAD files (*.FCStd)")
 
         if dlg.exec_():
             filenames = dlg.selectedFiles()
-            print(filenames)
+            self.ui.file_edit.setText(filenames[0])
 
     def apply_file(self):
         """Apply file import"""
+        print("Ok button pushed")
         # TODO: Apply connection == save connection state
         pass
 
