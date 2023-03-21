@@ -19,9 +19,6 @@ class FileSystem():
     def __init__(self):
         self.conf = conf()
         self.conf.read()
-        self._user = ""
-        self._passwd = ""
-
 
     def create_folder(self):
         """Create new folder"""
@@ -113,11 +110,12 @@ class FileSystem():
     def revision_file(self, fname):
         """copy a file and increments revision number."""
         # TODO; make it work for older files and not simply overwrite the files.
+        # TODO: we should have to deal with version ".999"
         self.sftp.get(fname)
         file, ext = os.path.splitext(fname)
         ext_int = int(ext[1:])
         ext_int += 1
-        new_file = file + "." + str(ext_int)
+        new_file = file + "." + str(ext_int).zfill(3)
         os.rename(fname, new_file)
         self.sftp.put(new_file)
         self.sftp.chown(remotepath=new_file, uid=self._user_uid, gid=self._vault_uid)
@@ -139,23 +137,10 @@ class FileSystem():
         """rename a file, for instance when he or she wants to use a file 
         with a specified numbering system."""
         raise NotImplementedError("Function rename_file is not implemented yet")
-        # TODO: This can be a bit tricky because of the multiple files and users that are involved, besides the file name extensions that are ending with '.FCStd.#x'
+        # TODO: This can be a bit tricky because of the multiple files and users that are involved.
 
     def move_file(self, fname, dest_dir):
         """moves a file to a different directory."""
         raise NotImplementedError("Function move_file is not implemented yet")
-        # TODO: This can be a bit tricky because of the multiple files and users that are involved, besides the file name extensions that are ending with '.FCStd.#x'
+        # TODO: This can be a bit tricky because of the multiple files and users that are involved
 
-if __name__ == "__main__":
-    fs = FileSystem()
-    fs.connect("10.0.0.11", "user1", "passwd1")
-    fs.sftp.cwd("/vault/TestFiles2")
-    print(fs.sftp.listdir())
-    print(fs.ls("/vault/TestFiles2"))
-    print("checking file number: " + str(fs.check_latest_file_version("0003.FCStd")))
-    print("checking file number: " + str(fs.check_latest_file_version("v0.FCStd")))
-    print("checking file number: " + str(fs.check_latest_file_version("non_existing_file.FCStd")))
-    rev = fs.check_latest_file_version("0003.FCStd")
-    new_file = "0003.FCStd" + "." + str(rev)
-    fs.revision_file(new_file)
-    print("checking file number: " + str(fs.check_latest_file_version("0003.FCStd")))
