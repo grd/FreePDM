@@ -45,12 +45,20 @@ class conf():
         self.fast_loading_dir =  ""
         self.server_name = ""     # The URL to the server
         self.server_path = ""     # Path to the PDM
+        self.vault_uid: int = -1
+        self.user_uid: int = -1
 
     def get_filter(self, filter_flag) -> Filter:
         return self.filter & filter_flag == filter_flag
 
     def set_filter(self, filter_flag):
         self.filter = self.filter | filter_flag
+
+    def get_user_uid(self, user: str) -> int:
+        config = configparser.ConfigParser()
+        config.read(config_name)
+        return int(config['user'][user])
+
 
     def read(self):
         config = configparser.ConfigParser()
@@ -64,6 +72,7 @@ class conf():
         self.fast_loading_dir = config['DEFAULT']['fast_loading_dir']
         self.server_name = config['DEFAULT']['server_name']
         self.server_path = config['DEFAULT']['server_path']
+        self.vault_uid = int(config['user']['vault'])
 
 
     def write(self):

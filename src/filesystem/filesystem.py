@@ -42,6 +42,8 @@ class FileSystem():
         self.server_pdm_name = server
         self._user = user
         self._passwd = passwd
+        self._user_uid = self.conf.get_user_uid(self._user)
+        self._vault_uid = self.conf.vault_uid
 
         try:
             self.sftp = pysftp.Connection(
@@ -69,10 +71,10 @@ class FileSystem():
         """export a file to a local directory."""
         raise NotImplementedError("Function export_file is not implemented yet")
 
-    def mkdir(dname):
-        """Creates a new directory inside the current directory."""
-        # Note: chown(uid en gid)
-        pass
+    def mkdir(self, dname):
+        """Creates a new directory inside the current directory, with the correct uid and gid."""
+        self.sftp.mkdir(dname)
+        self.sftp.chown(remotepath=dname, uid=self._user_uid, gid=self._vault_uid)
 
     def ls(self, dir):
         """list the sorted directories and filtered the latest files only"""
@@ -110,6 +112,7 @@ class FileSystem():
 
     def revision_file(self, fname):
         """copy a file and increments revision number."""
+        # TODO; make it work for older files and not simply overwrite the files.
         self.sftp.get(fname)
         file, ext = os.path.splitext(fname)
         ext_int = int(ext[1:])
@@ -117,9 +120,7 @@ class FileSystem():
         new_file = file + "." + str(ext_int)
         os.rename(fname, new_file)
         self.sftp.put(new_file)
-        self.sftp.chown(remotepath=new_file, uid=1002, gid=1001)
-        # TODO: The uid and gid needs to come from somewhere. ATM it is fixed, which is wrong.
-        # But for the working it is essential.
+        self.sftp.chown(remotepath=new_file, uid=self._user_uid, gid=self._vault_uid)
         os.remove(new_file)
 
 
@@ -149,6 +150,7 @@ if __name__ == "__main__":
     fs = FileSystem()
     fs.connect("10.0.0.11", "user1", "passwd1")
     fs.sftp.cwd("/vault/TestFiles2")
+    print(fs.sftp.listdir())
     print(fs.ls("/vault/TestFiles2"))
     print("checking file number: " + str(fs.check_latest_file_version("0003.FCStd")))
     print("checking file number: " + str(fs.check_latest_file_version("v0.FCStd")))
