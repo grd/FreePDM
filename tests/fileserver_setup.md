@@ -8,9 +8,12 @@ servername: 10.0.0.11
 
 path: "/vault/"
 
-usernames:
-inlogname1: user1, passwd: passwd1 (use your own loginname and password)
-inlogname2: user2, passwd: passwd2 (use your own loginname and password)
+example usernames and passwords:
+
+login name 1: user1, passwd: passwd1
+
+login name 2: user2, passwd: passwd2
+
 
 The following commands are all in root (use `sudo su`):
 
@@ -26,6 +29,15 @@ usermod -aG vault myadmin
 mkdir /vault
 chown vault:vault /vault
 chmod g+w vault
+```
+
+While still in `ssh` have a look at `/etc/group` and write down the number behind the users `vault`, `user1` and `user2`, but keep in mind to use different names. After you completed the following you need to write down in the `FreePDM.conf` file that is stored (in Ubuntu) in the `.cache` or `.config` directory the following, at the bottom:
+
+```
+[user]
+vault = 1000
+user1 = 1001
+user2 = 1002
 ```
 
 Testing things out: Download FreePDM with this command: `git pull https://github.com/grd/FreePDM` then go to the directory `tests` and run `python3 fileserver.py` and if it runs then it is done.
