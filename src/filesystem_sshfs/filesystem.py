@@ -14,6 +14,7 @@ from typing import List
 
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
 from skeleton.config import conf
+from filesystem_sshfs import file_index
 
 class FileSystem():
     """File System related Class"""
@@ -21,6 +22,7 @@ class FileSystem():
     def __init__(self):
         self.conf = conf()
         self.conf.read()
+        self._index = file_index.FileIndex()
         self._user: str
         self._passwd: str
         self._user_uid = self.conf.get_user_uid(self._user)
@@ -34,6 +36,7 @@ class FileSystem():
         self._vault_dir = vault_dir
         self._main_pdm_dir = path.join(self._vault_dir, "/PDM")
         self.current_working_dir = self._main_pdm_dir
+        self._index.init(self._vault_dir, self._user_uid, self._vault_uid)
 
     def import_new_file(self, fname, dest_dir, descr, long_descr=None):
         """import a file inside the PDM. When you import a 
