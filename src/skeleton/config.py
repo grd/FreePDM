@@ -38,7 +38,6 @@ hide_versioned_fc_files = 2
 
 class conf():
     def __init__(self):
-        self.startup_directory = ""
         self.filter: Filter = 0
         self.log_file = ""
         self.logging_is_on = "False"
@@ -65,7 +64,6 @@ class conf():
         config.read(config_name)
 
         # reading variables from section: 'DEFAULT'
-        self.startup_directory = config['DEFAULT']['startup_directory']
         self.filter = int(config['DEFAULT']['filter'])
         self.log_file = config['DEFAULT']['log_file']
         self.logging_is_on = config['DEFAULT']['logging_is_on']
@@ -77,7 +75,6 @@ class conf():
 
     def write(self):
         config = configparser.ConfigParser()
-        config['DEFAULT']['startup_directory'] = self.startup_directory
         config['DEFAULT']['filter'] = str(self.filter)
         config['DEFAULT']['log_file'] = self.log_file
         config['DEFAULT']['logging_is_on'] = self.logging_is_on

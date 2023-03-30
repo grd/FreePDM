@@ -80,17 +80,17 @@ class FileSystem():
         file_list = self.sftp.listdir(dir)
         index = len(file_list)
         while index > 0:
-            index = index - 1
+            index -= 1
             if self.sftp.isdir(file_list[index]):
                 continue
             file, ext = os.path.splitext(file_list[index])
             number = int(ext[1:])
-            while number > 1:
-                index = index - 1
+            while number > 0:
+                index -= 1
                 file1, ext1 = os.path.splitext(file_list[index])
                 if file == file1:
                     file_list.pop(index)
-                    number = number - 1
+                    number -= 1
         self.sftp.chdir(prevdir)
         return file_list
 
@@ -121,8 +121,6 @@ class FileSystem():
         self.sftp.chown(remotepath=new_file, uid=self._user_uid, gid=self._vault_uid)
         os.remove(new_file)
 
-
-
     def checkout_file(self, fname):
         """locks a file so that others can't accidentally check-in a different file."""
         raise NotImplementedError("Function checkout_file is not implemented yet")
@@ -133,14 +131,28 @@ class FileSystem():
         raise NotImplementedError("Function checkin_file is not implemented yet")
 
 
-    def rename_file(self, fname):
-        """rename a file, for instance when he or she wants to use a file 
+    def rename(self, src, dest):
+        """rename a directory or a file, for instance when he or she wants to use a file 
         with a specified numbering system."""
-        raise NotImplementedError("Function rename_file is not implemented yet")
-        # TODO: This can be a bit tricky because of the multiple files and users that are involved.
+        if self.sftp.isdir(src):
+            try:
+                self.sftp.rename(src, dest)
+            except IOError:
+                return "The new directory already exist. Can't rename the directory."
+        else:
+            file, ext = os.path.splitext(src)
+            file_list = self.sftp.listdir()
+            for item in file_list:
+                file1, ext1 = os.path.splitextitem(item)
+                if file == file1:
+                    try:
+                        self.sftp.rename(item, dest + ext1)
+                    except IOError:
+                        return "The new file already exist. Can't rename the file."
+        return "The file(s) is / are successfully renamed"
 
     def move_file(self, fname, dest_dir):
         """moves a file to a different directory."""
         raise NotImplementedError("Function move_file is not implemented yet")
-        # TODO: This can be a bit tricky because of the multiple files and users that are involved
+        # TODO: This can be a bit tricky because of the multiple files.
 

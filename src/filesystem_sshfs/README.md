@@ -32,8 +32,8 @@ TheFilesystem class containes all the things that are needed to manipulate files
 
 `checkin_file(fname, descr, long_descr=None)`removes the locking but also uploads the file to the PDM. You need to write a description of what you did.
 
-## Renaming of file
-`rename_file(fname)` rename a file, for instance when he or she wants to use a file with a specified numbering system.
+## Renaming of directory or file
+`rename(src, dest)` rename a directory or a file, for instance when he or she wants to use a file with a specified numbering system.
 
 ## Moving files
 `move_file(fname, dest_dir)` moves a file to a different directory.
