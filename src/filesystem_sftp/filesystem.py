@@ -5,6 +5,10 @@
     :license:   MIT License.
 """
 
+"""
+    This code is obsolete. It has been replaced by another FileSystem.
+"""
+
 import os
 import sys
 from pathlib import Path
