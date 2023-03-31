@@ -56,7 +56,8 @@ class conf():
     def get_user_uid(self, user: str) -> int:
         config = configparser.ConfigParser()
         config.read(config_name)
-        return int(config['user'][user])
+        int_ret = int(config['user'][user])
+        return int_ret
 
 
     def read(self):

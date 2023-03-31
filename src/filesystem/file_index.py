@@ -12,6 +12,9 @@ from pathlib import Path
 from typing import List
 from datetime import date
 
+# TODO: Optimize the index by making it a tuple and reading from that tuple binary.
+#       This index should also include the file location.
+
 class FileIndex():
     """File Index Files in the root"""
 

@@ -17,9 +17,9 @@ from src.skeleton.config import conf
 
 if __name__ == "__main__":
     fs = FileSystem()
-    fs.connect("10.0.0.11", "user1", "passwd1")
-    fs.sftp.cwd("/vault/TestFiles2")
-    print(fs.ls("/vault/TestFiles2"))
+    fs.connect("/mnt/test/vault1", "user1", "passwd1")
+    os.chdir("/vault/TestFiles3")
+    print(fs.listdir())
     print("checking file number: " + str(fs.check_latest_file_version("0003.FCStd")))
     print("checking file number: " + str(fs.check_latest_file_version("v0.FCStd")))
     print("checking file number: " + str(fs.check_latest_file_version("non_existing_file.FCStd")))
@@ -28,11 +28,4 @@ if __name__ == "__main__":
     fs.revision_file(new_file)
     print("checking file number: " + str(fs.check_latest_file_version("0003.FCStd")))
 
-    # s1 = "023"
-    # i = int(s1)
-    # print("str to int check: " + str(i))
-    # i2 = 0
-    # s2 = str(i2).zfill(3)
-    # print("s2 = " + s2)
-
-    fs.sftp.close()
+    fs.rename("0003.FCStd.003", "0001.FCStd")

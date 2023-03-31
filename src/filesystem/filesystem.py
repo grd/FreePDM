@@ -14,7 +14,7 @@ from typing import List
 
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
 from skeleton.config import conf
-from filesystem_sshfs import file_index
+from filesystem import file_index
 
 class FileSystem():
     """File System related Class"""
@@ -25,13 +25,13 @@ class FileSystem():
         self._index = file_index.FileIndex()
         self._user: str
         self._passwd: str
-        self._user_uid = self.conf.get_user_uid(self._user)
         self._vault_uid = self.conf.vault_uid
         self._main_pdm_dir: str
         self.current_working_dir: str
 
-    def connect(self, user, passwd, vault_dir: str):
+    def connect(self, vault_dir, user, passwd: str):
         self._user = user
+        self._user_uid = self.conf.get_user_uid(self._user)
         self._passwd = passwd
         self._vault_dir = vault_dir
         self._main_pdm_dir = path.join(self._vault_dir, "/PDM")
@@ -99,12 +99,12 @@ class FileSystem():
             file_names = IOBase.readline()
         return file_names
 
-    def listdir(self) -> List[str, str]:
+    def listdir(self) -> List[str]:
         """list the sorted directories and files of the current working directory"""
         dir_list = os.listdir(self.current_working_directory)
         directory_list = []
         file_list = []
-        sub_dir_list: List[str, str]
+        sub_dir_list: List[str]
 
         for sub_dir in dir_list:
             if path.isdir(sub_dir):
@@ -117,13 +117,13 @@ class FileSystem():
                 os.chdir('..')
 
         if path.abspath(self.current_working_dir) != self._main_pdm_dir:
-            sub_dir_list.append([['d'], ['..']])
+            sub_dir_list.append("d: ..")
 
         for sub_dir in directory_list:
-            sub_dir_list.append([['d'], [sub_dir]])
+            sub_dir_list.append("d: " + sub_dir)
 
         for file in file_list:
-            sub_dir_list.append([['f'], [file]])
+            sub_dir_list.append(file)
         
         return sub_dir_list
 

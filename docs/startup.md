@@ -21,7 +21,6 @@ TODO: Show how to
 pip install PySide2
 pip install appdirs
 pip install defusedxml
-pip install pysftp
 ```
 
 #### CSV

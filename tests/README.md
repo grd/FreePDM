@@ -8,7 +8,7 @@ servername: 10.0.0.11
 
 path: "/vault/"
 
-example usernames and passwords:
+### example usernames and passwords:
 
 login name 1: user1, passwd: passwd1
 
@@ -40,4 +40,23 @@ user1 = 1001
 user2 = 1002
 ```
 
-Testing things out: Download FreePDM with this command: `git pull https://github.com/grd/FreePDM` then go to the directory `tests` and run `python3 fileserver.py` and if it runs then it is done.
+### Testing things out in Ubnutu Linux: 
+
+1. Install pip modules: 
+```pip install PySide2
+pip install appdirs
+pip install defusedxml
+```
+1. System update: `sudo apt update`
+1. Install sshfs: `sudo apt install sshfs`
+1. Make a directory : `sudo mkdir /mnt/test`
+1. Mount your drive: `sudo sshfs -o allow_other user1@10.0.0.11:/vault /mnt/test`
+1. Download FreePDM with this command: `git pull https://github.com/grd/FreePDM` 
+
+### Installing a new Vault
+
+In the FreePDM directory go to the directory `tests` and run `python3 create_new_vault.py`. 
+
+### Testing a vault
+
+In the FreePDM directory go to the directory `tests` and run `python3 fileserver.py` and if it runs then it is done.
