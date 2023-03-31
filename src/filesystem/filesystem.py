@@ -30,13 +30,16 @@ class FileSystem():
         self.current_working_dir: str
 
     def connect(self, vault_dir, user, passwd: str):
+        os.chdir(vault_dir)
+        print("Vault dir: " + os.getcwd())
         self._user = user
         self._user_uid = self.conf.get_user_uid(self._user)
         self._passwd = passwd
         self._vault_dir = vault_dir
-        self._main_pdm_dir = path.join(self._vault_dir, "/PDM")
+        self._main_pdm_dir = path.join(self._vault_dir, "PDM")
         self.current_working_dir = self._main_pdm_dir
         self._index.init(self._vault_dir, self._user_uid, self._vault_uid)
+        os.chdir(self.current_working_dir)
 
     def import_new_file(self, fname, dest_dir, descr, long_descr=None):
         """import a file inside the PDM. When you import a 

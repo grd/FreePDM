@@ -87,7 +87,10 @@ if __name__ == "__main__":
     open(file_location, 'a').close()
     os.chown(file_location, user_uid, vault_uid)
 
-    print("Two files have been created: 'All Files.txt' and 'FileLocation.txt'")
+    os.mkdir("PDM")
+    os.chown('PDM', user_uid, vault_uid)
+
+    print("Three files have been created: 'All Files.txt', 'FileLocation.txt' and the directory 'PDM")
     print("")
     print(os.listdir())
     print("")
