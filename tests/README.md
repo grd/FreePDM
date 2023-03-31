@@ -14,6 +14,10 @@ login name 1: user1, passwd: passwd1
 
 login name 2: user2, passwd: passwd2
 
+### Loggin in the server
+`ssh ubuntu@10.0.0.11`
+
+The password is `ubuntu`. The loginscreen asks you to modify the password.
 
 The following commands are all in root (use `sudo su`):
 
