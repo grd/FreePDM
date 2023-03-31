@@ -43,17 +43,19 @@ user2 = 1002
 ### Testing things out in Ubnutu Linux: 
 
 1. Install pip modules: 
-```pip install PySide2
+```
+pip install PySide2
 pip install appdirs
 pip install defusedxml
+pip install sshfs
 ```
 1. System update: `sudo apt update`
 1. Install sshfs: `sudo apt install sshfs`
 1. Make a directory : `sudo mkdir /mnt/test`
-1. Mount your drive: `sudo sshfs -o allow_other user1@10.0.0.11:/vault /mnt/test`
+1. Mount your drive: `sudo sshfs -o allow_other user1@10.0.0.11:/vault /mnt/test` (Advise: Make a alias for that in your `.bashrc`)
 1. Download FreePDM with this command: `git pull https://github.com/grd/FreePDM` 
 
-### Installing a new Vault
+### Creating a new Vault
 
 In the FreePDM directory go to the directory `tests` and run `python3 create_new_vault.py`. 
 
