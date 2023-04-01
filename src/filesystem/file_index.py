@@ -7,13 +7,15 @@
 
 import os
 from os import path
-import sys
-from pathlib import Path
 from typing import List
 from datetime import date
 
-# TODO: Optimize the index by making it a tuple and reading from that tuple binary.
-#       This index should also include the file location.
+""" TODO: 1. Combine both indexes into one, but only after the index
+             is working completely and is tested!!! """
+
+""" TODO: 2. Optimize the index by making it a tuple and
+             reading from / writing to that tuple binary."""
+
 
 class FileIndex():
     """File Index Files in the root"""
@@ -24,8 +26,22 @@ class FileIndex():
         self._vault_uid = vault_uid
         if not path.isdir(vault_dir):
             raise FileNotFoundError("Directory " + vault_dir + " does not exist.")
+
+        """
+            The self.file_index is a List with three fields:
+            0. The number. This is a integer. This is the name of the directory inside the PDM.
+            1. The file name.
+            2. The previous name of the file including the date when the file was renamed.
+        """
         self.file_index: List[int, str, str]
+
+        """
+            The self.file_location_list is a List with two fields:
+            0. The number. This is a integer. This is the name of the directory.
+            1. The location, in what directory the file was stored, offset from '<VaultDir>/PDM/'.
+        """
         self.file_location_list: List[int, str]
+
         self.all_files_txt = path.join(self.vault_dir, "All Files.txt")
         self.file_location_txt = path.join(self.vault_dir, "FileLocation.txt")
 
@@ -38,6 +54,9 @@ class FileIndex():
 
 
     def read(self):
+        """ Reads the values from both "All Files.txt" and "FileLocation.txt",
+            and stores the data into memory. """
+
         with open(self.all_files_txt, "r") as file:
             while (line := file.readline()):
                 index, complete_file_name = line.split("=")
@@ -53,7 +72,11 @@ class FileIndex():
 
 
     def add_item(self, name, dir: str):
-        """ This code only adds items to the index."""
+        """ Adds the item from both self.file_index and self.file_location_list
+            and store the information on disk.
+
+            It does not add a file on disk. """
+
         self.read() # refreshing the index
         index_len = len(self.file_index)
 
@@ -69,7 +92,17 @@ class FileIndex():
 
 
     def rename_item(self, index: int, new_name: str):
+        """ Renames the filename to new_name in self.file_index
+            and store the information on disk.
+
+            It does not rename a file on disk. """
+
         self.read() # refreshing index
+
+        # check whether new name already exist
+        for item in self.file_index:
+            if new_name == item[1]:
+                raise IndexError("Duplicate file in index: " + new_name)
 
         for item in self.file_index:
             if index == item[0]:
@@ -86,9 +119,54 @@ class FileIndex():
         os.chown(self.all_files_txt, self._user_uid, self._vault_uid)
 
 
-    def remove_item(self, item: str):
-        pass
+    def remove_item(self, filename: str) -> int:
+        """ Removes the filename both self.file_index and self.file_location_list
+            and store the information on disk.
+
+            It does not remove a file on disk. """
+
+        self.read() # refreshing the index
+
+        index = -1
+
+        for idx, item in enumerate(self.file_index):
+            if filename == item[1]:
+                index = idx
+                break
+
+        if index == -1:
+            return -1
+
+        self.file_index.pop(index)
+        self.file_location_list.pop(index)
+
+        with open(self.all_files_txt, "w") as file:
+            for item in self.file_index:
+                file.write(str(item[0]) + "=" + item[1] + item[2] + "\n")
+        os.chown(self.all_files_txt, self._user_uid, self._vault_uid)
+
+        with open(self.file_location_txt, "a") as file:
+            for item in self.file_location_list:
+                file.write(str(item[0]) + "=" + item[1] + "\n")
+        os.chown(self.file_location_txt, self._user_uid, self._vault_uid)
+
+        return index
+
 
     def get_filename_index(self, name: str) -> int:
-        pass
+        """ Returns the index number of the file name,
+            or -1 when the file is not found. """
 
+        for item in self.file_index:
+            if name == item[1]:
+                return item[0]
+
+        return -1  # not found the name
+
+
+    def move_item(self, filename, new_filename: str):
+        """ Moves the filename to new_filename in both self.file_index and self.file_location_list
+            and store the information on disk.
+
+            It does not move a file on disk. """
+        pass
