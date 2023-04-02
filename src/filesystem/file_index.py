@@ -8,7 +8,7 @@
 import os
 from os import path
 from typing import List
-from datetime import date
+from datetime import datetime
 
 """ TODO: 1. Combine both indexes into one, but only after the index
              is working completely and is tested!!! """
@@ -33,22 +33,28 @@ class FileIndex():
             1. The file name.
             2. The previous name of the file including the date when the file was renamed.
         """
-        self.file_index: List[int, str, str]
+        self.file_index: List[int, str, str] = []
 
         """
             The self.file_location_list is a List with two fields:
             0. The number. This is a integer. This is the name of the directory.
             1. The location, in what directory the file was stored, offset from '<VaultDir>/PDM/'.
         """
-        self.file_location_list: List[int, str]
+        self.file_location_list: List[int, str] = []
 
         self.all_files_txt = path.join(self.vault_dir, "All Files.txt")
         self.file_location_txt = path.join(self.vault_dir, "FileLocation.txt")
+
+        self.index_number: int
+        self.index_number_txt = path.join(self.vault_dir, "IndexNumber.txt")
 
         if not path.isfile(self.all_files_txt):
             raise FileNotFoundError("File " + self.all_files_txt + " does not exist.")
         if not path.isfile(self.file_location_txt):
             raise FileNotFoundError("File " + self.file_location_txt + " does not exist.")
+
+        if not path.isfile(self.index_number_txt):
+            raise FileNotFoundError("File " + self.index_number_txt + " does not exist.")
 
         self.read() # read the indexes
 
@@ -60,10 +66,14 @@ class FileIndex():
         with open(self.all_files_txt, "r") as file:
             while (line := file.readline()):
                 index, complete_file_name = line.split("=")
-                file_name, rename_name = complete_file_name.split("<")
-                if len(rename_name) > 0:
-                    rename_name.removesuffix(">")
-                self.file_index.append([int(index), file_name, rename_name])
+                if complete_file_name.find("<") != -1:
+                    file_name, rename_name = complete_file_name.split("<")
+                    if len(rename_name) > 0:
+                        rename_name.removesuffix(">")
+                    self.file_index.append([int(index), file_name, rename_name])
+                else:
+                    self.file_index.append([int(index), complete_file_name, ""])
+
 
         with open(self.file_location_txt, "r") as file:
             while (line := file.readline()):
@@ -71,14 +81,34 @@ class FileIndex():
                 self.file_location_list.append([int(index), path_name])
 
 
-    def add_item(self, name, dir: str):
+    def _increase_index_number(self) -> int:
+        """Increases the index number, that is stored in the file 'IndexNumber.txt' 
+           in the root directory of the vault."""
+
+        with open(self.index_number_txt, "r") as file:
+            self.index_number = int(file.readline())
+
+        with open(self.index_number_txt, "w") as file:
+            file.write(str(self.index_number + 1))
+
+        os.chown(self.index_number_txt, self._user_uid, self._vault_uid)
+
+        print("The index number = " + str(self.index_number))
+ 
+        return self.index_number
+
+ 
+    def add_item(self, name, dir: str) -> int:
         """ Adds the item from both self.file_index and self.file_location_list
-            and store the information on disk.
+            and store the information on disk. Returns the index number.
 
             It does not add a file on disk. """
 
         self.read() # refreshing the index
-        index_len = len(self.file_index)
+
+        index_len = self._increase_index_number()
+        self.file_index.append([index_len, name, ""])
+        self.file_location_list.append([index_len, dir])
 
         with open(self.all_files_txt, "a") as file:
             file.write(str(index_len) + "=" + name + "\n")
@@ -89,6 +119,8 @@ class FileIndex():
         os.chown(self.file_location_txt, self._user_uid, self._vault_uid)
 
         self.read() # again refreshing the index
+
+        return index_len
 
 
     def rename_item(self, index: int, new_name: str):
@@ -108,7 +140,7 @@ class FileIndex():
             if index == item[0]:
                 old_filename = item[1]
                 item[1] = new_name
-                today = date.today()
+                today = today()
                 item[2] = "<" + old_filename + "," + today + ">"
                 break
 
@@ -170,3 +202,8 @@ class FileIndex():
 
             It does not move a file on disk. """
         pass
+
+
+def today():
+    # helper function
+    return datetime.today().isoformat()

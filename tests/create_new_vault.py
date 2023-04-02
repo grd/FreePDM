@@ -76,16 +76,21 @@ if __name__ == "__main__":
 
     os.chdir(vault_dir)
 
-    # creating two files: 'All Files.txt' and 'FileLocation.txt'
+    # creating three files: 'All Files.txt', 'FileLocation.txt' and 'IndexNumber.txt'
 
     all_files = "All Files.txt"
     file_location = "FileLocation.txt"
+    index_number = "IndexNumber.txt"
 
     open(all_files, 'a').close()
     os.chown(all_files, user_uid, vault_uid)
 
     open(file_location, 'a').close()
     os.chown(file_location, user_uid, vault_uid)
+
+    with open(index_number, 'w') as file:
+        file.write("0")
+    os.chown(index_number, user_uid, vault_uid)
 
     os.mkdir("PDM")
     os.chown('PDM', user_uid, vault_uid)

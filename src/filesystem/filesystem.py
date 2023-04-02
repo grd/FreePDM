@@ -15,6 +15,7 @@ from typing import List
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
 from skeleton.config import conf
 from filesystem import file_index
+import filesystem.file_directory as fd
 
 class FileSystem():
     """File System related Class"""
@@ -41,21 +42,40 @@ class FileSystem():
         self._index.init(self._vault_dir, self._user_uid, self._vault_uid)
         os.chdir(self.current_working_dir)
 
-    def import_new_file(self, fname, dest_dir, descr, long_descr=None):
-        """import a file inside the PDM. When you import a 
+
+    def cred(self):
+        """cred returns the credentials that are being used inside a FileDirectory."""
+
+        idx = len(self._main_pdm_dir)
+        dir_name = self.current_working_dir[idx:]
+        return dir_name, self._user, self._user_uid, self._vault_uid
+
+
+    def import_new_file(self, fname, descr, long_descr: str):
+        """import a file inside the PDM. When you import a
         file the meta-data also gets imported, which means uploaded to the server.
-        When you import a file or files you are placing the new file in the current directory. 
+        When you import a file or files you are placing the new file in the current directory.
         The new file inside the PDM gets a revision number automatically."""
-        raise NotImplementedError("Function import_file is not implemented yet")
+
+        if not path.isfile(fname):
+            raise FileNotFoundError("File " + fname + " could not be found.")
+
+        index = self._index.add_item(fname, self.current_working_dir)
+
+        fd.new_directory(index, self.cred()).new_version(fname, descr, long_descr)
+
 
     def export_file(self, fname, dest_dir):
         """export a file to a local directory."""
         raise NotImplementedError("Function export_file is not implemented yet")
 
-    def mkdir(self, dname):
+
+    def mkdir(self, dname: str):
         """Creates a new directory inside the current directory, with the correct uid and gid."""
         os.mkdir(dname)
-        os.chown(remotepath=dname, uid=self._user_uid, gid=self._vault_uid)
+        # os.chown(remotepath=dname, uid=self._user_uid, gid=self._vault_uid)
+        os.chown(dname, self._user_uid, self._vault_uid)
+
 
     def chdir(self, dir: str):
         self.current_working_dir = path.join(self.current_working_dir, dir)
@@ -74,6 +94,7 @@ class FileSystem():
         with open(path.joinpath(dir, version, version + ' File.txt')):
             file_name = IOBase.readline()
         return file_name
+
 
     def _latest_file_information_version(self, dir: str) -> List[str]:
         """Returns the latest file information from directory "dir" """
@@ -104,10 +125,10 @@ class FileSystem():
 
     def listdir(self) -> List[str]:
         """list the sorted directories and files of the current working directory"""
-        dir_list = os.listdir(self.current_working_directory)
+        dir_list = os.listdir(self.current_working_dir)
         directory_list = []
         file_list = []
-        sub_dir_list: List[str]
+        sub_dir_list: List[str] = []
 
         for sub_dir in dir_list:
             if path.isdir(sub_dir):
@@ -131,7 +152,7 @@ class FileSystem():
         return sub_dir_list
 
 
-    def check_latest_file_version(self, fname):
+    def check_latest_file_version(self, fname: str) -> int:
         """ returns the latest version number of a file in the current
         directory or -1 when the file doesn't exist."""
         file_list = os.listdir()
@@ -143,6 +164,7 @@ class FileSystem():
             if fname == file1:
                 result = int(ext1[1:])
         return result
+
 
     # def revision_file(self, fname):
     #     """copy a file and increments revision number."""
@@ -158,9 +180,11 @@ class FileSystem():
     #     self.sftp.chown(remotepath=new_file, uid=self._user_uid, gid=self._vault_uid)
     #     os.remove(new_file)
 
+
     def checkout_file(self, fname):
         """locks a file so that others can't accidentally check-in a different file."""
         raise NotImplementedError("Function checkout_file is not implemented yet")
+
 
     def checkin_file(self, fname, descr, long_descr=None):
         """removes the locking but also uploads the file to the PDM. 
@@ -168,14 +192,15 @@ class FileSystem():
         raise NotImplementedError("Function checkin_file is not implemented yet")
 
 
-    def rename(self, src, dest):
+    def rename(self, src, dest: str) -> bool:
         """rename a directory or a file, for instance when the user wants to use a file 
         with a specified numbering system."""
         if path.isdir(src):
             try:
                 os.rename(src, dest)
             except IOError:
-                return "The new directory already exist. Can't rename the directory."
+                # The new directory already exist. Can't rename the directory.
+                return False
         else:
             file, ext = os.path.splitext(src)
             file_list = os.listdir()
@@ -185,11 +210,15 @@ class FileSystem():
                     try:
                         os.rename(item, dest + ext1)
                     except IOError:
-                        return "The new file already exist. Can't rename the file."
-        return "The file(s) is / are successfully renamed"
+                        # The new file already exist. Can't rename the file.
+                        return False
+        # The file(s) is / are successfully renamed
+        return True
 
-    def move_file(self, fname, dest_dir):
+
+    def move_file(self, fname, dest_dir: str):
         """moves a file to a different directory."""
         raise NotImplementedError("Function move_file is not implemented yet")
         # TODO: This can be a bit tricky because of the multiple files.
+        # Also look into file_index.py function move_item !!!
 
