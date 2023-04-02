@@ -54,6 +54,7 @@ class FileDirectory():
     def new_directory(self, dname):
         os.mkdir(dname)
         os.chown(dname, self._user_uid, self._vault_uid)
+        os.chdir(dname)
         self._dir = path.join(self._dir, dname)
         return self
 
@@ -86,15 +87,19 @@ class FileDirectory():
         os.chown("Properties.txt", self._user_uid, self._vault_uid)
 
         # create a new file reference text
+        split_file = path.split(fname)
+        copied_file = split_file[1]
+
         with open("File.txt", "w") as file:
-            file.write(fname)
+            file.write(copied_file)
 
         os.chown("File.txt", self._user_uid, self._vault_uid)
 
         # copy the file inside the new version
-        shutil.copyfile(fname, "1."+fname)
+        shutil.copyfile(fname, copied_file)
 
-        os.chdir(self._dir)
+        print(self._dir)
+        os.chdir("..")
         return self
 
 

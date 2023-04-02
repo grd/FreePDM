@@ -17,6 +17,12 @@ from src.skeleton.config import conf
 
 
 if __name__ == "__main__":
+    fd_dir = os.fspath(Path(__file__).resolve().parents[1])
+    test_dir = path.join(fd_dir, "ConceptOfDesign/TestFiles")
+    file1 = path.join(test_dir, "0001.FCStd")
+    file2 = path.join(test_dir, "0002.FCStd")
+    file3 = path.join(test_dir, "0003.FCStd")
+    
     fs = FileSystem()
     fs.connect("/mnt/test/vault1", "user1", "passwd1")
     print("Root directory of the vault: " + os.getcwd())
@@ -24,12 +30,14 @@ if __name__ == "__main__":
     fs.mkdir("Projects")
     print(fs.listdir())
     fs.chdir("Projects")
-    fs.mkdir("Temp")
     print(fs.listdir())
-    file1 = "/media/nas/FreePDM/tests/0001.FCStd"
-    # file1 = "0001.FCStd"
-    i = fs.import_new_file(file1, "", "")
+    i = fs.import_new_file(file1, "ConceptOfDesign/TestFiles", "")
     print("Import Nr: " + str(i))
+    i = fs.import_new_file(file2, "ConceptOfDesign/TestFiles", "")
+    print("Import Nr: " + str(i))
+    i = fs.import_new_file(file3, "ConceptOfDesign/TestFiles", "")
+    print("Import Nr: " + str(i))
+    print(fs.listdir())
 
     # print(fs.listdir())
     # print("checking file number: " + str(fs.check_latest_file_version("0003.FCStd")))
