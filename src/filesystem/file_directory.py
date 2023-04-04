@@ -11,11 +11,10 @@ import sys
 from pathlib import Path
 from io import IOBase
 from typing import List
-from datetime import datetime
 import shutil
 
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
-
+from filesystem import extras
 
 class FileDirectory():
     """
@@ -54,8 +53,7 @@ class FileDirectory():
     def new_directory(self, dname):
         os.mkdir(dname)
         os.chown(dname, self._user_uid, self._vault_uid)
-        os.chdir(dname)
-        self._dir = path.join(self._dir, dname)
+        self._dir = dname
         return self
 
 
@@ -65,11 +63,15 @@ class FileDirectory():
         # check whether the file is locked
         if self.is_locked():
             raise Exception("File is locked.")
+        
+        print("_dir = " + self._dir)
+        # going into the directory...
+        os.chdir(self._dir)
 
         # create a new version string
         new_version = self.latest_version_string() + 1
         version = "VER" + str(new_version).zfill(2)
-        to_day = today()
+        to_day = extras.today()
         with open("VER.txt", 'a') as file:
             file.write(version + "\n")
             file.write(to_day + "\n")
@@ -99,7 +101,7 @@ class FileDirectory():
         shutil.copyfile(fname, copied_file)
 
         print(self._dir)
-        os.chdir("..")
+        os.chdir("../..")
         return self
 
 
@@ -185,8 +187,3 @@ def new_directory(item: int, cred) -> FileDirectory:
 
 def open_directory(item: int) -> FileDirectory:
     pass
-
-
-def today():
-    # helper function
-    return datetime.today().isoformat()

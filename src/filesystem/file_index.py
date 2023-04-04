@@ -7,8 +7,15 @@
 
 import os
 from os import path
+import sys
+from pathlib import Path
 from typing import List
 from datetime import datetime
+
+sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
+
+from filesystem import extras
+
 
 """ TODO: 1. Combine both indexes into one, but only after the index
              is working completely and is tested!!! """
@@ -63,22 +70,32 @@ class FileIndex():
         """ Reads the values from both "All Files.txt" and "FileLocation.txt",
             and stores the data into memory. """
 
-        with open(self.all_files_txt, "r") as file:
-            while (line := file.readline()):
-                index, complete_file_name = line.split("=")
-                if complete_file_name.find("<") != -1:
-                    file_name, rename_name = complete_file_name.split("<")
-                    if len(rename_name) > 0:
-                        rename_name.removesuffix(">")
-                    self.file_index.append([int(index), file_name, rename_name])
-                else:
-                    self.file_index.append([int(index), complete_file_name, ""])
+        # key_value = []
+        # with open(self.all_files_txt, "r") as file:
+        #     item = file.readline()
+        #     key, value = item.split("=")
+        #     key_value.append([key, value])
 
+        key_value = extras.get_key_value_list(self.all_files_txt)
 
+        # for index, file in enumerate(key_value):
+        #     rename_name = ""
+        #     location = file.find("<")
+        #     if location != -1:
+        #         file_name, rename_name = file.split("<")
+        #         if len(rename_name) > 0:
+        #             rename_name.removesuffix(">")
+        #         self.file_index.append([int(index), file_name, rename_name])
+        #     else:
+        #         self.file_index.append([int(index), file, rename_name])
+
+        key_value = []
         with open(self.file_location_txt, "r") as file:
-            while (line := file.readline()):
-                index, path_name = line.split("=")
-                self.file_location_list.append([int(index), path_name])
+            item = file.readline()
+            key, value = item.split("=")
+            key_value.append([key, value])
+
+        self.file_location_list = key_value
 
 
     def _increase_index_number(self) -> int:
@@ -98,24 +115,33 @@ class FileIndex():
         return self.index_number
 
  
-    def add_item(self, name, dir: str) -> int:
+    def add_item(self, name, dirname: str) -> int:
         """ Adds the item from both self.file_index and self.file_location_list
             and store the information on disk. Returns the index number.
 
-            It does not add a file on disk. """
+            It does not add a file on disk."""
+
+        # getting rid of the path
+        split_file = path.split(name)
+        name = split_file[1]
 
         self.read() # refreshing the index
 
         index_len = self._increase_index_number()
         self.file_index.append([index_len, name, ""])
-        self.file_location_list.append([index_len, dir])
+        self.file_location_list.append([index_len, dirname])
 
+        # Appending to file
         with open(self.all_files_txt, "a") as file:
             file.write(str(index_len) + "=" + name + "\n")
         os.chown(self.all_files_txt, self._user_uid, self._vault_uid)
 
+        index = len(self.vault_dir) + 5 # /PDM/
+        temp_dir = dirname[index:]
+
+        # Appending to file
         with open(self.file_location_txt, "a") as file:
-            file.write(str(index_len) + "=" + dir + "\n")
+            file.write(str(index_len) + "=" + temp_dir + "\n")
         os.chown(self.file_location_txt, self._user_uid, self._vault_uid)
 
         self.read() # again refreshing the index
@@ -140,7 +166,7 @@ class FileIndex():
             if index == item[0]:
                 old_filename = item[1]
                 item[1] = new_name
-                today = today()
+                today = extras.today()
                 item[2] = "<" + old_filename + "," + today + ">"
                 break
 
@@ -202,8 +228,3 @@ class FileIndex():
 
             It does not move a file on disk. """
         pass
-
-
-def today():
-    # helper function
-    return datetime.today().isoformat()
