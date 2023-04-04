@@ -84,15 +84,25 @@ class FileSystem():
 
     def _latest_file_version(self, dir: str) -> str:
         """Returns the latest file name from directory "dir" """
+
+        prevdir = os.getcwd()
+
         version: str
         version_list = []
         file_name: str
-        with open(path.johnpath(dir, "VER.txt")):
-            version_list = IOBase.read_lines()
-        if len(version_list >= 2):
-            version = version_list[-2]
-        with open(path.joinpath(dir, version, version + ' File.txt')):
-            file_name = IOBase.readline()
+
+        with open("VER.txt", "r") as file:
+            version_list = file.readlines()
+        if len(version_list) >= 2:
+            version = version_list[-2].strip()
+
+        os.chdir(version)
+
+        with open('File.txt', "r") as file:
+            file_name = file.readline()
+
+        os.chdir(prevdir)
+        
         return file_name
 
 
@@ -102,7 +112,7 @@ class FileSystem():
         version_list = []
         file_information: List[str]
         with open(path.johnpath(dir, "VER.txt")):
-            version_list = IOBase.read_lines()
+            version_list = IOBase.readlines()
         if len(version_list >= 2):
             version = version_list[-2]
         with open(path.joinpath(dir, version, version + '.txt')):
@@ -115,7 +125,7 @@ class FileSystem():
         version_list = []
         file_names: List[str]
         with open(path.johnpath(dir, "VER.txt")):
-            version_list = IOBase.read_lines()
+            version_list = IOBase.readlines()
         if len(version_list >= 2):
             # TODO; Implement this. ATM I don't know how.
             version = version_list[-2]

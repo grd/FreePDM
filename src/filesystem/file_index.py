@@ -110,8 +110,6 @@ class FileIndex():
 
         os.chown(self.index_number_txt, self._user_uid, self._vault_uid)
 
-        print("The index number = " + str(self.index_number))
- 
         return self.index_number
 
  

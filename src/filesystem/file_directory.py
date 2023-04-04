@@ -64,7 +64,6 @@ class FileDirectory():
         if self.is_locked():
             raise Exception("File is locked.")
         
-        print("_dir = " + self._dir)
         # going into the directory...
         os.chdir(self._dir)
 
@@ -100,8 +99,8 @@ class FileDirectory():
         # copy the file inside the new version
         shutil.copyfile(fname, copied_file)
 
-        print(self._dir)
         os.chdir("../..")
+
         return self
 
 
