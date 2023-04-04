@@ -33,9 +33,11 @@ usermod -aG vault myadmin
 mkdir /vault
 chown vault:vault /vault
 chmod g+w vault
+
+exit
 ```
 
-While still in `ssh` have a look at `/etc/group` and write down the number behind the users `vault`, `user1` and `user2`, but keep in mind to use different names. After you completed the following you need to write down in the `FreePDM.conf` file that is stored (in Ubuntu) in the `.cache` or `.config` directory the following, at the bottom:
+While still in `ssh` have a look at /etc/group, you can use `cat /etc/group` and write down the number behind the users `vault`, `user1` and `user2` (but keep in mind to use different names). After you completed the following you need to write down in the `FreePDM.conf` file that is stored (in Ubuntu) in the `.cache` or `.config` directory the following, at the bottom:
 
 ```
 [user]
