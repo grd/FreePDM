@@ -34,10 +34,16 @@ if __name__ == "__main__":
     print(fs.listdir())
     fs.chdir("Projects")
     print(fs.listdir())
-    fs.import_new_file(file1, "ConceptOfDesign/TestFiles", "")
-    fs.import_new_file(file2, "ConceptOfDesign/TestFiles", "")
+    f1 = fs.import_new_file(file1, "ConceptOfDesign/TestFiles", "")
+    f2 = fs.import_new_file(file2, "ConceptOfDesign/TestFiles", "")
     fs.import_new_file(file3, "ConceptOfDesign/TestFiles", "")
     
+    fs.checkout(f1)
+    fs.checkout(f2)
+
+    print("checkout status of nr:" + str(f1) + " = " + fs.checkout_status(f1))
+    fs.checkin(f1)
+
     fs.mkdir("Temp")
     fs.chdir("Temp")
 

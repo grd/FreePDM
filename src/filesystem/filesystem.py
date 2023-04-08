@@ -16,6 +16,7 @@ sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
 from skeleton.config import conf
 from filesystem import file_index
 import filesystem.file_directory as fd
+from filesystem.extras import *
 
 class FileSystem():
     """File System related Class"""
@@ -41,6 +42,15 @@ class FileSystem():
         self.current_working_dir = self._main_pdm_dir
         self._index.init(self._vault_dir, self._user_uid, self._vault_uid)
         os.chdir(self.current_working_dir)
+        self._locked_txt = path.join(self._vault_dir, "Locked.txt")
+        # self._locked_index: List[int, str] = get_key_value_list(self._locked_txt)
+        self._locked_index: List[int, str] = []
+        self.read()
+
+
+    def read(self):
+        """read updates the locked index by reading from the locked file."""
+        self._locked_index = get_key_value_list(self._locked_txt)
 
 
     def cred(self):
@@ -51,11 +61,12 @@ class FileSystem():
         return dir_name, self._user, self._user_uid, self._vault_uid
 
 
-    def import_new_file(self, fname, descr, long_descr: str):
+    def import_new_file(self, fname, descr, long_descr: str) -> int:
         """import a file inside the PDM. When you import a
         file the meta-data also gets imported, which means uploaded to the server.
         When you import a file or files you are placing the new file in the current directory.
-        The new file inside the PDM gets a revision number automatically."""
+        The new file inside the PDM gets a revision number automatically.
+        The function returns the number of the imported file."""
 
         if not path.isfile(fname):
             raise FileNotFoundError("File " + fname + " could not be found.")
@@ -63,6 +74,8 @@ class FileSystem():
         index = self._index.add_item(fname, self.current_working_dir)
 
         fd.new_directory(index, self.cred()).new_version(fname, descr, long_descr)
+
+        return index
 
 
     def export_file(self, fname, dest_dir):
@@ -119,6 +132,7 @@ class FileSystem():
             file_information = IOBase.readlines()
         return file_information
 
+
     def _all_file_versions(self, dir: str) -> List[str]:
         """Returns all file versions name from directory "dir" """
         version: str
@@ -132,6 +146,7 @@ class FileSystem():
         with open(path.joinpath(dir, version, version + ' File.txt')):
             file_names = IOBase.readline()
         return file_names
+
 
     def listdir(self) -> List[str]:
         """list the sorted directories and files of the current working directory"""
@@ -191,15 +206,61 @@ class FileSystem():
     #     os.remove(new_file)
 
 
-    def checkout_file(self, fname):
-        """locks a file so that others can't accidentally check-in a different file."""
-        raise NotImplementedError("Function checkout_file is not implemented yet")
+    def is_locked(self, itemnr: int) -> bool:
+        """Check whether the itemnr is locked."""
+
+        self.read() # update the index
+
+        for item in self._locked_index:
+            if int(item[0]) == itemnr:
+                return True
+
+        return False
 
 
-    def checkin_file(self, fname, descr, long_descr=None):
-        """removes the locking but also uploads the file to the PDM. 
-        You need to write a description of what you did."""
-        raise NotImplementedError("Function checkin_file is not implemented yet")
+    def checkout(self, itemnr: int):
+        """Checkout means locking a itemnr so that only you can use it."""
+
+        self.read() # update the index
+
+        # check whether the itemnr is locked
+        if self.is_locked(itemnr):
+            raise Exception("file is already locked.")
+
+        self._locked_index.append([itemnr, self._user])
+
+        with open(self._locked_txt, "a") as file:
+            file.write(str(itemnr) + "=" + self._user + "\n")
+
+        os.chown(self._locked_txt, self._user_uid, self._vault_uid)
+
+
+    def checkout_status(self, itemnr: int) -> str:
+        """Returns the status of a check-out."""
+
+        self.read() # updates the index
+
+        for item in self._locked_index:
+            if int(item[0]) == itemnr:
+                return item[1]
+
+        return "The file is not checked out."
+
+
+    def checkin(self, itemnr: int):
+        """Checkin means unlocking a itemnr."""
+
+        self.read() # updates the index
+
+        num = -1
+        for idx, item in enumerate(self._locked_index):
+            if int(item[0]) == itemnr:
+                num = idx
+
+        if num != -1:
+            self._locked_index.pop(num)
+            store_key_value_list(self._locked_txt, self._locked_index)
+            os.chown(self._locked_txt, self._user_uid, self._vault_uid)
 
 
     def rename(self, src, dest: str) -> bool:

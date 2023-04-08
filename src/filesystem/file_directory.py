@@ -47,7 +47,6 @@ class FileDirectory():
         self._user_name: str = user_name
         self._user_uid: int = user_uid
         self._vault_uid: int = vault_uid
-        self._locked_file = "Locked.txt"
 
 
     def new_directory(self, dname):
@@ -60,10 +59,6 @@ class FileDirectory():
     def new_version(self, fname, descr, long_descr):
         """Creates a new file version."""
 
-        # check whether the file is locked
-        if self.is_locked():
-            raise Exception("File is locked.")
-        
         # going into the directory...
         os.chdir(self._dir)
 
@@ -115,50 +110,6 @@ class FileDirectory():
             verstr = my_list[-2]
             ver = int(verstr[3:])
             return ver
-
-
-    def is_locked(self):
-        """Check whether the file is locked by someone else."""
-        if path.isfile(self._locked_file):
-            # check locking user
-            with open(self._locked_file, "r") as file:
-                line = file.readline()
-                _, user = line.split("=")
-                return user != self._user_name
-        else:
-            return False
-
-
-    def checkout(self):
-        """Checkout means locking a file so that only you can use it."""
-
-        # check whether the file is locked
-        if self.is_locked():
-            raise Exception("File is locked.")
-
-        with open(self._locked_file, "w") as file:
-            file.write("Locked=" + self._user_name)
-
-        os.chown(self._locked_file, self._user_uid, self._vault_uid)
-
-
-    def checkout_status(self):
-        """Returns the status of a check-out."""
-
-        if self.is_locked():
-            with open(self._locked_file, "r") as file:
-                line = file.readline()
-                _, user = line.split("=")
-                return "The file is checked out by " + user
-        else:
-            return "The file is not checked out."
-
-
-    def checkin(self):
-        """Checkin means unlocking a file."""
-
-        os.remove(self._locked_file)
-        return self
 
 
     def release():
