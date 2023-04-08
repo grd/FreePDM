@@ -13,11 +13,12 @@ TheFilesystem class containes all the things that are needed to manipulate files
 - [x] Add a filesystem (directories)
 - [ ] Allow importing and exporting of files
 - [ ] Copying files (incl. it's dependencies. Everything below and drawings, all optional). When it's not put into the Filesystem.
+- [ ] Moving files
+- [ ] Renaming files
 - [ ] Dealing with versions.
 - [ ] Dealing with and releases.
-- [ ] Disable released files with a disable state.
+- [ ] Disable released files with a disable state?
 - [ ] Dealing with states?
 - [x] Dealing with checkin and checkout.
-- [ ] Importing and exporting files.
 - [x] Dealing with users.
 - [ ] Logging the activities.

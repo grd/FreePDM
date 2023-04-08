@@ -61,8 +61,8 @@ if __name__ == "__main__":
     if len(os.listdir()) > 0:
         print("")
         print("This is a list of exisisting vaults:")
-        for filenr in os.listdir():
-            print(filenr)
+        for file in os.listdir():
+            print(file)
 
     print("")
     print("Input your new vault...")
@@ -92,8 +92,8 @@ if __name__ == "__main__":
     open(locked_file, 'a').close()
     os.chown(locked_file, user_uid, vault_uid)
 
-    with open(index_number, 'w') as filenr:
-        filenr.write("0")
+    with open(index_number, 'w') as file:
+        file.write("0")
     os.chown(index_number, user_uid, vault_uid)
 
     os.mkdir("PDM")
