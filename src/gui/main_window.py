@@ -4,6 +4,7 @@
 """
 
 import os
+from os import path
 import sys
 import logging
 from pathlib import Path
@@ -17,6 +18,7 @@ sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
 from gui.edit_item import *
 from gui.filter import filter_dialog
 from gui.authenticate import *
+from gui.import_file import import_file_dialog
 
 from skeleton.directorymodel import DirectoryModel
 from filesystem.filesystem import FileSystem
@@ -27,7 +29,8 @@ class Ui_MainWindow(object):
 
     def setup_ui(self, MainWindow):
         self._fs = FileSystem() # the connection to the server
-        self.root_directory = os.path.expanduser('~')
+        # self.root_directory = os.path.expanduser('~')
+        self.root_directory = self._fs.connect("/home/user/mnt/vault1", "user1", "passwd1")
         if len(sys.argv) == 2:
             self.root_directory = sys.argv[1]
         self.current_directory = self.root_directory
@@ -74,6 +77,9 @@ class Ui_MainWindow(object):
         self.buttonFilter = QtWidgets.QPushButton(self.centralwidget)
         self.buttonFilter.setObjectName("buttonFilter")
         self.layoutButtonBar.addWidget(self.buttonFilter)
+        self.importFile = QtWidgets.QPushButton(self.centralwidget)
+        self.importFile.setObjectName("importFile")
+        self.layoutButtonBar.addWidget(self.importFile)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.layoutButtonBar.addItem(spacerItem)
         self.buttonSearch = QtWidgets.QPushButton(self.centralwidget)
@@ -130,6 +136,7 @@ class Ui_MainWindow(object):
         # self.ui.buttonCheckOutButton('Check In', clicked=self.retrieve_check_button_values)
         self.buttonFilter.clicked.connect(self.set_filter)
         self.buttonPurge.clicked.connect(self.purge)
+        self.importFile.clicked.connect(self.import_file)
 
         # Grid / Table
         self.tableWorkspace.setSelectionBehavior(QTableWidget.SelectRows)
@@ -139,7 +146,7 @@ class Ui_MainWindow(object):
         self.load_data()
 
     def load_data(self):
-        self.dirmodel = DirectoryModel(self.current_directory, self.root_directory != self.current_directory)
+        self.dirmodel = DirectoryModel(self._fs, self.current_directory)
         row = 0
         self.tableWorkspace.setRowCount(self.dirmodel.size())
         # https://stackoverflow.com/questions/39511181/python-add-checkbox-to-every-row-in-qtablewidget
@@ -177,10 +184,10 @@ class Ui_MainWindow(object):
             self.tableWorkspace.setItem(row, 6, size)
             row += 1
 
-        if len(self.dirmodel.purge_list) == 0:
-            self.buttonPurge.setEnabled(False)
-        else:
-            self.buttonPurge.setEnabled(True)
+        # if self._fs == None:
+        #     self.importFile.setEnabled(False)
+        # else:
+        #     self.importFile.setEnabled(True)
 
     def login(self):
         """Function to start authenticating proces"""
@@ -196,6 +203,9 @@ class Ui_MainWindow(object):
         msg.setDefaultButton(QMessageBox.Cancel)
         msg.buttonClicked.connect(self.popup_purge)
         x = msg.exec_()
+
+    def import_file(self):
+        import_file_dialog(self._fs)
 
     def popup_purge(self, i):
         if i.text() == '&OK':
@@ -213,6 +223,7 @@ class Ui_MainWindow(object):
         self.buttonCheckInOut.setText(_translate("MainWindow", "Check In/Out"))
         self.buttonPurge.setText(_translate("MainWindow", "Purge"))
         self.buttonFilter.setText(_translate("MainWindow", "Filter"))
+        self.importFile.setText(_translate("MainWindow", "Import"))
         self.buttonSearch.setText(_translate("MainWindow", "Search"))
         # Grid / Table
         item = self.tableWorkspace.horizontalHeaderItem(1)
@@ -241,7 +252,8 @@ class Ui_MainWindow(object):
         # Change directory
         if item == 'Directory':
             dir = self.tableWorkspace.item(row, 1).text()
-            self.current_directory = os.path.abspath(os.path.join(self.current_directory, dir))
+            # self.current_directory = os.path.abspath(os.path.join(self.current_directory, dir))
+            self._fs.chdir(dir)
             self.load_data()
 
         # Edit FC Item

@@ -11,6 +11,7 @@ import os
 from os import path
 import sys
 from pathlib import Path
+import appdirs
 
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
 
@@ -37,26 +38,29 @@ if __name__ == "__main__":
     print("the directory of the mounted sshfs drive and the name of the new vault.")
     print("")
     print("Are you ready? [Y/n]")
-    drive = input()
-    if drive.lower() == "n":
+    mounting_point = input()
+    if mounting_point.lower() == "n":
         exit("Program terminated.")
     
+    print("Enter the user name")
+    user_name = input()
+
     print("Enter the user uid")
     user_uid = int(input())
 
     print("Enter the vault uid")
     vault_uid = int(input())
 
-    print("Enter the path to the sshfs directory, e.g. '/mnt/test'")
+    print("Enter mounting point of the sshfs directory, e.g. '/mnt/test'")
 
     while True:
-        drive = input()
-        if not path.isdir(drive):
+        mounting_point = input()
+        if not path.isdir(mounting_point):
             print("Path doesn't exist. Try again.")
         else:
             break
 
-    os.chdir(drive)
+    os.chdir(mounting_point)
     
     if len(os.listdir()) > 0:
         print("")
@@ -65,7 +69,7 @@ if __name__ == "__main__":
             print(file)
 
     print("")
-    print("Input your new vault...")
+    print("Input the directory of your new vault...")
     vault_dir = input()
     
     if path.isdir(vault_dir):
@@ -76,7 +80,8 @@ if __name__ == "__main__":
 
     os.chdir(vault_dir)
 
-    # creating three files: 'All Files.txt', 'FileLocation.txt' and 'IndexNumber.txt'
+    # creating four files: 'All Files.txt', 'FileLocation.txt',
+    # 'IndexNumber.txt' and 'Locked.txt'
 
     all_files = "All Files.txt"
     file_location = "FileLocation.txt"
@@ -99,9 +104,48 @@ if __name__ == "__main__":
     os.mkdir("PDM")
     os.chown('PDM', user_uid, vault_uid)
 
-    print("Three files have been created: 'All Files.txt', 'FileLocation.txt' and the directory 'PDM")
+    print("Four files have been created: 'All Files.txt', 'FileLocation.txt', ")
+    print("'IndexNumber.txt' and 'Locked.txt', and the directory 'PDM")
     print("")
     print(os.listdir())
     print("")
-    print("If that is correct, then the vault has been created.")
+    print("If that is correct, then the vault has been created.\n\n")
+    print("Creating a configuration file...\n\n")
+
+    appname = 'FreePDM'
+    config_dir = appdirs.user_config_dir(appname)
+    config_name = os.path.join(config_dir, 'FreePDM.conf')
+
+    if path.isfile(config_name):
+        print("Configuration file already exist.\n\n")
+        print("Changing the vault directory...")
+        item_list = []
+        with open(config_name, "r") as file:
+            item_list = file.readlines()
+
+        idx = len(item_list) - 1
+        while idx > 0:
+            item = item_list[idx]
+            if item.startswith("vault"):
+                item_list[idx] = "vault = " + "/vault/" + vault_dir + "\n"
+            idx -= 1
+
+        with open(config_name, "w") as file:
+            for item in item_list:
+                file.write(item)
+    else:
+        os.mkdir(config_dir)
+        with open(config_name, "w") as file:
+            file.write("[DEFAULT]\n")
+            file.write("log_file = \n")
+            file.write("logging_is_on = False\n")
+            file.write("mounting_point = \"" + mounting_point + "\"\n")
+            file.write("server_path = \"" + "/vault/" + vault_dir + "\"\n\n")
+            file.write("[user]\n")
+            file.write("vault = " + vault_uid + "\n")
+            file.write(user_name + " = " + str(user_uid) + "\n")
+
+
+
     print("Program ended successfully.")
+

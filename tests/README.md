@@ -4,9 +4,11 @@ The specs for a file server are minimal. Right now I am using a Raspberry Pi 4 a
 This program uses Ubuntu Server. They support both the Intel and ARM platforms.
 First you need to install Ubuntu Server and after that you need to write down the ip address of the server. When you need to have access outside of the LAN you are gonna need port forwarding and also a certificate (certbot for instance). This is the ip address of my server: 10.0.0.11 
 
-servername: 10.0.0.11
+### Loggin in the server
+`ssh ubuntu@10.0.0.11`
 
-path: "/vault/"
+The password is `ubuntu`. The loginscreen asks you to modify the password.
+
 
 ### example usernames and passwords:
 
@@ -14,10 +16,8 @@ login name 1: user1, passwd: passwd1
 
 login name 2: user2, passwd: passwd2
 
-### Loggin in the server
-`ssh ubuntu@10.0.0.11`
+(Use different names and passwords, these are only as an example.)
 
-The password is `ubuntu`. The loginscreen asks you to modify the password.
 
 The following commands are all in root (use `sudo su`):
 
@@ -48,7 +48,7 @@ user2 = 1002
 
 ### Testing things out in Ubnutu Linux: 
 
-1. Install pip modules: 
+Install pip modules:
 ```
 pip install PySide2
 pip install appdirs

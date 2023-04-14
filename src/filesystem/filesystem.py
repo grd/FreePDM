@@ -266,6 +266,13 @@ class FileSystem():
     def rename(self, src, dest: str) -> bool:
         """rename a directory or a file, for instance when the user wants to use a file 
         with a specified numbering system."""
+
+        # TODO: When renaming a directory, they may also have parts inside!
+        # So I also need to modify the file locations.
+
+        # TODO: This code still belongs to the old filesystem version,
+        # so I need to rewrite it completely.
+
         if path.isdir(src):
             try:
                 os.rename(src, dest)

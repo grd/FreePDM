@@ -38,10 +38,8 @@ hide_versioned_fc_files = 2
 
 class conf():
     def __init__(self):
-        self.filter: Filter = 0
         self.log_file = ""
         self.logging_is_on = "False"
-        self.fast_loading_dir =  ""
         self.server_name = ""     # The URL to the server
         self.server_path = ""     # Path to the PDM
         self.vault_uid: int = -1
@@ -65,10 +63,8 @@ class conf():
         config.read(config_name)
 
         # reading variables from section: 'DEFAULT'
-        self.filter = int(config['DEFAULT']['filter'])
         self.log_file = config['DEFAULT']['log_file']
         self.logging_is_on = config['DEFAULT']['logging_is_on']
-        self.fast_loading_dir = config['DEFAULT']['fast_loading_dir']
         self.server_name = config['DEFAULT']['server_name']
         self.server_path = config['DEFAULT']['server_path']
         self.vault_uid = int(config['user']['vault'])
@@ -76,10 +72,8 @@ class conf():
 
     def write(self):
         config = configparser.ConfigParser()
-        config['DEFAULT']['filter'] = str(self.filter)
         config['DEFAULT']['log_file'] = self.log_file
         config['DEFAULT']['logging_is_on'] = self.logging_is_on
-        config['DEFAULT']['fast_loading_dir'] = self.fast_loading_dir
         config['DEFAULT']['server_name'] = self.server_name
         config['DEFAULT']['server_path'] = self.server_path
 
