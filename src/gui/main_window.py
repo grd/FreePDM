@@ -178,10 +178,10 @@ class Ui_MainWindow(object):
             itemtype.setFlags(itemtype.flags() ^ Qt.ItemIsEditable)
             self.tableWorkspace.setItem(row, 5, itemtype)
 
-            size = QTableWidgetItem(item['size'])
-            size.setTextAlignment(Qt.AlignRight)
-            size.setFlags(size.flags() ^ Qt.ItemIsEditable)
-            self.tableWorkspace.setItem(row, 6, size)
+            # size = QTableWidgetItem(item['size'])
+            # size.setTextAlignment(Qt.AlignRight)
+            # size.setFlags(size.flags() ^ Qt.ItemIsEditable)
+            # self.tableWorkspace.setItem(row, 6, size)
             row += 1
 
         # if self._fs == None:
@@ -257,7 +257,7 @@ class Ui_MainWindow(object):
             self.load_data()
 
         # Edit FC Item
-        if item == 'FCStd' or item == 'A2-Assy' or item == 'A3-Assy'or item == 'A4-Assy':
+        if item == 'File':
             part = self.tableWorkspace.item(row, 1).text()
             part = os.path.abspath(os.path.join(self.current_directory, part))
             edit_item_dialog(part)

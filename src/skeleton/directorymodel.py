@@ -46,9 +46,9 @@ class DirectoryModel(object):
         for directory in dir_list:
             if directory.startswith("d: "):
                 directory = directory[3:]
-                self.directoryList.append({'nr': str(nr), 'filename': directory, 'type': 'Directory', 'size': ''})
+                self.directoryList.append({'nr': str(nr), 'filename': directory, 'type': 'Directory'})
             else:
-                self.directoryList.append({'nr': str(nr), 'filename': directory})
+                self.directoryList.append({'nr': str(nr), 'filename': directory, 'type': 'File'})
                 nr += 1
 
     def size(self) -> int:
