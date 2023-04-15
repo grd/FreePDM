@@ -9,7 +9,6 @@ import os
 from os import path
 import sys
 from pathlib import Path
-from io import IOBase
 from typing import List
 
 sys.path.append(os.fspath(Path(__file__).resolve().parents[1]))
@@ -124,12 +123,12 @@ class FileSystem():
         version: str
         version_list = []
         file_information: List[str]
-        with open(path.johnpath(dir, "VER.txt")):
-            version_list = IOBase.readlines()
+        with open(path.johnpath(dir, "VER.txt")) as file:
+            version_list = file.readlines()
         if len(version_list >= 2):
             version = version_list[-2]
-        with open(path.joinpath(dir, version, version + '.txt')):
-            file_information = IOBase.readlines()
+        with open(path.joinpath(dir, version, version + '.txt')) as file:
+            file_information = file.readlines()
         return file_information
 
 
@@ -138,13 +137,13 @@ class FileSystem():
         version: str
         version_list = []
         file_names: List[str]
-        with open(path.johnpath(dir, "VER.txt")):
-            version_list = IOBase.readlines()
+        with open(path.johnpath(dir, "VER.txt")) as file:
+            version_list = file.readlines()
         if len(version_list >= 2):
             # TODO; Implement this. ATM I don't know how.
             version = version_list[-2]
-        with open(path.joinpath(dir, version, version + ' File.txt')):
-            file_names = IOBase.readline()
+        with open(path.joinpath(dir, version, version + ' File.txt')) as file:
+            file_names = file.readline()
         return file_names
 
 
