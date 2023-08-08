@@ -37,14 +37,16 @@ chmod g+w vault
 exit
 ```
 
-While still in `ssh` have a look at /etc/group, you can use `cat /etc/group` and write down the number behind the users `vault`, `user1` and `user2` (but keep in mind to use different names). After you completed the following you need to write down in the `FreePDM.conf` file that is stored (in Ubuntu) in the `.cache` or `.config` directory the following, at the bottom:
+While still in ssh you can type `id user1`, `id user2` and `id vault` and write the number after `uid=` (but keep in mind to use different names). After you completed these tasks you can `exit` to exit the ssh. Next you can write down in the `FreePDM.conf` file that is stored (in Ubuntu) in the `.config/FreePDM` directory the following, at the bottom:
 
 ```
 [user]
-vault = 1000
-user1 = 1001
-user2 = 1002
+vault = 1001
+user1 = 1002
+user2 = 1003
 ```
+
+
 
 ### Testing things out in Ubnutu Linux: 
 
@@ -53,8 +55,8 @@ Install pip modules:
 pip install PySide2
 pip install appdirs
 pip install defusedxml
-pip install sshfs
 ```
+
 1. System update: `sudo apt update`
 1. Install sshfs: `sudo apt install sshfs`
 1. Make a directory : `sudo mkdir /mnt/test`
