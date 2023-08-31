@@ -5,7 +5,7 @@
 package filesystem
 
 import (
-	"bytes"
+	"encoding/csv"
 	"fmt"
 	"log"
 	"os"
@@ -17,7 +17,6 @@ import (
 
 // Some handy file names
 const (
-	FileName        = "FileName.txt"
 	Properties      = "Properties.txt"
 	Description     = "Description.txt"
 	LongDescription = "LongDescription.txt"
@@ -26,12 +25,58 @@ const (
 
 // File Directory related struct.
 type FileDirectory struct {
-	fs  *FileSystem
-	dir string
+	fs         *FileSystem
+	dir        string
+	fileNumber int64
 }
 
-func InitFileDirectory(fsm *FileSystem, dir string) FileDirectory {
-	return FileDirectory{fs: fsm, dir: dir}
+func InitFileDirectory(fsm *FileSystem, dir string, fileNumber int64) FileDirectory {
+	return FileDirectory{fs: fsm, dir: dir, fileNumber: fileNumber}
+}
+
+func (self *FileDirectory) writeVersionFile() {
+
+	ver := path.Join(self.dir, Ver)
+
+	records := [][]string{{"Version", "Date"}}
+
+	file, err := os.OpenFile(ver, os.O_WRONLY|os.O_CREATE, 0644)
+	ex.CheckErr(err)
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	err = writer.WriteAll(records) // calls Flush internally
+	ex.CheckErr(err)
+
+	os.Chown(ver, self.fs.userUid, self.fs.vaultUid)
+	ex.CheckErr(err)
+}
+
+// Add the version number and the date
+func (self *FileDirectory) addVersion(version, date string) {
+
+	ver := path.Join(self.dir, Ver)
+
+	record := []string{version, date}
+
+	err := os.Chmod(ver, 0644)
+	ex.CheckErr(err)
+
+	file, err := os.OpenFile(ver, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	ex.CheckErr(err)
+
+	writer := csv.NewWriter(file)
+	writer.Write(record)
+
+	writer.Flush()
+	file.Close()
+
+	err = os.Chown(ver, self.fs.userUid, self.fs.vaultUid)
+	ex.CheckErr(err)
+	err = os.Chmod(ver, 0444)
+	ex.CheckErr(err)
 }
 
 // Creates a new directory inside the current working directory.
@@ -44,13 +89,11 @@ func (self *FileDirectory) NewDirectory() FileDirectory {
 	err = os.Chown(dirName, self.fs.userUid, self.fs.vaultUid)
 	ex.CheckErr(err)
 
-	ver := path.Join(dirName, Ver)
-	verFile, err := os.Create(ver)
-	ex.CheckErr(err)
-	verFile.Close()
-	os.Chown(ver, self.fs.userUid, self.fs.vaultUid)
+	// Write version file
+	self.writeVersionFile()
 
-	log.Printf("Created file structure %s into %s\n", self.fs.index.FileNameOfString(dirName), self.fs.currentWorkingDir)
+	log.Printf("Created file structure %s into %s\n",
+		self.fs.index.FileNameOfString(dirName), self.fs.currentWorkingDir)
 
 	return *self
 }
@@ -58,66 +101,34 @@ func (self *FileDirectory) NewDirectory() FileDirectory {
 // Imports a file from an external source.
 func (self FileDirectory) ImportNewFile(fname string) FileDirectory {
 
-	// going into the directory...
-
-	err := os.Chdir(self.dir)
-	ex.CheckErr(err)
-
 	// create a new version string
 
-	err = os.Chmod(Ver, 0644)
-	ex.CheckErr(err)
-
 	new_version := self.LatestVersion() + 1
+
 	version := fmt.Sprintf("VER%03d", new_version)
-	to_day := ex.Today()
-	buf := fmt.Sprintf("%s\n%s\n", version, to_day)
 
-	err = os.Chmod(Ver, 0644)
-	ex.CheckErr(err)
+	versionDir := path.Join(self.dir, version)
 
-	f, err := os.OpenFile(Ver, os.O_APPEND|os.O_WRONLY, 0644)
-	ex.CheckErr(err)
-
-	_, err = f.WriteString(buf)
-	ex.CheckErr(err)
-	f.Close()
-
-	err = os.Chown(Ver, self.fs.userUid, self.fs.vaultUid)
-	ex.CheckErr(err)
-	err = os.Chmod(Ver, 0444)
-	ex.CheckErr(err)
+	self.addVersion(version, ex.Today())
 
 	// create a new version dir
 
-	err = os.Mkdir(version, 0777)
+	err := os.Mkdir(versionDir, 0777)
 	ex.CheckErr(err)
-	err = os.Chown(version, self.fs.userUid, self.fs.vaultUid)
-	ex.CheckErr(err)
-	err = os.Chdir(version)
+	err = os.Chown(versionDir, self.fs.userUid, self.fs.vaultUid)
 	ex.CheckErr(err)
 
 	// create a new file reference text inside FileName.txt
 
 	_, copiedFile := path.Split(fname)
 
-	cf := []byte(copiedFile)
-	err = os.WriteFile(FileName, cf, 0444)
-	ex.CheckErr(err)
-
-	err = os.Chown(FileName, self.fs.userUid, self.fs.vaultUid)
-	ex.CheckErr(err)
+	copiedFile = path.Join(versionDir, copiedFile)
 
 	// copy the file inside the new version
 
 	ex.CopyFile(fname, copiedFile)
 
 	err = os.Chown(copiedFile, self.fs.userUid, self.fs.vaultUid)
-	ex.CheckErr(err)
-
-	// Return to original directory
-
-	err = os.Chdir("../..")
 	ex.CheckErr(err)
 
 	return self
@@ -126,70 +137,41 @@ func (self FileDirectory) ImportNewFile(fname string) FileDirectory {
 // Creates a new version from copying the previous version.
 func (self FileDirectory) NewVersion() int16 {
 
-	// going into the directory...
-
-	err := os.Chdir(self.dir)
-	ex.CheckErr(err)
-
 	// create a new version string
 
 	new_version := self.LatestVersion() + 1
 	version := fmt.Sprintf("VER%03d", new_version)
-	to_day := ex.Today()
-	str := fmt.Sprintf("%s\n%s\n", version, to_day)
+	versionDir := path.Join(self.dir, version)
 
-	err = os.Chmod(Ver, 0644)
-	ex.CheckErr(err)
-
-	f, err := os.OpenFile(Ver, os.O_APPEND|os.O_WRONLY, 0644)
-	ex.CheckErr(err)
-
-	_, err = f.WriteString(str)
-	ex.CheckErr(err)
-	f.Close()
-
-	err = os.Chown(Ver, self.fs.userUid, self.fs.vaultUid)
-	ex.CheckErr(err)
-	err = os.Chmod(Ver, 0444)
-	ex.CheckErr(err)
+	self.addVersion(version, ex.Today())
 
 	// generate the new file name
 
 	old_version := new_version - 1
 	old_directory := fmt.Sprintf("VER%03d", old_version)
-	buf, err := os.ReadFile(path.Join(old_directory, FileName))
-	fname := path.Join(self.dir, old_directory, string(buf))
+
+	filename := self.fs.index.FileName(self.fileNumber)
+
+	fname := path.Join(self.dir, old_directory, filename)
 
 	// create a new version dir
 
-	err = os.Mkdir(version, 0755)
+	err := os.Mkdir(versionDir, 0755)
 	ex.CheckErr(err)
-	err = os.Chown(version, self.fs.userUid, self.fs.vaultUid)
-	ex.CheckErr(err)
-	err = os.Chdir(version)
+	err = os.Chown(versionDir, self.fs.userUid, self.fs.vaultUid)
 	ex.CheckErr(err)
 
 	// create a new file reference text inside FileName.txt
 
 	_, copiedFile := path.Split(fname)
 
-	cf := []byte(copiedFile)
-	err = os.WriteFile(FileName, cf, 0644)
-	ex.CheckErr(err)
-
-	err = os.Chown(FileName, self.fs.userUid, self.fs.vaultUid)
-	ex.CheckErr(err)
+	copiedFile = path.Join(versionDir, copiedFile)
 
 	// copy the file inside the new version
 
 	ex.CopyFile(fname, copiedFile)
 
 	err = os.Chown(copiedFile, self.fs.userUid, self.fs.vaultUid)
-	ex.CheckErr(err)
-
-	// Return to original directory
-
-	err = os.Chdir("../..")
 	ex.CheckErr(err)
 
 	return new_version
@@ -241,30 +223,6 @@ func (self FileDirectory) FileNumber() int64 {
 	return num
 }
 
-// String returns the file name of the latest version
-func (self FileDirectory) String() string {
-	return self.LatestFileName()
-}
-
-// Returns the file name of the specific version
-func (self FileDirectory) FileName(nr int) string {
-	version := fmt.Sprintf("VER%03d", nr)
-	file, err := os.ReadFile(path.Join(version, FileName))
-	ex.CheckErr(err)
-
-	return string(file)
-}
-
-// Returns the file name of the latest version
-func (self FileDirectory) LatestFileName() string {
-	release := self.LatestVersion()
-	version := fmt.Sprintf("VER%03d", release)
-	file, err := os.ReadFile(path.Join(version, FileName))
-	ex.CheckErr(err)
-
-	return string(file)
-}
-
 // Returns the file properties of the latest version
 func (self FileDirectory) LatestProperties() []FileProperties {
 	release := self.LatestVersion()
@@ -311,95 +269,46 @@ func (self FileDirectory) SetProperties(nr int16, props []FileProperties) {
 }
 
 // Returns the latest version.
-func (self FileDirectory) LatestVersion() (ret int16) {
+func (self *FileDirectory) LatestVersion() int16 {
 
-	versionFile := Ver // path.Join(self.dir, Ver)
-
-	// check wether the current directory ends with "self.dir"
-
-	wd, _ := os.Getwd()
-	if strings.HasSuffix(wd, self.dir) == false {
-		versionFile = path.Join(self.dir, Ver)
+	versions, err := self.AllFileVersions()
+	if err != nil {
+		return -1
 	}
 
-	// check wether file exist
-
-	if ex.FileExists(versionFile) == false {
-		wd, _ := os.Getwd()
-		log.Fatalf("File %s doesn't exist inside %s", versionFile, wd)
-	}
-
-	err := os.Chmod(versionFile, 0644)
-	ex.CheckErr(err)
-
-	buf, err := os.ReadFile(versionFile)
-	ex.CheckErr(err)
-
-	if len(buf) > 3 {
-
-		// check for latest '\n'
-		if buf[len(buf)-1] == '\n' {
-			buf = buf[:len(buf)-2]
-		}
-
-		var num int16
-		lines := bytes.Split(buf, []byte{'\n'})
-		nr := len(lines) - 2
-		fmt.Sscanf(string(lines[nr]), "VER%d", &num)
-		ret = num
-	} else {
-		ret = -1
-	}
-
-	err = os.Chmod(versionFile, 0444)
-	ex.CheckErr(err)
-
-	return ret
+	return versions[len(versions)-1]
 }
 
 // Returns all file versions name from file or an error.
-func (self FileDirectory) AllFileVersions() ([]int16, error) {
-	buf, err := os.ReadFile(path.Join(self.dir, Ver))
+func (self *FileDirectory) AllFileVersions() ([]int16, error) {
+
+	version := path.Join(self.dir, Ver)
+
+	file, err := os.Open(version)
+	ex.CheckErr(err)
+	defer file.Close()
+
+	r := csv.NewReader(file)
+
+	records, err := r.ReadAll()
+
 	ex.CheckErr(err)
 
-	if len(buf) == 0 {
-		return nil, fmt.Errorf("%s, \"%s\" is empty.", self.dir, Ver)
+	if len(records) <= 1 {
+		return []int16{-1}, fmt.Errorf("File %s is empty or has only one record.\n",
+			path.Join(self.fs.currentWorkingDir, self.dir, Ver))
 	}
 
-	// check for latest '\n'
-	if buf[len(buf)-1] == '\n' {
-		buf = buf[:len(buf)-2]
-	}
+	records = records[1:]
 
-	lines := bytes.Split(buf, []byte{'\n'})
-	ret := make([]int16, len(lines))
-	for nr, line := range lines {
-		if nr%2 == 0 {
-			var num int16
-			fmt.Sscanf(string(line), "VER%d", &num)
-			if num >= 0 { // Negative numbers are archived.
-				ret = append(ret, num)
-			}
-		}
+	ret := make([]int16, len(records))
+
+	for i, record := range records {
+
+		fmt.Sscanf(record[0], "VER%d", &ret[i])
 	}
 
 	return ret, nil
-}
-
-// Release is a milestone. It also generates data.
-func (self *FileDirectory) Release(nr int) {
-	// TODO: Implement this. But TBH I don't know how this releases data and also not what data.
-	// Specs:
-	// - User Name
-	// - Date
-	// - Release description name of action. Short one and a long one.
-	// - ORM: Update all values.
-	// - The "run script" I don't know yet... and I don't know whether it is neccessary.
-}
-
-// Dealing with the OOPS factor.
-func UnRelease(nr int) {
-	// TODO: Implement this.
 }
 
 // Delete one version, not the file on its own.
@@ -478,24 +387,22 @@ func (self *FileDirectory) CloseItemVersion(ver int16) {
 	ex.CheckErr(err)
 }
 
-// Renames the filename. It returns an error when not succeed.
+// Renames the filename. Returns an error when not succeed.
 func (self *FileDirectory) fileRename(src, dest string) error {
+
 	versions, err := self.AllFileVersions()
 	ex.CheckErr(err)
-	for version := range versions {
+
+	fmt.Printf("Versions: %v\n", versions)
+
+	for _, version := range versions {
 		ver := fmt.Sprintf("VER%03d", version)
-		buf := []byte(dest)
-		fname := path.Join(ver, FileName)
-		// FileName with new name
-		err := os.WriteFile(fname, buf, 0644)
-		ex.CheckErr(err)
-		err = os.Chown(fname, self.fs.userUid, self.fs.vaultUid)
-		ex.CheckErr(err)
+
 		// Rename
-		err = os.Rename(path.Join(ver, src), path.Join(ver, dest))
-		ex.CheckErr(err)
-		err = os.Chown(ver, self.fs.userUid, self.fs.vaultUid)
+
+		err = os.Rename(path.Join(self.dir, ver, src), path.Join(self.dir, ver, dest))
 		ex.CheckErr(err)
 	}
+
 	return nil
 }

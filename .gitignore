@@ -135,3 +135,11 @@ dmypy.json
 
 # OSX Operating system
 .DS_Store
+
+
+# Common golang files
+bin/createvault
+bin/removevault
+bin/app
+bin/addusers
+bin/setup

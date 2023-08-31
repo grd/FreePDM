@@ -141,7 +141,7 @@ func (self *FileSystem) ImportFile(fname string) int64 {
 	dir := fmt.Sprintf("%d", index)
 
 	// fd := InitFileDirectory(self, path.Join(self.mainPdmDir, dir))
-	fd := InitFileDirectory(self, dir)
+	fd := InitFileDirectory(self, dir, index)
 
 	fd.NewDirectory().ImportNewFile(fname)
 
@@ -162,7 +162,7 @@ func (self *FileSystem) NewVersion(indexNr int64) int16 {
 	ex.CheckErr(err)
 	dir := path.Join(self.mainPdmDir, dirIdx)
 
-	fd := InitFileDirectory(self, dir)
+	fd := InitFileDirectory(self, dir, indexNr)
 
 	ret := fd.NewVersion()
 
@@ -213,7 +213,7 @@ func (self FileSystem) ListDir(dirName string) []FileInfo {
 	subDirList := make([]FileInfo, len(dir_list))
 
 	for _, sub_dir := range dir_list {
-		if num, err := strconv.Atoi(sub_dir.Name()); err == nil { //TODO verder invullen...
+		if num, err := strconv.Atoi(sub_dir.Name()); err == nil { //TODO fill this in...
 			// dir := filepath.Join(self.currentWorkingDir, self.index.Dir(self.index.indexNumberTxt))
 			// fd := InitFileDirectory(self, dir)
 			fileList = append(directoryList, FileInfo{
@@ -279,7 +279,7 @@ func (self *FileSystem) CheckOut(itemNr int64, ver int16) error {
 	dir, err := self.index.DirIndex(itemNr)
 	ex.CheckErr(err)
 
-	fd := InitFileDirectory(self, path.Join(self.mainPdmDir, dir))
+	fd := InitFileDirectory(self, path.Join(self.mainPdmDir, dir), itemNr)
 	fd.OpenItemVersion(ver)
 
 	// check whether the itemnr is locked
@@ -317,7 +317,7 @@ func (self *FileSystem) CheckIn(itemNr int64, ver int16, descr, longdescr string
 	dir, err := self.index.DirIndex(itemNr)
 	ex.CheckErr(err)
 
-	fd := InitFileDirectory(self, path.Join(self.mainPdmDir, dir))
+	fd := InitFileDirectory(self, path.Join(self.mainPdmDir, dir), itemNr)
 
 	fd.StoreData(ver, descr, longdescr)
 
@@ -352,26 +352,70 @@ func (self *FileSystem) CheckIn(itemNr int64, ver int16, descr, longdescr string
 	}
 }
 
-// TODO right now this feature doesn't work.
-
-// Rename a directory or a file, for instance when the user wants to use a file
+// Rename a file, for instance when the user wants to use a file
 // with a specified numbering system.
-func (self *FileSystem) Rename(src, dest string) error {
+// Note that all versions need to be checked in.
+func (self *FileSystem) FileRename(src, dest string) error {
 
-	// TODO Check wether "dest" doesn't exist
+	// Check wether dest exist
 
-	// and ater that renames the file inside the file index.
-
-	err := self.index.renameItem(src, dest)
-	ex.CheckErr(err)
+	dir, err := self.index.Dir(dest)
+	if err == nil {
+		return fmt.Errorf("File %s already exist and is stored in %s", dest, dir)
+	}
 
 	// Rename the file from src to dest
 
-	dir, err := self.index.Dir(src)
+	dir, err = self.index.CurrentDir(src)
 	ex.CheckErr(err)
 
-	fd := InitFileDirectory(self, path.Join(self.currentWorkingDir, dir))
+	fileName, err := self.index.Index(src)
+	ex.CheckErr(err)
+
+	fd := InitFileDirectory(self, path.Join(self.currentWorkingDir, dir), fileName)
+	println(fd.dir)
+
 	err = fd.fileRename(src, dest)
+	if err != nil {
+		return err
+	}
+
+	// Rename the file in the index
+
+	err = self.index.renameItem(src, dest)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// TODO right now this feature doesn't work.
+
+// Copy a file.
+// Flag latestOnly means that when true it only copies the latest file,
+// when false then it copies all files.
+// Note that all versions need to be checked in.
+func (self *FileSystem) FileCopy(src, dest string, latestOnly bool) error {
+
+	// TODO copy the file inside the file index.
+	// Note: Als think about copying all files or only the latest
+
+	_, err := self.index.Dir(dest)
+	if err != nil {
+		return fmt.Errorf("File %s already exist", dest)
+	}
+
+	// err := self.index.renameItem(src, dest)
+	// ex.CheckErr(err)
+
+	// // Copy the file from src to dest
+
+	// dir, err := self.index.Dir(src)
+	// ex.CheckErr(err)
+
+	// fd := InitFileDirectory(self, path.Join(self.currentWorkingDir, dir))
+	// err = fd.fileRename(src, dest)
 
 	return nil
 }
@@ -379,7 +423,8 @@ func (self *FileSystem) Rename(src, dest string) error {
 // TODO right now this feature doesn't work
 
 // Moves a file to a different directory.
-func (self *FileSystem) Move(fileName, destDir string) error {
+// Note that all versions need to be checked in.
+func (self *FileSystem) FileMove(fileName, destDir string) error {
 
 	// delete the part up to PDM dir from destDir
 
@@ -401,6 +446,30 @@ func (self *FileSystem) Move(fileName, destDir string) error {
 	err = os.Chown(destDir, self.userUid, self.vaultUid)
 	ex.CheckErr(err)
 
+	return nil
+}
+
+// TODO implement these three, but they are tricky
+//
+// Think about recursive ! ! !
+
+// Rename a directory.
+// Note that all versions need to be checked in.
+func (self *FileSystem) DirectoryRename(src, dest string) error {
+	// Think about recursive ! ! !
+	return nil
+}
+
+// Copy a directory.
+// Note that all versions need to be checked in.
+func (self *FileSystem) DirectoryCopy(src, dest string) error {
+	return nil
+}
+
+// Move a directory.
+// Note that all versions need to be checked in.
+func (self *FileSystem) DirectoryMove(src, dest string) error {
+	// Think about recursive ! ! !
 	return nil
 }
 

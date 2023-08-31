@@ -185,6 +185,18 @@ func (self *FileIndex) Dir(fileName string) (string, error) {
 	return "", fmt.Errorf("File %s not found.", fileName)
 }
 
+// Returns the directory name of a file placed inside the current directory,
+// or an error when not found.
+func (self *FileIndex) CurrentDir(fileName string) (string, error) {
+	for _, v := range self.fileList {
+		if fileName == v.file {
+			str := fmt.Sprintf("%d", v.index)
+			return str, nil
+		}
+	}
+	return "", fmt.Errorf("File %s not found.", fileName)
+}
+
 // Returns the complete directory name of a file number, or an error when not found.
 func (self *FileIndex) DirIndex(fileName int64) (string, error) {
 	for _, v := range self.fileList {

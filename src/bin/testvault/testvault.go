@@ -63,18 +63,27 @@ func main() {
 	f3 := fs.ImportFile(file3)
 	fs.CheckIn(f3, 0, "Testf3-0", "")
 
-	ver = fs.NewVersion(f3) // Don't check in yet...
+	ver = fs.NewVersion(f3)
+	fs.CheckIn(f3, ver, "Testf3-1", "Test3-1")
 
 	//
-	// Both rename and move requires a bit of love...
+	// rename, copy and move requires a bit of love...
+	//
+	// these functions require that all the files are checked in and will fail when they are not.
 	//
 
-	// err = fs.Rename("0001.FCStd", "0007.FCstd")
+	err = fs.FileRename("0001.FCStd", "0007.FCStd")
+	ex.CheckErr(err)
+
+	// err = fs.FileCopy("0007.FCStd", "0008.FCstd", true) // true means that only the latest version is copied
+	// ex.CheckErr(err)
+
+	// err = fs.FileCopy("0007.FCStd", "0009.FCstd", false) // true means that all versions are copied
 	// ex.CheckErr(err)
 
 	// fs.Mkdir("temp")
 
-	// err = fs.Move("0001.FCStd", "test")
+	// err = fs.FileMove("0007.FCStd", "test")
 	// ex.CheckErr(err)
 
 	fs.Chdir("..")
