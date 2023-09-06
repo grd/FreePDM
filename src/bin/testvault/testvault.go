@@ -75,15 +75,12 @@ func main() {
 	err = fs.FileRename("0001.FCStd", "0007.FCStd")
 	ex.CheckErr(err)
 
-	// err = fs.FileCopy("0007.FCStd", "0008.FCstd", true) // true means that only the latest version is copied
-	// ex.CheckErr(err)
+	err = fs.FileCopy("0002.FCStd", "0008.FCstd")
+	ex.CheckErr(err)
 
-	// err = fs.FileCopy("0007.FCStd", "0009.FCstd", false) // true means that all versions are copied
-	// ex.CheckErr(err)
+	fs.Mkdir("temp")
 
-	// fs.Mkdir("temp")
-
-	// err = fs.FileMove("0007.FCStd", "test")
+	// err = fs.FileMove("0003.FCStd", "temp")
 	// ex.CheckErr(err)
 
 	fs.Chdir("..")

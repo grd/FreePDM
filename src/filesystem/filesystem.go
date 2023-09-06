@@ -120,6 +120,14 @@ func (self *FileSystem) WriteLockedIndex() {
 	ex.CheckErr(err)
 }
 
+// This helper function returns the offset of the
+// current working dir from the main PDM dir.
+// This is only useful for the FileIndex.AddItem() function
+func (self FileSystem) GetWd() string {
+	idx := len(self.mainPdmDir) + 1     // trailing slash
+	return self.currentWorkingDir[idx:] // takes away the mainPdmDir part
+}
+
 // import a file inside the PDM. When you import a file the meta-data also gets imported,
 // which means uploaded to the server.
 // When you import a file or files you are placing the new file in the current directory.
@@ -131,12 +139,14 @@ func (self *FileSystem) ImportFile(fname string) int64 {
 		log.Fatalf("File %s could not be found.", fname)
 	}
 
-	idx := len(self.mainPdmDir) + 1 // trailing slash
+	// idx := len(self.mainPdmDir) + 1 // trailing slash
 
-	dirname := self.currentWorkingDir[idx:] // takes away the mainPdmDir part
+	// dirname := self.currentWorkingDir[idx:] // takes away the mainPdmDir part
 
 	// storing "fname" and "dir" into the file index
-	index := self.index.AddItem(fname, dirname)
+	// index := self.index.AddItem(fname, dirname)
+
+	index := self.index.AddItem(fname, self.GetWd())
 
 	dir := fmt.Sprintf("%d", index)
 
@@ -177,18 +187,21 @@ func (self *FileSystem) NewVersion(indexNr int64) int16 {
 }
 
 // Creates a new directory inside the current directory, with the correct uid and gid.
-func (self FileSystem) Mkdir(dname string) error {
+func (self FileSystem) Mkdir(dir string) error {
 
 	// Check wether dname is an int. We don't want that, because the number could interfere with the fileindex.
-	if _, err := strconv.Atoi(dname); err == nil {
-		return fmt.Errorf("Please change %s into a string, now it is a number.", dname)
+	if _, err := strconv.Atoi(dir); err == nil {
+		return fmt.Errorf("Please change %s into a string, now it is a number.", dir)
 	}
 
-	err := os.Mkdir(dname, 0777)
+	err := os.Mkdir(dir, 0777)
 	ex.CheckErr(err)
 
-	err = os.Chown(dname, self.userUid, self.vaultUid)
+	err = os.Chown(dir, self.userUid, self.vaultUid)
 	ex.CheckErr(err)
+
+	log.Printf("Created directory: %s\n", dir)
+
 	return nil
 }
 
@@ -197,6 +210,8 @@ func (self *FileSystem) Chdir(dir string) {
 	self.currentWorkingDir = newPath
 	err := os.Chdir(self.currentWorkingDir)
 	ex.CheckErr(err)
+
+	log.Printf("Changed directory: %s\n", dir)
 }
 
 // list the sorted directories and files of the current working directory.
@@ -357,6 +372,8 @@ func (self *FileSystem) CheckIn(itemNr int64, ver int16, descr, longdescr string
 // Note that all versions need to be checked in.
 func (self *FileSystem) FileRename(src, dest string) error {
 
+	// TODO Store the data in the index. Right now it doesn't work as it should.
+
 	// Check wether dest exist
 
 	dir, err := self.index.Dir(dest)
@@ -373,7 +390,6 @@ func (self *FileSystem) FileRename(src, dest string) error {
 	ex.CheckErr(err)
 
 	fd := InitFileDirectory(self, path.Join(self.currentWorkingDir, dir), fileName)
-	println(fd.dir)
 
 	err = fd.fileRename(src, dest)
 	if err != nil {
@@ -387,55 +403,74 @@ func (self *FileSystem) FileRename(src, dest string) error {
 		return err
 	}
 
+	// Logging
+
+	log.Printf("File %s renamed to %s\n", src, dest)
+
 	return nil
 }
 
-// TODO right now this feature doesn't work.
-
-// Copy a file.
-// Flag latestOnly means that when true it only copies the latest file,
-// when false then it copies all files.
+// Copy a the latest version of a file.
 // Note that all versions need to be checked in.
-func (self *FileSystem) FileCopy(src, dest string, latestOnly bool) error {
-
-	// TODO copy the file inside the file index.
-	// Note: Als think about copying all files or only the latest
+func (self *FileSystem) FileCopy(src, dest string) error {
 
 	_, err := self.index.Dir(dest)
-	if err != nil {
+	if err == nil {
 		return fmt.Errorf("File %s already exist", dest)
 	}
 
-	// err := self.index.renameItem(src, dest)
-	// ex.CheckErr(err)
+	srcIndex, err := self.index.Index(src)
+	ex.CheckErr(err)
 
-	// // Copy the file from src to dest
+	srcDir, err := self.index.Dir(src)
+	ex.CheckErr(err)
 
-	// dir, err := self.index.Dir(src)
-	// ex.CheckErr(err)
+	srcFd := InitFileDirectory(self, path.Join(self.mainPdmDir, srcDir), srcIndex)
 
-	// fd := InitFileDirectory(self, path.Join(self.currentWorkingDir, dir))
-	// err = fd.fileRename(src, dest)
+	destIndex := self.index.AddItem(dest, self.GetWd()) // TODO implement this into other AddItem
+
+	destDir, err := self.index.Dir(dest)
+	ex.CheckErr(err)
+
+	destFd := InitFileDirectory(self, path.Join(self.mainPdmDir, destDir), destIndex)
+
+	destFd.NewDirectory()
+
+	// Copy the file from src to dest
+
+	ver := srcFd.LatestVersion()
+	if ver == -1 {
+		return fmt.Errorf("Source file %s doesn't have a version entry.\n", src)
+	}
+
+	version := fmt.Sprintf("VER%03d", ver)
+	srcFile := path.Join(srcFd.dir, version, src)
+
+	// Copying file from src to dest and also properties
+
+	destFd.ImportNewFile(srcFile)
+
+	// Logging
+
+	log.Printf("File %s copied to %s\n", src, dest)
 
 	return nil
 }
-
-// TODO right now this feature doesn't work
 
 // Moves a file to a different directory.
 // Note that all versions need to be checked in.
 func (self *FileSystem) FileMove(fileName, destDir string) error {
 
-	// delete the part up to PDM dir from destDir
+	// "normalize" the destDir
 
 	dir := destDir
 	if strings.HasPrefix(destDir, self.mainPdmDir) {
-		destDir = destDir[len(self.mainPdmDir):]
+		dir = destDir[len(self.mainPdmDir):]
 	}
 
-	// Move file in FileIndex
-
-	self.index.moveItem(fileName, dir)
+	if ex.DirExists(dir) == false {
+		return fmt.Errorf("Directory %s doesn't exist.\n", destDir)
+	}
 
 	// Move file
 
@@ -446,12 +481,21 @@ func (self *FileSystem) FileMove(fileName, destDir string) error {
 	err = os.Chown(destDir, self.userUid, self.vaultUid)
 	ex.CheckErr(err)
 
+	// Move file in FileIndex
+
+	self.index.moveItem(fileName, dir)
+
+	// Logging
+
+	log.Printf("File %s moved to to %s\n", fileName, destDir)
+
 	return nil
 }
 
 // TODO implement these three, but they are tricky
 //
 // Think about recursive ! ! !
+// And logging
 
 // Rename a directory.
 // Note that all versions need to be checked in.

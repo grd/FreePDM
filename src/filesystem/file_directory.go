@@ -34,51 +34,6 @@ func InitFileDirectory(fsm *FileSystem, dir string, fileNumber int64) FileDirect
 	return FileDirectory{fs: fsm, dir: dir, fileNumber: fileNumber}
 }
 
-func (self *FileDirectory) writeVersionFile() {
-
-	ver := path.Join(self.dir, Ver)
-
-	records := [][]string{{"Version", "Date"}}
-
-	file, err := os.OpenFile(ver, os.O_WRONLY|os.O_CREATE, 0644)
-	ex.CheckErr(err)
-	defer file.Close()
-
-	writer := csv.NewWriter(file)
-	defer writer.Flush()
-
-	err = writer.WriteAll(records) // calls Flush internally
-	ex.CheckErr(err)
-
-	os.Chown(ver, self.fs.userUid, self.fs.vaultUid)
-	ex.CheckErr(err)
-}
-
-// Add the version number and the date
-func (self *FileDirectory) addVersion(version, date string) {
-
-	ver := path.Join(self.dir, Ver)
-
-	record := []string{version, date}
-
-	err := os.Chmod(ver, 0644)
-	ex.CheckErr(err)
-
-	file, err := os.OpenFile(ver, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
-	ex.CheckErr(err)
-
-	writer := csv.NewWriter(file)
-	writer.Write(record)
-
-	writer.Flush()
-	file.Close()
-
-	err = os.Chown(ver, self.fs.userUid, self.fs.vaultUid)
-	ex.CheckErr(err)
-	err = os.Chmod(ver, 0444)
-	ex.CheckErr(err)
-}
-
 // Creates a new directory inside the current working directory.
 func (self *FileDirectory) NewDirectory() FileDirectory {
 
@@ -92,8 +47,8 @@ func (self *FileDirectory) NewDirectory() FileDirectory {
 	// Write version file
 	self.writeVersionFile()
 
-	log.Printf("Created file structure %s into %s\n",
-		self.fs.index.FileNameOfString(dirName), self.fs.currentWorkingDir)
+	log.Printf("Created file structure %s\n",
+		path.Join(self.dir, self.fs.index.FileName(self.fileNumber)))
 
 	return *self
 }
@@ -364,6 +319,51 @@ func (self *FileDirectory) OpenItemVersion(ver int16) {
 	ex.CheckErr(err)
 }
 
+func (self *FileDirectory) writeVersionFile() {
+
+	ver := path.Join(self.dir, Ver)
+
+	records := [][]string{{"Version", "Date"}}
+
+	file, err := os.OpenFile(ver, os.O_WRONLY|os.O_CREATE, 0644)
+	ex.CheckErr(err)
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	err = writer.WriteAll(records) // calls Flush internally
+	ex.CheckErr(err)
+
+	os.Chown(ver, self.fs.userUid, self.fs.vaultUid)
+	ex.CheckErr(err)
+}
+
+// Add the version number and the date
+func (self *FileDirectory) addVersion(version, date string) {
+
+	ver := path.Join(self.dir, Ver)
+
+	record := []string{version, date}
+
+	err := os.Chmod(ver, 0644)
+	ex.CheckErr(err)
+
+	file, err := os.OpenFile(ver, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	ex.CheckErr(err)
+
+	writer := csv.NewWriter(file)
+	writer.Write(record)
+
+	writer.Flush()
+	file.Close()
+
+	err = os.Chown(ver, self.fs.userUid, self.fs.vaultUid)
+	ex.CheckErr(err)
+	err = os.Chmod(ver, 0444)
+	ex.CheckErr(err)
+}
+
 // Closes item number for editing.
 func (self *FileDirectory) CloseItemVersion(ver int16) {
 
@@ -392,8 +392,6 @@ func (self *FileDirectory) fileRename(src, dest string) error {
 
 	versions, err := self.AllFileVersions()
 	ex.CheckErr(err)
-
-	fmt.Printf("Versions: %v\n", versions)
 
 	for _, version := range versions {
 		ver := fmt.Sprintf("VER%03d", version)
