@@ -139,13 +139,6 @@ func (self *FileSystem) ImportFile(fname string) int64 {
 		log.Fatalf("File %s could not be found.", fname)
 	}
 
-	// idx := len(self.mainPdmDir) + 1 // trailing slash
-
-	// dirname := self.currentWorkingDir[idx:] // takes away the mainPdmDir part
-
-	// storing "fname" and "dir" into the file index
-	// index := self.index.AddItem(fname, dirname)
-
 	index := self.index.AddItem(fname, self.GetWd())
 
 	dir := fmt.Sprintf("%d", index)
@@ -372,8 +365,6 @@ func (self *FileSystem) CheckIn(itemNr int64, ver int16, descr, longdescr string
 // Note that all versions need to be checked in.
 func (self *FileSystem) FileRename(src, dest string) error {
 
-	// TODO Store the data in the index. Right now it doesn't work as it should.
-
 	// Check wether dest exist
 
 	dir, err := self.index.Dir(dest)
@@ -427,7 +418,7 @@ func (self *FileSystem) FileCopy(src, dest string) error {
 
 	srcFd := InitFileDirectory(self, path.Join(self.mainPdmDir, srcDir), srcIndex)
 
-	destIndex := self.index.AddItem(dest, self.GetWd()) // TODO implement this into other AddItem
+	destIndex := self.index.AddItem(dest, self.GetWd())
 
 	destDir, err := self.index.Dir(dest)
 	ex.CheckErr(err)
@@ -474,10 +465,14 @@ func (self *FileSystem) FileMove(fileName, destDir string) error {
 
 	// Move file
 
-	fname, err := self.index.Dir(fileName)
+	fname, err := self.index.CurrentDir(fileName)
 	ex.CheckErr(err)
-	err = os.Rename(fname, destDir)
+
+	dest := path.Join(destDir, fname)
+
+	err = os.Rename(fname, dest)
 	ex.CheckErr(err)
+
 	err = os.Chown(destDir, self.userUid, self.vaultUid)
 	ex.CheckErr(err)
 

@@ -64,7 +64,7 @@ func (self FileDirectory) ImportNewFile(fname string) FileDirectory {
 
 	versionDir := path.Join(self.dir, version)
 
-	self.addVersion(version, ex.Today())
+	self.increaseVersionNumber(version)
 
 	// create a new version dir
 
@@ -98,7 +98,7 @@ func (self FileDirectory) NewVersion() int16 {
 	version := fmt.Sprintf("VER%03d", new_version)
 	versionDir := path.Join(self.dir, version)
 
-	self.addVersion(version, ex.Today())
+	self.increaseVersionNumber(version)
 
 	// generate the new file name
 
@@ -339,8 +339,10 @@ func (self *FileDirectory) writeVersionFile() {
 	ex.CheckErr(err)
 }
 
-// Add the version number and the date
-func (self *FileDirectory) addVersion(version, date string) {
+// Increase the version number
+func (self *FileDirectory) increaseVersionNumber(version string) {
+
+	date := ex.Today()
 
 	ver := path.Join(self.dir, Ver)
 

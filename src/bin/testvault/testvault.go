@@ -80,8 +80,8 @@ func main() {
 
 	fs.Mkdir("temp")
 
-	// err = fs.FileMove("0003.FCStd", "temp")
-	// ex.CheckErr(err)
+	err = fs.FileMove("0003.FCStd", "temp")
+	ex.CheckErr(err)
 
 	fs.Chdir("..")
 	fs.Chdir("Standard Parts")

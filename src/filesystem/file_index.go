@@ -71,6 +71,8 @@ func InitFileIndex(vaultDir string, user_uid, vault_uid int) (ret FileIndex) {
 // Reads the values from "FileList.txt"
 func (self *FileIndex) Read() {
 
+	self.fileList = nil
+
 	var fl FileList
 
 	records, err := self.readCsv()
@@ -300,10 +302,14 @@ func (self *FileIndex) Index(fileName string) (int64, error) {
 // Moves the filename to an other directory,
 // but only in the FileList, not on disk.
 func (self *FileIndex) moveItem(fileNname, directory string) {
-	for _, v := range self.fileList {
+
+	var movefile *FileList
+
+	for index, v := range self.fileList {
 		if fileNname == v.file {
-			v.previousDir = v.dir
-			v.dir = directory
+			movefile = &self.fileList[index]
+			movefile.previousDir = v.dir
+			movefile.dir = directory
 			break
 		}
 	}
@@ -327,10 +333,13 @@ func (self *FileIndex) renameItem(src, dest string) error {
 
 	// Rename
 
-	for _, v := range self.fileList {
+	var renamefile *FileList
+
+	for index, v := range self.fileList {
 		if v.file == src {
-			v.previousFile = v.file
-			v.file = dest
+			renamefile = &self.fileList[index]
+			renamefile.previousFile = v.file
+			renamefile.file = dest
 			break
 		}
 	}
