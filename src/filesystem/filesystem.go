@@ -441,6 +441,8 @@ func (self *FileSystem) FileCopy(src, dest string) error {
 
 	destFd.ImportNewFile(srcFile)
 
+	err = destFd.fileRename(src, dest)
+
 	// Logging
 
 	log.Printf("File %s copied to %s\n", src, dest)
