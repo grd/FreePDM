@@ -18,7 +18,8 @@ require (
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/rivo/tview v0.0.0-20230615085408-bb9595ee0f4d
 	github.com/rivo/uniseg v0.4.3 // indirect
-	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
+	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/term v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
 	gorm.io/driver/mysql v1.5.1

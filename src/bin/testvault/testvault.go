@@ -66,11 +66,11 @@ func main() {
 	ver = fs.NewVersion(f3)
 	fs.CheckIn(f3, ver, "Testf3-1", "Test3-1")
 
-	//
-	// rename, copy and move requires a bit of love...
-	//
-	// these functions require that all the files are checked in and will fail when they are not.
-	//
+	// //
+	// // rename, copy and move requires a bit of love...
+	// //
+	// // these functions require that all the files are checked in and will fail when they are not.
+	// //
 
 	err = fs.FileRename("0001.FCStd", "0007.FCStd")
 	ex.CheckErr(err)

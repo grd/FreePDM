@@ -5,6 +5,7 @@
 package filesystem
 
 import (
+	"bytes"
 	"encoding/csv"
 	"fmt"
 	"log"
@@ -16,6 +17,7 @@ import (
 
 	"github.com/grd/FreePDM/src/config"
 	ex "github.com/grd/FreePDM/src/extras"
+	"golang.org/x/exp/slices"
 )
 
 // LockedIndex is the list of locked files
@@ -67,17 +69,22 @@ func InitFileSystem(vaultDir, userName string) (self FileSystem) {
 // Updates the locked index by reading from the lockedTxt file.
 func (self *FileSystem) ReadLockedIndex() {
 
-	file, err := os.Open(self.lockedCvs)
+	buf, err := os.ReadFile(self.lockedCvs)
 	ex.CheckErr(err)
-	defer file.Close()
 
-	r := csv.NewReader(file)
+	r := csv.NewReader(bytes.NewBuffer(buf))
 
 	records, err := r.ReadAll()
-
 	ex.CheckErr(err)
 
-	self.lockedIndex = make([]LockedIndex, 0, len(records)*2)
+	if len(records) <= 1 {
+		return
+	}
+
+	records = records[1:]
+
+	self.lockedIndex = nil
+
 	var list = LockedIndex{}
 
 	for _, record := range records {
@@ -93,7 +100,7 @@ func (self *FileSystem) ReadLockedIndex() {
 func (self *FileSystem) WriteLockedIndex() {
 
 	records := [][]string{
-		{"FileNumber", "Version", "UserNume"},
+		{"FileNumber", "Version", "UserName"},
 	}
 
 	for _, list := range self.lockedIndex {
@@ -105,15 +112,18 @@ func (self *FileSystem) WriteLockedIndex() {
 
 	}
 
-	file, err := os.OpenFile(self.lockedCvs, os.O_WRONLY|os.O_CREATE, 0644)
-	// file, err := os.Open(self.lockedCvs)
+	var buf []byte
+	buffer := bytes.NewBuffer(buf)
+
+	writer := csv.NewWriter(buffer)
+
+	err := writer.WriteAll(records) // calls Flush internally
 	ex.CheckErr(err)
-	defer file.Close()
 
-	writer := csv.NewWriter(file)
-	defer writer.Flush()
+	err = writer.Error()
+	ex.CheckErr(err)
 
-	err = writer.WriteAll(records) // calls Flush internally
+	err = os.WriteFile(self.lockedCvs, buffer.Bytes(), 0644)
 	ex.CheckErr(err)
 
 	err = os.Chown(self.lockedCvs, self.userUid, self.vaultUid)
@@ -300,15 +310,7 @@ func (self *FileSystem) CheckOut(itemNr int64, ver int16) error {
 
 		self.lockedIndex = append(self.lockedIndex, LockedIndex{itemNr, ver, self.user})
 
-		// Appending to file
-
-		var record = make([]string, 3)
-
-		record[0] = ex.I64toa(itemNr)
-		record[1] = ex.I16toa(ver)
-		record[2] = self.user
-
-		addRecord(self.lockedCvs, record)
+		self.WriteLockedIndex()
 
 		log.Printf("Checked out version %d of file %s\n", ver, self.index.FileName(itemNr))
 
@@ -350,7 +352,7 @@ func (self *FileSystem) CheckIn(itemNr int64, ver int16, descr, longdescr string
 			}
 		}
 
-		self.lockedIndex = append(self.lockedIndex[:nr], self.lockedIndex[nr+1:]...)
+		self.lockedIndex = slices.Delete(self.lockedIndex, nr, nr+1)
 
 		self.WriteLockedIndex()
 
