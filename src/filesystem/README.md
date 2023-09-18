@@ -7,7 +7,7 @@ The Filesystem is a major part of FreePDM. It is primarily a storage of files th
 
 - [x] Add a filesystem (directories)
 - [x] Allow importing of files
-- [ ] Allow showing and editing files with SMB
+- [x] Allow showing and editing files with SMB
 - [x] Renaming files
 - [x] Copying files
 - [x] Moving files
@@ -19,5 +19,5 @@ The Filesystem is a major part of FreePDM. It is primarily a storage of files th
 - [x] Dealing with checkin and checkout.
 - [x] Dealing with users.
 - [ ] Reporting with json (dir list, properties, etc.)
-- [ ] Logging the activities.
+- [x] Logging the activities.
 - [ ] Hovering over an item (show list of description, checked out, etc.)
