@@ -143,3 +143,5 @@ bin/removevault
 bin/app
 bin/addusers
 bin/setup
+
+Makefile

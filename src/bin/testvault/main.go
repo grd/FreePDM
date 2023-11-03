@@ -7,21 +7,29 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
+	"os/user"
 	"path"
 
-	ex "github.com/grd/FreePDM/src/extras"
 	fs "github.com/grd/FreePDM/src/filesystem"
+	ex "github.com/grd/FreePDM/src/utils"
 )
 
 func main() {
 	vaultDirectory := flag.String("v", "", "The existing vault directory, stored in /vault")
-	userName := flag.String("u", "", "The user- or login name")
+	userName, err := user.Current()
+	ex.CheckErr(err)
+
 	flag.Parse()
 	fmt.Printf("Vault dir: %s\n", *vaultDirectory)
-	fmt.Printf("User name: %s\n", *userName)
+	fmt.Printf("User name: %s\n", *&userName.Name)
 
-	err := os.Chdir("/media/nas/FreePDM")
+	if *vaultDirectory == "" {
+		log.Fatal("Please input your vault directory.")
+	}
+
+	err = os.Chdir("/media/nas/FreePDM")
 	ex.CheckErr(err)
 	fd_dir, err := os.Getwd()
 	ex.CheckErr(err)
@@ -39,10 +47,17 @@ func main() {
 	err = os.Chdir(vaultDir)
 	ex.CheckErr(err)
 
-	fs := fs.InitFileSystem(vaultDir, *userName)
+	fs := fs.InitFileSystem(vaultDir, userName.Name)
 	fmt.Printf("Root directory of the vault: %s\n\n", vaultDir)
 	fs.Mkdir("Standard Parts")
 	fs.Mkdir("Projects")
+	fs.Mkdir("test")
+
+	fileInfo := fs.ListWD()
+	for _, info := range fileInfo {
+		fmt.Println(info.FileName)
+	}
+
 	fs.Chdir("Projects")
 
 	f1 := fs.ImportFile(file1)
@@ -75,15 +90,31 @@ func main() {
 	err = fs.FileRename("0001.FCStd", "0007.FCStd")
 	ex.CheckErr(err)
 
-	err = fs.FileCopy("0002.FCStd", "0008.FCstd")
+	err = fs.FileCopy("0002.FCStd", "0008.FCStd")
 	ex.CheckErr(err)
 
-	fs.Mkdir("temp")
+	err = fs.FileCopy("0002.FCStd", "../test/0008a.FCStd")
+	ex.CheckErr(err)
 
-	err = fs.FileMove("0003.FCStd", "temp")
+	fileInfo = fs.ListWD()
+	for _, info := range fileInfo {
+		fmt.Println(info.FileName)
+	}
+
+	err = fs.FileMove("0003.FCStd", "..")
 	ex.CheckErr(err)
 
 	fs.Chdir("..")
+
+	fileInfo = fs.ListWD()
+	for _, info := range fileInfo {
+		fmt.Println(info.FileName)
+	}
+
+	// fs.Mkdir("Projects/temp")
+	// err = fs.FileMove("0003.FCStd", "Projects/temp")
+	// ex.CheckErr(err)
+
 	fs.Chdir("Standard Parts")
 
 	f4 := fs.ImportFile(file4)
@@ -94,6 +125,23 @@ func main() {
 
 	f6 := fs.ImportFile(file6)
 	fs.CheckIn(f6, 0, "Testf6-0", "Testf6-0")
+
+	fileInfo = fs.ListWD()
+	for _, info := range fileInfo {
+		fmt.Println(info.FileName)
+	}
+
+	fs.Chdir("..") // back in PDM root
+
+	fs.Mkdir("Projects2")
+	err = fs.DirectoryCopy("Projects", "Projects2")
+	ex.CheckErr(err)
+
+	// fs.Chdir("Projects (copy)")
+	// fileInfo = fs.ListWD()
+	// for _, info := range fileInfo {
+	// 	fmt.Println(info.FileName)
+	// }
 
 	fmt.Println("This script successfully finished.")
 }

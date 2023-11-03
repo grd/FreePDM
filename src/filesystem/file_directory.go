@@ -12,7 +12,7 @@ import (
 	"path"
 	"strings"
 
-	ex "github.com/grd/FreePDM/src/extras"
+	ex "github.com/grd/FreePDM/src/utils"
 )
 
 // Some handy file names
@@ -28,6 +28,20 @@ type FileDirectory struct {
 	fs         *FileSystem
 	dir        string
 	fileNumber int64
+}
+
+// File versions struct
+//
+//	field: 'number', an increment
+//	field: 'pretty' means a version presentation, such as A.1, A-0, 2.0, 3 or A.
+//
+// TODO This functionality hasn't been implemented yet... For the time being it just reports the string presentation of 'number'
+//
+//	field: 'date' means the time of a new version with the format "YYYY-MM-DD H:M:S"
+type FileVersion struct {
+	number int16
+	pretty string
+	date   string
 }
 
 func InitFileDirectory(fsm *FileSystem, dir string, fileNumber int64) FileDirectory {
@@ -244,6 +258,7 @@ func (self *FileDirectory) AllFileVersions() ([]int16, error) {
 	defer file.Close()
 
 	r := csv.NewReader(file)
+	r.Comma = ':'
 
 	records, err := r.ReadAll()
 
@@ -309,7 +324,7 @@ func (self *FileDirectory) OpenItemVersion(ver int16) {
 	err = os.Chmod(dirVersion, 0700)
 	ex.CheckErr(err)
 
-	// And that guy has filemode 644 for the file itself.
+	// And that guy has filemode 0644 for the file itself.
 
 	base := path.Base(self.dir)
 	num := ex.Atoi64(base)
@@ -323,7 +338,7 @@ func (self *FileDirectory) writeVersionFile() {
 
 	ver := path.Join(self.dir, Ver)
 
-	records := [][]string{{"Version", "Date"}}
+	records := [][]string{{"Version", "Pretty", "Date"}}
 
 	file, err := os.OpenFile(ver, os.O_WRONLY|os.O_CREATE, 0644)
 	ex.CheckErr(err)
@@ -331,6 +346,7 @@ func (self *FileDirectory) writeVersionFile() {
 
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
+	writer.Comma = ':'
 
 	err = writer.WriteAll(records) // calls Flush internally
 	ex.CheckErr(err)
@@ -342,11 +358,11 @@ func (self *FileDirectory) writeVersionFile() {
 // Increase the version number
 func (self *FileDirectory) increaseVersionNumber(version string) {
 
-	date := ex.Today()
+	date := ex.Now()
 
 	ver := path.Join(self.dir, Ver)
 
-	record := []string{version, date}
+	record := []string{version, version, date}
 
 	err := os.Chmod(ver, 0644)
 	ex.CheckErr(err)
@@ -355,6 +371,8 @@ func (self *FileDirectory) increaseVersionNumber(version string) {
 	ex.CheckErr(err)
 
 	writer := csv.NewWriter(file)
+	writer.Comma = ':'
+
 	writer.Write(record)
 
 	writer.Flush()

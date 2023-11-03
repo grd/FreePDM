@@ -9,7 +9,8 @@ import (
 	"log"
 	"os"
 
-	ex "github.com/grd/FreePDM/src/extras"
+	"github.com/grd/FreePDM/src/config"
+	ex "github.com/grd/FreePDM/src/utils"
 )
 
 // A simple "quick and dirty" remove all files from testvault script
@@ -24,6 +25,8 @@ func WriteIndexNumber() {
 	w := csv.NewWriter(f)
 	defer w.Flush()
 
+	w.Comma = ':'
+
 	firstRecord := []string{
 		"Index", "FileName", "PreviousFile", "Directory", "PreviousDir",
 	}
@@ -32,7 +35,9 @@ func WriteIndexNumber() {
 		log.Fatalln("error writing record to file", err)
 	}
 
-	os.Chown("FileList.csv", os.Geteuid(), 1002)
+	vaultUid := config.GetUid("vault")
+
+	os.Chown("FileList.csv", os.Geteuid(), vaultUid)
 }
 
 func WriteLockedFiles() {
@@ -44,13 +49,17 @@ func WriteLockedFiles() {
 	w := csv.NewWriter(f)
 	defer w.Flush()
 
+	w.Comma = ':'
+
 	firstRecord := []string{"FileNumber", "Version", "UserName"}
 
 	if err := w.Write(firstRecord); err != nil {
 		log.Fatalln("error writing record to file", err)
 	}
 
-	os.Chown("LockedFiles.csv", os.Geteuid(), 1002)
+	vaultUid := config.GetUid("vault")
+
+	os.Chown("LockedFiles.csv", os.Geteuid(), vaultUid)
 }
 
 func main() {
@@ -69,8 +78,10 @@ func main() {
 	err = os.RemoveAll("PDM")
 	ex.CheckErr(err)
 
-	err = os.Mkdir("PDM", 0777)
+	err = os.Mkdir("PDM", 0775)
 	ex.CheckErr(err)
 
-	os.Chown("PDM", os.Geteuid(), 1002)
+	vaultUid := config.GetUid("vault")
+
+	os.Chown("PDM", os.Geteuid(), vaultUid)
 }

@@ -5,14 +5,14 @@
 package filesystem
 
 import (
+	"bytes"
 	"encoding/csv"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path"
 
-	ex "github.com/grd/FreePDM/src/extras"
+	ex "github.com/grd/FreePDM/src/utils"
 )
 
 // The FileList is a struct with five fields:
@@ -43,6 +43,7 @@ type FileIndex struct {
 }
 
 func InitFileIndex(vaultDir string, user_uid, vault_uid int) (ret FileIndex) {
+
 	ret.vaultDir = vaultDir
 	ret.userUid = user_uid
 	ret.vaultUid = vault_uid
@@ -92,26 +93,22 @@ func (self *FileIndex) Read() {
 
 func (self FileIndex) readCsv() ([][]string, error) {
 
-	f, err := os.Open(self.fileListCsv)
+	buf, err := os.ReadFile(self.fileListCsv)
+	ex.CheckErr(err)
 
-	if err != nil {
-		return [][]string{}, err
-	}
-
-	defer f.Close()
-
-	r := csv.NewReader(f)
-
-	// skip first line
-	if _, err := r.Read(); err != nil {
-		return [][]string{}, err
-	}
+	r := csv.NewReader(bytes.NewBuffer(buf))
+	r.Comma = ':'
 
 	records, err := r.ReadAll()
-
 	if err != nil {
-		return [][]string{}, err
+		return [][]string{}, fmt.Errorf("Error reading file %s with error: %v", self.fileListCsv, err)
 	}
+
+	if len(records) == 0 {
+		return [][]string{}, fmt.Errorf("Error reading file %s with error: No header included.", self.fileListCsv)
+	}
+
+	records = records[1:]
 
 	return records, nil
 }
@@ -119,50 +116,37 @@ func (self FileIndex) readCsv() ([][]string, error) {
 // Writes the values to "FileList.csv"
 func (self *FileIndex) Write() {
 
-	file, err := os.OpenFile(self.fileListCsv, os.O_WRONLY|os.O_CREATE, 0644)
-	ex.CheckErr(err)
-	defer file.Close()
-
-	writer := csv.NewWriter(file)
-	defer writer.Flush()
-
-	firstRecord := []string{
-		"Index", "FileName", "PreviousFile", "Dir", "PreviousDir",
+	records := [][]string{
+		{"Index", "FileName", "PreviousFile", "Dir", "PreviousDir"},
 	}
-
-	if err := writer.Write(firstRecord); err != nil {
-		log.Fatalln("error writing record to file", err)
-	}
-
-	record := make([]string, 5)
 
 	for _, item := range self.fileList {
 
-		record[0] = ex.I64toa(item.index)
-		record[1] = item.file
-		record[2] = item.previousFile
-		record[3] = item.dir
-		record[4] = item.previousDir
-
-		if err := writer.Write(record); err != nil {
-			log.Fatalln("error writing record to file", err)
-		}
+		records = append(records, []string{
+			ex.I64toa(item.index),
+			item.file,
+			item.previousFile,
+			item.dir,
+			item.previousDir})
 	}
+
+	var buf []byte
+	buffer := bytes.NewBuffer(buf)
+
+	writer := csv.NewWriter(buffer)
+	writer.Comma = ':'
+
+	err := writer.WriteAll(records) // calls Flush internally
+	ex.CheckErr(err)
+
+	err = writer.Error()
+	ex.CheckErr(err)
+
+	err = os.WriteFile(self.fileListCsv, buffer.Bytes(), 0644)
+	ex.CheckErr(err)
 
 	err = os.Chown(self.fileListCsv, self.userUid, self.vaultUid)
 	ex.CheckErr(err)
-}
-
-// Write a record to a file
-func addRecord(fname string, column []string) {
-	file, err := os.OpenFile(fname, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
-	ex.CheckErr(err)
-
-	writer := csv.NewWriter(file)
-	writer.Write(column)
-
-	writer.Flush()
-	file.Close()
 }
 
 // Reads the index number and stores it.
@@ -184,7 +168,7 @@ func (self *FileIndex) Dir(fileName string) (string, error) {
 			return str, nil
 		}
 	}
-	return "", fmt.Errorf("File %s not found.", fileName)
+	return "", fmt.Errorf("[2] File %s not found.", fileName)
 }
 
 // Returns the directory name of a file placed inside the current directory,
@@ -196,7 +180,7 @@ func (self *FileIndex) CurrentDir(fileName string) (string, error) {
 			return str, nil
 		}
 	}
-	return "", fmt.Errorf("File %s not found.", fileName)
+	return "", fmt.Errorf("[1] File %s not found.", fileName)
 }
 
 // Returns the complete directory name of a file number, or an error when not found.
@@ -208,7 +192,18 @@ func (self *FileIndex) DirIndex(fileName int64) (string, error) {
 			return str, nil
 		}
 	}
-	return "", fmt.Errorf("File %d not found.", fileName)
+	return "", fmt.Errorf("[3] File %d not found.", fileName)
+}
+
+// Returns the file name of a file number.
+func (self *FileIndex) ContainerName(fileNumber string) (FileList, error) {
+	num := ex.Atoi64(fileNumber)
+	for _, item := range self.fileList {
+		if num == item.index {
+			return item, nil
+		}
+	}
+	return FileList{}, fmt.Errorf("File %s not !!! found in the index.", fileNumber)
 }
 
 // Returns the file name of a file number.
@@ -218,7 +213,7 @@ func (self *FileIndex) FileName(fileName int64) string {
 			return v.file
 		}
 	}
-	return fmt.Sprintf("File %d not found.", fileName)
+	return fmt.Sprintf("[4] File %d not found.", fileName)
 }
 
 // Returns the file name from a string (instead of an int64) of a file number.
@@ -257,37 +252,25 @@ func (self *FileIndex) increase_index_number() int64 {
 // It does not add a file on disk.
 func (self *FileIndex) AddItem(filename, dirname string) int64 {
 
+	self.Read() // refreshing the index
+
 	// getting rid of the path
 	_, split_file := path.Split(filename)
 	fname := split_file
 
-	self.Read() // refreshing the index
-
 	index := self.increase_index_number()
+
 	fl := FileList{index: index, file: fname, dir: dirname}
 
 	self.fileList = append(self.fileList, fl)
 
-	// Appending to file
-
-	var record = make([]string, 5)
-
-	record[0] = ex.I64toa(fl.index)
-	record[1] = fl.file
-	record[2] = fl.previousFile
-	record[3] = fl.dir
-	record[4] = fl.previousDir
-
-	addRecord(self.fileListCsv, record)
-
-	err := os.Chown(self.fileListCsv, self.userUid, self.vaultUid)
-	ex.CheckErr(err)
+	self.Write()
 
 	return index
 }
 
 // Returns the index number of the file name,
-// or -1 when the file is not found.
+// or an error when the file is not found.
 func (self *FileIndex) Index(fileName string) (int64, error) {
 
 	for _, v := range self.fileList {

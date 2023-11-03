@@ -12,7 +12,7 @@ import (
 	"path"
 
 	"github.com/BurntSushi/toml"
-	"github.com/grd/FreePDM/src/extras"
+	extras "github.com/grd/FreePDM/src/utils"
 )
 
 var (

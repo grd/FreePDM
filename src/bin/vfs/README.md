@@ -1,6 +1,6 @@
 # The Virtual Filesystem page
 
-The Virtual Filesystem (vfs) is a representation of the file structures. I think that I am using [this](https://github.com/C2FO/vfs) to start with. In the end it is an executable vfs that can be mounted in the server. The vfs is read-writeable. It consists of multiple levels that are highly complicated.
+The Virtual Filesystem (vfs) is a representation of the file structures. I think that I am using [this](https://github.com/jacobsa/fuse) to start with. In the end it is an executable vfs that can be mounted in the server. The vfs is read-writeable. It consists of multiple levels that are highly complicated.
 
 ### Level 1 (and two)
 

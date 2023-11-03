@@ -9,6 +9,8 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
+	"strconv"
 	"time"
 )
 
@@ -20,9 +22,16 @@ func Today() string {
 	return t[0:10]
 }
 
-// Now returns the time of now in the format "YYYY-MMM-DD HH:MM:SS"
+// Now returns the time of now in the format "YYYY-MM-DD HH:MM:SS"
 func Now() string {
-	return ""
+	currentTime := time.Now()
+	return fmt.Sprintf("%d-%d-%d %d:%d:%d",
+		currentTime.Year(),
+		currentTime.Month(),
+		currentTime.Day(),
+		currentTime.Hour(),
+		currentTime.Minute(),
+		currentTime.Second())
 }
 
 // Fatal when having an error
@@ -103,4 +112,19 @@ func Atoi64(str string) int64 {
 // Converts an int64 into a string
 func I64toa(i int64) string {
 	return fmt.Sprintf("%d", i)
+}
+
+func SplitFileExtension(file string) (base, ext string) {
+	ext = filepath.Ext(file)
+	base = file[:len(file)-len(ext)]
+	return
+}
+
+// Returns true when the string is a number.
+func IsNumber(name string) bool {
+	if _, err := strconv.Atoi(name); err == nil {
+		return true
+	} else {
+		return false
+	}
 }

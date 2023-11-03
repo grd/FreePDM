@@ -16,7 +16,7 @@ import (
 	"strings"
 
 	"github.com/grd/FreePDM/src/config"
-	ex "github.com/grd/FreePDM/src/extras"
+	ex "github.com/grd/FreePDM/src/utils"
 	"golang.org/x/exp/slices"
 )
 
@@ -54,9 +54,14 @@ func InitFileSystem(vaultDir, userName string) (self FileSystem) {
 		log.Fatal("Username has not been stored into the FreePDM config file. Please follow the setup process.")
 	}
 
+	if self.vaultUid == -1|0 {
+		log.Fatal("Vault UID has not been stored into the FreePDM config file. Please follow the setup process.")
+	}
+
 	self.index = InitFileIndex(self.vaultDir, self.userUid, self.vaultUid)
 
 	self.lockedCvs = path.Join(self.vaultDir, LockedFileCsv)
+
 	self.ReadLockedIndex() // retrieve the values
 
 	os.Chdir(self.currentWorkingDir)
@@ -73,6 +78,7 @@ func (self *FileSystem) ReadLockedIndex() {
 	ex.CheckErr(err)
 
 	r := csv.NewReader(bytes.NewBuffer(buf))
+	r.Comma = ':'
 
 	records, err := r.ReadAll()
 	ex.CheckErr(err)
@@ -116,6 +122,7 @@ func (self *FileSystem) WriteLockedIndex() {
 	buffer := bytes.NewBuffer(buf)
 
 	writer := csv.NewWriter(buffer)
+	writer.Comma = ':'
 
 	err := writer.WriteAll(records) // calls Flush internally
 	ex.CheckErr(err)
@@ -134,8 +141,12 @@ func (self *FileSystem) WriteLockedIndex() {
 // current working dir from the main PDM dir.
 // This is only useful for the FileIndex.AddItem() function
 func (self FileSystem) GetWd() string {
-	idx := len(self.mainPdmDir) + 1     // trailing slash
-	return self.currentWorkingDir[idx:] // takes away the mainPdmDir part
+	idx := len(self.mainPdmDir) + 1 // trailing slash
+	if len(self.mainPdmDir) == len(self.currentWorkingDir) {
+		return ""
+	} else {
+		return self.currentWorkingDir[idx:] // takes away the mainPdmDir part
+	}
 }
 
 // import a file inside the PDM. When you import a file the meta-data also gets imported,
@@ -209,12 +220,13 @@ func (self FileSystem) Mkdir(dir string) error {
 }
 
 func (self *FileSystem) Chdir(dir string) {
-	newPath := filepath.Clean(path.Join(self.currentWorkingDir, dir))
+	newPath, err := filepath.Abs(path.Join(self.currentWorkingDir, dir))
+	ex.CheckErr(err)
 	self.currentWorkingDir = newPath
-	err := os.Chdir(self.currentWorkingDir)
+	err = os.Chdir(self.currentWorkingDir)
 	ex.CheckErr(err)
 
-	log.Printf("Changed directory: %s\n", dir)
+	log.Printf("Changed directory: %s\n", newPath)
 }
 
 // list the sorted directories and files of the current working directory.
@@ -226,17 +238,16 @@ func (self FileSystem) ListWD() []FileInfo {
 func (self FileSystem) ListDir(dirName string) []FileInfo {
 	dir_list, err := os.ReadDir(dirName)
 	ex.CheckErr(err)
-	directoryList := make([]FileInfo, len(dir_list)+1)
-	fileList := make([]FileInfo, len(dir_list))
-	subDirList := make([]FileInfo, len(dir_list))
+	var directoryList []FileInfo
+	var fileList []FileInfo
+	var subDirList []FileInfo
 
 	for _, sub_dir := range dir_list {
-		if num, err := strconv.Atoi(sub_dir.Name()); err == nil { //TODO fill this in...
-			// dir := filepath.Join(self.currentWorkingDir, self.index.Dir(self.index.indexNumberTxt))
-			// fd := InitFileDirectory(self, dir)
-			fileList = append(directoryList, FileInfo{
+		if num, err := strconv.Atoi(sub_dir.Name()); err == nil {
+			fileName := self.index.FileName(int64(num))
+			fileList = append(fileList, FileInfo{
 				Dir:      false,
-				FileName: self.index.FileName(int64(num)),
+				FileName: fileName,
 			})
 		} else {
 			directoryList = append(directoryList, FileInfo{Dir: true, FileName: sub_dir.Name()})
@@ -247,8 +258,13 @@ func (self FileSystem) ListDir(dirName string) []FileInfo {
 		subDirList = append(subDirList, FileInfo{Dir: true, FileName: ".."})
 	}
 
-	subDirList = append(subDirList, directoryList...)
-	subDirList = append(subDirList, fileList...)
+	if directoryList != nil {
+		subDirList = append(subDirList, directoryList...)
+	}
+
+	if fileList != nil {
+		subDirList = append(subDirList, fileList...)
+	}
 
 	return subDirList
 }
@@ -412,18 +428,30 @@ func (self *FileSystem) FileCopy(src, dest string) error {
 		return fmt.Errorf("File %s already exist", dest)
 	}
 
-	srcIndex, err := self.index.Index(src)
+	// srcIndex, err := self.index.Index(src)
+	file, err := self.index.ContainerName(src)
 	ex.CheckErr(err)
 
 	srcDir, err := self.index.Dir(src)
 	ex.CheckErr(err)
 
-	srcFd := InitFileDirectory(self, path.Join(self.mainPdmDir, srcDir), srcIndex)
+	srcFd := InitFileDirectory(self, path.Join(self.mainPdmDir, srcDir), file.index)
 
-	destIndex := self.index.AddItem(dest, self.GetWd())
+	destDirectory, destFile := path.Split(dest)
+	destDirectory, _ = filepath.Abs(destDirectory)
+	destDirectory = self.OffsetFromPdmDir(destDirectory)
 
-	destDir, err := self.index.Dir(dest)
+	if destDirectory == "" {
+		fmt.Println("yes")
+		destDirectory = self.currentWorkingDir
+	}
+
+	destIndex := self.index.AddItem(destFile, destDirectory)
+
+	destDir, err := self.index.Dir(destFile)
 	ex.CheckErr(err)
+
+	fmt.Printf("dest = %s, destFile = %s, destDirectory = %s, destDir = %s\n", dest, destFile, destDirectory, destDir)
 
 	destFd := InitFileDirectory(self, path.Join(self.mainPdmDir, destDir), destIndex)
 
@@ -443,7 +471,10 @@ func (self *FileSystem) FileCopy(src, dest string) error {
 
 	destFd.ImportNewFile(srcFile)
 
-	err = destFd.fileRename(src, dest)
+	fmt.Printf("src = %s, dest = %s\n", src, dest)
+
+	// err = destFd.fileRename(src, dest)
+	err = destFd.fileRename(src, destFile)
 
 	// Logging
 
@@ -458,7 +489,9 @@ func (self *FileSystem) FileMove(fileName, destDir string) error {
 
 	// "normalize" the destDir
 
-	dir := destDir
+	dir, err := filepath.Abs(destDir)
+	ex.CheckErr(err)
+
 	if strings.HasPrefix(destDir, self.mainPdmDir) {
 		dir = destDir[len(self.mainPdmDir):]
 	}
@@ -482,7 +515,7 @@ func (self *FileSystem) FileMove(fileName, destDir string) error {
 
 	// Move file in FileIndex
 
-	self.index.moveItem(fileName, dir)
+	self.index.moveItem(self.OffsetFromPdmDir(fileName), self.OffsetFromPdmDir(dir))
 
 	// Logging
 
@@ -492,20 +525,63 @@ func (self *FileSystem) FileMove(fileName, destDir string) error {
 }
 
 // TODO implement these three, but they are tricky
+
+// TODO also note of the ex.IsNumber() function for copy and rename
 //
 // Think about recursive ! ! !
 // And logging
 
-// Rename a directory.
-// Note that all versions need to be checked in.
-func (self *FileSystem) DirectoryRename(src, dest string) error {
-	// Think about recursive ! ! !
+// Copy a directory.
+// Note that all file versions need to be checked in.
+func (self *FileSystem) DirectoryCopy(src, dest string) error {
+	if ex.IsNumber(dest) {
+		return fmt.Errorf("Directory %s is a number.\n", dest)
+	}
+
+	dirList, err := os.ReadDir(src)
+	ex.CheckErr(err)
+
+	// if ex.DirExists(dest) == false {
+	// 	self.Mkdir(dest)
+	// }
+
+	for _, item := range dirList {
+		if _, err := strconv.Atoi(item.Name()); err != nil {
+
+			// Directory operations
+
+			destDir := path.Join(dest, item.Name())
+			err := self.Mkdir(destDir)
+			ex.CheckErr(err)
+
+			err = self.DirectoryCopy(item.Name(), destDir)
+			if err != nil {
+				return err
+			}
+
+		} else {
+
+			// File operations
+
+			fileNum, err := self.index.ContainerName(item.Name())
+			ex.CheckErr(err)
+			base, ext := ex.SplitFileExtension(fileNum.file)
+			newFileName := base + " (copy)" + ext
+			destFile := path.Join(dest, newFileName)
+			err = self.FileCopy(fileNum.file, destFile)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	return nil
 }
 
-// Copy a directory.
+// Rename a directory.
 // Note that all versions need to be checked in.
-func (self *FileSystem) DirectoryCopy(src, dest string) error {
+func (self *FileSystem) DirectoryRename(src, dest string) error {
+
 	return nil
 }
 
@@ -516,8 +592,78 @@ func (self *FileSystem) DirectoryMove(src, dest string) error {
 	return nil
 }
 
-func SplitExt(path string) (root, ext string) {
+// Splits a file with its base and extension
+func SplitExt(path string) (base, ext string) {
 	ext = filepath.Ext(path)
-	root = path[:len(path)-len(ext)]
+	base = path[:len(path)-len(ext)]
 	return
 }
+
+// Returns the "vault" Uid
+func GetVaultUid() int {
+
+	buf, err := os.ReadFile("/etc/group")
+	ex.CheckErr(err)
+
+	r := csv.NewReader(bytes.NewBuffer(buf))
+	r.Comma = ':'
+
+	records, err := r.ReadAll()
+	ex.CheckErr(err)
+
+	for _, record := range records {
+
+		if record[0] == "vault" {
+			log.Printf("Vault uid = %s\n", record[2])
+			return int(ex.Atoi16(record[2]))
+		}
+	}
+
+	log.Fatalf("File %s doesn't have an entry \"vault\". See the installation instructions.", "/etc/group")
+	return -1
+}
+
+// Returns the offset directory from the PDM directory
+func (self *FileSystem) OffsetFromPdmDir(dir string) string {
+	offset := len(self.mainPdmDir)
+	if offset >= len(dir) {
+		return ""
+	} else {
+		return dir[offset+1:]
+	}
+}
+
+// TODO: Implement this inside all functions that need it.
+
+// // Verifies that both the copy and the registry are okay.
+// func (self FileSystem) Verify(indexNum int64, fileName, location string, version int16) error {
+// 	var index FileList
+// 	for _, file := range self.index.fileList {
+// 		if indexNum == file.index {
+// 			index = file
+// 			break
+// 		}
+// 	}
+
+// 	if index.index == 0 && index.file == "" {
+// 		return fmt.Errorf("Critical error: Index not found! The index number %d is not found!\n", indexNum)
+// 	}
+
+// 	if fileName != index.file {
+// 		return fmt.Errorf("Critical error: Line %d, stored file name %s doesn't match with the file name %s\n", index.index, index.file, fileName)
+// 	}
+
+// 	if location != index.dir {
+// 		return fmt.Errorf("Critical error: Line %d, stored directory name %s doesn't match with the location name %s\n", index.index, index.dir, location)
+// 	}
+
+// 	dirIdx, err := self.index.DirIndex(index.index)
+// 	ex.CheckErr(err)
+// 	dir := path.Join(self.mainPdmDir, dirIdx)
+
+// 	fd := InitFileDirectory(&self, dir, index.index)
+
+// 	file := path.Join(self.mainPdmDir, index.dir, ex.I64toa(indexNum))
+
+// 	return nil
+// }

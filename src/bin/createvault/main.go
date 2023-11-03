@@ -5,15 +5,22 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"log"
 	"os"
 	"strings"
 
-	ex "github.com/grd/FreePDM/src/extras"
+	ex "github.com/grd/FreePDM/src/utils"
 )
 
 // Script for creating a new PDM vault.
+
+const (
+	fileListCsv   = "FileList.csv"
+	indexNumber   = "IndexNumber.txt"
+	lockedFileCsv = "LockedFiles.csv"
+)
 
 func setup() {
 	fmt.Println("")
@@ -22,7 +29,7 @@ func setup() {
 	fmt.Println("Now a small questionaire is coming for the creation of the new vault.")
 	fmt.Println("For more info look at https://github.com/grd/FreePDM/tests/README.md")
 	fmt.Println("")
-	fmt.Println("The necessary information is the user uid, the vault uid,")
+	fmt.Println("The necessary information is the login user, user uid, the vault uid,")
 	fmt.Println("and the name of the new vault.")
 	fmt.Println("")
 	fmt.Println("Are you ready? [Y/n]")
@@ -33,13 +40,7 @@ func setup() {
 		os.Exit(-1)
 	}
 
-	fmt.Println("\nEnter the user name")
-	var user_name string
-	fmt.Scan(&user_name)
-
-	fmt.Println("\nEnter the user uid")
-	var user_uid int
-	fmt.Scan(&user_uid)
+	user_uid := os.Geteuid()
 
 	fmt.Println("Enter the vault uid")
 	var vault_uid int
@@ -64,7 +65,7 @@ func setup() {
 	if ex.DirExists(vault_dir) == true {
 		log.Fatalf("The vault \"%v\" already exist.", vault_dir)
 	}
-	err = os.Mkdir(vault_dir, 0777)
+	err = os.Mkdir(vault_dir, 0775)
 	ex.CheckErr(err)
 	err = os.Chown(vault_dir, user_uid, vault_uid)
 	ex.CheckErr(err)
@@ -72,35 +73,22 @@ func setup() {
 	err = os.Chdir(vault_dir)
 	ex.CheckErr(err)
 
-	// creating three files: "FileList.txt",
-	// "IndexNumber.txt" and "Locked.txt"
-
-	fileListTxt := "FileList.txt"
-	index_number := "IndexNumber.txt"
-	locked_file := "Locked.txt"
-
-	f1, err := os.Create(fileListTxt)
-	f1.Close()
+	err = os.WriteFile(indexNumber, []byte{'0'}, 0644)
 	ex.CheckErr(err)
-	os.Chown(fileListTxt, user_uid, vault_uid)
-
-	_, err = os.Create(locked_file)
+	os.Chown(indexNumber, user_uid, vault_uid)
 	ex.CheckErr(err)
-	os.Chown(locked_file, user_uid, vault_uid)
 
-	d1 := []byte("0")
-	err = os.WriteFile(index_number, d1, 0644)
-	ex.CheckErr(err)
-	os.Chown(index_number, user_uid, vault_uid)
+	WriteIndexNumber()
 
-	err = os.Mkdir("PDM", 0777)
+	WriteLockedFiles()
+
+	err = os.Mkdir("PDM", 0775)
 	ex.CheckErr(err)
 	err = os.Chown("PDM", user_uid, vault_uid)
 	ex.CheckErr(err)
 
-	fmt.Println("Three files have been created: FileList.txt,")
-	fmt.Println("IndexNumber.txt and Locked.txt, and the directory PDM")
-	fmt.Println("")
+	fmt.Printf(`Three files have been created: %s,\n
+		%s and %s, and the directory PDM.\n\n`, fileListCsv, indexNumber, lockedFileCsv)
 	fileList, err := os.ReadDir(".")
 	ex.CheckErr(err)
 	for _, list := range fileList {
@@ -111,6 +99,47 @@ func setup() {
 	fmt.Println("If that is correct, then the vault has been created.")
 
 	fmt.Println("Program ended successfully.")
+}
+
+// A simple "quick and dirty" remove all files from testvault script
+// but it also initializes the startup files again.
+
+func WriteIndexNumber() {
+
+	f, err := os.Create(fileListCsv)
+	ex.CheckErr(err)
+	defer f.Close()
+
+	w := csv.NewWriter(f)
+	defer w.Flush()
+
+	firstRecord := []string{
+		"Index", "FileName", "PreviousFile", "Directory", "PreviousDir",
+	}
+
+	if err := w.Write(firstRecord); err != nil {
+		log.Fatalln("error writing record to file", err)
+	}
+
+	os.Chown(fileListCsv, os.Geteuid(), 1002)
+}
+
+func WriteLockedFiles() {
+
+	f, err := os.Create(lockedFileCsv)
+	ex.CheckErr(err)
+	defer f.Close()
+
+	w := csv.NewWriter(f)
+	defer w.Flush()
+
+	firstRecord := []string{"FileNumber", "Version", "UserName"}
+
+	if err := w.Write(firstRecord); err != nil {
+		log.Fatalln("error writing record to file", err)
+	}
+
+	os.Chown(lockedFileCsv, os.Geteuid(), 1002)
 }
 
 func main() {
