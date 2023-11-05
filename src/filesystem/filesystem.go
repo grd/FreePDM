@@ -167,20 +167,21 @@ func (self *FileSystem) ImportFile(fname string) int64 {
 	// fd := InitFileDirectory(self, path.Join(self.mainPdmDir, dir))
 	fd := InitFileDirectory(self, dir, index)
 
-	fd.NewDirectory().ImportNewFile(fname)
+	bla := fd.NewDirectory()
+	bla.ImportNewFile(fname)
 
 	log.Printf("Imported %s into %s with version %d\n", fname, self.index.FileNameOfString(fd.dir), 0)
 
 	// Checking out the new file so no one else can see it.
 
-	err := self.CheckOut(index, 0)
+	err := self.CheckOut(index, FileVersion{0, "0", ex.Now()})
 	ex.CheckErr(err)
 
 	return index
 }
 
 // Generates a new version of a file and returns the version number.
-func (self *FileSystem) NewVersion(indexNr int64) int16 {
+func (self *FileSystem) NewVersion(indexNr int64) FileVersion {
 
 	dirIdx, err := self.index.DirIndex(indexNr)
 	ex.CheckErr(err)
@@ -192,7 +193,7 @@ func (self *FileSystem) NewVersion(indexNr int64) int16 {
 
 	// Checking out the new file so no one else can see it.
 
-	log.Printf("Created version %d of file %s\n", ret, self.index.FileName(indexNr))
+	log.Printf("Created version %d of file %s\n", ret.Number, self.index.FileName(indexNr))
 
 	err = self.CheckOut(indexNr, ret)
 	ex.CheckErr(err)
@@ -292,10 +293,10 @@ func (self FileSystem) CheckLatestFileVersion(fname string) int64 {
 
 // Check whether the itemnr is locked.
 // Returns the name of the user who locked it or empty when not locked.
-func (self FileSystem) IsLocked(itemNr int64, ver int16) string {
+func (self FileSystem) IsLocked(itemNr int64, version FileVersion) string {
 
 	for _, item := range self.lockedIndex {
-		if item.fileNr == itemNr && item.version == ver {
+		if item.fileNr == itemNr && item.version == version.Number {
 			return item.userName
 		}
 	}
@@ -304,7 +305,7 @@ func (self FileSystem) IsLocked(itemNr int64, ver int16) string {
 }
 
 // Checkout means locking a itemnr so that only you can use it.
-func (self *FileSystem) CheckOut(itemNr int64, ver int16) error {
+func (self *FileSystem) CheckOut(itemNr int64, version FileVersion) error {
 
 	self.ReadLockedIndex() // update the index
 
@@ -314,21 +315,21 @@ func (self *FileSystem) CheckOut(itemNr int64, ver int16) error {
 	ex.CheckErr(err)
 
 	fd := InitFileDirectory(self, path.Join(self.mainPdmDir, dir), itemNr)
-	fd.OpenItemVersion(ver)
+	fd.OpenItemVersion(version)
 
 	// check whether the itemnr is locked
 
-	if usr := self.IsLocked(itemNr, ver); usr != "" {
+	if usr := self.IsLocked(itemNr, version); usr != "" {
 
-		return fmt.Errorf("File %d-%d is locked by user %s.", itemNr, ver, usr)
+		return fmt.Errorf("File %d-%d is locked by user %s.", itemNr, version.Number, usr)
 
 	} else {
 
-		self.lockedIndex = append(self.lockedIndex, LockedIndex{itemNr, ver, self.user})
+		self.lockedIndex = append(self.lockedIndex, LockedIndex{itemNr, version.Number, self.user})
 
 		self.WriteLockedIndex()
 
-		log.Printf("Checked out version %d of file %s\n", ver, self.index.FileName(itemNr))
+		log.Printf("Checked out version %d of file %s\n", version.Number, self.index.FileName(itemNr))
 
 		return nil
 	}
@@ -336,7 +337,7 @@ func (self *FileSystem) CheckOut(itemNr int64, ver int16) error {
 
 // Checkin means unlocking an itemnr.
 // The description and long description are meant for storage.
-func (self *FileSystem) CheckIn(itemNr int64, ver int16, descr, longdescr string) error {
+func (self *FileSystem) CheckIn(itemNr int64, version FileVersion, descr, longdescr string) error {
 
 	// Set file mode 0755
 
@@ -345,17 +346,17 @@ func (self *FileSystem) CheckIn(itemNr int64, ver int16, descr, longdescr string
 
 	fd := InitFileDirectory(self, path.Join(self.mainPdmDir, dir), itemNr)
 
-	fd.StoreData(ver, descr, longdescr)
+	fd.StoreData(version, descr, longdescr)
 
-	fd.CloseItemVersion(ver)
+	fd.CloseItemVersion(version)
 
 	// check whether the itemnr is locked
 
-	usr := self.IsLocked(itemNr, ver)
+	usr := self.IsLocked(itemNr, version)
 
 	if usr != self.user {
 
-		return fmt.Errorf("File %d-%d is locked by user %s.", itemNr, ver, usr)
+		return fmt.Errorf("File %d-%d is locked by user %s.", itemNr, version.Number, usr)
 
 	} else {
 
@@ -363,7 +364,7 @@ func (self *FileSystem) CheckIn(itemNr int64, ver int16, descr, longdescr string
 
 		var nr int
 		for i, y := range self.lockedIndex {
-			if y.fileNr == itemNr && y.version == ver {
+			if y.fileNr == itemNr && y.version == version.Number {
 				nr = i
 			}
 		}
@@ -372,7 +373,7 @@ func (self *FileSystem) CheckIn(itemNr int64, ver int16, descr, longdescr string
 
 		self.WriteLockedIndex()
 
-		log.Printf("Checked in version %d of file %s", ver, self.index.FileName(itemNr))
+		log.Printf("Checked in version %d of file %s", version.Number, self.index.FileName(itemNr))
 
 		return nil
 	}
@@ -459,13 +460,9 @@ func (self *FileSystem) FileCopy(src, dest string) error {
 
 	// Copy the file from src to dest
 
-	ver := srcFd.LatestVersion()
-	if ver == -1 {
-		return fmt.Errorf("Source file %s doesn't have a version entry.\n", src)
-	}
+	version := srcFd.LatestVersion()
 
-	version := fmt.Sprintf("VER%03d", ver)
-	srcFile := path.Join(srcFd.dir, version, src)
+	srcFile := path.Join(srcFd.dir, version.Pretty, src)
 
 	// Copying file from src to dest and also properties
 

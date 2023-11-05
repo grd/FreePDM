@@ -39,9 +39,9 @@ type FileDirectory struct {
 //
 //	field: 'date' means the time of a new version with the format "YYYY-MM-DD H:M:S"
 type FileVersion struct {
-	number int16
-	pretty string
-	date   string
+	Number int16
+	Pretty string
+	Date   string
 }
 
 func InitFileDirectory(fsm *FileSystem, dir string, fileNumber int64) FileDirectory {
@@ -59,7 +59,7 @@ func (self *FileDirectory) NewDirectory() FileDirectory {
 	ex.CheckErr(err)
 
 	// Write version file
-	self.writeVersionFile()
+	self.writeInitialVersionFile()
 
 	log.Printf("Created file structure %s\n",
 		path.Join(self.dir, self.fs.index.FileName(self.fileNumber)))
@@ -72,9 +72,9 @@ func (self FileDirectory) ImportNewFile(fname string) FileDirectory {
 
 	// create a new version string
 
-	new_version := self.LatestVersion() + 1
+	new_version := self.LatestVersion().Number + 1
 
-	version := fmt.Sprintf("VER%03d", new_version)
+	version := fmt.Sprintf("%d", new_version)
 
 	versionDir := path.Join(self.dir, version)
 
@@ -104,24 +104,22 @@ func (self FileDirectory) ImportNewFile(fname string) FileDirectory {
 }
 
 // Creates a new version from copying the previous version.
-func (self FileDirectory) NewVersion() int16 {
+func (self FileDirectory) NewVersion() FileVersion {
 
 	// create a new version string
 
-	new_version := self.LatestVersion() + 1
-	version := fmt.Sprintf("VER%03d", new_version)
-	versionDir := path.Join(self.dir, version)
+	oldVersion := self.LatestVersion()
+	newVersion := FileVersion{Number: oldVersion.Number + 1, Date: ex.Now()}
+	newVersion.Pretty = ex.I16toa(newVersion.Number)
+	versionDir := path.Join(self.dir, newVersion.Pretty)
 
-	self.increaseVersionNumber(version)
+	self.increaseVersionNumber(newVersion.Pretty)
 
 	// generate the new file name
 
-	old_version := new_version - 1
-	old_directory := fmt.Sprintf("VER%03d", old_version)
-
 	filename := self.fs.index.FileName(self.fileNumber)
 
-	fname := path.Join(self.dir, old_directory, filename)
+	fname := path.Join(self.dir, oldVersion.Pretty, filename)
 
 	// create a new version dir
 
@@ -143,16 +141,15 @@ func (self FileDirectory) NewVersion() int16 {
 	err = os.Chown(copiedFile, self.fs.userUid, self.fs.vaultUid)
 	ex.CheckErr(err)
 
-	return new_version
+	return newVersion
 }
 
 // Stores the description and long description text.
-func (self FileDirectory) StoreData(ver int16, descr, longDescr string) {
+func (self FileDirectory) StoreData(version FileVersion, descr, longDescr string) {
 
 	// create a version directory
 
-	version := fmt.Sprintf("VER%03d", ver)
-	versionDir := path.Join(self.dir, version)
+	versionDir := path.Join(self.dir, version.Pretty)
 
 	if ex.DirExists(versionDir) == false {
 		log.Fatalf("Directory %s doesn't exist.", versionDir)
@@ -199,9 +196,8 @@ func (self FileDirectory) LatestProperties() []FileProperties {
 }
 
 // Returns the file properties of the specific version
-func (self FileDirectory) Properties(nr int16) []FileProperties {
-	version := fmt.Sprintf("VER%03d", nr)
-	buf, err := os.ReadFile(path.Join(version, Properties))
+func (self FileDirectory) Properties(version FileVersion) []FileProperties {
+	buf, err := os.ReadFile(path.Join(version.Pretty, Properties))
 	ex.CheckErr(err)
 	str := string(buf)
 	// check for latest '\n'
@@ -224,32 +220,37 @@ func (self FileDirectory) SetLatestProperties(props []FileProperties) {
 }
 
 // Sets the file properties of the specific version
-func (self FileDirectory) SetProperties(nr int16, props []FileProperties) {
-	version := fmt.Sprintf("VER%03d", nr)
+func (self FileDirectory) SetProperties(version FileVersion, props []FileProperties) {
 	buf := make([]byte, len(props)*20)
 	for _, v := range props {
 		str := []byte(fmt.Sprintf("%s = %s\n", v.Key, v.Value))
 		buf = append(buf, str...)
 	}
-	err := os.WriteFile(path.Join(version, Properties), buf, 0644)
+	err := os.WriteFile(path.Join(version.Pretty, Properties), buf, 0644)
 	ex.CheckErr(err)
-	err = os.Chown(path.Join(version, Properties), self.fs.userUid, self.fs.vaultUid)
+	err = os.Chown(path.Join(version.Pretty, Properties), self.fs.userUid, self.fs.vaultUid)
 	ex.CheckErr(err)
 }
 
 // Returns the latest version.
-func (self *FileDirectory) LatestVersion() int16 {
+func (self *FileDirectory) LatestVersion() FileVersion {
 
 	versions, err := self.AllFileVersions()
 	if err != nil {
-		return -1
+		log.Fatalf("Error reading file %s, version %v", self.fs.index.FileName(self.fileNumber), err)
+	}
+
+	if len(versions) == 1 {
+		return versions[0]
 	}
 
 	return versions[len(versions)-1]
 }
 
+// TODO get rid of error return
+
 // Returns all file versions name from file or an error.
-func (self *FileDirectory) AllFileVersions() ([]int16, error) {
+func (self *FileDirectory) AllFileVersions() ([]FileVersion, error) {
 
 	version := path.Join(self.dir, Ver)
 
@@ -261,21 +262,26 @@ func (self *FileDirectory) AllFileVersions() ([]int16, error) {
 	r.Comma = ':'
 
 	records, err := r.ReadAll()
-
 	ex.CheckErr(err)
 
-	if len(records) <= 1 {
-		return []int16{-1}, fmt.Errorf("File %s is empty or has only one record.\n",
+	if len(records) == 0 {
+		return nil, fmt.Errorf("File %s is empty.\n",
 			path.Join(self.fs.currentWorkingDir, self.dir, Ver))
+	}
+
+	if len(records) == 1 {
+		fv_slice := append([]FileVersion{}, FileVersion{Number: -1, Pretty: "-1", Date: ex.Now()})
+		return fv_slice, nil
 	}
 
 	records = records[1:]
 
-	ret := make([]int16, len(records))
+	ret := make([]FileVersion, len(records))
 
 	for i, record := range records {
-
-		fmt.Sscanf(record[0], "VER%d", &ret[i])
+		fmt.Sscanf(record[0], "%d", &ret[i].Number)
+		ret[i].Pretty = record[1]
+		ret[i].Date = record[2]
 	}
 
 	return ret, nil
@@ -309,12 +315,11 @@ func (self *FileDirectory) CloseLatestsVersion() {
 	self.CloseItemVersion(ver)
 }
 
-// Opens the item number for editing the SMB mount.
+// Opens the item number for editing.
 // This "Checkes Out" the item.
-func (self *FileDirectory) OpenItemVersion(ver int16) {
+func (self *FileDirectory) OpenItemVersion(version FileVersion) {
 
-	version := fmt.Sprintf("VER%03d", ver)
-	dirVersion := path.Join(self.dir, version)
+	dirVersion := path.Join(self.dir, version.Pretty)
 
 	err := os.Chown(dirVersion, self.fs.userUid, self.fs.vaultUid)
 	ex.CheckErr(err)
@@ -334,7 +339,29 @@ func (self *FileDirectory) OpenItemVersion(ver int16) {
 	ex.CheckErr(err)
 }
 
-func (self *FileDirectory) writeVersionFile() {
+// Closes item number for editing.
+func (self *FileDirectory) CloseItemVersion(version FileVersion) {
+
+	dirVersion := path.Join(self.dir, version.Pretty)
+
+	// Filemode 0755 means that the directory is open for anyone.
+
+	err := os.Chown(dirVersion, self.fs.userUid, self.fs.vaultUid)
+	ex.CheckErr(err)
+	err = os.Chmod(dirVersion, 0755)
+	ex.CheckErr(err)
+
+	// And the file can't be edited anymore with filemode 0444.
+
+	base := path.Base(self.dir)
+	num := ex.Atoi64(base)
+	file := path.Join(dirVersion, self.fs.index.FileName(num))
+
+	err = os.Chmod(file, 0444)
+	ex.CheckErr(err)
+}
+
+func (self *FileDirectory) writeInitialVersionFile() {
 
 	ver := path.Join(self.dir, Ver)
 
@@ -384,29 +411,6 @@ func (self *FileDirectory) increaseVersionNumber(version string) {
 	ex.CheckErr(err)
 }
 
-// Closes item number for editing.
-func (self *FileDirectory) CloseItemVersion(ver int16) {
-
-	version := fmt.Sprintf("VER%03d", ver)
-	dirVersion := path.Join(self.dir, version)
-
-	// Filemode 0755 means that the directory is open for anyone.
-
-	err := os.Chown(dirVersion, self.fs.userUid, self.fs.vaultUid)
-	ex.CheckErr(err)
-	err = os.Chmod(dirVersion, 0755)
-	ex.CheckErr(err)
-
-	// And the file can't be edited anymore with filemode 0444.
-
-	base := path.Base(self.dir)
-	num := ex.Atoi64(base)
-	file := path.Join(dirVersion, self.fs.index.FileName(num))
-
-	err = os.Chmod(file, 0444)
-	ex.CheckErr(err)
-}
-
 // Renames the filename. Returns an error when not succeed.
 func (self *FileDirectory) fileRename(src, dest string) error {
 
@@ -414,11 +418,10 @@ func (self *FileDirectory) fileRename(src, dest string) error {
 	ex.CheckErr(err)
 
 	for _, version := range versions {
-		ver := fmt.Sprintf("VER%03d", version)
 
 		// Rename
 
-		err = os.Rename(path.Join(self.dir, ver, src), path.Join(self.dir, ver, dest))
+		err = os.Rename(path.Join(self.dir, version.Pretty, src), path.Join(self.dir, version.Pretty, dest))
 		ex.CheckErr(err)
 	}
 

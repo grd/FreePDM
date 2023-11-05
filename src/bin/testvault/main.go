@@ -12,7 +12,7 @@ import (
 	"os/user"
 	"path"
 
-	fs "github.com/grd/FreePDM/src/filesystem"
+	fsm "github.com/grd/FreePDM/src/filesystem"
 	ex "github.com/grd/FreePDM/src/utils"
 )
 
@@ -47,7 +47,7 @@ func main() {
 	err = os.Chdir(vaultDir)
 	ex.CheckErr(err)
 
-	fs := fs.InitFileSystem(vaultDir, userName.Name)
+	fs := fsm.InitFileSystem(vaultDir, userName.Name)
 	fmt.Printf("Root directory of the vault: %s\n\n", vaultDir)
 	fs.Mkdir("Standard Parts")
 	fs.Mkdir("Projects")
@@ -61,7 +61,7 @@ func main() {
 	fs.Chdir("Projects")
 
 	f1 := fs.ImportFile(file1)
-	fs.CheckIn(f1, 0, "Testf1-0", "Testf1-0")
+	fs.CheckIn(f1, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf1-0", "Testf1-0")
 
 	ver := fs.NewVersion(f1)
 	fs.CheckIn(f1, ver, "Testf1-1", "Test1-1")
@@ -73,10 +73,10 @@ func main() {
 	fs.CheckIn(f1, ver, "Testf1-3", "Test1-3")
 
 	f2 := fs.ImportFile(file2)
-	fs.CheckIn(f2, 0, "Testf2-0", "")
+	fs.CheckIn(f2, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf2-0", "")
 
 	f3 := fs.ImportFile(file3)
-	fs.CheckIn(f3, 0, "Testf3-0", "")
+	fs.CheckIn(f3, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf3-0", "")
 
 	ver = fs.NewVersion(f3)
 	fs.CheckIn(f3, ver, "Testf3-1", "Test3-1")
@@ -118,13 +118,13 @@ func main() {
 	fs.Chdir("Standard Parts")
 
 	f4 := fs.ImportFile(file4)
-	fs.CheckIn(f4, 0, "Testf4-0", "Testf4-0")
+	fs.CheckIn(f4, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf4-0", "Testf4-0")
 
 	f5 := fs.ImportFile(file5)
-	fs.CheckIn(f5, 0, "Testf5-0", "Testf5-0")
+	fs.CheckIn(f5, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf5-0", "Testf5-0")
 
 	f6 := fs.ImportFile(file6)
-	fs.CheckIn(f6, 0, "Testf6-0", "Testf6-0")
+	fs.CheckIn(f6, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf6-0", "Testf6-0")
 
 	fileInfo = fs.ListWD()
 	for _, info := range fileInfo {
