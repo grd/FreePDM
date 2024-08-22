@@ -2,15 +2,15 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package main_test
+package main
 
 import (
 	"fmt"
 	"os"
 	"path"
 
+	ex "github.com/grd/FreePDM/src/extras"
 	fs "github.com/grd/FreePDM/src/filesystem"
-	ex "github.com/grd/FreePDM/src/utils"
 )
 
 func main() {
@@ -31,7 +31,8 @@ func main() {
 	err = os.Chdir(tmpdir)
 	ex.CheckErr(err)
 
-	fsm := fs.InitFileSystem("/tmp/testpdm", "user1")
+	// fsm := fs.InitFileSystem("/tmp/testpdm", "user1")
+	fsm := fs.InitFileSystem("/samba/vaults/testpdm", "user")
 
 	dir, err := os.ReadDir(".")
 	ex.CheckErr(err)
