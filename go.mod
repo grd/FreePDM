@@ -5,6 +5,12 @@ go 1.20
 require github.com/BurntSushi/toml v1.3.2
 
 require (
+	github.com/geoffgarside/ber v1.1.0 // indirect
+	github.com/hirochachacha/go-smb2 v1.1.0 // indirect
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
+)
+
+require (
 	github.com/jacobsa/fuse v0.0.0-20230810134708-ab21db1af836
 	github.com/jacobsa/oglematchers v0.0.0-20150720000706-141901ea67cd
 	github.com/jacobsa/oglemock v0.0.0-20150831005832-e94d794d06ff // indirect

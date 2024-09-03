@@ -9,8 +9,8 @@ import (
 	"os"
 	"path"
 
-	ex "github.com/grd/FreePDM/src/extras"
 	fs "github.com/grd/FreePDM/src/filesystem"
+	ex "github.com/grd/FreePDM/src/utils"
 )
 
 func main() {
