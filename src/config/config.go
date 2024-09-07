@@ -49,13 +49,18 @@ func GetUid(name string) int {
 }
 
 func ReadConfig() {
-	log.Printf("Config file = %s\n", configName)
+	if !extras.FileExists(configName) {
+		log.Printf("Config file = %s\n", configName)
+		os.Exit(1)
+	}
 	_, err := toml.DecodeFile(configName, &Conf)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	log.Printf("The config = %v\n", Conf)
+	if len(Conf.Users) == 0 {
+		log.Printf("The config = %v\n", Conf)
+	}
 }
 
 func WriteConfig() {
