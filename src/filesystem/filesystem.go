@@ -46,8 +46,8 @@ const adminDirectory = "/samba/admin"
 // Constructor
 func InitFileSystem(vaultDir, userName string) (fs FileSystem) {
 	fs = FileSystem{vaultDir: vaultDir, user: userName}
-	fs.mainPdmDir = path.Join(fs.vaultDir, "PDM")
-	fs.currentWorkingDir = fs.mainPdmDir
+	fs.mainPdmDir = path.Join(adminDirectory, vaultDir)
+	fs.currentWorkingDir = vaultDir
 	fs.vaultUid = config.GetUid("vault")
 	fs.userUid = config.GetUid(userName)
 
@@ -55,7 +55,7 @@ func InitFileSystem(vaultDir, userName string) (fs FileSystem) {
 		log.Fatal("Username has not been stored into the FreePDM config file. Please follow the setup process.")
 	}
 
-	if fs.vaultUid == -1|0 {
+	if fs.vaultUid == 0 || fs.vaultUid == -1 {
 		log.Fatal("Vault UID has not been stored into the FreePDM config file. Please follow the setup process.")
 	}
 
@@ -207,7 +207,7 @@ func (fs FileSystem) Mkdir(dir string) error {
 
 	// Check wether dname is an int. We don't want that, because the number could interfere with the fileindex.
 	if _, err := strconv.Atoi(dir); err == nil {
-		return fmt.Errorf("Please change %s into a string, now it is a number.", dir)
+		return fmt.Errorf("please change %s into a string, now it is a number", dir)
 	}
 
 	err := os.Mkdir(dir, 0777)
@@ -322,7 +322,7 @@ func (fs *FileSystem) CheckOut(itemNr int64, version FileVersion) error {
 
 	if usr := fs.IsLocked(itemNr, version); usr != "" {
 
-		return fmt.Errorf("File %d-%d is locked by user %s.", itemNr, version.Number, usr)
+		return fmt.Errorf("file %d-%d is locked by user %v", itemNr, version.Number, usr)
 
 	} else {
 
@@ -357,7 +357,7 @@ func (fs *FileSystem) CheckIn(itemNr int64, version FileVersion, descr, longdesc
 
 	if usr != fs.user {
 
-		return fmt.Errorf("File %d-%d is locked by user %s.", itemNr, version.Number, usr)
+		return fmt.Errorf("file %d-%d is locked by user %s", itemNr, version.Number, usr)
 
 	} else {
 
@@ -389,7 +389,7 @@ func (fs *FileSystem) FileRename(src, dest string) error {
 
 	dir, err := fs.index.Dir(dest)
 	if err == nil {
-		return fmt.Errorf("File %s already exist and is stored in %s", dest, dir)
+		return fmt.Errorf("file %s already exist and is stored in %s", dest, dir)
 	}
 
 	// Rename the file from src to dest
@@ -427,7 +427,7 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 
 	_, err := fs.index.Dir(dest)
 	if err == nil {
-		return fmt.Errorf("File %s already exist", dest)
+		return fmt.Errorf("file %s already exist", dest)
 	}
 
 	// srcIndex, err := self.index.Index(src)
@@ -496,7 +496,7 @@ func (fs *FileSystem) FileMove(fileName, destDir string) error {
 	}
 
 	if !ex.DirExists(dir) {
-		return fmt.Errorf("Directory %s doesn't exist.\n", destDir)
+		return fmt.Errorf("directory %s doesn't exist", destDir)
 	}
 
 	// Move file
@@ -534,7 +534,7 @@ func (fs *FileSystem) FileMove(fileName, destDir string) error {
 // Note that all file versions need to be checked in.
 func (fs *FileSystem) DirectoryCopy(src, dest string) error {
 	if ex.IsNumber(dest) {
-		return fmt.Errorf("Directory %s is a number.", dest)
+		return fmt.Errorf("directory %s is a number", dest)
 	}
 
 	dirList, err := os.ReadDir(src)

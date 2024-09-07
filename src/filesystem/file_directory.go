@@ -266,7 +266,7 @@ func (fd *FileDirectory) AllFileVersions() ([]FileVersion, error) {
 	ex.CheckErr(err)
 
 	if len(records) == 0 {
-		return nil, fmt.Errorf("File %s is empty.",
+		return nil, fmt.Errorf("file %s is empty",
 			path.Join(fd.fs.currentWorkingDir, fd.dir, Ver))
 	}
 

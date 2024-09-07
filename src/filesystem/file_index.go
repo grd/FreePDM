@@ -7,7 +7,6 @@ package filesystem
 import (
 	"bytes"
 	"encoding/csv"
-	"errors"
 	"fmt"
 	"os"
 	"path"
@@ -101,11 +100,11 @@ func (fix FileIndex) readCsv() ([][]string, error) {
 
 	records, err := r.ReadAll()
 	if err != nil {
-		return [][]string{}, fmt.Errorf("Error reading file %s with error: %v", fix.fileListCsv, err)
+		return [][]string{}, fmt.Errorf("error reading file %s with error: %v", fix.fileListCsv, err)
 	}
 
 	if len(records) == 0 {
-		return [][]string{}, fmt.Errorf("Error reading file %s with error: No header included.", fix.fileListCsv)
+		return [][]string{}, fmt.Errorf("error reading file %s with error: No header included", fix.fileListCsv)
 	}
 
 	records = records[1:]
@@ -168,7 +167,7 @@ func (fix *FileIndex) Dir(fileName string) (string, error) {
 			return str, nil
 		}
 	}
-	return "", fmt.Errorf("[2] File %s not found.", fileName)
+	return "", fmt.Errorf("[2] file %s not found", fileName)
 }
 
 // Returns the directory name of a file placed inside the current directory,
@@ -180,7 +179,7 @@ func (fix *FileIndex) CurrentDir(fileName string) (string, error) {
 			return str, nil
 		}
 	}
-	return "", fmt.Errorf("[1] File %s not found.", fileName)
+	return "", fmt.Errorf("[1] file %s not found", fileName)
 }
 
 // Returns the complete directory name of a file number, or an error when not found.
@@ -192,7 +191,7 @@ func (fix *FileIndex) DirIndex(fileName int64) (string, error) {
 			return str, nil
 		}
 	}
-	return "", fmt.Errorf("[3] File %d not found.", fileName)
+	return "", fmt.Errorf("[3] file %d not found", fileName)
 }
 
 // Returns the file name of a file number.
@@ -203,7 +202,7 @@ func (fix *FileIndex) ContainerName(fileNumber string) (FileList, error) {
 			return item, nil
 		}
 	}
-	return FileList{}, fmt.Errorf("File %s not !!! found in the index.", fileNumber)
+	return FileList{}, fmt.Errorf("file %s not !!! found in the index", fileNumber)
 }
 
 // Returns the file name of a file number.
@@ -279,7 +278,7 @@ func (fix *FileIndex) Index(fileName string) (int64, error) {
 		}
 	}
 
-	return 0, fmt.Errorf("File %s is not found in the index.", fileName)
+	return 0, fmt.Errorf("file %s is not found in the index", fileName)
 }
 
 // Moves the filename to an other directory,
@@ -310,7 +309,7 @@ func (fix *FileIndex) renameItem(src, dest string) error {
 
 	for _, v := range fix.fileList {
 		if dest == v.file {
-			return errors.New(fmt.Sprintf("Duplicate file in index: %s", dest))
+			return fmt.Errorf("duplicate file in index: %s", dest)
 		}
 	}
 
