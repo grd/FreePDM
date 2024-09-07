@@ -41,40 +41,41 @@ type FileSystem struct {
 }
 
 const LockedFileCsv = "LockedFiles.csv"
+const adminDirectory = "/samba/admin"
 
 // Constructor
-func InitFileSystem(vaultDir, userName string) (self FileSystem) {
-	self = FileSystem{vaultDir: vaultDir, user: userName}
-	self.mainPdmDir = path.Join(self.vaultDir, "PDM")
-	self.currentWorkingDir = self.mainPdmDir
-	self.vaultUid = config.GetUid("vault")
-	self.userUid = config.GetUid(userName)
+func InitFileSystem(vaultDir, userName string) (fs FileSystem) {
+	fs = FileSystem{vaultDir: vaultDir, user: userName}
+	fs.mainPdmDir = path.Join(fs.vaultDir, "PDM")
+	fs.currentWorkingDir = fs.mainPdmDir
+	fs.vaultUid = config.GetUid("vault")
+	fs.userUid = config.GetUid(userName)
 
-	if self.userUid == -1 {
+	if fs.userUid == -1 {
 		log.Fatal("Username has not been stored into the FreePDM config file. Please follow the setup process.")
 	}
 
-	if self.vaultUid == -1|0 {
+	if fs.vaultUid == -1|0 {
 		log.Fatal("Vault UID has not been stored into the FreePDM config file. Please follow the setup process.")
 	}
 
-	self.index = InitFileIndex(self.vaultDir, self.userUid, self.vaultUid)
+	fs.index = InitFileIndex(fs.vaultDir, fs.userUid, fs.vaultUid)
 
-	self.lockedCvs = path.Join(self.vaultDir, LockedFileCsv)
+	fs.lockedCvs = path.Join(fs.vaultDir, LockedFileCsv)
 
-	self.ReadLockedIndex() // retrieve the values
+	fs.ReadLockedIndex() // retrieve the values
 
-	os.Chdir(self.currentWorkingDir)
+	os.Chdir(fs.currentWorkingDir)
 
-	log.Printf("Vault dir: %s", self.currentWorkingDir)
+	log.Printf("Vault dir: %s", fs.currentWorkingDir)
 
-	return self
+	return fs
 }
 
 // Updates the locked index by reading from the lockedTxt file.
-func (self *FileSystem) ReadLockedIndex() {
+func (fs *FileSystem) ReadLockedIndex() {
 
-	buf, err := os.ReadFile(self.lockedCvs)
+	buf, err := os.ReadFile(fs.lockedCvs)
 	ex.CheckErr(err)
 
 	r := csv.NewReader(bytes.NewBuffer(buf))
@@ -89,7 +90,7 @@ func (self *FileSystem) ReadLockedIndex() {
 
 	records = records[1:]
 
-	self.lockedIndex = nil
+	fs.lockedIndex = nil
 
 	var list = LockedIndex{}
 
@@ -99,17 +100,17 @@ func (self *FileSystem) ReadLockedIndex() {
 		list.version = ex.Atoi16(record[1])
 		list.userName = record[2]
 
-		self.lockedIndex = append(self.lockedIndex, list)
+		fs.lockedIndex = append(fs.lockedIndex, list)
 	}
 }
 
-func (self *FileSystem) WriteLockedIndex() {
+func (fs *FileSystem) WriteLockedIndex() {
 
 	records := [][]string{
 		{"FileNumber", "Version", "UserName"},
 	}
 
-	for _, list := range self.lockedIndex {
+	for _, list := range fs.lockedIndex {
 
 		records = append(records, []string{
 			ex.I64toa(list.fileNr),
@@ -130,22 +131,22 @@ func (self *FileSystem) WriteLockedIndex() {
 	err = writer.Error()
 	ex.CheckErr(err)
 
-	err = os.WriteFile(self.lockedCvs, buffer.Bytes(), 0644)
+	err = os.WriteFile(fs.lockedCvs, buffer.Bytes(), 0644)
 	ex.CheckErr(err)
 
-	err = os.Chown(self.lockedCvs, self.userUid, self.vaultUid)
+	err = os.Chown(fs.lockedCvs, fs.userUid, fs.vaultUid)
 	ex.CheckErr(err)
 }
 
 // This helper function returns the offset of the
 // current working dir from the main PDM dir.
 // This is only useful for the FileIndex.AddItem() function
-func (self FileSystem) GetWd() string {
-	idx := len(self.mainPdmDir) + 1 // trailing slash
-	if len(self.mainPdmDir) == len(self.currentWorkingDir) {
+func (fs FileSystem) GetWd() string {
+	idx := len(fs.mainPdmDir) + 1 // trailing slash
+	if len(fs.mainPdmDir) == len(fs.currentWorkingDir) {
 		return ""
 	} else {
-		return self.currentWorkingDir[idx:] // takes away the mainPdmDir part
+		return fs.currentWorkingDir[idx:] // takes away the mainPdmDir part
 	}
 }
 
@@ -154,55 +155,55 @@ func (self FileSystem) GetWd() string {
 // When you import a file or files you are placing the new file in the current directory.
 // The new file inside the PDM gets a revision number automatically.
 // The function returns the number of the imported file.
-func (self *FileSystem) ImportFile(fname string) int64 {
+func (fs *FileSystem) ImportFile(fname string) int64 {
 	// check wether a file exist
-	if ex.FileExists(fname) == false {
+	if !ex.FileExists(fname) {
 		log.Fatalf("File %s could not be found.", fname)
 	}
 
-	index := self.index.AddItem(fname, self.GetWd())
+	index := fs.index.AddItem(fname, fs.GetWd())
 
 	dir := fmt.Sprintf("%d", index)
 
 	// fd := InitFileDirectory(self, path.Join(self.mainPdmDir, dir))
-	fd := InitFileDirectory(self, dir, index)
+	fd := InitFileDirectory(fs, dir, index)
 
 	bla := fd.NewDirectory()
 	bla.ImportNewFile(fname)
 
-	log.Printf("Imported %s into %s with version %d\n", fname, self.index.FileNameOfString(fd.dir), 0)
+	log.Printf("Imported %s into %s with version %d\n", fname, fs.index.FileNameOfString(fd.dir), 0)
 
 	// Checking out the new file so no one else can see it.
 
-	err := self.CheckOut(index, FileVersion{0, "0", ex.Now()})
+	err := fs.CheckOut(index, FileVersion{0, "0", ex.Now()})
 	ex.CheckErr(err)
 
 	return index
 }
 
 // Generates a new version of a file and returns the version number.
-func (self *FileSystem) NewVersion(indexNr int64) FileVersion {
+func (fs *FileSystem) NewVersion(indexNr int64) FileVersion {
 
-	dirIdx, err := self.index.DirIndex(indexNr)
+	dirIdx, err := fs.index.DirIndex(indexNr)
 	ex.CheckErr(err)
-	dir := path.Join(self.mainPdmDir, dirIdx)
+	dir := path.Join(fs.mainPdmDir, dirIdx)
 
-	fd := InitFileDirectory(self, dir, indexNr)
+	fd := InitFileDirectory(fs, dir, indexNr)
 
 	ret := fd.NewVersion()
 
 	// Checking out the new file so no one else can see it.
 
-	log.Printf("Created version %d of file %s\n", ret.Number, self.index.FileName(indexNr))
+	log.Printf("Created version %d of file %s\n", ret.Number, fs.index.FileName(indexNr))
 
-	err = self.CheckOut(indexNr, ret)
+	err = fs.CheckOut(indexNr, ret)
 	ex.CheckErr(err)
 
 	return ret
 }
 
 // Creates a new directory inside the current directory, with the correct uid and gid.
-func (self FileSystem) Mkdir(dir string) error {
+func (fs FileSystem) Mkdir(dir string) error {
 
 	// Check wether dname is an int. We don't want that, because the number could interfere with the fileindex.
 	if _, err := strconv.Atoi(dir); err == nil {
@@ -212,7 +213,7 @@ func (self FileSystem) Mkdir(dir string) error {
 	err := os.Mkdir(dir, 0777)
 	ex.CheckErr(err)
 
-	err = os.Chown(dir, self.userUid, self.vaultUid)
+	err = os.Chown(dir, fs.userUid, fs.vaultUid)
 	ex.CheckErr(err)
 
 	log.Printf("Created directory: %s\n", dir)
@@ -220,23 +221,23 @@ func (self FileSystem) Mkdir(dir string) error {
 	return nil
 }
 
-func (self *FileSystem) Chdir(dir string) {
-	newPath, err := filepath.Abs(path.Join(self.currentWorkingDir, dir))
+func (fs *FileSystem) Chdir(dir string) {
+	newPath, err := filepath.Abs(path.Join(fs.currentWorkingDir, dir))
 	ex.CheckErr(err)
-	self.currentWorkingDir = newPath
-	err = os.Chdir(self.currentWorkingDir)
+	fs.currentWorkingDir = newPath
+	err = os.Chdir(fs.currentWorkingDir)
 	ex.CheckErr(err)
 
 	log.Printf("Changed directory: %s\n", newPath)
 }
 
 // list the sorted directories and files of the current working directory.
-func (self FileSystem) ListWD() []FileInfo {
-	return self.ListDir(self.currentWorkingDir)
+func (fs FileSystem) ListWD() []FileInfo {
+	return fs.ListDir(fs.currentWorkingDir)
 }
 
 // list the sorted directories and files, as long as the directory is inside the vault.
-func (self FileSystem) ListDir(dirName string) []FileInfo {
+func (fs FileSystem) ListDir(dirName string) []FileInfo {
 	dir_list, err := os.ReadDir(dirName)
 	ex.CheckErr(err)
 	var directoryList []FileInfo
@@ -245,7 +246,7 @@ func (self FileSystem) ListDir(dirName string) []FileInfo {
 
 	for _, sub_dir := range dir_list {
 		if num, err := strconv.Atoi(sub_dir.Name()); err == nil {
-			fileName := self.index.FileName(int64(num))
+			fileName := fs.index.FileName(int64(num))
 			fileList = append(fileList, FileInfo{
 				Dir:      false,
 				FileName: fileName,
@@ -255,7 +256,7 @@ func (self FileSystem) ListDir(dirName string) []FileInfo {
 		}
 	}
 
-	if path.Clean(dirName) != self.mainPdmDir {
+	if path.Clean(dirName) != fs.mainPdmDir {
 		subDirList = append(subDirList, FileInfo{Dir: true, FileName: ".."})
 	}
 
@@ -272,7 +273,7 @@ func (self FileSystem) ListDir(dirName string) []FileInfo {
 
 // returns the latest version number of a file in the current
 // directory or -1 when the file doesn't exist.
-func (self FileSystem) CheckLatestFileVersion(fname string) int64 {
+func (fs FileSystem) CheckLatestFileVersion(fname string) int64 {
 	file_list, err := os.ReadDir(".")
 	ex.CheckErr(err)
 	var result int64 = -1
@@ -293,9 +294,9 @@ func (self FileSystem) CheckLatestFileVersion(fname string) int64 {
 
 // Check whether the itemnr is locked.
 // Returns the name of the user who locked it or empty when not locked.
-func (self FileSystem) IsLocked(itemNr int64, version FileVersion) string {
+func (fs FileSystem) IsLocked(itemNr int64, version FileVersion) string {
 
-	for _, item := range self.lockedIndex {
+	for _, item := range fs.lockedIndex {
 		if item.fileNr == itemNr && item.version == version.Number {
 			return item.userName
 		}
@@ -305,31 +306,31 @@ func (self FileSystem) IsLocked(itemNr int64, version FileVersion) string {
 }
 
 // Checkout means locking a itemnr so that only you can use it.
-func (self *FileSystem) CheckOut(itemNr int64, version FileVersion) error {
+func (fs *FileSystem) CheckOut(itemNr int64, version FileVersion) error {
 
-	self.ReadLockedIndex() // update the index
+	fs.ReadLockedIndex() // update the index
 
 	// Set file mode 0700
 
-	dir, err := self.index.DirIndex(itemNr)
+	dir, err := fs.index.DirIndex(itemNr)
 	ex.CheckErr(err)
 
-	fd := InitFileDirectory(self, path.Join(self.mainPdmDir, dir), itemNr)
+	fd := InitFileDirectory(fs, path.Join(fs.mainPdmDir, dir), itemNr)
 	fd.OpenItemVersion(version)
 
 	// check whether the itemnr is locked
 
-	if usr := self.IsLocked(itemNr, version); usr != "" {
+	if usr := fs.IsLocked(itemNr, version); usr != "" {
 
 		return fmt.Errorf("File %d-%d is locked by user %s.", itemNr, version.Number, usr)
 
 	} else {
 
-		self.lockedIndex = append(self.lockedIndex, LockedIndex{itemNr, version.Number, self.user})
+		fs.lockedIndex = append(fs.lockedIndex, LockedIndex{itemNr, version.Number, fs.user})
 
-		self.WriteLockedIndex()
+		fs.WriteLockedIndex()
 
-		log.Printf("Checked out version %d of file %s\n", version.Number, self.index.FileName(itemNr))
+		log.Printf("Checked out version %d of file %s\n", version.Number, fs.index.FileName(itemNr))
 
 		return nil
 	}
@@ -337,14 +338,14 @@ func (self *FileSystem) CheckOut(itemNr int64, version FileVersion) error {
 
 // Checkin means unlocking an itemnr.
 // The description and long description are meant for storage.
-func (self *FileSystem) CheckIn(itemNr int64, version FileVersion, descr, longdescr string) error {
+func (fs *FileSystem) CheckIn(itemNr int64, version FileVersion, descr, longdescr string) error {
 
 	// Set file mode 0755
 
-	dir, err := self.index.DirIndex(itemNr)
+	dir, err := fs.index.DirIndex(itemNr)
 	ex.CheckErr(err)
 
-	fd := InitFileDirectory(self, path.Join(self.mainPdmDir, dir), itemNr)
+	fd := InitFileDirectory(fs, path.Join(fs.mainPdmDir, dir), itemNr)
 
 	fd.StoreData(version, descr, longdescr)
 
@@ -352,9 +353,9 @@ func (self *FileSystem) CheckIn(itemNr int64, version FileVersion, descr, longde
 
 	// check whether the itemnr is locked
 
-	usr := self.IsLocked(itemNr, version)
+	usr := fs.IsLocked(itemNr, version)
 
-	if usr != self.user {
+	if usr != fs.user {
 
 		return fmt.Errorf("File %d-%d is locked by user %s.", itemNr, version.Number, usr)
 
@@ -363,17 +364,17 @@ func (self *FileSystem) CheckIn(itemNr int64, version FileVersion, descr, longde
 		// Remove item from index
 
 		var nr int
-		for i, y := range self.lockedIndex {
+		for i, y := range fs.lockedIndex {
 			if y.fileNr == itemNr && y.version == version.Number {
 				nr = i
 			}
 		}
 
-		self.lockedIndex = slices.Delete(self.lockedIndex, nr, nr+1)
+		fs.lockedIndex = slices.Delete(fs.lockedIndex, nr, nr+1)
 
-		self.WriteLockedIndex()
+		fs.WriteLockedIndex()
 
-		log.Printf("Checked in version %d of file %s", version.Number, self.index.FileName(itemNr))
+		log.Printf("Checked in version %d of file %s", version.Number, fs.index.FileName(itemNr))
 
 		return nil
 	}
@@ -382,24 +383,24 @@ func (self *FileSystem) CheckIn(itemNr int64, version FileVersion, descr, longde
 // Rename a file, for instance when the user wants to use a file
 // with a specified numbering system.
 // Note that all versions need to be checked in.
-func (self *FileSystem) FileRename(src, dest string) error {
+func (fs *FileSystem) FileRename(src, dest string) error {
 
 	// Check wether dest exist
 
-	dir, err := self.index.Dir(dest)
+	dir, err := fs.index.Dir(dest)
 	if err == nil {
 		return fmt.Errorf("File %s already exist and is stored in %s", dest, dir)
 	}
 
 	// Rename the file from src to dest
 
-	dir, err = self.index.CurrentDir(src)
+	dir, err = fs.index.CurrentDir(src)
 	ex.CheckErr(err)
 
-	fileName, err := self.index.Index(src)
+	fileName, err := fs.index.Index(src)
 	ex.CheckErr(err)
 
-	fd := InitFileDirectory(self, path.Join(self.currentWorkingDir, dir), fileName)
+	fd := InitFileDirectory(fs, path.Join(fs.currentWorkingDir, dir), fileName)
 
 	err = fd.fileRename(src, dest)
 	if err != nil {
@@ -408,7 +409,7 @@ func (self *FileSystem) FileRename(src, dest string) error {
 
 	// Rename the file in the index
 
-	err = self.index.renameItem(src, dest)
+	err = fs.index.renameItem(src, dest)
 	if err != nil {
 		return err
 	}
@@ -422,39 +423,39 @@ func (self *FileSystem) FileRename(src, dest string) error {
 
 // Copy a the latest version of a file.
 // Note that all versions need to be checked in.
-func (self *FileSystem) FileCopy(src, dest string) error {
+func (fs *FileSystem) FileCopy(src, dest string) error {
 
-	_, err := self.index.Dir(dest)
+	_, err := fs.index.Dir(dest)
 	if err == nil {
 		return fmt.Errorf("File %s already exist", dest)
 	}
 
 	// srcIndex, err := self.index.Index(src)
-	file, err := self.index.ContainerName(src)
+	file, err := fs.index.ContainerName(src)
 	ex.CheckErr(err)
 
-	srcDir, err := self.index.Dir(src)
+	srcDir, err := fs.index.Dir(src)
 	ex.CheckErr(err)
 
-	srcFd := InitFileDirectory(self, path.Join(self.mainPdmDir, srcDir), file.index)
+	srcFd := InitFileDirectory(fs, path.Join(fs.mainPdmDir, srcDir), file.index)
 
 	destDirectory, destFile := path.Split(dest)
 	destDirectory, _ = filepath.Abs(destDirectory)
-	destDirectory = self.OffsetFromPdmDir(destDirectory)
+	destDirectory = fs.OffsetFromPdmDir(destDirectory)
 
 	if destDirectory == "" {
 		fmt.Println("yes")
-		destDirectory = self.currentWorkingDir
+		destDirectory = fs.currentWorkingDir
 	}
 
-	destIndex := self.index.AddItem(destFile, destDirectory)
+	destIndex := fs.index.AddItem(destFile, destDirectory)
 
-	destDir, err := self.index.Dir(destFile)
+	destDir, err := fs.index.Dir(destFile)
 	ex.CheckErr(err)
 
 	fmt.Printf("dest = %s, destFile = %s, destDirectory = %s, destDir = %s\n", dest, destFile, destDirectory, destDir)
 
-	destFd := InitFileDirectory(self, path.Join(self.mainPdmDir, destDir), destIndex)
+	destFd := InitFileDirectory(fs, path.Join(fs.mainPdmDir, destDir), destIndex)
 
 	destFd.NewDirectory()
 
@@ -472,6 +473,7 @@ func (self *FileSystem) FileCopy(src, dest string) error {
 
 	// err = destFd.fileRename(src, dest)
 	err = destFd.fileRename(src, destFile)
+	ex.CheckErr(err)
 
 	// Logging
 
@@ -482,24 +484,24 @@ func (self *FileSystem) FileCopy(src, dest string) error {
 
 // Moves a file to a different directory.
 // Note that all versions need to be checked in.
-func (self *FileSystem) FileMove(fileName, destDir string) error {
+func (fs *FileSystem) FileMove(fileName, destDir string) error {
 
 	// "normalize" the destDir
 
 	dir, err := filepath.Abs(destDir)
 	ex.CheckErr(err)
 
-	if strings.HasPrefix(destDir, self.mainPdmDir) {
-		dir = destDir[len(self.mainPdmDir):]
+	if strings.HasPrefix(destDir, fs.mainPdmDir) {
+		dir = destDir[len(fs.mainPdmDir):]
 	}
 
-	if ex.DirExists(dir) == false {
+	if !ex.DirExists(dir) {
 		return fmt.Errorf("Directory %s doesn't exist.\n", destDir)
 	}
 
 	// Move file
 
-	fname, err := self.index.CurrentDir(fileName)
+	fname, err := fs.index.CurrentDir(fileName)
 	ex.CheckErr(err)
 
 	dest := path.Join(destDir, fname)
@@ -507,12 +509,12 @@ func (self *FileSystem) FileMove(fileName, destDir string) error {
 	err = os.Rename(fname, dest)
 	ex.CheckErr(err)
 
-	err = os.Chown(destDir, self.userUid, self.vaultUid)
+	err = os.Chown(destDir, fs.userUid, fs.vaultUid)
 	ex.CheckErr(err)
 
 	// Move file in FileIndex
 
-	self.index.moveItem(self.OffsetFromPdmDir(fileName), self.OffsetFromPdmDir(dir))
+	fs.index.moveItem(fs.OffsetFromPdmDir(fileName), fs.OffsetFromPdmDir(dir))
 
 	// Logging
 
@@ -530,9 +532,9 @@ func (self *FileSystem) FileMove(fileName, destDir string) error {
 
 // Copy a directory.
 // Note that all file versions need to be checked in.
-func (self *FileSystem) DirectoryCopy(src, dest string) error {
+func (fs *FileSystem) DirectoryCopy(src, dest string) error {
 	if ex.IsNumber(dest) {
-		return fmt.Errorf("Directory %s is a number.\n", dest)
+		return fmt.Errorf("Directory %s is a number.", dest)
 	}
 
 	dirList, err := os.ReadDir(src)
@@ -548,10 +550,10 @@ func (self *FileSystem) DirectoryCopy(src, dest string) error {
 			// Directory operations
 
 			destDir := path.Join(dest, item.Name())
-			err := self.Mkdir(destDir)
+			err := fs.Mkdir(destDir)
 			ex.CheckErr(err)
 
-			err = self.DirectoryCopy(item.Name(), destDir)
+			err = fs.DirectoryCopy(item.Name(), destDir)
 			if err != nil {
 				return err
 			}
@@ -560,12 +562,12 @@ func (self *FileSystem) DirectoryCopy(src, dest string) error {
 
 			// File operations
 
-			fileNum, err := self.index.ContainerName(item.Name())
+			fileNum, err := fs.index.ContainerName(item.Name())
 			ex.CheckErr(err)
 			base, ext := ex.SplitFileExtension(fileNum.file)
 			newFileName := base + " (copy)" + ext
 			destFile := path.Join(dest, newFileName)
-			err = self.FileCopy(fileNum.file, destFile)
+			err = fs.FileCopy(fileNum.file, destFile)
 			if err != nil {
 				return err
 			}
@@ -577,14 +579,14 @@ func (self *FileSystem) DirectoryCopy(src, dest string) error {
 
 // Rename a directory.
 // Note that all versions need to be checked in.
-func (self *FileSystem) DirectoryRename(src, dest string) error {
+func (fs *FileSystem) DirectoryRename(src, dest string) error {
 
 	return nil
 }
 
 // Move a directory.
 // Note that all versions need to be checked in.
-func (self *FileSystem) DirectoryMove(src, dest string) error {
+func (fs *FileSystem) DirectoryMove(src, dest string) error {
 	// Think about recursive ! ! !
 	return nil
 }
@@ -621,8 +623,8 @@ func GetVaultUid() int {
 }
 
 // Returns the offset directory from the PDM directory
-func (self *FileSystem) OffsetFromPdmDir(dir string) string {
-	offset := len(self.mainPdmDir)
+func (fs *FileSystem) OffsetFromPdmDir(dir string) string {
+	offset := len(fs.mainPdmDir)
 	if offset >= len(dir) {
 		return ""
 	} else {

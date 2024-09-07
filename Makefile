@@ -9,10 +9,10 @@ add_users:
 	go build -o $(BIN_DIR)/add_users src/bin/add_users/main.go
 
 createvault: 
-	go build -o $(BIN_DIR)/create_vault src/bin/create_new_vault/main.go
+	go build -o $(BIN_DIR)/createvault src/bin/createvault/main.go
 
 add_samples: 
-	go build -o $(BIN_DIR)/add_samples src/bin/create_vault/add_samples/add_samples.go
+	go build -o $(BIN_DIR)/add_samples src/bin/createvault/add_samples/add_samples.go
 
 removevault: 
 	go build -o $(BIN_DIR)/removevault src/bin/removevault/main.go

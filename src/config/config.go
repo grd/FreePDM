@@ -17,7 +17,8 @@ import (
 
 var (
 	appName    = "FreePDM"
-	configDir  = path.Join("/vault", ".config")
+	homeDir    = os.Getenv("HOME") // TODO: dirty hack
+	configDir  = path.Join(homeDir, ".config", appName)
 	configName = path.Join(configDir, appName+".toml")
 	Conf       = Config{}
 )
@@ -48,11 +49,13 @@ func GetUid(name string) int {
 }
 
 func ReadConfig() {
+	log.Printf("Config file = %s\n", configName)
 	_, err := toml.DecodeFile(configName, &Conf)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+	log.Printf("The config = %v\n", Conf)
 }
 
 func WriteConfig() {
@@ -66,9 +69,9 @@ func WriteConfig() {
 
 }
 
-func (self *Config) String() string {
+func (cfg *Config) String() string {
 	buf := new(bytes.Buffer)
-	err := toml.NewEncoder(buf).Encode(self)
+	err := toml.NewEncoder(buf).Encode(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -77,12 +80,12 @@ func (self *Config) String() string {
 
 func init() {
 	// create the new directory if it doesn't exist
-	if extras.DirExists(configDir) == false {
+	if !extras.DirExists(configDir) {
 		os.Mkdir(configDir, 0700)
 	}
 
 	// create a new config file when it doesn't exist
-	if extras.FileExists(configName) == false {
+	if !extras.FileExists(configName) {
 		WriteConfig()
 	}
 

@@ -25,35 +25,35 @@ type FileProperties struct {
 	Key, Value string
 }
 
-func (self FileInfo) IsDir() bool {
-	return self.Dir
+func (fi FileInfo) IsDir() bool {
+	return fi.Dir
 }
 
 // Returns the directory or file name
-func (self FileInfo) Name() string {
-	return self.FileName
+func (fi FileInfo) Name() string {
+	return fi.FileName
 }
 
-func (self FileInfo) Description() string {
-	return self.FileDescription
+func (fi FileInfo) Description() string {
+	return fi.FileDescription
 }
 
-func (self FileInfo) SecondDescription() string {
-	return self.FileSecondDescr
+func (fi FileInfo) SecondDescription() string {
+	return fi.FileSecondDescr
 }
 
-func (self FileInfo) Version() string {
-	return self.FileVersion
+func (fi FileInfo) Version() string {
+	return fi.FileVersion
 }
 
-func (self FileInfo) IsLocked() bool {
-	return self.FileLocked
+func (fi FileInfo) IsLocked() bool {
+	return fi.FileLocked
 }
 
-func (self FileInfo) LockedOutBy() string {
-	return self.FileLockedOutBy
+func (fi FileInfo) LockedOutBy() string {
+	return fi.FileLockedOutBy
 }
 
-func (self FileInfo) Properties() []FileProperties {
-	return self.FileProperties
+func (fi FileInfo) Properties() []FileProperties {
+	return fi.FileProperties
 }
