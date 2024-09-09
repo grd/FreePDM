@@ -53,7 +53,7 @@ func CriticalFileExist(fileName string) {
 func CriticalDirExist(dirName string) {
 	_, err := os.Stat(dirName)
 	if err != nil {
-		log.Fatalf("%s file does not exist\n", dirName)
+		log.Fatalf("%s directory does not exist\n", dirName)
 	}
 }
 

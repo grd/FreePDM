@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 
 	ex "github.com/grd/FreePDM/src/utils"
 )
@@ -31,6 +32,7 @@ type FileList struct {
 // File Index Files in the root
 type FileIndex struct {
 	vaultDir string
+	dataDir  string
 	userUid  int
 	vaultUid int
 
@@ -44,15 +46,19 @@ type FileIndex struct {
 func InitFileIndex(vaultDir string, user_uid, vault_uid int) (ret FileIndex) {
 
 	ret.vaultDir = vaultDir
+	parts := strings.Split(vaultDir, "/")
+	part := parts[len(parts)-1]
+	ret.dataDir = path.Join("/samba/vaultsdata", part)
 	ret.userUid = user_uid
 	ret.vaultUid = vault_uid
 
 	// check wether the critical directory exists.
 
-	ex.CriticalDirExist(vaultDir)
+	ex.CriticalDirExist(ret.vaultDir)
+	ex.CriticalDirExist(ret.dataDir)
 
-	ret.fileListCsv = path.Join(ret.vaultDir, "FileList.csv")
-	ret.indexNumberTxt = path.Join(ret.vaultDir, "IndexNumber.txt")
+	ret.fileListCsv = path.Join(ret.dataDir, "FileList.csv")
+	ret.indexNumberTxt = path.Join(ret.dataDir, "IndexNumber.txt")
 
 	// check wether the critical files exists.
 

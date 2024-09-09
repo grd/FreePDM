@@ -17,33 +17,34 @@ import (
 )
 
 func main() {
-	vaultDirectory := flag.String("v", "", "The existing vault directory, stored in /vault")
+	vaultDirectory := flag.String("v", "", "The existing vault directory, stored in /samba/vaults")
 	userName, err := user.Current()
 	ex.CheckErr(err)
 
 	flag.Parse()
 	fmt.Printf("Vault dir: %s\n", *vaultDirectory)
-	fmt.Printf("User name: %s\n", *&userName.Name)
+	fmt.Printf("User name: %s\n", userName.Name)
 
 	if *vaultDirectory == "" {
-		log.Fatal("Please input your vault directory.")
+		log.Fatal("Please input your empty vault directory (in /samba/vaults) with flag -v.")
 	}
 
-	err = os.Chdir("/media/nas/FreePDM")
+	tempDir := os.Getenv("HOME") // TODO: Dirty hack. Better to look at github files
+	err = os.Chdir(path.Join(tempDir, "FreePDM"))
 	ex.CheckErr(err)
 	fd_dir, err := os.Getwd()
 	ex.CheckErr(err)
-	test_dir := path.Join(fd_dir, "ConceptOfDesign/TestFiles")
-	file1 := path.Join(test_dir, "0001.FCStd")
-	file2 := path.Join(test_dir, "0002.FCStd")
-	file3 := path.Join(test_dir, "0003.FCStd")
-	file4 := path.Join(test_dir, "0004.FCStd")
-	file5 := path.Join(test_dir, "0005.FCStd")
-	file6 := path.Join(test_dir, "0006.FCStd")
+	testDir := path.Join(fd_dir, "ConceptOfDesign/TestFiles")
+	file1 := path.Join(testDir, "0001.FCStd")
+	file2 := path.Join(testDir, "0002.FCStd")
+	file3 := path.Join(testDir, "0003.FCStd")
+	file4 := path.Join(testDir, "0004.FCStd")
+	file5 := path.Join(testDir, "0005.FCStd")
+	file6 := path.Join(testDir, "0006.FCStd")
 
 	fmt.Println("This program populates a vault with existing data.")
 
-	vaultDir := path.Join("/vault", *vaultDirectory) // storage of temporary data
+	vaultDir := path.Join("/samba/vaults", *vaultDirectory) // storage of temporary data
 	err = os.Chdir(vaultDir)
 	ex.CheckErr(err)
 
