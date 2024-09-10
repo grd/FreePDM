@@ -82,11 +82,11 @@ func main() {
 	ver = fs.NewVersion(f3)
 	fs.CheckIn(f3, ver, "Testf3-1", "Test3-1")
 
-	// //
-	// // rename, copy and move requires a bit of love...
-	// //
-	// // these functions require that all the files are checked in and will fail when they are not.
-	// //
+	//
+	// rename, copy and move requires a bit of love...
+	//
+	// these functions require that all the files are checked in and will fail when they are not.
+	//
 
 	err = fs.FileRename("0001.FCStd", "0007.FCStd")
 	ex.CheckErr(err)
@@ -112,9 +112,9 @@ func main() {
 		fmt.Println(info.FileName)
 	}
 
-	// fs.Mkdir("Projects/temp")
-	// err = fs.FileMove("0003.FCStd", "Projects/temp")
-	// ex.CheckErr(err)
+	fs.Mkdir("Projects/temp")
+	err = fs.FileMove("0003.FCStd", "Projects/temp")
+	ex.CheckErr(err)
 
 	fs.Chdir("Standard Parts")
 
@@ -132,17 +132,15 @@ func main() {
 		fmt.Println(info.FileName)
 	}
 
-	fs.Chdir("..") // back in PDM root
-
 	fs.Mkdir("Projects2")
 	err = fs.DirectoryCopy("Projects", "Projects2")
 	ex.CheckErr(err)
 
-	// fs.Chdir("Projects (copy)")
-	// fileInfo = fs.ListWD()
-	// for _, info := range fileInfo {
-	// 	fmt.Println(info.FileName)
-	// }
+	fs.Chdir("Projects (copy)")
+	fileInfo = fs.ListWD()
+	for _, info := range fileInfo {
+		fmt.Println(info.FileName)
+	}
 
 	fmt.Println("This script successfully finished.")
 }

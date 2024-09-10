@@ -146,8 +146,8 @@ func (fs *FileSystem) WriteLockedIndex() {
 // current working dir from the main PDM dir.
 // This is only useful for the FileIndex.AddItem() function
 func (fs FileSystem) GetWd() string {
-	idx := len(fs.dataDir) + 1 // trailing slash
-	if len(fs.dataDir) == len(fs.currentWorkingDir) {
+	idx := len(fs.vaultDir) + 1 // trailing slash
+	if len(fs.vaultDir) == len(fs.currentWorkingDir) {
 		return ""
 	} else {
 		return fs.currentWorkingDir[idx:] // takes away the mainPdmDir part
@@ -190,7 +190,7 @@ func (fs *FileSystem) NewVersion(indexNr int64) FileVersion {
 
 	dirIdx, err := fs.index.DirIndex(indexNr)
 	ex.CheckErr(err)
-	dir := path.Join(fs.dataDir, dirIdx)
+	dir := path.Join(fs.vaultDir, dirIdx)
 
 	fd := InitFileDirectory(fs, dir, indexNr)
 
@@ -260,7 +260,7 @@ func (fs FileSystem) ListDir(dirName string) []FileInfo {
 		}
 	}
 
-	if path.Clean(dirName) != fs.dataDir {
+	if path.Clean(dirName) != fs.vaultDir {
 		subDirList = append(subDirList, FileInfo{Dir: true, FileName: ".."})
 	}
 
@@ -319,7 +319,7 @@ func (fs *FileSystem) CheckOut(itemNr int64, version FileVersion) error {
 	dir, err := fs.index.DirIndex(itemNr)
 	ex.CheckErr(err)
 
-	fd := InitFileDirectory(fs, path.Join(fs.dataDir, dir), itemNr)
+	fd := InitFileDirectory(fs, path.Join(fs.vaultDir, dir), itemNr)
 	fd.OpenItemVersion(version)
 
 	// check whether the itemnr is locked
@@ -349,7 +349,7 @@ func (fs *FileSystem) CheckIn(itemNr int64, version FileVersion, descr, longdesc
 	dir, err := fs.index.DirIndex(itemNr)
 	ex.CheckErr(err)
 
-	fd := InitFileDirectory(fs, path.Join(fs.dataDir, dir), itemNr)
+	fd := InitFileDirectory(fs, path.Join(fs.vaultDir, dir), itemNr)
 
 	fd.StoreData(version, descr, longdescr)
 
@@ -441,7 +441,7 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 	srcDir, err := fs.index.Dir(src)
 	ex.CheckErr(err)
 
-	srcFd := InitFileDirectory(fs, path.Join(fs.dataDir, srcDir), file.index)
+	srcFd := InitFileDirectory(fs, path.Join(fs.vaultDir, srcDir), file.index)
 
 	destDirectory, destFile := path.Split(dest)
 	destDirectory, _ = filepath.Abs(destDirectory)
@@ -459,7 +459,7 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 
 	fmt.Printf("dest = %s, destFile = %s, destDirectory = %s, destDir = %s\n", dest, destFile, destDirectory, destDir)
 
-	destFd := InitFileDirectory(fs, path.Join(fs.dataDir, destDir), destIndex)
+	destFd := InitFileDirectory(fs, path.Join(fs.vaultDir, destDir), destIndex)
 
 	destFd.NewDirectory()
 
@@ -495,8 +495,8 @@ func (fs *FileSystem) FileMove(fileName, destDir string) error {
 	dir, err := filepath.Abs(destDir)
 	ex.CheckErr(err)
 
-	if strings.HasPrefix(destDir, fs.dataDir) {
-		dir = destDir[len(fs.dataDir):]
+	if strings.HasPrefix(destDir, fs.vaultDir) {
+		dir = destDir[len(fs.vaultDir):]
 	}
 
 	if !ex.DirExists(dir) {
@@ -628,7 +628,7 @@ func GetVaultUid() int {
 
 // Returns the offset directory from the PDM directory
 func (fs *FileSystem) OffsetFromPdmDir(dir string) string {
-	offset := len(fs.dataDir)
+	offset := len(fs.dataDir) // Check fs.dataDir
 	if offset >= len(dir) {
 		return ""
 	} else {
