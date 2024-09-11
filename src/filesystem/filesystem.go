@@ -51,6 +51,12 @@ func InitFileSystem(vaultDir, userName string) (fs FileSystem) {
 	part := parts[len(parts)-1]
 
 	fs.dataDir = path.Join(vaultsData, part)
+
+	// check wether the critical directories exist.
+
+	ex.CriticalDirExist(fs.vaultDir)
+	ex.CriticalDirExist(fs.dataDir)
+
 	fs.currentWorkingDir = vaultDir
 	fs.vaultUid = config.GetUid("vault")
 	fs.userUid = config.GetUid(userName)
@@ -63,7 +69,8 @@ func InitFileSystem(vaultDir, userName string) (fs FileSystem) {
 		log.Fatal("Vault UID has not been stored into the FreePDM config file. Please follow the setup process.")
 	}
 
-	fs.index = InitFileIndex(fs.vaultDir, fs.userUid, fs.vaultUid)
+	fs.index = InitFileIndex(&fs)
+	// fs.index = InitFileIndex(fs.vaultDir, fs.userUid, fs.vaultUid)
 
 	fs.lockedCvs = path.Join(fs.dataDir, LockedFileCsv)
 

@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"strings"
 
 	ex "github.com/grd/FreePDM/src/utils"
 )
@@ -31,10 +30,7 @@ type FileList struct {
 
 // File Index Files in the root
 type FileIndex struct {
-	vaultDir string
-	dataDir  string
-	userUid  int
-	vaultUid int
+	fs *FileSystem
 
 	fileListCsv string
 	fileList    []FileList
@@ -43,22 +39,12 @@ type FileIndex struct {
 	indexNumber    int64
 }
 
-func InitFileIndex(vaultDir string, user_uid, vault_uid int) (ret FileIndex) {
+func InitFileIndex(fs *FileSystem) (ret FileIndex) {
 
-	ret.vaultDir = vaultDir
-	parts := strings.Split(vaultDir, "/")
-	part := parts[len(parts)-1]
-	ret.dataDir = path.Join("/samba/vaultsdata", part)
-	ret.userUid = user_uid
-	ret.vaultUid = vault_uid
+	ret.fs = fs
 
-	// check wether the critical directory exists.
-
-	ex.CriticalDirExist(ret.vaultDir)
-	ex.CriticalDirExist(ret.dataDir)
-
-	ret.fileListCsv = path.Join(ret.dataDir, "FileList.csv")
-	ret.indexNumberTxt = path.Join(ret.dataDir, "IndexNumber.txt")
+	ret.fileListCsv = path.Join(ret.fs.dataDir, "FileList.csv")
+	ret.indexNumberTxt = path.Join(ret.fs.dataDir, "IndexNumber.txt")
 
 	// check wether the critical files exists.
 
@@ -150,7 +136,7 @@ func (fix *FileIndex) Write() {
 	err = os.WriteFile(fix.fileListCsv, buffer.Bytes(), 0644)
 	ex.CheckErr(err)
 
-	err = os.Chown(fix.fileListCsv, fix.userUid, fix.vaultUid)
+	err = os.Chown(fix.fileListCsv, fix.fs.userUid, fix.fs.vaultUid)
 	ex.CheckErr(err)
 }
 
@@ -246,7 +232,7 @@ func (fix *FileIndex) increase_index_number() int64 {
 	err = os.WriteFile(fix.indexNumberTxt, []byte(str), 0644)
 	ex.CheckErr(err)
 
-	err = os.Chown(fix.indexNumberTxt, fix.userUid, fix.vaultUid)
+	err = os.Chown(fix.indexNumberTxt, fix.fs.userUid, fix.fs.vaultUid)
 	ex.CheckErr(err)
 
 	return fix.indexNumber
