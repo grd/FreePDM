@@ -18,17 +18,8 @@ removevault:
 	go build -o $(BIN_DIR)/removevault src/bin/removevault/main.go
 	removevault
 
-
-testvault: 
-	rm -f $(BIN_DIR)/testvault
-	make build_testvault runtestvault
-
-build_testvault: 
-	go build -o $(BIN_DIR)/testvault src/bin/testvault/main.go
-
-
-run_testvault: 
-	$(BIN_DIR)/testvault
+test:
+	go test src/bin/testvault/main_test.go
 
 serverapp: 
 	go build -o $(BIN_DIR)/serverapp src/bin/serverapp/main.go
@@ -45,8 +36,8 @@ vfs:
 smb2:
 	go build -o $(BIN_DIR)/smb2 temp/smb2.go
 	
-test:
-	go test src/bin/testvault/main_test.go
+error-test:
+	go build -o $(BIN_DIR)/error-test temp/error-test/error-test.go
 
 file-manipulation:
 	go build -o $(BIN_DIR)/file-manipulation temp/file-manipulation/file-manipulation.go
