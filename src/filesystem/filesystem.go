@@ -40,24 +40,32 @@ type FileSystem struct {
 	lockedIndex       []LockedIndex
 }
 
-const LockedFileCsv = "LockedFiles.csv"
-const vaultsData = "/samba/vaultsdata"
+const (
+	LockedFileCsv = "LockedFiles.csv"
+
+	Vaults     = "/samba/vaults"
+	VaultsData = "/samba/vaultsdata"
+)
 
 // Constructor
 func InitFileSystem(vaultDir, userName string) (fs FileSystem) {
-	fs = FileSystem{vaultDir: vaultDir, user: userName}
 
 	parts := strings.Split(vaultDir, "/")
-	part := parts[len(parts)-1]
+	if len(parts) == 1 {
+		fs.vaultDir = path.Join(Vaults, vaultDir)
+		fs.dataDir = path.Join(VaultsData, vaultDir)
+	} else {
+		log.Fatalf("multi-level vaultDir parameter: %s", vaultDir)
+	}
 
-	fs.dataDir = path.Join(vaultsData, part)
+	fs.user = userName
 
 	// check wether the critical directories exist.
 
 	ex.CriticalDirExist(fs.vaultDir)
 	ex.CriticalDirExist(fs.dataDir)
 
-	fs.currentWorkingDir = vaultDir
+	fs.currentWorkingDir = fs.vaultDir
 	fs.vaultUid = config.GetUid("vault")
 	fs.userUid = config.GetUid(userName)
 
@@ -70,13 +78,13 @@ func InitFileSystem(vaultDir, userName string) (fs FileSystem) {
 	}
 
 	fs.index = InitFileIndex(&fs)
-	// fs.index = InitFileIndex(fs.vaultDir, fs.userUid, fs.vaultUid)
 
 	fs.lockedCvs = path.Join(fs.dataDir, LockedFileCsv)
 
 	fs.ReadLockedIndex() // retrieve the values
 
-	os.Chdir(fs.currentWorkingDir)
+	err := os.Chdir(fs.currentWorkingDir)
+	ex.CheckErr(err)
 
 	log.Printf("Vault dir: %s", fs.currentWorkingDir)
 
