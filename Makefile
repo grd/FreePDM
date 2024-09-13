@@ -45,8 +45,8 @@ vfs:
 smb2:
 	go build -o $(BIN_DIR)/smb2 temp/smb2.go
 	
-error-test:
-	go build -o $(BIN_DIR)/error-test temp/error-test/error-test.go
+test:
+	go test src/bin/testvault/main_test.go
 
 file-manipulation:
 	go build -o $(BIN_DIR)/file-manipulation temp/file-manipulation/file-manipulation.go
