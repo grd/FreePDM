@@ -58,7 +58,8 @@ func ReadConfig() {
 		os.Exit(1)
 	}
 	if len(Conf.Users) == 0 {
-		log.Printf("The config = %v\n", Conf)
+		log.Printf("The configuration file = %s\n", configName)
+		log.Printf("The configuration = %v\n", Conf)
 	}
 }
 
