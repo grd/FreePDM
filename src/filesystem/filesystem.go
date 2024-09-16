@@ -502,12 +502,14 @@ func (fs *FileSystem) FileMove(fileName, destDir string) error {
 	dir, err := filepath.Abs(destDir)
 	ex.CheckErr(err)
 
-	if strings.HasPrefix(destDir, fs.vaultDir) {
-		dir = destDir[len(fs.vaultDir):]
-	}
-
 	if !ex.DirExists(dir) {
 		return fmt.Errorf("directory %s doesn't exist", destDir)
+	}
+	if len(dir) == len(fs.vaultDir) { // case when file moved to the root
+		dir = ""
+	}
+	if strings.HasPrefix(dir, fs.vaultDir) {
+		dir = dir[len(fs.vaultDir)+1:]
 	}
 
 	// Move file
@@ -527,7 +529,7 @@ func (fs *FileSystem) FileMove(fileName, destDir string) error {
 
 	// Move file in FileIndex
 
-	fs.index.moveItem(fs.OffsetFromPdmDir(fileName), fs.OffsetFromPdmDir(dir))
+	fs.index.moveItem(fileName, dir)
 
 	// Logging
 

@@ -118,22 +118,24 @@ func TestTheRest(t *testing.T) {
 	// 	fmt.Println(info.FileName)
 	// }
 
+	err = fs.Mkdir("temp")
+	ex.CheckErr(err)
+
+	err = fs.FileMove("0002.FCStd", "temp")
+	ex.CheckErr(err)
+
 	err = fs.FileMove("0003.FCStd", "..")
 	ex.CheckErr(err)
 
-	err = fs.Chdir("..")
-	ex.CheckErr(err)
+	// err = fs.Chdir("..")
+	// ex.CheckErr(err)
 
 	// fileInfo = fs.ListWD()
 	// for _, info := range fileInfo {
 	// 	fmt.Println(info.FileName)
 	// }
 
-	fs.Mkdir("Projects/temp")
-	err = fs.FileMove("0003.FCStd", "Projects/temp")
-	ex.CheckErr(err)
-
-	err = fs.Chdir("Standard Parts")
+	err = fs.Chdir("../Standard Parts")
 	ex.CheckErr(err)
 
 	f4 := fs.ImportFile(file4)
@@ -150,7 +152,9 @@ func TestTheRest(t *testing.T) {
 	// 	fmt.Println(info.FileName)
 	// }
 
-	// fs.Mkdir("Projects2")
+	err = fs.Mkdir("Projects2")
+	ex.CheckErr(err)
+
 	// err = fs.DirectoryCopy("Projects", "Projects2")
 	// ex.CheckErr(err)
 
