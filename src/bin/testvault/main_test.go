@@ -69,12 +69,13 @@ func TestTheRest(t *testing.T) {
 	file5 = path.Join(filesDir, "0005.FCStd")
 	file6 = path.Join(filesDir, "0006.FCStd")
 
-	fileInfo := fs.ListWD()
-	for _, info := range fileInfo {
-		fmt.Println(info.FileName)
-	}
+	// fileInfo := fs.ListWD()
+	// for _, info := range fileInfo {
+	// 	fmt.Println(info.FileName)
+	// }
 
-	fs.Chdir("Projects")
+	err = fs.Chdir("Projects")
+	ex.CheckErr(err)
 
 	f1 := fs.ImportFile(file1)
 	fs.CheckIn(f1, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf1-0", "Testf1-0")
@@ -120,18 +121,20 @@ func TestTheRest(t *testing.T) {
 	err = fs.FileMove("0003.FCStd", "..")
 	ex.CheckErr(err)
 
-	fs.Chdir("..")
+	err = fs.Chdir("..")
+	ex.CheckErr(err)
 
-	fileInfo = fs.ListWD()
-	for _, info := range fileInfo {
-		fmt.Println(info.FileName)
-	}
+	// fileInfo = fs.ListWD()
+	// for _, info := range fileInfo {
+	// 	fmt.Println(info.FileName)
+	// }
 
 	fs.Mkdir("Projects/temp")
 	err = fs.FileMove("0003.FCStd", "Projects/temp")
 	ex.CheckErr(err)
 
-	fs.Chdir("Standard Parts")
+	err = fs.Chdir("Standard Parts")
+	ex.CheckErr(err)
 
 	f4 := fs.ImportFile(file4)
 	fs.CheckIn(f4, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf4-0", "Testf4-0")
@@ -142,16 +145,18 @@ func TestTheRest(t *testing.T) {
 	f6 := fs.ImportFile(file6)
 	fs.CheckIn(f6, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf6-0", "Testf6-0")
 
-	fileInfo = fs.ListWD()
-	for _, info := range fileInfo {
-		fmt.Println(info.FileName)
-	}
+	// fileInfo = fs.ListWD()
+	// for _, info := range fileInfo {
+	// 	fmt.Println(info.FileName)
+	// }
 
 	// fs.Mkdir("Projects2")
 	// err = fs.DirectoryCopy("Projects", "Projects2")
 	// ex.CheckErr(err)
 
-	// fs.Chdir("Projects (copy)")
+	// err = fs.Chdir("Projects (copy)")
+	// ex.CheckErr(err)
+
 	// fileInfo = fs.ListWD()
 	// for _, info := range fileInfo {
 	// 	fmt.Println(info.FileName)

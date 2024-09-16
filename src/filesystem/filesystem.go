@@ -65,7 +65,7 @@ func InitFileSystem(vaultDir, userName string) (fs FileSystem) {
 	ex.CriticalDirExist(fs.vaultDir)
 	ex.CriticalDirExist(fs.dataDir)
 
-	fs.currentWorkingDir = fs.vaultDir
+	fs.currentWorkingDir = ""
 	fs.vaultUid = config.GetUid("vault")
 	fs.userUid = config.GetUid(userName)
 
@@ -83,7 +83,7 @@ func InitFileSystem(vaultDir, userName string) (fs FileSystem) {
 
 	fs.ReadLockedIndex() // retrieve the values
 
-	err := os.Chdir(fs.currentWorkingDir)
+	err := os.Chdir(fs.vaultDir)
 	ex.CheckErr(err)
 
 	log.Printf("Vault dir: %s", fs.currentWorkingDir)
@@ -157,18 +157,6 @@ func (fs *FileSystem) WriteLockedIndex() {
 	ex.CheckErr(err)
 }
 
-// This helper function returns the offset of the
-// current working dir from the main PDM dir.
-// This is only useful for the FileIndex.AddItem() function
-func (fs FileSystem) GetWd() string {
-	idx := len(fs.vaultDir) + 1 // trailing slash
-	if len(fs.vaultDir) == len(fs.currentWorkingDir) {
-		return ""
-	} else {
-		return fs.currentWorkingDir[idx:] // takes away the mainPdmDir part
-	}
-}
-
 // import a file inside the PDM. When you import a file the meta-data also gets imported,
 // which means uploaded to the server.
 // When you import a file or files you are placing the new file in the current directory.
@@ -180,15 +168,15 @@ func (fs *FileSystem) ImportFile(fname string) int64 {
 		log.Fatalf("File %s could not be found.", fname)
 	}
 
-	index := fs.index.AddItem(fname, fs.GetWd())
+	index := fs.index.AddItem(fname, fs.currentWorkingDir)
 
 	dir := fmt.Sprintf("%d", index)
 
 	// fd := InitFileDirectory(self, path.Join(self.mainPdmDir, dir))
 	fd := InitFileDirectory(fs, dir, index)
 
-	bla := fd.NewDirectory()
-	bla.ImportNewFile(fname)
+	newDir := fd.NewDirectory()
+	newDir.ImportNewFile(fname)
 
 	log.Printf("Imported %s into %s with version %d\n", fname, fs.index.FileNameOfString(fd.dir), 0)
 
@@ -240,14 +228,25 @@ func (fs FileSystem) Mkdir(dir string) error {
 	return nil
 }
 
-func (fs *FileSystem) Chdir(dir string) {
-	newPath, err := filepath.Abs(path.Join(fs.currentWorkingDir, dir))
-	ex.CheckErr(err)
-	fs.currentWorkingDir = newPath
-	err = os.Chdir(fs.currentWorkingDir)
-	ex.CheckErr(err)
+func (fs *FileSystem) Chdir(dir string) error {
 
-	log.Printf("Changed directory: %s\n", newPath)
+	if !ex.DirExists(dir) {
+		return fmt.Errorf("dir %s does not exist", dir)
+	}
+
+	newPath := path.Join(fs.vaultDir, fs.currentWorkingDir, dir)
+
+	fs.currentWorkingDir = path.Join(fs.currentWorkingDir, dir)
+
+	err := os.Chdir(newPath)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("Changed directory: %s\n", fs.currentWorkingDir)
+	log.Printf("Full path: %s\n", newPath)
+
+	return nil
 }
 
 // list the sorted directories and files of the current working directory.
@@ -449,22 +448,19 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 		return fmt.Errorf("file %s already exist", dest)
 	}
 
-	// srcIndex, err := self.index.Index(src)
 	file, err := fs.index.ContainerName(src)
 	ex.CheckErr(err)
 
-	srcDir, err := fs.index.Dir(src)
+	srcDir, err := fs.index.CurrentDir(src)
 	ex.CheckErr(err)
 
-	srcFd := InitFileDirectory(fs, path.Join(fs.vaultDir, srcDir), file.index)
+	dir := path.Join(fs.currentWorkingDir, srcDir)
+	srcFd := InitFileDirectory(fs, dir, file.index)
 
 	destDirectory, destFile := path.Split(dest)
-	destDirectory, _ = filepath.Abs(destDirectory)
-	destDirectory = fs.OffsetFromPdmDir(destDirectory)
 
 	if destDirectory == "" {
-		fmt.Println("yes")
-		destDirectory = fs.currentWorkingDir
+		destDirectory = fs.OffsetFromPdmDir(fs.currentWorkingDir)
 	}
 
 	destIndex := fs.index.AddItem(destFile, destDirectory)
@@ -472,9 +468,7 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 	destDir, err := fs.index.Dir(destFile)
 	ex.CheckErr(err)
 
-	fmt.Printf("dest = %s, destFile = %s, destDirectory = %s, destDir = %s\n", dest, destFile, destDirectory, destDir)
-
-	destFd := InitFileDirectory(fs, path.Join(fs.vaultDir, destDir), destIndex)
+	destFd := InitFileDirectory(fs, path.Join(fs.currentWorkingDir, destDir), destIndex)
 
 	destFd.NewDirectory()
 
@@ -487,8 +481,6 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 	// Copying file from src to dest and also properties
 
 	destFd.ImportNewFile(srcFile)
-
-	fmt.Printf("src = %s, dest = %s\n", src, dest)
 
 	// err = destFd.fileRename(src, dest)
 	err = destFd.fileRename(src, destFile)
@@ -526,7 +518,9 @@ func (fs *FileSystem) FileMove(fileName, destDir string) error {
 	dest := path.Join(destDir, fname)
 
 	err = os.Rename(fname, dest)
-	ex.CheckErr(err)
+	if err != nil {
+		return err
+	}
 
 	err = os.Chown(destDir, fs.userUid, fs.vaultUid)
 	ex.CheckErr(err)
@@ -643,7 +637,7 @@ func GetVaultUid() int {
 
 // Returns the offset directory from the PDM directory
 func (fs *FileSystem) OffsetFromPdmDir(dir string) string {
-	offset := len(fs.dataDir) // Check fs.dataDir
+	offset := len(fs.currentWorkingDir) // Check fs.dataDir
 	if offset >= len(dir) {
 		return ""
 	} else {
