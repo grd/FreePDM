@@ -418,7 +418,7 @@ func (fs *FileSystem) FileRename(src, dest string) error {
 	fileName, err := fs.index.Index(src)
 	ex.CheckErr(err)
 
-	fd := InitFileDirectory(fs, path.Join(fs.currentWorkingDir, dir), fileName)
+	fd := InitFileDirectory(fs, dir, fileName)
 
 	err = fd.fileRename(src, dest)
 	if err != nil {

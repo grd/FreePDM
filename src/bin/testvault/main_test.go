@@ -104,8 +104,8 @@ func TestTheRest(t *testing.T) {
 	// these functions require that all the files are checked in and will fail when they are not.
 	//
 
-	// err = fs.FileRename("0001.FCStd", "0007.FCStd")
-	// ex.CheckErr(err)
+	err = fs.FileRename("0001.FCStd", "0007.FCStd")
+	ex.CheckErr(err)
 
 	// err = fs.FileCopy("0002.FCStd", "0008.FCStd")
 	// ex.CheckErr(err)
