@@ -4,6 +4,9 @@
 
 package filesystem
 
+// The FileDirectory struct deals with file versions.
+// Each file that is stored inside the vault has its own version.
+
 import (
 	"encoding/csv"
 	"fmt"
@@ -45,6 +48,10 @@ type FileVersion struct {
 	Date   string
 }
 
+// Initializes the FileDirectory struct. Parameters:
+// fsm is necessary because of this struct
+// dir means the directory in where to put the file structure
+// fileNumber means the file number, which is an int64
 func InitFileDirectory(fsm *FileSystem, dir string, fileNumber int64) FileDirectory {
 	return FileDirectory{fs: fsm, dir: dir, fileNumber: fileNumber}
 }

@@ -251,7 +251,7 @@ func (fs *FileSystem) Chdir(dir string) error {
 
 // list the sorted directories and files of the current working directory.
 func (fs FileSystem) ListWD() []FileInfo {
-	return fs.ListDir(fs.currentWorkingDir)
+	return fs.ListDir(path.Join(fs.vaultDir, fs.currentWorkingDir))
 }
 
 // list the sorted directories and files, as long as the directory is inside the vault.
@@ -443,6 +443,17 @@ func (fs *FileSystem) FileRename(src, dest string) error {
 // Note that all versions need to be checked in.
 func (fs *FileSystem) FileCopy(src, dest string) error {
 
+	var dst string
+
+	if strings.Contains(dest, "/") {
+		num := strings.LastIndexByte(dest, '/')
+		dst = path.Join(fs.currentWorkingDir, dest[:num])
+		fmt.Printf("dst = %s\n", dst)
+		destPath := path.Join(fs.vaultDir, dst)
+		if !ex.DirExists(destPath) {
+			return fmt.Errorf("directory %s doesn't exist", destPath)
+		}
+	}
 	_, err := fs.index.Dir(dest)
 	if err == nil {
 		return fmt.Errorf("file %s already exist", dest)
@@ -454,21 +465,16 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 	srcDir, err := fs.index.CurrentDir(src)
 	ex.CheckErr(err)
 
-	dir := path.Join(fs.currentWorkingDir, srcDir)
-	srcFd := InitFileDirectory(fs, dir, file.index)
+	srcFd := InitFileDirectory(fs, srcDir, file.index)
 
-	destDirectory, destFile := path.Split(dest)
+	_, destFile := path.Split(dest)
 
-	if destDirectory == "" {
-		destDirectory = fs.OffsetFromPdmDir(fs.currentWorkingDir)
-	}
+	destIndex := fs.index.AddItem(destFile, dst)
 
-	destIndex := fs.index.AddItem(destFile, destDirectory)
-
-	destDir, err := fs.index.Dir(destFile)
+	destDir, err := fs.index.CurrentDir(destFile)
 	ex.CheckErr(err)
 
-	destFd := InitFileDirectory(fs, path.Join(fs.currentWorkingDir, destDir), destIndex)
+	destFd := InitFileDirectory(fs, destDir, destIndex)
 
 	destFd.NewDirectory()
 
@@ -482,7 +488,6 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 
 	destFd.ImportNewFile(srcFile)
 
-	// err = destFd.fileRename(src, dest)
 	err = destFd.fileRename(src, destFile)
 	ex.CheckErr(err)
 

@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/user"
 	"path"
+	"strings"
 	"testing"
 
 	fsm "github.com/grd/FreePDM/src/filesystem"
@@ -69,34 +70,41 @@ func TestTheRest(t *testing.T) {
 	file5 = path.Join(filesDir, "0005.FCStd")
 	file6 = path.Join(filesDir, "0006.FCStd")
 
-	// fileInfo := fs.ListWD()
-	// for _, info := range fileInfo {
-	// 	fmt.Println(info.FileName)
-	// }
+	listWd()
 
 	err = fs.Chdir("Projects")
 	ex.CheckErr(err)
 
-	f1 := fs.ImportFile(file1)
-	fs.CheckIn(f1, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf1-0", "Testf1-0")
+	{
+		f1 := fs.ImportFile(file1)
+		fs.CheckIn(f1, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf1-0", "Testf1-0")
 
-	ver := fs.NewVersion(f1)
-	fs.CheckIn(f1, ver, "Testf1-1", "Test1-1")
+		compareFileListLine(1, "1:0001.FCStd::Projects:")
 
-	ver = fs.NewVersion(f1)
-	fs.CheckIn(f1, ver, "Testf1-2", "Test1-2")
+		ver := fs.NewVersion(f1)
+		fs.CheckIn(f1, ver, "Testf1-1", "Test1-1")
 
-	ver = fs.NewVersion(f1)
-	fs.CheckIn(f1, ver, "Testf1-3", "Test1-3")
+		ver = fs.NewVersion(f1)
+		fs.CheckIn(f1, ver, "Testf1-2", "Test1-2")
 
-	f2 := fs.ImportFile(file2)
-	fs.CheckIn(f2, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf2-0", "")
+		ver = fs.NewVersion(f1)
+		fs.CheckIn(f1, ver, "Testf1-3", "Test1-3")
+	}
 
-	f3 := fs.ImportFile(file3)
-	fs.CheckIn(f3, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf3-0", "")
+	{
+		f2 := fs.ImportFile(file2)
+		fs.CheckIn(f2, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf2-0", "")
 
-	ver = fs.NewVersion(f3)
-	fs.CheckIn(f3, ver, "Testf3-1", "Test3-1")
+		compareFileListLine(2, "2:0002.FCStd::Projects:")
+
+		f3 := fs.ImportFile(file3)
+		fs.CheckIn(f3, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf3-0", "")
+
+		compareFileListLine(3, "3:0003.FCStd::Projects:")
+
+		ver := fs.NewVersion(f3)
+		fs.CheckIn(f3, ver, "Testf3-1", "Test3-1")
+	}
 
 	//
 	// rename, copy and move requires a bit of love...
@@ -104,56 +112,77 @@ func TestTheRest(t *testing.T) {
 	// these functions require that all the files are checked in and will fail when they are not.
 	//
 
-	err = fs.FileRename("0001.FCStd", "0007.FCStd")
-	ex.CheckErr(err)
+	{
+		err = fs.FileRename("0001.FCStd", "0007.FCStd")
+		ex.CheckErr(err)
 
-	// err = fs.FileCopy("0002.FCStd", "0008.FCStd")
-	// ex.CheckErr(err)
+		compareFileListLine(1, "1:0007.FCStd:0001.FCStd:Projects:")
+	}
 
-	// err = fs.FileCopy("0002.FCStd", "../test/0008a.FCStd")
-	// ex.CheckErr(err)
+	{
+		err = fs.FileCopy("0002.FCStd", "0008.FCStd")
+		ex.CheckErr(err)
 
-	// fileInfo = fs.ListWD()
-	// for _, info := range fileInfo {
-	// 	fmt.Println(info.FileName)
-	// }
+		// TODO: Fix this bug !!!
+		// readFileListLastLine(4, "4:0008.FCStd::Projects:")
+	}
+
+	{
+		err = fs.FileCopy("0002.FCStd", "../test/0008a.FCStd")
+		ex.CheckErr(err)
+
+		compareFileListLine(5, "5:0008a.FCStd::test:")
+	}
+
+	listWd()
 
 	err = fs.Mkdir("temp")
 	ex.CheckErr(err)
 
-	err = fs.FileMove("0002.FCStd", "temp")
-	ex.CheckErr(err)
+	{
+		err = fs.FileMove("0002.FCStd", "temp")
+		ex.CheckErr(err)
 
-	err = fs.FileMove("0003.FCStd", "..")
-	ex.CheckErr(err)
+		compareFileListLine(2, "2:0002.FCStd::Projects/temp:Projects")
+	}
 
-	// err = fs.Chdir("..")
-	// ex.CheckErr(err)
+	{
+		err = fs.FileMove("0003.FCStd", "..")
+		ex.CheckErr(err)
 
-	// fileInfo = fs.ListWD()
-	// for _, info := range fileInfo {
-	// 	fmt.Println(info.FileName)
-	// }
+		compareFileListLine(3, "3:0003.FCStd:::Projects")
+	}
+
+	listWd()
 
 	err = fs.Chdir("../Standard Parts")
 	ex.CheckErr(err)
 
-	f4 := fs.ImportFile(file4)
-	fs.CheckIn(f4, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf4-0", "Testf4-0")
+	{
+		f4 := fs.ImportFile(file4)
+		fs.CheckIn(f4, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf4-0", "Testf4-0")
 
-	f5 := fs.ImportFile(file5)
-	fs.CheckIn(f5, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf5-0", "Testf5-0")
+		compareFileListLine(6, "6:0004.FCStd::Standard Parts:")
+	}
 
-	f6 := fs.ImportFile(file6)
-	fs.CheckIn(f6, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf6-0", "Testf6-0")
+	{
+		f5 := fs.ImportFile(file5)
+		fs.CheckIn(f5, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf5-0", "Testf5-0")
 
-	// fileInfo = fs.ListWD()
-	// for _, info := range fileInfo {
-	// 	fmt.Println(info.FileName)
-	// }
+		compareFileListLine(7, "7:0005.FCStd::Standard Parts:")
+	}
 
-	err = fs.Mkdir("Projects2")
-	ex.CheckErr(err)
+	{
+		f6 := fs.ImportFile(file6)
+		fs.CheckIn(f6, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf6-0", "Testf6-0")
+
+		compareFileListLine(8, "8:0006.FCStd::Standard Parts:")
+	}
+
+	listWd()
+
+	// err = fs.Mkdir("Projects2")
+	// ex.CheckErr(err)
 
 	// err = fs.DirectoryCopy("Projects", "Projects2")
 	// ex.CheckErr(err)
@@ -161,10 +190,7 @@ func TestTheRest(t *testing.T) {
 	// err = fs.Chdir("Projects (copy)")
 	// ex.CheckErr(err)
 
-	// fileInfo = fs.ListWD()
-	// for _, info := range fileInfo {
-	// 	fmt.Println(info.FileName)
-	// }
+	listWd()
 }
 
 func TestMain(m *testing.M) {
@@ -275,4 +301,29 @@ func writeIndexNumber() {
 
 	err = os.Chown(idxfile, os.Geteuid(), vaultUid)
 	ex.CheckErr(err)
+}
+
+func listWd() {
+	wd, err := os.Getwd()
+	ex.CheckErr(err)
+	fmt.Printf("\n\nList directory of %s\n\n", wd)
+	fileInfo := fs.ListWD()
+	for _, info := range fileInfo {
+		fmt.Println(info.FileName)
+	}
+	fmt.Println("")
+
+}
+
+func compareFileListLine(num int, line string) {
+	content, err := os.ReadFile(path.Join(testvaultsdata, "FileList.csv"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	s := string(content[:len(content)-1])
+	slice := strings.Split(s, "\n")
+
+	if slice[num] != line {
+		log.Fatalf("error comparing lines of FileList.csv\nRead line (line %d): %s\nLine parameter: %s", num, slice[num], line)
+	}
 }
