@@ -642,16 +642,6 @@ func GetVaultUid() int {
 	return -1
 }
 
-// Returns the offset directory from the PDM directory
-func (fs *FileSystem) OffsetFromPdmDir(dir string) string {
-	offset := len(fs.currentWorkingDir) // Check fs.dataDir
-	if offset >= len(dir) {
-		return ""
-	} else {
-		return dir[offset+1:]
-	}
-}
-
 // TODO: Implement this inside all functions that need it.
 
 // // Verifies that both the copy and the registry are okay.
