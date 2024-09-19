@@ -4,11 +4,6 @@
 
 // Tests for the filesystem.
 
-// Priority from high to low
-// TODO: Checks about checkout during file operations (move, rename, copy) and new versions.
-// TODO: Make it working for multi-user, multi-vaults
-// TODO: Checks about CheckIn comments (descr and longDescr)
-// TODO: Checks about the VER.txt in file versions
 package main
 
 import (
