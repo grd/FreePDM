@@ -453,6 +453,8 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 		if !ex.DirExists(destPath) {
 			return fmt.Errorf("directory %s doesn't exist", destPath)
 		}
+	} else {
+		dst = fs.currentWorkingDir
 	}
 	_, err := fs.index.Dir(dest)
 	if err == nil {
