@@ -2,6 +2,13 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+// Tests for the filesystem.
+
+// Priority from high to low
+// TODO: Checks about checkout during file operations (move, rename, copy) and new versions.
+// TODO: Make it working for multi-user, multi-vaults
+// TODO: Checks about CheckIn comments (descr and longDescr)
+// TODO: Checks about the VER.txt in file versions
 package main
 
 import (
@@ -77,33 +84,74 @@ func TestTheRest(t *testing.T) {
 
 	{
 		f1 := fs.ImportFile(file1)
+		{
+			compareFileListLine(1, "1:0001.FCStd::Projects:")
+			checkOutStatus(1, 0)
+		}
 		fs.CheckIn(f1, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf1-0", "Testf1-0")
-
-		compareFileListLine(1, "1:0001.FCStd::Projects:")
+		{
+			checkInStatus(1, 0)
+		}
 
 		ver := fs.NewVersion(f1)
+		{
+			checkOutStatus(1, 1)
+		}
 		fs.CheckIn(f1, ver, "Testf1-1", "Test1-1")
+		{
+			checkInStatus(1, 1)
+		}
 
 		ver = fs.NewVersion(f1)
+		{
+			checkOutStatus(1, 2)
+		}
 		fs.CheckIn(f1, ver, "Testf1-2", "Test1-2")
+		{
+			checkInStatus(1, 2)
+		}
 
 		ver = fs.NewVersion(f1)
+		{
+			checkOutStatus(1, 3)
+		}
 		fs.CheckIn(f1, ver, "Testf1-3", "Test1-3")
+		{
+			checkInStatus(1, 3)
+		}
 	}
 
 	{
 		f2 := fs.ImportFile(file2)
+		{
+			compareFileListLine(2, "2:0002.FCStd::Projects:")
+			checkOutStatus(2, 0)
+		}
 		fs.CheckIn(f2, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf2-0", "")
+		{
+			checkInStatus(2, 0)
+		}
+	}
 
-		compareFileListLine(2, "2:0002.FCStd::Projects:")
-
+	{
 		f3 := fs.ImportFile(file3)
+		{
+			compareFileListLine(3, "3:0003.FCStd::Projects:")
+			checkOutStatus(3, 0)
+		}
 		fs.CheckIn(f3, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf3-0", "")
-
-		compareFileListLine(3, "3:0003.FCStd::Projects:")
+		{
+			checkInStatus(3, 0)
+		}
 
 		ver := fs.NewVersion(f3)
+		{
+			checkOutStatus(3, 1)
+		}
 		fs.CheckIn(f3, ver, "Testf3-1", "Test3-1")
+		{
+			checkInStatus(3, 1)
+		}
 	}
 
 	//
@@ -115,23 +163,25 @@ func TestTheRest(t *testing.T) {
 	{
 		err = fs.FileRename("0001.FCStd", "0007.FCStd")
 		ex.CheckErr(err)
-
-		compareFileListLine(1, "1:0007.FCStd:0001.FCStd:Projects:")
+		{
+			compareFileListLine(1, "1:0007.FCStd:0001.FCStd:Projects:")
+		}
 	}
 
 	{
 		err = fs.FileCopy("0002.FCStd", "0008.FCStd")
 		ex.CheckErr(err)
-
-		// TODO: Fix this bug !!!
-		// readFileListLastLine(4, "4:0008.FCStd::Projects:")
+		{
+			compareFileListLine(4, "4:0008.FCStd::Projects:")
+		}
 	}
 
 	{
 		err = fs.FileCopy("0002.FCStd", "../test/0008a.FCStd")
 		ex.CheckErr(err)
-
-		compareFileListLine(5, "5:0008a.FCStd::test:")
+		{
+			compareFileListLine(5, "5:0008a.FCStd::test:")
+		}
 	}
 
 	listWd()
@@ -142,15 +192,17 @@ func TestTheRest(t *testing.T) {
 	{
 		err = fs.FileMove("0002.FCStd", "temp")
 		ex.CheckErr(err)
-
-		compareFileListLine(2, "2:0002.FCStd::Projects/temp:Projects")
+		{
+			compareFileListLine(2, "2:0002.FCStd::Projects/temp:Projects")
+		}
 	}
 
 	{
 		err = fs.FileMove("0003.FCStd", "..")
 		ex.CheckErr(err)
-
-		compareFileListLine(3, "3:0003.FCStd:::Projects")
+		{
+			compareFileListLine(3, "3:0003.FCStd:::Projects")
+		}
 	}
 
 	listWd()
@@ -161,22 +213,25 @@ func TestTheRest(t *testing.T) {
 	{
 		f4 := fs.ImportFile(file4)
 		fs.CheckIn(f4, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf4-0", "Testf4-0")
-
-		compareFileListLine(6, "6:0004.FCStd::Standard Parts:")
+		{
+			compareFileListLine(6, "6:0004.FCStd::Standard Parts:")
+		}
 	}
 
 	{
 		f5 := fs.ImportFile(file5)
 		fs.CheckIn(f5, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf5-0", "Testf5-0")
-
-		compareFileListLine(7, "7:0005.FCStd::Standard Parts:")
+		{
+			compareFileListLine(7, "7:0005.FCStd::Standard Parts:")
+		}
 	}
 
 	{
 		f6 := fs.ImportFile(file6)
 		fs.CheckIn(f6, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf6-0", "Testf6-0")
-
-		compareFileListLine(8, "8:0006.FCStd::Standard Parts:")
+		{
+			compareFileListLine(8, "8:0006.FCStd::Standard Parts:")
+		}
 	}
 
 	listWd()
@@ -324,6 +379,46 @@ func compareFileListLine(num int, line string) {
 	slice := strings.Split(s, "\n")
 
 	if slice[num] != line {
-		log.Fatalf("error comparing lines of FileList.csv\nRead line (line %d): %s\nLine parameter: %s", num, slice[num], line)
+		log.Fatalf("error comparing lines of FileList.csv\nRead line (line %d): %s\nLine parameter:     %s", num, slice[num], line)
 	}
 }
+
+func checkStatus(file int64, num int16) bool {
+	content, err := os.ReadFile(path.Join(testvaultsdata, "LockedFiles.csv"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	s := string(content[:len(content)-1])
+	slice := strings.Split(s, "\n")
+	slice = slice[1:] // first line
+	if len(slice) == 0 {
+		return false
+	}
+	for _, line := range slice {
+		segments := strings.Split(line, ":")
+		if ex.Atoi64(segments[0]) == file && ex.Atoi16(segments[1]) == num {
+			return true
+		}
+
+	}
+
+	return false
+}
+
+func checkOutStatus(file int64, num int16) {
+	done := checkStatus(file, num)
+	if !done {
+		log.Fatalf("error file not properly checked out")
+	}
+}
+
+func checkInStatus(file int64, num int16) {
+	done := checkStatus(file, num)
+	if done {
+		log.Fatalf("error file not properly checked in")
+	}
+}
+
+// func checkFileComments(file int64, dir string, num int16, descr, longDescr string){
+
+// }
