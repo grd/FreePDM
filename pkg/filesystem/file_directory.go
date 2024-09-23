@@ -15,7 +15,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/grd/FreePDM/util"
+	"github.com/grd/FreePDM/pkg/util"
 )
 
 // Some handy file names

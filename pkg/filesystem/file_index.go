@@ -11,7 +11,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/grd/FreePDM/util"
+	"github.com/grd/FreePDM/pkg/util"
 )
 
 // The FileList is a struct with five fields:

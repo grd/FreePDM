@@ -16,7 +16,7 @@ import (
 	"strings"
 
 	"github.com/grd/FreePDM/pkg/config"
-	"github.com/grd/FreePDM/util"
+	"github.com/grd/FreePDM/pkg/util"
 	"golang.org/x/exp/slices"
 )
 

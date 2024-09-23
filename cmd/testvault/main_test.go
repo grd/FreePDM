@@ -18,7 +18,7 @@ import (
 
 	"github.com/grd/FreePDM/pkg/config"
 	fsm "github.com/grd/FreePDM/pkg/filesystem"
-	"github.com/grd/FreePDM/util"
+	"github.com/grd/FreePDM/pkg/util"
 )
 
 const testpdm = "testpdm"
