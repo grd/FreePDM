@@ -11,7 +11,7 @@ import (
 	"os"
 	"path"
 
-	ex "github.com/grd/FreePDM/src/utils"
+	"github.com/grd/FreePDM/util"
 )
 
 // The FileList is a struct with five fields:
@@ -48,8 +48,8 @@ func InitFileIndex(fs *FileSystem) (ret FileIndex) {
 
 	// check wether the critical files exists.
 
-	ex.CriticalFileExist(ret.fileListCsv)
-	ex.CriticalFileExist(ret.indexNumberTxt)
+	util.CriticalFileExist(ret.fileListCsv)
+	util.CriticalFileExist(ret.indexNumberTxt)
 
 	ret.getIndexNumber()
 
@@ -68,11 +68,11 @@ func (fix *FileIndex) Read() {
 	var fl FileList
 
 	records, err := fix.readCsv()
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	for _, record := range records {
 
-		fl.index = ex.Atoi64(record[0])
+		fl.index = util.Atoi64(record[0])
 		fl.file = record[1]
 		fl.previousFile = record[2]
 		fl.dir = record[3]
@@ -85,7 +85,7 @@ func (fix *FileIndex) Read() {
 func (fix FileIndex) readCsv() ([][]string, error) {
 
 	buf, err := os.ReadFile(fix.fileListCsv)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	r := csv.NewReader(bytes.NewBuffer(buf))
 	r.Comma = ':'
@@ -114,7 +114,7 @@ func (fix *FileIndex) Write() {
 	for _, item := range fix.fileList {
 
 		records = append(records, []string{
-			ex.I64toa(item.index),
+			util.I64toa(item.index),
 			item.file,
 			item.previousFile,
 			item.dir,
@@ -128,26 +128,26 @@ func (fix *FileIndex) Write() {
 	writer.Comma = ':'
 
 	err := writer.WriteAll(records) // calls Flush internally
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	err = writer.Error()
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	err = os.WriteFile(fix.fileListCsv, buffer.Bytes(), 0644)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	err = os.Chown(fix.fileListCsv, fix.fs.userUid, fix.fs.vaultUid)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 }
 
 // Reads the index number and stores it.
 func (fix *FileIndex) getIndexNumber() {
 
 	buf, err := os.ReadFile(fix.indexNumberTxt)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	_, err = fmt.Sscanf(string(buf), "%d", &fix.indexNumber)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 }
 
 // Returns the complete directory name of a file, or an error when not found.
@@ -188,7 +188,7 @@ func (fix *FileIndex) DirIndex(fileName int64) (string, error) {
 
 // Returns the file name of a file number.
 func (fix *FileIndex) ContainerName(fileNumber string) (FileList, error) {
-	num := ex.Atoi64(fileNumber)
+	num := util.Atoi64(fileNumber)
 	for _, item := range fix.fileList {
 		if num == item.index {
 			return item, nil
@@ -219,9 +219,9 @@ func (fix *FileIndex) FileNameOfString(fileName string) string {
 func (fix *FileIndex) increase_index_number() int64 {
 
 	buf, err := os.ReadFile(fix.indexNumberTxt)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 	_, err = fmt.Sscanf(string(buf), "%d", &fix.indexNumber)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	// Increase index number
 
@@ -230,10 +230,10 @@ func (fix *FileIndex) increase_index_number() int64 {
 	str := fmt.Sprintf("%d", fix.indexNumber)
 
 	err = os.WriteFile(fix.indexNumberTxt, []byte(str), 0644)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	err = os.Chown(fix.indexNumberTxt, fix.fs.userUid, fix.fs.vaultUid)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	return fix.indexNumber
 }

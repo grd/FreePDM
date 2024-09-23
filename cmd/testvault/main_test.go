@@ -16,10 +16,9 @@ import (
 	"strings"
 	"testing"
 
-	fsm "github.com/grd/FreePDM/src/filesystem"
-	ex "github.com/grd/FreePDM/src/utils"
-
-	"github.com/grd/FreePDM/src/config"
+	"github.com/grd/FreePDM/pkg/config"
+	fsm "github.com/grd/FreePDM/pkg/filesystem"
+	"github.com/grd/FreePDM/util"
 )
 
 const testpdm = "testpdm"
@@ -37,7 +36,7 @@ var (
 
 func TestInitFileSystem(t *testing.T) {
 	userName, err := user.Current()
-	ex.CheckErr(err)
+	util.CheckErr(err)
 	fs = fsm.InitFileSystem(testpdm, userName.Name)
 }
 
@@ -58,7 +57,7 @@ func TestImportFile(t *testing.T) {
 func TestTheRest(t *testing.T) {
 
 	userName, err := user.Current()
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	fmt.Printf("Vault dir: %s\n", testvaults)
 	fmt.Printf("Vault data dir: %s\n", testvaultsdata)
@@ -75,7 +74,7 @@ func TestTheRest(t *testing.T) {
 	listWd()
 
 	err = fs.Chdir("Projects")
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	{
 		f1 := fs.ImportFile(file1)
@@ -157,7 +156,7 @@ func TestTheRest(t *testing.T) {
 
 	{
 		err = fs.FileRename("0001.FCStd", "0007.FCStd")
-		ex.CheckErr(err)
+		util.CheckErr(err)
 		{
 			compareFileListLine(1, "1:0007.FCStd:0001.FCStd:Projects:")
 		}
@@ -165,7 +164,7 @@ func TestTheRest(t *testing.T) {
 
 	{
 		err = fs.FileCopy("0002.FCStd", "0008.FCStd")
-		ex.CheckErr(err)
+		util.CheckErr(err)
 		{
 			compareFileListLine(4, "4:0008.FCStd::Projects:")
 		}
@@ -173,7 +172,7 @@ func TestTheRest(t *testing.T) {
 
 	{
 		err = fs.FileCopy("0002.FCStd", "../test/0008a.FCStd")
-		ex.CheckErr(err)
+		util.CheckErr(err)
 		{
 			compareFileListLine(5, "5:0008a.FCStd::test:")
 		}
@@ -182,11 +181,11 @@ func TestTheRest(t *testing.T) {
 	listWd()
 
 	err = fs.Mkdir("temp")
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	{
 		err = fs.FileMove("0002.FCStd", "temp")
-		ex.CheckErr(err)
+		util.CheckErr(err)
 		{
 			compareFileListLine(2, "2:0002.FCStd::Projects/temp:Projects")
 		}
@@ -194,7 +193,7 @@ func TestTheRest(t *testing.T) {
 
 	{
 		err = fs.FileMove("0003.FCStd", "..")
-		ex.CheckErr(err)
+		util.CheckErr(err)
 		{
 			compareFileListLine(3, "3:0003.FCStd:::Projects")
 		}
@@ -203,7 +202,7 @@ func TestTheRest(t *testing.T) {
 	listWd()
 
 	err = fs.Chdir("../Standard Parts")
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	{
 		f4 := fs.ImportFile(file4)
@@ -258,26 +257,26 @@ func setup() {
 	// cleanup the testvaults
 
 	err := os.RemoveAll(testvaults)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	err = os.Mkdir(testvaults, 0775)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	vaultUid := config.GetUid("vault")
 
 	err = os.Chown(testvaults, os.Geteuid(), vaultUid)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	// cleanup the testvaultsdata
 
 	err = os.RemoveAll(testvaultsdata)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	err = os.Mkdir(testvaultsdata, 0775)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	err = os.Chown(testvaultsdata, os.Geteuid(), vaultUid)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	// writing three files...
 
@@ -293,7 +292,7 @@ func writeIndexFileList() {
 	fileList := path.Join(testvaultsdata, "FileList.csv")
 
 	f, err := os.Create(fileList)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 	defer f.Close()
 
 	w := csv.NewWriter(f)
@@ -312,7 +311,7 @@ func writeIndexFileList() {
 	vaultUid := config.GetUid("vault")
 
 	err = os.Chown(fileList, os.Geteuid(), vaultUid)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 }
 
 func writeLockedFiles() {
@@ -320,7 +319,7 @@ func writeLockedFiles() {
 	lockedfile := path.Join(testvaultsdata, "LockedFiles.csv")
 
 	f, err := os.Create(lockedfile)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 	defer f.Close()
 
 	w := csv.NewWriter(f)
@@ -337,7 +336,7 @@ func writeLockedFiles() {
 	vaultUid := config.GetUid("vault")
 
 	err = os.Chown(lockedfile, os.Geteuid(), vaultUid)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 }
 
 func writeIndexNumber() {
@@ -347,15 +346,15 @@ func writeIndexNumber() {
 	idxfile := path.Join(testvaultsdata, "IndexNumber.txt")
 
 	err := os.WriteFile(idxfile, []byte{'0'}, 0644)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	err = os.Chown(idxfile, os.Geteuid(), vaultUid)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 }
 
 func listWd() {
 	wd, err := os.Getwd()
-	ex.CheckErr(err)
+	util.CheckErr(err)
 	fmt.Printf("\n\nList directory of %s\n\n", wd)
 	fileInfo := fs.ListWD()
 	for _, info := range fileInfo {
@@ -391,7 +390,7 @@ func checkStatus(file int64, num int16) bool {
 	}
 	for _, line := range slice {
 		segments := strings.Split(line, ":")
-		if ex.Atoi64(segments[0]) == file && ex.Atoi16(segments[1]) == num {
+		if util.Atoi64(segments[0]) == file && util.Atoi16(segments[1]) == num {
 			return true
 		}
 

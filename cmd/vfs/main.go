@@ -5,14 +5,13 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"log"
 	"os"
 
-	vfs "github.com/grd/FreePDM/src/bin/vfs/vcsfs"
+	// vfs "github.com/grd/FreePDM/src/bin/vfs/vcsfs"
 	"github.com/jacobsa/fuse"
-	"github.com/jacobsa/timeutil"
+	// "github.com/jacobsa/timeutil"
 )
 
 var fMountPoint = flag.String("mount_point", "", "Path to mount point.")
@@ -24,10 +23,10 @@ func main() {
 	flag.Parse()
 
 	// Create an appropriate file system.
-	server, err := vfs.NewVFS(timeutil.RealClock())
-	if err != nil {
-		log.Fatalf("makeFS: %v", err)
-	}
+	// server, err := vfs.NewVFS(timeutil.RealClock())
+	// if err != nil {
+	// 	log.Fatalf("makeFS: %v", err)
+	// }
 
 	// Mount the file system.
 	if *fMountPoint == "" {
@@ -42,13 +41,13 @@ func main() {
 		cfg.DebugLogger = log.New(os.Stderr, "fuse: ", 0)
 	}
 
-	mfs, err := fuse.Mount(*fMountPoint, server, cfg)
-	if err != nil {
-		log.Fatalf("Mount: %v", err)
-	}
+	// mfs, err := fuse.Mount(*fMountPoint, server, cfg)
+	// if err != nil {
+	// 	log.Fatalf("Mount: %v", err)
+	// }
 
-	// Wait for it to be unmounted.
-	if err = mfs.Join(context.Background()); err != nil {
-		log.Fatalf("Join: %v", err)
-	}
+	// // Wait for it to be unmounted.
+	// if err = mfs.Join(context.Background()); err != nil {
+	// 	log.Fatalf("Join: %v", err)
+	// }
 }

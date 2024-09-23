@@ -9,8 +9,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/grd/FreePDM/src/config"
-	ex "github.com/grd/FreePDM/src/utils"
+	"github.com/grd/FreePDM/pkg/config"
+	"github.com/grd/FreePDM/util"
 )
 
 // A simple "quick and dirty" remove all files from testvault script
@@ -19,7 +19,7 @@ import (
 func WriteIndexNumber() {
 
 	f, err := os.Create("FileList.csv")
-	ex.CheckErr(err)
+	util.CheckErr(err)
 	defer f.Close()
 
 	w := csv.NewWriter(f)
@@ -43,7 +43,7 @@ func WriteIndexNumber() {
 func WriteLockedFiles() {
 
 	f, err := os.Create("LockedFiles.csv")
-	ex.CheckErr(err)
+	util.CheckErr(err)
 	defer f.Close()
 
 	w := csv.NewWriter(f)
@@ -64,22 +64,22 @@ func WriteLockedFiles() {
 
 func main() {
 	// Check wether we are inside the right folder...
-	if ex.FileExists("IndexNumber.txt") == false {
+	if !util.FileExists("IndexNumber.txt") {
 		log.Fatal("Wrong directory...")
 	}
 
 	err := os.WriteFile("IndexNumber.txt", []byte{'0'}, 0644)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	WriteIndexNumber()
 
 	WriteLockedFiles()
 
 	err = os.RemoveAll("PDM")
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	err = os.Mkdir("PDM", 0775)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	vaultUid := config.GetUid("vault")
 

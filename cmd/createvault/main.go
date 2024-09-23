@@ -11,7 +11,7 @@ import (
 	"os"
 	"strings"
 
-	ex "github.com/grd/FreePDM/src/utils"
+	"github.com/grd/FreePDM/util"
 )
 
 // Script for creating a new PDM vault.
@@ -49,7 +49,7 @@ func setup() {
 	os.Chdir("/vault")
 
 	dir, err := os.ReadDir(".")
-	ex.CheckErr(err)
+	util.CheckErr(err)
 	if len(dir) > 0 {
 		fmt.Println("")
 		fmt.Println("This is a list of exisisting vaults:")
@@ -62,35 +62,35 @@ func setup() {
 	var vault_dir string
 	fmt.Scan(&vault_dir)
 
-	if ex.DirExists(vault_dir) == true {
+	if util.DirExists(vault_dir) == true {
 		log.Fatalf("The vault \"%v\" already exist.", vault_dir)
 	}
 	err = os.Mkdir(vault_dir, 0775)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 	err = os.Chown(vault_dir, user_uid, vault_uid)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	err = os.Chdir(vault_dir)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	err = os.WriteFile(indexNumber, []byte{'0'}, 0644)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 	os.Chown(indexNumber, user_uid, vault_uid)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	WriteIndexNumber()
 
 	WriteLockedFiles()
 
 	err = os.Mkdir("PDM", 0775)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 	err = os.Chown("PDM", user_uid, vault_uid)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 
 	fmt.Printf(`Three files have been created: %s,\n
 		%s and %s, and the directory PDM.\n\n`, fileListCsv, indexNumber, lockedFileCsv)
 	fileList, err := os.ReadDir(".")
-	ex.CheckErr(err)
+	util.CheckErr(err)
 	for _, list := range fileList {
 		fmt.Println(list.Name())
 	}
@@ -107,7 +107,7 @@ func setup() {
 func WriteIndexNumber() {
 
 	f, err := os.Create(fileListCsv)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 	defer f.Close()
 
 	w := csv.NewWriter(f)
@@ -127,7 +127,7 @@ func WriteIndexNumber() {
 func WriteLockedFiles() {
 
 	f, err := os.Create(lockedFileCsv)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 	defer f.Close()
 
 	w := csv.NewWriter(f)

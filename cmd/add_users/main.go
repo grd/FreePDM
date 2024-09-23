@@ -9,7 +9,7 @@ import (
 
 	"github.com/rivo/tview"
 
-	"github.com/grd/FreePDM/src/config"
+	"github.com/grd/FreePDM/pkg/config"
 )
 
 // Script for user management.

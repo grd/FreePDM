@@ -12,7 +12,7 @@ import (
 	"path"
 
 	"github.com/BurntSushi/toml"
-	utils "github.com/grd/FreePDM/src/utils"
+	"github.com/grd/FreePDM/util"
 )
 
 var (
@@ -48,7 +48,7 @@ func GetUid(name string) int {
 }
 
 func ReadConfig() {
-	if !utils.FileExists(configName) {
+	if !util.FileExists(configName) {
 		log.Printf("Config file = %s\n", configName)
 		os.Exit(1)
 	}
@@ -70,7 +70,7 @@ func WriteConfig() {
 		log.Fatal(err)
 	}
 	err = os.WriteFile(configName, buf.Bytes(), 0644)
-	utils.CheckErr(err)
+	util.CheckErr(err)
 
 }
 
@@ -85,12 +85,12 @@ func (cfg *Config) String() string {
 
 func init() {
 	// create the new directory if it doesn't exist
-	if !utils.DirExists(configDir) {
+	if !util.DirExists(configDir) {
 		os.Mkdir(configDir, 0700)
 	}
 
 	// create a new config file when it doesn't exist
-	if !utils.FileExists(configName) {
+	if !util.FileExists(configName) {
 		WriteConfig()
 	}
 

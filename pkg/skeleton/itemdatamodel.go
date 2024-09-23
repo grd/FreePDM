@@ -12,7 +12,7 @@ import (
 	"os"
 	"path"
 
-	ex "github.com/grd/FreePDM/src/utils"
+	"github.com/grd/FreePDM/util"
 )
 
 // Getting file info from Document.xml that is stored within each FC file
@@ -286,34 +286,34 @@ func InitItemDataModel(filename string) (ret ItemDataModel) {
 	return ret
 }
 
-func (self *ItemDataModel) ReadFcFile() {
+func (idm *ItemDataModel) ReadFcFile() {
 	// Note that this temp-directory and all it's contents is automatically being deleted
 	tempDir, err := os.MkdirTemp("/etc", "*-FC-File")
-	ex.CheckErr(err)
+	util.CheckErr(err)
 	defer os.RemoveAll(tempDir) // clean up
 	log.Printf("Created temporary directory with path: %s", tempDir)
 
 	// Unzipping the file to the directory
-	err = unzipSource(self.FileName, tempDir)
-	ex.CheckErr(err)
+	err = unzipSource(idm.FileName, tempDir)
+	util.CheckErr(err)
 
 	dirList, err := os.ReadDir(tempDir)
-	ex.CheckErr(err)
+	util.CheckErr(err)
 	for _, item := range dirList {
 		fmt.Println(item.Name())
 	}
 
 	// reading xml file
-	self.readXml(path.Join(tempDir, "Document.xml"))
+	idm.readXml(path.Join(tempDir, "Document.xml"))
 
 	// Check whether there is a thumbnail
-	if ex.DirExists(path.Join(tempDir, "/thumbnails")) {
-		self.thumbnail, err = os.ReadFile(path.Join(tempDir, "/thumbnails/Thumbnail.png"))
-		ex.CheckErr(err)
+	if util.DirExists(path.Join(tempDir, "/thumbnails")) {
+		idm.thumbnail, err = os.ReadFile(path.Join(tempDir, "/thumbnails/Thumbnail.png"))
+		util.CheckErr(err)
 	}
 }
 
-func (self *ItemDataModel) readXml(fileName string) {
+func (idm *ItemDataModel) readXml(fileName string) {
 	// text, _ := os.ReadFile(fileName)
 	// self.xml_document = loadXml(text)
 
@@ -443,15 +443,15 @@ func (self *ItemDataModel) readXml(fileName string) {
 // 	return xlist
 // }
 
-func (self ItemDataModel) GetFileName() string {
-	return self.FileName
+func (idm ItemDataModel) GetFileName() string {
+	return idm.FileName
 }
 
 // func (self ItemDataModel) get_document_propterties() TypedDict {
 // 	return self.document_properties
 // }
 
-func (self ItemDataModel) Save() {
+func (idm ItemDataModel) Save() {
 	// TODO
 }
 
