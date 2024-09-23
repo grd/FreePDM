@@ -188,11 +188,18 @@ func (fs *FileSystem) ImportFile(fname string) int64 {
 	return index
 }
 
-// Generates a new version of a file and returns the version number.
-func (fs *FileSystem) NewVersion(indexNr int64) FileVersion {
+// Generates a new version of a file. Returns the FileVersion and an error.
+func (fs *FileSystem) NewVersion(indexNr int64) (FileVersion, error) {
+
+	// Check wether src is locked or not
 
 	dirIdx, err := fs.index.DirIndex(indexNr)
 	util.CheckErr(err)
+
+	if name := fs.IsLockedItem(indexNr); name != "" {
+		return FileVersion{}, fmt.Errorf("NewVersion error: File %s is checked out by %s", dirIdx, name)
+	}
+
 	dir := path.Join(fs.vaultDir, dirIdx)
 
 	fd := InitFileDirectory(fs, dir, indexNr)
@@ -206,7 +213,7 @@ func (fs *FileSystem) NewVersion(indexNr int64) FileVersion {
 	err = fs.CheckOut(indexNr, ret)
 	util.CheckErr(err)
 
-	return ret
+	return ret, nil
 }
 
 // Creates a new directory inside the current directory, with the correct uid and gid.
@@ -289,33 +296,25 @@ func (fs FileSystem) ListDir(dirName string) []FileInfo {
 	return subDirList
 }
 
-// returns the latest version number of a file in the current
-// directory or -1 when the file doesn't exist.
-func (fs FileSystem) CheckLatestFileVersion(fname string) int64 {
-	file_list, err := os.ReadDir(".")
-	util.CheckErr(err)
-	var result int64 = -1
-	for _, file := range file_list {
-		if util.DirExists(file.Name()) {
-			continue
-		}
-		file1, ext1 := SplitExt(file.Name())
-		if fname == file1 {
-			n, err := strconv.ParseInt(ext1[1:], 10, 64)
-			util.CheckErr(err)
-			result = n
-		}
-	}
-
-	return result
-}
-
 // Check whether the itemnr is locked.
 // Returns the name of the user who locked it or empty when not locked.
 func (fs FileSystem) IsLocked(itemNr int64, version FileVersion) string {
 
 	for _, item := range fs.lockedIndex {
 		if item.fileNr == itemNr && item.version == version.Number {
+			return item.userName
+		}
+	}
+
+	return "" // Nothing found
+}
+
+// Check whether the itemnr is locked.
+// Returns the name of the user who locked it or empty when not locked.
+func (fs FileSystem) IsLockedItem(itemNr int64) string {
+
+	for _, item := range fs.lockedIndex {
+		if item.fileNr == itemNr {
 			return item.userName
 		}
 	}
@@ -403,9 +402,18 @@ func (fs *FileSystem) CheckIn(itemNr int64, version FileVersion, descr, longdesc
 // Note that all versions need to be checked in.
 func (fs *FileSystem) FileRename(src, dest string) error {
 
+	// Check wether src is locked or not
+
+	fileName, err := fs.index.Index(src)
+	util.CheckErr(err)
+
+	if name := fs.IsLockedItem(fileName); name != "" {
+		return fmt.Errorf("FileRename error: File %s is checked out by %s", src, name)
+	}
+
 	// Check wether dest exist
 
-	dir, err := fs.index.Dir(dest)
+	_, dir, err := fs.index.Dir(dest)
 	if err == nil {
 		return fmt.Errorf("file %s already exist and is stored in %s", dest, dir)
 	}
@@ -413,9 +421,6 @@ func (fs *FileSystem) FileRename(src, dest string) error {
 	// Rename the file from src to dest
 
 	dir, err = fs.index.CurrentDir(src)
-	util.CheckErr(err)
-
-	fileName, err := fs.index.Index(src)
 	util.CheckErr(err)
 
 	fd := InitFileDirectory(fs, dir, fileName)
@@ -443,6 +448,15 @@ func (fs *FileSystem) FileRename(src, dest string) error {
 // Note that all versions need to be checked in.
 func (fs *FileSystem) FileCopy(src, dest string) error {
 
+	// Check wether src is locked or not
+
+	fileName, err := fs.index.Index(src)
+	util.CheckErr(err)
+
+	if name := fs.IsLockedItem(fileName); name != "" {
+		return fmt.Errorf("FileCopy error: File %s is checked out by %s", src, name)
+	}
+
 	var dst string
 
 	if strings.Contains(dest, "/") {
@@ -456,7 +470,7 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 	} else {
 		dst = fs.currentWorkingDir
 	}
-	_, err := fs.index.Dir(dest)
+	_, _, err = fs.index.Dir(dest)
 	if err == nil {
 		return fmt.Errorf("file %s already exist", dest)
 	}
@@ -503,6 +517,15 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 // Moves a file to a different directory.
 // Note that all versions need to be checked in.
 func (fs *FileSystem) FileMove(fileName, destDir string) error {
+
+	// Check wether src is locked or not
+
+	fileNr, err := fs.index.Index(fileName)
+	util.CheckErr(err)
+
+	if name := fs.IsLockedItem(fileNr); name != "" {
+		return fmt.Errorf("FileMove error: File %s is checked out by %s", fileName, name)
+	}
 
 	// "normalize" the destDir
 
@@ -669,7 +692,7 @@ func GetVaultUid() int {
 // 	}
 
 // 	dirIdx, err := self.index.DirIndex(index.index)
-// 	ex.CheckErr(err)
+// util.CheckErr(err)
 // 	dir := path.Join(self.mainPdmDir, dirIdx)
 
 // 	fd := InitFileDirectory(&self, dir, index.index)

@@ -87,7 +87,8 @@ func TestTheRest(t *testing.T) {
 			checkInStatus(1, 0)
 		}
 
-		ver := fs.NewVersion(f1)
+		ver, _ := fs.NewVersion(f1)
+
 		{
 			checkOutStatus(1, 1)
 		}
@@ -96,7 +97,7 @@ func TestTheRest(t *testing.T) {
 			checkInStatus(1, 1)
 		}
 
-		ver = fs.NewVersion(f1)
+		ver, _ = fs.NewVersion(f1)
 		{
 			checkOutStatus(1, 2)
 		}
@@ -105,7 +106,7 @@ func TestTheRest(t *testing.T) {
 			checkInStatus(1, 2)
 		}
 
-		ver = fs.NewVersion(f1)
+		ver, _ = fs.NewVersion(f1)
 		{
 			checkOutStatus(1, 3)
 		}
@@ -138,7 +139,7 @@ func TestTheRest(t *testing.T) {
 			checkInStatus(3, 0)
 		}
 
-		ver := fs.NewVersion(f3)
+		ver, _ := fs.NewVersion(f3)
 		{
 			checkOutStatus(3, 1)
 		}

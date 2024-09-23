@@ -150,16 +150,16 @@ func (fix *FileIndex) getIndexNumber() {
 	util.CheckErr(err)
 }
 
-// Returns the complete directory name of a file, or an error when not found.
-func (fix *FileIndex) Dir(fileName string) (string, error) {
+// Input parameter is the file name.
+// Returns the path and name of a file, or an error when not found.
+func (fix *FileIndex) Dir(fileName string) (retPath, retFileName string, err error) {
 	for _, v := range fix.fileList {
 		if fileName == v.file {
-			s := fmt.Sprintf("%d", v.index)
-			str := path.Join(v.dir, s)
-			return str, nil
+			str := fmt.Sprintf("%d", v.index)
+			return v.dir, str, nil
 		}
 	}
-	return "", fmt.Errorf("[2] file %s not found", fileName)
+	return "", "", fmt.Errorf("[2] file %s not found", fileName)
 }
 
 // Returns the directory name of a file placed inside the current directory,
