@@ -12,7 +12,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/grd/FreePDM/util"
+	"github.com/grd/FreePDM/pkg/util"
 )
 
 // Getting file info from Document.xml that is stored within each FC file

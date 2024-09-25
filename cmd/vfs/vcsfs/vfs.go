@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 
-	fsm "github.com/grd/FreePDM/src/filesystem"
+	fsm "github.com/grd/FreePDM/pkg/filesystem"
 	"github.com/jacobsa/fuse"
 	"github.com/jacobsa/fuse/fuseops"
 	"github.com/jacobsa/fuse/fuseutil"

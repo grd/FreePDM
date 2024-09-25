@@ -11,7 +11,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/grd/FreePDM/util"
+	"github.com/grd/FreePDM/pkg/util"
 )
 
 // Script for creating a new PDM vault.
