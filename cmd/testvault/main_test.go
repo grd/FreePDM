@@ -37,7 +37,7 @@ var (
 func TestInitFileSystem(t *testing.T) {
 	userName, err := user.Current()
 	util.CheckErr(err)
-	fs = fsm.InitFileSystem(testpdm, userName.Name)
+	fs = fsm.InitFileSystem(testpdm, userName.Username)
 }
 
 func TestMkDir(t *testing.T) {
