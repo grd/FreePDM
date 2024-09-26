@@ -1,8 +1,12 @@
 # Howto create a file server
-The specs for a file server are minimal. Right now I am using a Raspberry Pi 4 and it works for me, but when you need to have lots of guys then you can use a dedicated server. This are the things you need to do to make it work.
+The specs for a file server are minimal (a RPI4/5 should work). Right now I am using a desktop and it works for me, when you need to have a few guys then you can use a proper server. 
 
-This program uses Ubuntu Server but you can also use Debian. They support both the Intel and ARM platforms.
-First you need to install Ubuntu Server and after that you need to write down the ip address of the server. When you need to have access outside of the LAN you are gonna need port forwarding and also a certificate (certbot for instance). This is the ip address of my server: 10.0.0.11 
+This are the things you need to do to make it work.
+
+The program(s) run on Ubuntu Server or Debian. They support both the Intel and ARM platforms.
+First you need to install Ubuntu Server (or Debian) and after that you need to write down the ip address of the server. When you need to have access outside of the LAN you are gonna need port forwarding and also a certificate (certbot for instance). This is the ip address of my server: 10.0.0.11 
+
+To understand the IP address of your server, type in `ip a`
 
 ### Loggin in the server
 `ssh ubuntu@10.0.0.11`
@@ -40,10 +44,10 @@ chmod g+w /vault
 exit
 ```
 
-While still in ssh you can type `id user1`, `id user2` and `id vault` and write the number after `uid=` (but keep in mind to use different names). After you completed these tasks you can `exit` to exit the ssh. Next you can write down in the `FreePDM.conf` file that is stored (in Ubuntu) in the `.config/FreePDM` directory the following, at the bottom:
+While still in ssh you can type `id user1`, `id user2` and `id vault` and write the number after `uid=` (but keep in mind to use different names). After you completed these tasks you can `exit` to exit the ssh. Next you can write down in the `FreePDM.toml` file that is stored (in Ubuntu) in the `.config/FreePDM` directory the following, at the bottom:
 
 ```
-[user]
+[Users]
 vault = 1001
 user1 = 1002
 user2 = 1003
