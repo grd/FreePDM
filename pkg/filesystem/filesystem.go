@@ -70,7 +70,7 @@ func InitFileSystem(vaultDir, userName string) (fs FileSystem) {
 	fs.userUid = config.GetUid(userName)
 
 	if fs.userUid == -1 {
-		log.Fatal("Username has not been stored into the FreePDM config file. Please follow the setup process.")
+		log.Fatalf("Username %s has not been stored into the FreePDM config file, please follow the setup process", userName)
 	}
 
 	if fs.vaultUid == 0 || fs.vaultUid == -1 {
