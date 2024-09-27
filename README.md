@@ -6,8 +6,6 @@
 
 # FreePDM
 
-[![Join the chat at https://gitter.im/FreePDM/community](https://badges.gitter.im/FreePDM/community.svg)](https://gitter.im/FreePDM/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 A PDM for FreeCAD. A PDM is a Product Data Management system. Per [wikipedia](https://en.wikipedia.org/wiki/Product_data_management): 
 
 > Product data management (PDM) should not be confused with product information management (PIM). PDM is the name of a business function within product lifecycle management (PLM) that is denotes the management and publication of product data. 
