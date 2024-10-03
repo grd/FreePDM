@@ -340,7 +340,7 @@ func (fd *FileDirectory) OpenItemVersion(version FileVersion) {
 	// And that guy has filemode 0644 for the file itself.
 
 	base := path.Base(fd.dir)
-	num := util.Atoi64(base)
+	num, _ := util.Atoi64(base)
 	file := path.Join(dirVersion, fd.fs.index.FileName(num))
 
 	err = os.Chmod(file, 0644)
@@ -362,7 +362,7 @@ func (fd *FileDirectory) CloseItemVersion(version FileVersion) {
 	// And the file can't be edited anymore with filemode 0444.
 
 	base := path.Base(fd.dir)
-	num := util.Atoi64(base)
+	num, _ := util.Atoi64(base)
 	file := path.Join(dirVersion, fd.fs.index.FileName(num))
 
 	err = os.Chmod(file, 0444)

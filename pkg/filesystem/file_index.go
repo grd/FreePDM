@@ -72,7 +72,7 @@ func (fix *FileIndex) Read() {
 
 	for _, record := range records {
 
-		fl.index = util.Atoi64(record[0])
+		fl.index, _ = util.Atoi64(record[0])
 		fl.file = record[1]
 		fl.previousFile = record[2]
 		fl.dir = record[3]
@@ -188,7 +188,7 @@ func (fix *FileIndex) DirIndex(fileName int64) (string, error) {
 
 // Returns the file name of a file number.
 func (fix *FileIndex) ContainerName(fileNumber string) (FileList, error) {
-	num := util.Atoi64(fileNumber)
+	num, _ := util.Atoi64(fileNumber)
 	for _, item := range fix.fileList {
 		if num == item.index {
 			return item, nil
@@ -275,7 +275,7 @@ func (fix *FileIndex) Index(fileName string) (int64, error) {
 
 // Moves the filename to an other directory,
 // but only in the FileList, not on disk.
-func (fix *FileIndex) moveItem(fileNname, directory string) {
+func (fix *FileIndex) moveItem(fileNname, directory string) error {
 
 	var movefile *FileList
 
@@ -289,6 +289,8 @@ func (fix *FileIndex) moveItem(fileNname, directory string) {
 	}
 
 	fix.Write()
+
+	return nil
 }
 
 // Renames the filename from src to dest,

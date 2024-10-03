@@ -231,6 +231,19 @@ func TestTheRest(t *testing.T) {
 
 	listWd()
 
+	err = fs.Chdir("../Projects")
+	util.CheckErr(err)
+
+	listWd()
+
+	fs.Chdir("..")
+
+	list := fs.ListWD()
+
+	for _, elem := range list {
+		fmt.Println(elem)
+	}
+
 	// err = fs.Mkdir("Projects2")
 	// ex.CheckErr(err)
 
@@ -240,7 +253,14 @@ func TestTheRest(t *testing.T) {
 	// err = fs.Chdir("Projects (copy)")
 	// ex.CheckErr(err)
 
-	listWd()
+	fmt.Printf("\nstart listtree\n")
+	list = fs.ListTree(fs.VaultDir())
+	for _, elem := range list {
+		fmt.Printf("%v\n", elem)
+	}
+
+	fmt.Printf("\n\n")
+	log.Fatal("oeps")
 }
 
 func TestMain(m *testing.M) {
@@ -391,7 +411,9 @@ func checkStatus(file int64, num int16) bool {
 	}
 	for _, line := range slice {
 		segments := strings.Split(line, ":")
-		if util.Atoi64(segments[0]) == file && util.Atoi16(segments[1]) == num {
+		seg0, _ := util.Atoi64(segments[0])
+		seg1, _ := util.Atoi16(segments[1])
+		if seg0 == file && seg1 == num {
 			return true
 		}
 

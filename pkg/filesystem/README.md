@@ -24,3 +24,4 @@ The Filesystem is a major part of FreePDM. It is primarily a storage of files th
 - [ ] Make it working for multi-user, multi-vaults (branch multi)
 - [ ] Checks about CheckIn comments (descr and longDescr)
 - [ ] Checks about the VER.txt in file versions
+- [ ] Change directory and file structure to Read Only for security. That way no accidental issues can happen.

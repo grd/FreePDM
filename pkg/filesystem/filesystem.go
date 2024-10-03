@@ -7,11 +7,13 @@ package filesystem
 import (
 	"bytes"
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"log"
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -91,6 +93,11 @@ func InitFileSystem(vaultDir, userName string) (fs FileSystem) {
 	return fs
 }
 
+// Returns the Vault directory
+func (fs *FileSystem) VaultDir() string {
+	return fs.vaultDir
+}
+
 // Updates the locked index by reading from the lockedTxt file.
 func (fs *FileSystem) ReadLockedIndex() {
 
@@ -115,8 +122,8 @@ func (fs *FileSystem) ReadLockedIndex() {
 
 	for _, record := range records {
 
-		list.fileNr = util.Atoi64(record[0])
-		list.version = util.Atoi16(record[1])
+		list.fileNr, _ = util.Atoi64(record[0])
+		list.version, _ = util.Atoi16(record[1])
 		list.userName = record[2]
 
 		fs.lockedIndex = append(fs.lockedIndex, list)
@@ -163,7 +170,9 @@ func (fs *FileSystem) WriteLockedIndex() {
 // The new file inside the PDM gets a revision number automatically.
 // The function returns the number of the imported file.
 func (fs *FileSystem) ImportFile(fname string) int64 {
+
 	// check wether a file exist
+
 	if !util.FileExists(fname) {
 		log.Fatalf("File %s could not be found.", fname)
 	}
@@ -172,7 +181,6 @@ func (fs *FileSystem) ImportFile(fname string) int64 {
 
 	dir := fmt.Sprintf("%d", index)
 
-	// fd := InitFileDirectory(self, path.Join(self.mainPdmDir, dir))
 	fd := InitFileDirectory(fs, dir, index)
 
 	newDir := fd.NewDirectory()
@@ -265,35 +273,71 @@ func (fs FileSystem) ListWD() []FileInfo {
 func (fs FileSystem) ListDir(dirName string) []FileInfo {
 	dir_list, err := os.ReadDir(dirName)
 	util.CheckErr(err)
-	var directoryList []FileInfo
-	var fileList []FileInfo
-	var subDirList []FileInfo
+
+	var list []FileInfo
 
 	for _, sub_dir := range dir_list {
-		if num, err := strconv.Atoi(sub_dir.Name()); err == nil {
+		if num, err := util.Atoi64(sub_dir.Name()); err == nil {
 			fileName := fs.index.FileName(int64(num))
-			fileList = append(fileList, FileInfo{
-				Dir:      false,
-				FileName: fileName,
+			idx, err := fs.index.Index(fileName)
+			util.CheckErr(err)
+			lockedUser := fs.IsLockedItem(idx)
+			list = append(list, FileInfo{
+				Dir:             false,
+				FileName:        fileName,
+				FilePath:        fs.currentWorkingDir,
+				FileLocked:      lockedUser != "",
+				FileLockedOutBy: lockedUser,
 			})
 		} else {
-			directoryList = append(directoryList, FileInfo{Dir: true, FileName: sub_dir.Name()})
+			list = append(list, FileInfo{Dir: true, FileName: sub_dir.Name()})
 		}
 	}
 
-	if path.Clean(dirName) != fs.vaultDir {
-		subDirList = append(subDirList, FileInfo{Dir: true, FileName: ".."})
+	sort.Slice(list, func(i, j int) bool {
+		return list[i].Name() < list[j].Name()
+	})
+
+	sort.Slice(list, func(i, j int) bool {
+		return list[i].DirSort() < list[j].DirSort()
+	})
+
+	if path.Clean(dirName) != fs.VaultDir() {
+		list = slices.Insert(list, 0, FileInfo{Dir: true, FileName: ".."})
 	}
 
-	if directoryList != nil {
-		subDirList = append(subDirList, directoryList...)
+	return list
+}
+
+// list the sorted directories and files, as long as the directory is inside the vault.
+func (fs FileSystem) ListTree(dirName string) []FileInfo {
+	return fs.listTree(dirName)
+}
+
+func (fs FileSystem) listTree(dirName string) []FileInfo {
+
+	dirList := fs.ListDir(dirName)
+	if dirList == nil {
+		return nil
 	}
 
-	if fileList != nil {
-		subDirList = append(subDirList, fileList...)
+	if dirList[0].Name() == ".." {
+		dirList = dirList[1:]
 	}
 
-	return subDirList
+	list := make([]FileInfo, len(dirList))
+
+	for _, elem := range dirList {
+
+		list = append(list, elem)
+
+		if elem.IsDir() {
+			dir := path.Join(dirName, elem.Name())
+			list = append(list, fs.listTree(dir)...)
+		}
+	}
+
+	return list
 }
 
 // Check whether the itemnr is locked.
@@ -399,7 +443,6 @@ func (fs *FileSystem) CheckIn(itemNr int64, version FileVersion, descr, longdesc
 
 // Rename a file, for instance when the user wants to use a file
 // with a specified numbering system.
-// Note that all versions need to be checked in.
 func (fs *FileSystem) FileRename(src, dest string) error {
 
 	// Check wether src is locked or not
@@ -445,7 +488,6 @@ func (fs *FileSystem) FileRename(src, dest string) error {
 }
 
 // Copy a the latest version of a file.
-// Note that all versions need to be checked in.
 func (fs *FileSystem) FileCopy(src, dest string) error {
 
 	// Check wether src is locked or not
@@ -549,8 +591,7 @@ func (fs *FileSystem) FileMove(fileName, destDir string) error {
 
 	dest := path.Join(destDir, fname)
 
-	err = os.Rename(fname, dest)
-	if err != nil {
+	if err := os.Rename(fname, dest); err != nil {
 		return err
 	}
 
@@ -559,7 +600,9 @@ func (fs *FileSystem) FileMove(fileName, destDir string) error {
 
 	// Move file in FileIndex
 
-	fs.index.moveItem(fileName, dir)
+	if err := fs.index.moveItem(fileName, dir); err != nil {
+		return err
+	}
 
 	// Logging
 
@@ -569,70 +612,171 @@ func (fs *FileSystem) FileMove(fileName, destDir string) error {
 }
 
 // TODO implement these three, but they are tricky
-
-// TODO also note of the ex.IsNumber() function for copy and rename
-//
-// Think about recursive ! ! !
-// And logging
+// TODO also test!
 
 // Copy a directory.
-// Note that all file versions need to be checked in.
 func (fs *FileSystem) DirectoryCopy(src, dest string) error {
+
+	// Check wether dest is a number
+
 	if util.IsNumber(dest) {
 		return fmt.Errorf("directory %s is a number", dest)
 	}
 
-	dirList, err := os.ReadDir(src)
-	util.CheckErr(err)
+	srcFiles := fs.ListTree(src)
 
-	// if ex.DirExists(dest) == false {
-	// 	self.Mkdir(dest)
-	// }
+	// Check wether dest directory exists
 
-	for _, item := range dirList {
-		if _, err := strconv.Atoi(item.Name()); err != nil {
+	if util.DirExists(dest) {
+		return fmt.Errorf("directory %s exists", dest)
+	}
 
-			// Directory operations
+	// Check wether files are Checked-Out
 
-			destDir := path.Join(dest, item.Name())
-			err := fs.Mkdir(destDir)
-			util.CheckErr(err)
+	if err := fs.checkOutFiles(srcFiles); err != nil {
+		return err
+	}
 
-			err = fs.DirectoryCopy(item.Name(), destDir)
-			if err != nil {
-				return err
-			}
+	//
+	// Copy the directory
+	//
 
+	// Copy the file in the index
+
+	for _, elem := range srcFiles {
+		if elem.IsDir() {
+			fs.Mkdir(path.Join(fs.currentWorkingDir, elem.Name()))
 		} else {
-
-			// File operations
-
-			fileNum, err := fs.index.ContainerName(item.Name())
-			util.CheckErr(err)
-			base, ext := util.SplitFileExtension(fileNum.file)
-			newFileName := base + " (copy)" + ext
-			destFile := path.Join(dest, newFileName)
-			err = fs.FileCopy(fileNum.file, destFile)
-			if err != nil {
+			if err := fs.FileCopy(elem.Name(), dest); err != nil {
 				return err
 			}
 		}
 	}
 
+	// Logging
+
+	log.Printf("Directory %s copied to %s\n", src, dest)
+
 	return nil
 }
 
 // Rename a directory.
-// Note that all versions need to be checked in.
 func (fs *FileSystem) DirectoryRename(src, dest string) error {
+
+	// Check wether dest is a number
+
+	if util.IsNumber(dest) {
+		return fmt.Errorf("directory %s is a number", dest)
+	}
+
+	srcFiles := fs.ListTree(src)
+
+	// Check wether dest directory exists
+
+	if util.DirExists(dest) {
+		return fmt.Errorf("directory %s exists", dest)
+	}
+
+	// Check wether files are Checked-Out
+
+	if err := fs.checkOutFiles(srcFiles); err != nil {
+		return err
+	}
+
+	//
+	// Rename the directory
+	//
+
+	// Rename the file in the index
+
+	for _, elem := range srcFiles {
+		if !elem.IsDir() {
+			if err := fs.index.renameItem(src, dest); err != nil {
+				return err
+			}
+		}
+	}
+
+	// Directory rename
+
+	if err := os.Rename(src, dest); err != nil {
+		return err
+	}
+
+	// Logging
+
+	log.Printf("Directory %s renamed to %s\n", src, dest)
 
 	return nil
 }
 
 // Move a directory.
-// Note that all versions need to be checked in.
-func (fs *FileSystem) DirectoryMove(src, dest string) error {
-	// Think about recursive ! ! !
+func (fs FileSystem) DirectoryMove(src, dest string) error {
+
+	// Check wether dest is a number
+
+	if util.IsNumber(dest) {
+		return fmt.Errorf("directory %s is a number", dest)
+	}
+
+	srcFiles := fs.ListTree(src)
+
+	// Check wether dest directory exists
+
+	if util.DirExists(dest) {
+		return fmt.Errorf("directory %s exists", dest)
+	}
+
+	// Check wether files are Checked-Out
+
+	if err := fs.checkOutFiles(srcFiles); err != nil {
+		return err
+	}
+
+	//
+	// Move the directory
+	//
+
+	// Move the file(s) in the index
+
+	for _, elem := range srcFiles {
+		if !elem.IsDir() {
+			if err := fs.index.moveItem(src, dest); err != nil {
+				return err
+			}
+		}
+	}
+
+	// Directory move
+
+	if err := os.Rename(src, dest); err != nil {
+		return err
+	}
+
+	// Logging
+
+	log.Printf("Directory %s moved to %s\n", src, dest)
+
+	return nil
+}
+
+// TODO: Test, test and test more
+
+// Check wether a FileInfo list has checkouts.
+// Returns each checkout as an error or nil
+func (fs FileSystem) checkOutFiles(list []FileInfo) error {
+	var checkOutFiles error
+
+	for _, item := range list {
+		if item.IsLocked() {
+			str := fmt.Errorf("%s is checked out by %s", item.Name(), item.LockedOutBy())
+			checkOutFiles = errors.Join(checkOutFiles, str)
+		}
+	}
+
+	if checkOutFiles != nil {
+		return checkOutFiles
+	}
 	return nil
 }
 
@@ -659,45 +803,12 @@ func GetVaultUid() int {
 
 		if record[0] == "vault" {
 			log.Printf("Vault uid = %s\n", record[2])
-			return int(util.Atoi16(record[2]))
+			num, err := util.Atoi16(record[2])
+			util.CheckErr(err)
+			return int(num)
 		}
 	}
 
 	log.Fatalf("File %s doesn't have an entry \"vault\". See the installation instructions.", "/etc/group")
 	return -1
 }
-
-// TODO: Implement this inside all functions that need it.
-
-// // Verifies that both the copy and the registry are okay.
-// func (self FileSystem) Verify(indexNum int64, fileName, location string, version int16) error {
-// 	var index FileList
-// 	for _, file := range self.index.fileList {
-// 		if indexNum == file.index {
-// 			index = file
-// 			break
-// 		}
-// 	}
-
-// 	if index.index == 0 && index.file == "" {
-// 		return fmt.Errorf("Critical error: Index not found! The index number %d is not found!\n", indexNum)
-// 	}
-
-// 	if fileName != index.file {
-// 		return fmt.Errorf("Critical error: Line %d, stored file name %s doesn't match with the file name %s\n", index.index, index.file, fileName)
-// 	}
-
-// 	if location != index.dir {
-// 		return fmt.Errorf("Critical error: Line %d, stored directory name %s doesn't match with the location name %s\n", index.index, index.dir, location)
-// 	}
-
-// 	dirIdx, err := self.index.DirIndex(index.index)
-// util.CheckErr(err)
-// 	dir := path.Join(self.mainPdmDir, dirIdx)
-
-// 	fd := InitFileDirectory(&self, dir, index.index)
-
-// 	file := path.Join(self.mainPdmDir, index.dir, ex.I64toa(indexNum))
-
-// 	return nil
-// }

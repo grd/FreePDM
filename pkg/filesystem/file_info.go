@@ -4,6 +4,10 @@
 
 package filesystem
 
+import (
+	"path"
+)
+
 // This shows only the latest version of a file and is handy when being used with
 // the web server. If the file is a directory then only the filename is visible.
 
@@ -11,6 +15,7 @@ package filesystem
 type FileInfo struct {
 	Dir             bool             `json:"Dir"` // Is it a directory or a file?
 	FileName        string           `json:"FileName"`
+	FilePath        string           `json:"FilePath"`
 	FileDescription string           `json:"FileDescription"`
 	FileSecondDescr string           `json:"FileSecondDescr"`
 	FileVersion     string           `json:"FileVersion"`
@@ -25,13 +30,29 @@ type FileProperties struct {
 	Key, Value string
 }
 
+func (fi FileInfo) String() string {
+	return path.Join(fi.Path(), fi.Name())
+}
 func (fi FileInfo) IsDir() bool {
 	return fi.Dir
+}
+
+func (fi FileInfo) DirSort() int {
+	if fi.IsDir() {
+		return 0
+	} else {
+		return 1
+	}
 }
 
 // Returns the directory or file name
 func (fi FileInfo) Name() string {
 	return fi.FileName
+}
+
+// Returns the path of the file or dir
+func (fi FileInfo) Path() string {
+	return fi.FilePath
 }
 
 func (fi FileInfo) Description() string {

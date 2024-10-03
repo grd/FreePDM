@@ -91,10 +91,12 @@ func CopyFile(src, dest string) {
 }
 
 // Converts a string into an int16
-func Atoi16(str string) int16 {
+func Atoi16(str string) (int16, error) {
 	var num int16
-	fmt.Sscanf(str, "%d", &num)
-	return num
+	if _, err := fmt.Sscanf(str, "%d", &num); err != nil {
+		return 0, err
+	}
+	return num, nil
 }
 
 // Converts an int16 into a string
@@ -103,10 +105,12 @@ func I16toa(i int16) string {
 }
 
 // Converts a string into an int64
-func Atoi64(str string) int64 {
+func Atoi64(str string) (int64, error) {
 	var num int64
-	fmt.Sscanf(str, "%d", &num)
-	return num
+	if _, err := fmt.Sscanf(str, "%d", &num); err != nil {
+		return 0, err
+	}
+	return num, nil
 }
 
 // Converts an int64 into a string
