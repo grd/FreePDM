@@ -186,11 +186,14 @@ func (fs *FileSystem) ImportFile(fname string) int64 {
 	newDir := fd.NewDirectory()
 	newDir.ImportNewFile(fname)
 
-	log.Printf("Imported %s into %s with version %d\n", fname, fs.index.FileNameOfString(fd.dir), 0)
+	name, err := fs.index.ContainerName(fd.dir)
+	util.CheckErr(err)
+
+	log.Printf("imported %s into %s with version %d", fname, name.file, 0)
 
 	// Checking out the new file so no one else can see it.
 
-	err := fs.CheckOut(index, FileVersion{0, "0", util.Now()})
+	err = fs.CheckOut(index, FileVersion{0, "0", util.Now()})
 	util.CheckErr(err)
 
 	return index
@@ -216,7 +219,10 @@ func (fs *FileSystem) NewVersion(indexNr int64) (FileVersion, error) {
 
 	// Checking out the new file so no one else can see it.
 
-	log.Printf("Created version %d of file %s\n", ret.Number, fs.index.FileName(indexNr))
+	name, err := fs.index.IndexToFileName(indexNr)
+	util.CheckErr(err)
+
+	log.Printf("Created version %d of file %s\n", ret.Number, name)
 
 	err = fs.CheckOut(indexNr, ret)
 	util.CheckErr(err)
@@ -271,31 +277,33 @@ func (fs FileSystem) ListWD() []FileInfo {
 
 // list the sorted directories and files, as long as the directory is inside the vault.
 func (fs FileSystem) ListDir(dirName string) []FileInfo {
-	dir_list, err := os.ReadDir(dirName)
+	dirList, err := os.ReadDir(dirName)
 	util.CheckErr(err)
+	fmt.Println(dirName)
 
-	var list []FileInfo
+	list := make([]FileInfo, len(dirList)+1)
 
-	for _, sub_dir := range dir_list {
-		if num, err := util.Atoi64(sub_dir.Name()); err == nil {
-			fileName := fs.index.FileName(int64(num))
-			idx, err := fs.index.Index(fileName)
+	for _, subDir := range dirList {
+		if num, err := util.Atoi64(subDir.Name()); err == nil {
+			fileName, err := fs.index.IndexToFileName(int64(num))
+			util.CheckErr(err)
+			idx, err := fs.index.FileNameToIndex(fileName)
 			util.CheckErr(err)
 			lockedUser := fs.IsLockedItem(idx)
 			list = append(list, FileInfo{
 				Dir:             false,
 				FileName:        fileName,
-				FilePath:        fs.currentWorkingDir,
+				FilePath:        dirName, // fs.currentWorkingDir,
 				FileLocked:      lockedUser != "",
 				FileLockedOutBy: lockedUser,
 			})
 		} else {
-			list = append(list, FileInfo{Dir: true, FileName: sub_dir.Name()})
+			list = append(list, FileInfo{Dir: true, FileName: subDir.Name()})
 		}
 	}
 
 	sort.Slice(list, func(i, j int) bool {
-		return list[i].Name() < list[j].Name()
+		return strings.ToUpper(list[i].Name()) < strings.ToUpper(list[j].Name())
 	})
 
 	sort.Slice(list, func(i, j int) bool {
@@ -332,8 +340,8 @@ func (fs FileSystem) listTree(dirName string) []FileInfo {
 		list = append(list, elem)
 
 		if elem.IsDir() {
-			dir := path.Join(dirName, elem.Name())
-			list = append(list, fs.listTree(dir)...)
+			// recursive
+			list = append(list, fs.listTree(path.Join(dirName, elem.Name()))...)
 		}
 	}
 
@@ -391,7 +399,10 @@ func (fs *FileSystem) CheckOut(itemNr int64, version FileVersion) error {
 
 		fs.WriteLockedIndex()
 
-		log.Printf("Checked out version %d of file %s\n", version.Number, fs.index.FileName(itemNr))
+		name, err := fs.index.IndexToFileName(itemNr)
+		util.CheckErr(err)
+
+		log.Printf("Checked out version %d of file %s\n", version.Number, name)
 
 		return nil
 	}
@@ -435,7 +446,10 @@ func (fs *FileSystem) CheckIn(itemNr int64, version FileVersion, descr, longdesc
 
 		fs.WriteLockedIndex()
 
-		log.Printf("Checked in version %d of file %s", version.Number, fs.index.FileName(itemNr))
+		name, err := fs.index.IndexToFileName(itemNr)
+		util.CheckErr(err)
+
+		log.Printf("Checked in version %d of file %s", version.Number, name)
 
 		return nil
 	}
@@ -447,7 +461,7 @@ func (fs *FileSystem) FileRename(src, dest string) error {
 
 	// Check wether src is locked or not
 
-	fileName, err := fs.index.Index(src)
+	fileName, err := fs.index.FileNameToIndex(src)
 	util.CheckErr(err)
 
 	if name := fs.IsLockedItem(fileName); name != "" {
@@ -456,17 +470,17 @@ func (fs *FileSystem) FileRename(src, dest string) error {
 
 	// Check wether dest exist
 
-	_, dir, err := fs.index.Dir(dest)
+	item, err := fs.index.FileNameToFileList(dest)
 	if err == nil {
-		return fmt.Errorf("file %s already exist and is stored in %s", dest, dir)
+		return fmt.Errorf("file %s already exist and is stored in %s", dest, item.Index())
 	}
 
 	// Rename the file from src to dest
 
-	dir, err = fs.index.CurrentDir(src)
+	idx, err := fs.index.FileNameToFileList(src)
 	util.CheckErr(err)
 
-	fd := InitFileDirectory(fs, dir, fileName)
+	fd := InitFileDirectory(fs, idx.Index(), fileName)
 
 	err = fd.fileRename(src, dest)
 	if err != nil {
@@ -492,7 +506,7 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 
 	// Check wether src is locked or not
 
-	fileName, err := fs.index.Index(src)
+	fileName, err := fs.index.FileNameToIndex(src)
 	util.CheckErr(err)
 
 	if name := fs.IsLockedItem(fileName); name != "" {
@@ -512,7 +526,7 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 	} else {
 		dst = fs.currentWorkingDir
 	}
-	_, _, err = fs.index.Dir(dest)
+	_, err = fs.index.FileNameToFileList(dest)
 	if err == nil {
 		return fmt.Errorf("file %s already exist", dest)
 	}
@@ -520,19 +534,19 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 	file, err := fs.index.ContainerName(src)
 	util.CheckErr(err)
 
-	srcDir, err := fs.index.CurrentDir(src)
+	srcIndex, err := fs.index.FileNameToFileList(src)
 	util.CheckErr(err)
 
-	srcFd := InitFileDirectory(fs, srcDir, file.index)
+	srcFd := InitFileDirectory(fs, srcIndex.Index(), file.index)
 
 	_, destFile := path.Split(dest)
 
 	destIndex := fs.index.AddItem(destFile, dst)
 
-	destDir, err := fs.index.CurrentDir(destFile)
+	destDir, err := fs.index.FileNameToFileList(destFile)
 	util.CheckErr(err)
 
-	destFd := InitFileDirectory(fs, destDir, destIndex)
+	destFd := InitFileDirectory(fs, destDir.Index(), destIndex)
 
 	destFd.NewDirectory()
 
@@ -562,7 +576,7 @@ func (fs *FileSystem) FileMove(fileName, destDir string) error {
 
 	// Check wether src is locked or not
 
-	fileNr, err := fs.index.Index(fileName)
+	fileNr, err := fs.index.FileNameToIndex(fileName)
 	util.CheckErr(err)
 
 	if name := fs.IsLockedItem(fileNr); name != "" {
@@ -586,12 +600,12 @@ func (fs *FileSystem) FileMove(fileName, destDir string) error {
 
 	// Move file
 
-	fname, err := fs.index.CurrentDir(fileName)
+	fname, err := fs.index.FileNameToFileList(fileName)
 	util.CheckErr(err)
 
-	dest := path.Join(destDir, fname)
+	dest := path.Join(destDir, fname.Index())
 
-	if err := os.Rename(fname, dest); err != nil {
+	if err := os.Rename(fname.Index(), dest); err != nil {
 		return err
 	}
 

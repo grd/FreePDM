@@ -140,6 +140,26 @@ func (fix *FileIndex) Write() {
 	util.CheckErr(err)
 }
 
+func (fl FileList) Index() string {
+	return fmt.Sprintf("%d", fl.index)
+}
+
+func (fl FileList) Name() string {
+	return fl.file
+}
+
+func (fl FileList) PreviousName() string {
+	return fl.previousFile
+}
+
+func (fl FileList) Path() string {
+	return fl.dir
+}
+
+func (fl FileList) PreviousPath() string {
+	return fl.previousDir
+}
+
 // Reads the index number and stores it.
 func (fix *FileIndex) getIndexNumber() {
 
@@ -150,68 +170,63 @@ func (fix *FileIndex) getIndexNumber() {
 	util.CheckErr(err)
 }
 
+// Returns the complete directory name of a file number, or an error when not found.
+func (fix *FileIndex) DirIndex(index int64) (string, error) {
+	for _, item := range fix.fileList {
+		if index == item.index {
+			num := fmt.Sprintf("%d", item.index)
+			str := path.Join(item.dir, num)
+			return str, nil
+		}
+	}
+	return "", fmt.Errorf("index number %d not found", index)
+}
+
+// Returns the index number of the file name,
+// or an error when the file is not found.
+func (fx *FileIndex) FileNameToIndex(fileName string) (int64, error) {
+	for _, item := range fx.fileList {
+		if fileName == item.file {
+			return item.index, nil
+		}
+	}
+
+	return 0, fmt.Errorf("file %s is not found in the index", fileName)
+}
+
 // Input parameter is the file name.
 // Returns the path and name of a file, or an error when not found.
-func (fix *FileIndex) Dir(fileName string) (retPath, retFileName string, err error) {
-	for _, v := range fix.fileList {
-		if fileName == v.file {
-			str := fmt.Sprintf("%d", v.index)
-			return v.dir, str, nil
+func (fix *FileIndex) FileNameToFileList(fileName string) (FileList, error) {
+	for _, item := range fix.fileList {
+		if fileName == item.file {
+			return item, nil
 		}
 	}
-	return "", "", fmt.Errorf("[2] file %s not found", fileName)
-}
-
-// Returns the directory name of a file placed inside the current directory,
-// or an error when not found.
-func (fix *FileIndex) CurrentDir(fileName string) (string, error) {
-	for _, v := range fix.fileList {
-		if fileName == v.file {
-			str := fmt.Sprintf("%d", v.index)
-			return str, nil
-		}
-	}
-	return "", fmt.Errorf("[1] file %s not found", fileName)
-}
-
-// Returns the complete directory name of a file number, or an error when not found.
-func (fix *FileIndex) DirIndex(fileName int64) (string, error) {
-	for _, v := range fix.fileList {
-		if fileName == v.index {
-			s := fmt.Sprintf("%d", v.index)
-			str := path.Join(v.dir, s)
-			return str, nil
-		}
-	}
-	return "", fmt.Errorf("[3] file %d not found", fileName)
+	return FileList{}, fmt.Errorf("file %s not found", fileName)
 }
 
 // Returns the file name of a file number.
-func (fix *FileIndex) ContainerName(fileNumber string) (FileList, error) {
-	num, _ := util.Atoi64(fileNumber)
+func (fix *FileIndex) ContainerName(index string) (FileList, error) {
+	num, err := util.Atoi64(index)
+	if err != nil {
+		return FileList{}, err
+	}
 	for _, item := range fix.fileList {
 		if num == item.index {
 			return item, nil
 		}
 	}
-	return FileList{}, fmt.Errorf("file %s not !!! found in the index", fileNumber)
+	return FileList{}, fmt.Errorf("file %s not found in the index", index)
 }
 
 // Returns the file name of a file number.
-func (fix *FileIndex) FileName(fileName int64) string {
-	for _, v := range fix.fileList {
-		if fileName == v.index {
-			return v.file
+func (fix *FileIndex) IndexToFileName(index int64) (string, error) {
+	for _, item := range fix.fileList {
+		if index == item.index {
+			return item.file, nil
 		}
 	}
-	return fmt.Sprintf("[4] File %d not found.", fileName)
-}
-
-// Returns the file name from a string (instead of an int64) of a file number.
-func (fix *FileIndex) FileNameOfString(fileName string) string {
-	var i int64
-	fmt.Sscanf(fileName, "%d", &i)
-	return fix.FileName(i)
+	return "", fmt.Errorf("file %d not found", index)
 }
 
 // Increases the index number, that is stored in the file 'IndexNumber.txt'
@@ -258,19 +273,6 @@ func (fix *FileIndex) AddItem(filename, dirname string) int64 {
 	fix.Write()
 
 	return index
-}
-
-// Returns the index number of the file name,
-// or an error when the file is not found.
-func (fix *FileIndex) Index(fileName string) (int64, error) {
-
-	for _, v := range fix.fileList {
-		if fileName == v.file {
-			return v.index, nil
-		}
-	}
-
-	return 0, fmt.Errorf("file %s is not found in the index", fileName)
 }
 
 // Moves the filename to an other directory,

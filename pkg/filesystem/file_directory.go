@@ -68,9 +68,11 @@ func (fd *FileDirectory) NewDirectory() FileDirectory {
 
 	// Write version file
 	fd.writeInitialVersionFile()
+	name, err := fd.fs.index.IndexToFileName(fd.fileNumber)
+	util.CheckErr(err)
 
 	log.Printf("Created file structure %s\n",
-		path.Join(fd.dir, fd.fs.index.FileName(fd.fileNumber)))
+		path.Join(fd.dir, name))
 
 	return *fd
 }
@@ -125,13 +127,14 @@ func (fd FileDirectory) NewVersion() FileVersion {
 
 	// generate the new file name
 
-	filename := fd.fs.index.FileName(fd.fileNumber)
+	filename, err := fd.fs.index.IndexToFileName(fd.fileNumber)
+	util.CheckErr(err)
 
 	fname := path.Join(fd.dir, oldVersion.Pretty, filename)
 
 	// create a new version dir
 
-	err := os.Mkdir(versionDir, 0755)
+	err = os.Mkdir(versionDir, 0755)
 	util.CheckErr(err)
 	err = os.Chown(versionDir, fd.fs.userUid, fd.fs.vaultUid)
 	util.CheckErr(err)
@@ -245,7 +248,9 @@ func (fd *FileDirectory) LatestVersion() FileVersion {
 
 	versions, err := fd.AllFileVersions()
 	if err != nil {
-		log.Fatalf("Error reading file %s, version %v", fd.fs.index.FileName(fd.fileNumber), err)
+		name, err := fd.fs.index.IndexToFileName(fd.fileNumber)
+		util.CheckErr(err)
+		log.Fatalf("Error reading file %s, version %v", name, err)
 	}
 
 	if len(versions) == 1 {
@@ -341,7 +346,9 @@ func (fd *FileDirectory) OpenItemVersion(version FileVersion) {
 
 	base := path.Base(fd.dir)
 	num, _ := util.Atoi64(base)
-	file := path.Join(dirVersion, fd.fs.index.FileName(num))
+	name, err := fd.fs.index.IndexToFileName(num)
+	util.CheckErr(err)
+	file := path.Join(dirVersion, name)
 
 	err = os.Chmod(file, 0644)
 	util.CheckErr(err)
@@ -363,7 +370,9 @@ func (fd *FileDirectory) CloseItemVersion(version FileVersion) {
 
 	base := path.Base(fd.dir)
 	num, _ := util.Atoi64(base)
-	file := path.Join(dirVersion, fd.fs.index.FileName(num))
+	name, err := fd.fs.index.IndexToFileName(num)
+	util.CheckErr(err)
+	file := path.Join(dirVersion, name)
 
 	err = os.Chmod(file, 0444)
 	util.CheckErr(err)

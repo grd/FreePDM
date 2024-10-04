@@ -253,14 +253,14 @@ func TestTheRest(t *testing.T) {
 	// err = fs.Chdir("Projects (copy)")
 	// ex.CheckErr(err)
 
-	fmt.Printf("\nstart listtree\n")
-	list = fs.ListTree(fs.VaultDir())
-	for _, elem := range list {
-		fmt.Printf("%v\n", elem)
-	}
+	// fmt.Printf("\nstart listtree\n")
+	// list = fs.ListTree(fs.VaultDir())
+	// for _, elem := range list {
+	// 	fmt.Printf("%v\n", elem)
+	// }
 
-	fmt.Printf("\n\n")
-	log.Fatal("oeps")
+	// fmt.Printf("\n\n")
+	// log.Fatal("oeps")
 }
 
 func TestMain(m *testing.M) {
