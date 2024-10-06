@@ -7,7 +7,7 @@ require github.com/BurntSushi/toml v1.3.2
 require (
 	github.com/geoffgarside/ber v1.1.0 // indirect
 	github.com/hirochachacha/go-smb2 v1.1.0 // indirect
-	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
+	golang.org/x/crypto v0.28.0 // indirect
 )
 
 require (
@@ -17,7 +17,7 @@ require (
 	github.com/jacobsa/reqtrace v0.0.0-20150505043853-245c9e0234cb // indirect
 	github.com/jacobsa/syncutil v0.0.0-20180201203307-228ac8e5a6c3 // indirect
 	github.com/jacobsa/timeutil v0.0.0-20170205232429-577e5acbbcf6
-	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
 )
 
 require (
@@ -36,8 +36,8 @@ require (
 	github.com/rivo/tview v0.0.0-20230615085408-bb9595ee0f4d
 	github.com/rivo/uniseg v0.4.3 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
-	golang.org/x/sys v0.12.0 // indirect
-	golang.org/x/term v0.5.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/sys v0.26.0 // indirect
+	golang.org/x/term v0.25.0 // indirect
+	golang.org/x/text v0.19.0 // indirect
 	gorm.io/driver/mysql v1.5.1
 )
