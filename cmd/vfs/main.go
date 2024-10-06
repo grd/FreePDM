@@ -3,66 +3,169 @@
 // license that can be found in the LICENSE file.
 
 // Tests for the SMB share functionality.
+
+// Create a multi-level file system with directories and files (that are directories too)
+// with a structure that looks like this:
+//
+//	file1/        file2/        dir1/        file3/         // rw
+//	  1/ 2/         1/ 2/ 3/      file4/      1/            // ro
+//	    data          data          ^           data        // ro + rw
+//                                  |
+//                                  |
+//                                  |   In this case file4 also has the multi-level file structure
+//                                      and is stored inside dir1.
+//
+
 package main
 
 import (
+	"bytes"
 	"fmt"
-	iofs "io/fs"
+	"io"
 	"net"
 	"os"
 
 	"github.com/hirochachacha/go-smb2"
 )
 
-var (
-	smb_host   = os.Getenv("SMB_HOST")
-	smb_mount  = os.Getenv("SMB_MOUNT")
-	smb_user   = os.Getenv("SMB_USER")
-	smb_passwd = os.Getenv("SMB_PASSWD")
-)
-
 func main() {
-	if smb_host == "" {
-		fmt.Printf("Local environment(s) not set.\n")
-		os.Exit(1)
-	}
-
-	conn, err := net.Dial("tcp", smb_host+":445")
+	// Set up SMB connection to your share
+	conn, err := net.Dial("tcp", "smb://your-share-name:445")
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return
 	}
 	defer conn.Close()
 
-	d := &smb2.Dialer{
-		Initiator: &smb2.NTLMInitiator{
-			User:     smb_user,
-			Password: smb_passwd,
-		},
+	// Get a list of files and directories in the root directory
+	filesAndDirs, err := os.ReadDir(conn.Root())
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
 
-	s, err := d.Dial(conn)
-	if err != nil {
-		panic(err)
-	}
-	defer s.Logoff()
+	for _, fileOrDir := range filesAndDirs {
+		// Create a new path with 'a' added to the beginning
+		newPath := "a" + fileOrDir.Name()
 
-	fs, err := s.Mount(smb_mount)
-	if err != nil {
-		panic(err)
-	}
-	defer fs.Umount()
+		// Open the directory for reading (in binary mode)
+		d, err := conn.OpenFile(fileOrDir.Name(), os.O_RDONLY|os.O_CREATE, 0644)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		defer d.Close()
 
-	fmt.Println("here")
-	matches, err := iofs.Glob(fs.DirFS("."), "*")
-	if err != nil {
-		panic(err)
+		// Read the contents of the directory into memory
+		buf, err := io.ReadAll(d)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		// Write the modified buffer back to the original file/directory
+		d.Seek(0, 0)
+		_, err = d.Write(buf)
+
+		// Recursively traverse subdirectories and files
+		for _, entry := range bytes.Split(buf, []byte("\n")) {
+			if len(entry) > 1 && entry[0] == 'a' { // skip already processed entries
+				continue
+			}
+
+			entryPath := fileOrDir.Name() + "/" + string(entry)
+			newEntryPath := "a" + entryPath
+
+			// Open the subdirectory or file for reading (in binary mode)
+			subdir, err := conn.OpenFile(newEntryPath, os.O_RDONLY|os.O_CREATE, 0644)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			defer subdir.Close()
+
+			// Read the contents of the subdirectory or file into memory
+			buf2, err := io.ReadAll(subdir)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+
+			// Write the modified buffer back to the original subdirectory/file
+			subdir.Seek(0, 0)
+			_, err = subdir.Write(buf2)
+
+			// Recursively traverse deeper levels if necessary
+			if len(entry) > 1 && entry[0] == '/' { // found a directory
+				setup(conn, newPath+"/"+newEntryPath) // recursive call!
+			}
+		}
 	}
-	for _, match := range matches {
-		fmt.Println(match)
+}
+
+func setup(conn *smb2.Conn, path string) {
+	// Get a list of files and directories in the current directory
+	filesAndDirs, err := os.ReadDir(conn.OpenFile(path, os.O_RDONLY|os.O_CREATE, 0644))
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
 
-	err = RunTheProgram(fs)
-	if err != nil {
-		panic(err)
+	for _, fileOrDir := range filesAndDirs {
+		// Create a new path with 'a' added to the beginning
+		newPath := "a" + fileOrDir.Name()
+
+		// Open the directory for reading (in binary mode)
+		d, err := conn.OpenFile(path+"/"+fileOrDir.Name(), os.O_RDONLY|os.O_CREATE, 0644)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		defer d.Close()
+
+		// Read the contents of the directory into memory
+		buf, err := io.ReadAll(d)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		// Write the modified buffer back to the original file/directory
+		d.Seek(0, 0)
+		_, err = d.Write(buf)
+
+		// Recursively traverse subdirectories and files
+		for _, entry := range bytes.Split(buf, []byte("\n")) {
+			if len(entry) > 1 && entry[0] == 'a' { // skip already processed entries
+				continue
+			}
+
+			entryPath := path + "/" + fileOrDir.Name() + "/" + string(entry)
+			newEntryPath := "a" + entryPath
+
+			// Open the subdirectory or file for reading (in binary mode)
+			subdir, err := conn.OpenFile(newEntryPath, os.O_RDONLY|os.O_CREATE, 0644)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			defer subdir.Close()
+
+			// Read the contents of the subdirectory or file into memory
+			buf2, err := io.ReadAll(subdir)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+
+			// Write the modified buffer back to the original subdirectory/file
+			subdir.Seek(0, 0)
+			_, err = subdir.Write(buf2)
+
+			// Recursively traverse deeper levels if necessary
+			if len(entry) > 1 && entry[0] == '/' { // found a directory
+				setup(conn, newPath+"/"+newEntryPath) // recursive call!
+			}
+		}
 	}
 }
