@@ -144,6 +144,10 @@ func (fl FileList) Index() string {
 	return fmt.Sprintf("%d", fl.index)
 }
 
+func (fl FileList) PathAndIndex() string {
+	return path.Join(fl.Path(), fl.Index())
+}
+
 func (fl FileList) Name() string {
 	return fl.file
 }
