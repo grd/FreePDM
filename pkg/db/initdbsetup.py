@@ -1,13 +1,9 @@
 #!/usr/bin python3
 # -*- coding: utf-8 -*-
-"""
-    :copyright: Copyright 2022 by the FreePDM team
-    :license:   MIT License.
-"""
 
 from database import Base
 from database import Session
-from database import DataBaseMySQL, DataBasePostgreSQL, DataBaseSQLite
+from database import DataBasePostgreSQL
 from sqlalchemy.engine import Engine
 from sqlalchemy import MetaData
 from sqlalchemy import Table
@@ -56,30 +52,7 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
     """
     url_list = url_string.split(split)
 
-    if (db_type == "mysql") or (db_type == "MySQL"):
-        msql = DataBaseMySQL()
-
-        if len(url_list) == 1:
-            print("Complete url received.")
-            new_url = url_list[0]
-            dialect = None
-        elif len(url_list) == 6:
-            print("Url shall be created")
-            new_url = msql.make_url(url_list[0], url_list[1], url_list[2], url_list[3], url_list[4], int(url_list[5]))
-            dialect = None
-            # if dialect is part of the url...
-        elif len(url_list) == 7:
-            # list including dialect
-            url_dialect = url_list[0] + '+' + url_list[6]
-            new_url = msql.make_url(url_dialect, url_list[1], url_list[2], url_list[3], int(url_list[4]), url_list[5])
-            dialect = url_list[6]
-        else:
-            raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
-
-        msql_engine = msql.start_engine(new_url, dialect=dialect, encoding='utf-8', echo=False, future=True)
-        return(msql_engine)
-
-    elif (db_type is None) or (db_type == "postgresql") or (db_type == "PostgresSQL"):
+    if (db_type is None) or (db_type == "postgresql") or (db_type == "PostgresSQL"):
         psql = DataBasePostgreSQL()
 
         if len(url_list) == 1:
@@ -102,31 +75,7 @@ def start_your_engine(url_string: str, db_type: Optional[str], split: Optional[s
         psql_engine = psql.start_engine(new_url, dialect=dialect, encoding='utf-8', echo=False, future=True)
         return(psql_engine)  # Not sure if returning this is required
 
-    elif (db_type == "sqlite") or (db_type == "SQLite"):
-        sqli = DataBaseSQLite()
-
-        if len(url_list) == 1:
-            print("Complete url received.")
-            new_url = url_list[0]
-        elif len(url_list) == 6:
-            print("Url shall be created")
-            new_url = sqli.make_url(url_list[0], url_list[1], url_list[2], url_list[3], url_list[4], int(url_list[5]))
-            # dialect = None  # not needed? remove later
-            # if dialect is part of the url...
-        elif len(url_list) == 7:
-            # list including dialect
-            url_dialect = url_list[0] + '+' + url_list[6]
-            new_url = sqli.make_url(url_dialect, url_list[1], url_list[2], url_list[3], int(url_list[4]), url_list[5])
-            # dialect = url_list[6]  # not needed ? remove later
-        else:
-            raise ValueError("{} is not the right amount of values for the url. [1, 6 or 7]\n".format(len(url_list)))
-
-        sqli_engine = sqli.start_engine(new_url, encoding='utf-8', echo=False, future=True)
-        return(sqli_engine)
-
-    else:
-        raise ValueError("{} Is not a Valid input for 'db_type'.".format(db_type))
-
+ 
 
 def create_default_tables(engine: Engine):
     """

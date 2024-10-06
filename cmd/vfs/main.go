@@ -2,8 +2,6 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-// Tests for the SMB share functionality.
-
 // Create a multi-level file system with directories and files (that are directories too)
 // with a structure that looks like this:
 //

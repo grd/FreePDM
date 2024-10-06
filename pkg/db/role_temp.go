@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package database
+package db
 
 import (
 	"fmt"
@@ -15,12 +15,12 @@ type TempRole struct {
 }
 
 // Create new Role
-func (self TempRole) AddRole() {
+func (t TempRole) AddRole() {
 	fmt.Println("new role created")
 }
 
 // Delete existing role
-func (self TempRole) RemoveRole() {
+func (t TempRole) RemoveRole() {
 	fmt.Println("existing role deleted")
 }
 
@@ -29,21 +29,21 @@ func (self TempRole) RemoveRole() {
 type TempUser struct {
 }
 
-func (self TempUser) AddUserToSql(username string) {
+func (t TempUser) AddUserToSql(username string) {
 	fmt.Println("This is basically the interface")
 }
 
 // Delete existing user
-func (self TempUser) RemoveUserFromSql(user_id int, username string) {
+func (t TempUser) RemoveUserFromSql(user_id int, username string) {
 	fmt.Println("existing user deleted")
 }
 
-func (self TempUser) AddUserToLdap(username string) {
+func (t TempUser) AddUserToLdap(username string) {
 	fmt.Println("This is basically the interface")
 }
 
 // Delete existing user
-func (self TempUser) RemoveUserFromLdap(user_id int, username string) {
+func (t TempUser) RemoveUserFromLdap(user_id int, username string) {
 	fmt.Println("existing user deleted")
 }
 

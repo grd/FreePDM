@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package database
+package db
 
 import (
 	"gorm.io/gorm"
@@ -36,11 +36,14 @@ type Item struct {
 //
 //	Number of digits of the number length.
 //	If ndigits is -1 the length is just the length.
-func (self Item) CreateItemNumber() int {
-	call_proj := Project{} // BUG: This needs to be something that is running because of the number which would be zero.
-	item_nr := call_proj.CreateNumber()
+func (self Item) CreateItemNumber(n int) string {
+	// call_proj := Project{} // BUG: This needs to be something that is running because of the number which would be zero.
+
+	item_nr := createNumber()
 
 	return item_nr
+
+	return ""
 }
 
 // https://stackoverflow.com/questions/73887390/handle-multiple-users-login-database-with-sqlalchemy
