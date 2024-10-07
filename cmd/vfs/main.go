@@ -17,153 +17,79 @@
 package main
 
 import (
-	"bytes"
+	"context"
 	"fmt"
-	"io"
-	"net"
-	"os"
+	"log"
+	"path/filepath"
 
-	"github.com/hirochachacha/go-smb2"
+	"github.com/cloudsoda/go-smb2"
 )
 
-func main() {
-	// Set up SMB connection to your share
-	conn, err := net.Dial("tcp", "smb://your-share-name:445")
+// Recursively add 'a' to all files and directories
+func renameFilesRecursive(share *smb2.Share, path string) error {
+	// List all directory entries in the current path
+	dirEntries, err := share.ReadDir(path)
 	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer conn.Close()
-
-	// Get a list of files and directories in the root directory
-	filesAndDirs, err := os.ReadDir(conn.Root())
-	if err != nil {
-		fmt.Println(err)
-		return
+		return fmt.Errorf("failed to read directory: %v", err)
 	}
 
-	for _, fileOrDir := range filesAndDirs {
-		// Create a new path with 'a' added to the beginning
-		newPath := "a" + fileOrDir.Name()
+	for _, entry := range dirEntries {
+		oldName := filepath.Join(path, entry.Name())
+		newName := filepath.Join(path, "a"+entry.Name())
 
-		// Open the directory for reading (in binary mode)
-		d, err := conn.OpenFile(fileOrDir.Name(), os.O_RDONLY|os.O_CREATE, 0644)
+		// Rename the file or directory
+		err := share.Rename(oldName, newName)
 		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-		defer d.Close()
-
-		// Read the contents of the directory into memory
-		buf, err := io.ReadAll(d)
-		if err != nil {
-			fmt.Println(err)
+			log.Printf("Failed to rename %s to %s: %v", oldName, newName, err)
 			continue
 		}
 
-		// Write the modified buffer back to the original file/directory
-		d.Seek(0, 0)
-		_, err = d.Write(buf)
+		log.Printf("Renamed %s to %s", oldName, newName)
 
-		// Recursively traverse subdirectories and files
-		for _, entry := range bytes.Split(buf, []byte("\n")) {
-			if len(entry) > 1 && entry[0] == 'a' { // skip already processed entries
-				continue
-			}
-
-			entryPath := fileOrDir.Name() + "/" + string(entry)
-			newEntryPath := "a" + entryPath
-
-			// Open the subdirectory or file for reading (in binary mode)
-			subdir, err := conn.OpenFile(newEntryPath, os.O_RDONLY|os.O_CREATE, 0644)
+		// If it's a directory, recurse into it
+		if entry.IsDir() {
+			err = renameFilesRecursive(share, newName)
 			if err != nil {
-				fmt.Println(err)
+				log.Printf("Failed to recurse into directory %s: %v", newName, err)
 				continue
-			}
-			defer subdir.Close()
-
-			// Read the contents of the subdirectory or file into memory
-			buf2, err := io.ReadAll(subdir)
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-
-			// Write the modified buffer back to the original subdirectory/file
-			subdir.Seek(0, 0)
-			_, err = subdir.Write(buf2)
-
-			// Recursively traverse deeper levels if necessary
-			if len(entry) > 1 && entry[0] == '/' { // found a directory
-				setup(conn, newPath+"/"+newEntryPath) // recursive call!
 			}
 		}
 	}
+
+	return nil
 }
 
-func setup(conn *smb2.Conn, path string) {
-	// Get a list of files and directories in the current directory
-	filesAndDirs, err := os.ReadDir(conn.OpenFile(path, os.O_RDONLY|os.O_CREATE, 0644))
+func main() {
+	// Create an SMB2 session using NTLM authentication
+	dialer := &smb2.Dialer{
+		Initiator: &smb2.NTLMInitiator{
+			User:     "username", // Replace with your username
+			Password: "password", // Replace with your password
+			Domain:   "",         // Leave empty if not needed
+		},
+	}
+
+	// Dial the SMB2 session
+	smbSession, err := dialer.Dial(context.Background(), "smb-server-address:445") // Provide the address and port here
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Fatalf("Failed to start SMB session: %v", err)
+	}
+	defer smbSession.Logoff()
+
+	// Mount the SMB share
+	share, err := smbSession.Mount("share-name") // Replace with your share name
+	if err != nil {
+		log.Fatalf("Failed to mount SMB share: %v", err)
+	}
+	defer share.Umount()
+
+	rootDir := "/path/to/remote/directory" // Replace with your remote directory
+
+	// Start renaming files from the root directory
+	err = renameFilesRecursive(share, rootDir)
+	if err != nil {
+		log.Fatalf("Failed to rename files: %v", err)
 	}
 
-	for _, fileOrDir := range filesAndDirs {
-		// Create a new path with 'a' added to the beginning
-		newPath := "a" + fileOrDir.Name()
-
-		// Open the directory for reading (in binary mode)
-		d, err := conn.OpenFile(path+"/"+fileOrDir.Name(), os.O_RDONLY|os.O_CREATE, 0644)
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-		defer d.Close()
-
-		// Read the contents of the directory into memory
-		buf, err := io.ReadAll(d)
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		// Write the modified buffer back to the original file/directory
-		d.Seek(0, 0)
-		_, err = d.Write(buf)
-
-		// Recursively traverse subdirectories and files
-		for _, entry := range bytes.Split(buf, []byte("\n")) {
-			if len(entry) > 1 && entry[0] == 'a' { // skip already processed entries
-				continue
-			}
-
-			entryPath := path + "/" + fileOrDir.Name() + "/" + string(entry)
-			newEntryPath := "a" + entryPath
-
-			// Open the subdirectory or file for reading (in binary mode)
-			subdir, err := conn.OpenFile(newEntryPath, os.O_RDONLY|os.O_CREATE, 0644)
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-			defer subdir.Close()
-
-			// Read the contents of the subdirectory or file into memory
-			buf2, err := io.ReadAll(subdir)
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-
-			// Write the modified buffer back to the original subdirectory/file
-			subdir.Seek(0, 0)
-			_, err = subdir.Write(buf2)
-
-			// Recursively traverse deeper levels if necessary
-			if len(entry) > 1 && entry[0] == '/' { // found a directory
-				setup(conn, newPath+"/"+newEntryPath) // recursive call!
-			}
-		}
-	}
+	log.Println("Renaming completed successfully")
 }

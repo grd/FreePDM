@@ -33,6 +33,7 @@ require (
 )
 
 require (
+	github.com/cloudsoda/go-smb2 v0.0.0-20231124195312-f3ec8ae2c891
 	github.com/gdamore/encoding v1.0.0 // indirect
 	github.com/gdamore/tcell/v2 v2.6.0 // indirect
 	github.com/jacobsa/ogletest v0.0.0-20170503003838-80d50a735a11
