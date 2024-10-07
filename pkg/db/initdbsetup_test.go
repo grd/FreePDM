@@ -1,58 +1,23 @@
-package db_test
+package db
 
 import (
-	"database/sql"
 	"fmt"
-	"strings"
 	"testing"
 )
 
-func TestStartYourEngine(t *testing.T) {
-	tests := []struct {
-		urlString string
-		dbType    string
-	}{
-		{"localhost,port=5432,user=myuser,password=mypassword,database=mydb", ""},
-		{"host=localhost port=5432 user=myuser password=mypassword dbname=mydb sslmode=require", "postgresql"},
+func TestDatabaseFunctions(t *testing.T) {
+	username := "freepdm"
+	password := "PsqlPassword123!"
+	dbname := "freepdm"
+	url := fmt.Sprintf("host=localhost user=%s password=%s dbname=%s sslmode=disable", username, password, dbname)
+
+	db, err := StartYourEngine(url)
+	if err != nil {
+		t.Fatalf("Failed to start database engine: %v", err)
 	}
 
-	for _, test := range tests {
-		engine, err := StartYourEngine(test.urlString, test.dbType)
-		if err != nil {
-			t.Errorf("StartYourEngine() returned an error: %v", err)
-		} else if engine == nil {
-			t.Error("StartYourEngine() did not return a valid database connection")
-		}
-	}
-
-}
-
-func StartYourEngine(urlString string, dbType string) (*sql.DB, error) {
-	urlList := strings.Split(urlString, ",")
-	if len(urlList) == 6 || (dbType != "" && len(urlList) == 7) {
-		pgURL := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s",
-			urlList[0], urlList[4], urlList[1], urlList[2], urlList[3])
-		if dbType != "" && len(urlList) == 7 {
-			pgURL += fmt.Sprintf(" sslmode=require")
-		}
-		db, err := sql.Open("postgres", pgURL)
-		return &db, err
-	} else if len(urlList) == 1 {
-		fmt.Println("Complete url received.")
-		newUrl := urlList[0]
-		dialect := ""
-		if dbType != "" && len(urlList) > 6 {
-			urlDialect := fmt.Sprintf("%s+%s", newUrl, urlList[5])
-			pgURL = urlDialect
-			dialect = urlList[5]
-		} else if len(urlList) == 1 {
-			fmt.Println("Url shall be created")
-			pgURL = "host=localhost port=5432 user=myuser password=mypassword dbname=mydb sslmode=require"
-			dialect := ""
-		}
-		db, err := sql.Open("postgres", pgURL)
-		return &db, err
-	} else {
-		return nil, fmt.Errorf("%d is not the right amount of values for the url. [1, 6 or 7]\n", len(urlList))
+	err = db.CreateDefaultTables()
+	if err != nil {
+		t.Fatalf("Failed to create default tables: %v", err)
 	}
 }

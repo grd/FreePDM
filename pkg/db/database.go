@@ -1,122 +1,84 @@
-// Copyright 2023 The FreePDM team. All rights reserved.
-// Use of this source code is governed by a MIT-style
-// license that can be found in the LICENSE file.
-
 package db
 
 import (
-	"database/sql"
 	"fmt"
+	"log"
+	"strconv"
 
-	_ "github.com/go-sql-driver/postgres"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
-// Generic SQL Database class
-type Database struct {
-	db *sql.DB
-
-	drivername    string
-	username      string
-	password      string
-	host          string
-	port          int
-	database_name string
+// DatabaseGen is a generic SQL Database class
+type DatabaseGen struct {
+	DriverName   string
+	Username     string
+	Password     string
+	Host         string
+	Port         int
+	DatabaseName string
+	Engine       *gorm.DB
 }
 
-type QueryResult struct {
-	rowsAffected int64
-	err          error
+// NewDatabaseGen initializes a new DatabaseGen
+func NewDatabaseGen() *DatabaseGen {
+	log.Println("Generic DataBase")
+	return &DatabaseGen{}
 }
 
-func NewDatabase(username, password, host string) (*Database, error) {
-	dsn := fmt.Sprintf("%s:%s@%s", username, password, host)
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		return nil, err
+// MakeURL creates a new connection URL
+func (db *DatabaseGen) MakeURL() string {
+	return "host=" + db.Host +
+		" port=" + strconv.Itoa(db.Port) +
+		" user=" + db.Username +
+		" password=" + db.Password +
+		" dbname=" + db.DatabaseName +
+		" sslmode=disable"
+}
+
+// CreateDB not implemented yet
+func (db *DatabaseGen) CreateDB() error {
+	return fmt.Errorf("Function CreateDB is not implemented yet")
+}
+
+// CreateTable not implemented yet
+func (db *DatabaseGen) CreateTable() error {
+	return fmt.Errorf("Function CreateTable is not implemented yet")
+}
+
+// DeleteTable not implemented yet
+func (db *DatabaseGen) DeleteTable() error {
+	return fmt.Errorf("Function DeleteTable is not implemented yet")
+}
+
+// GetTables not implemented yet
+func (db *DatabaseGen) GetTables() error {
+	return fmt.Errorf("Function GetTables is not implemented yet")
+}
+
+// DataBasePostgreSQL struct feeds forward of generic SQL functions to PostgreSQL
+type DataBasePostgreSQL struct {
+	*DatabaseGen
+}
+
+// NewDataBasePostgreSQL initializes a new PostgreSQL database
+func NewDataBasePostgreSQL() *DataBasePostgreSQL {
+	log.Println("PostgreSQL")
+	return &DataBasePostgreSQL{DatabaseGen: NewDatabaseGen()}
+}
+
+// StartEngine starts the PostgreSQL engine
+func (db *DataBasePostgreSQL) StartEngine(echo bool) error {
+	dsn := db.MakeURL()
+	var err error
+	config := &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info), // Adjust log level as needed
 	}
-	return &Database{db: db}, nil
-}
 
-func (d *Database) Close() error {
-	return d.db.Close()
-}
-
-func (d *Database) Exec(query string, args ...interface{}) (*QueryResult, error) {
-	stmt, err := d.db.Prepare(query)
+	db.Engine, err = gorm.Open(postgres.Open(dsn), config)
 	if err != nil {
-		return &QueryResult{}, err
+		return err
 	}
-	defer stmt.Close()
-
-	result, err := stmt.Exec(args...)
-	if err != nil {
-		return &QueryResult{}, err
-	}
-
-	rowsAffected, _ := result.RowsAffected()
-	return &QueryResult{rowsAffected: rowsAffected}, nil
+	return nil
 }
-
-func (d *Database) Query(query string, args ...interface{}) (*sql.Rows, error) {
-	stmt, err := d.db.Prepare(query)
-	if err != nil {
-		return nil, err
-	}
-	defer stmt.Close()
-
-	rows, err := stmt.Query(args...)
-	if err != nil {
-		return nil, err
-	}
-
-	return rows, nil
-}
-
-/*
-Create new url
-
-Parameters
-----------
-
-drivername [str] :
-
-	drivername. For example 'postgresql+psycopg2'
-
-username [str] :
-
-	username
-
-password [str] :
-
-	password.
-
-host [str] :
-
-	host address. For example localhost
-
-port [int] :
-
-	SQL port.
-
-database_name [str] :
-
-	name of the database
-
-Returns
--------
-
-url [URL object]
-*/
-
-// func (d *Database) MakeUrl(drivername, username, password, host string, port int, database_name string) (engine.URL, error) {
-// 	d.drivername = drivername
-// 	d.username = username
-// 	d.password = password
-// 	d.host = host
-// 	d.port = port
-// 	d.database_name = database_name
-
-// 	new_url = engine.URL.create(self.drivername, self.username, self.password, self.host, self.port, self.database_name)
-// 	return (new_url)
-
-// }
