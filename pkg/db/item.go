@@ -16,9 +16,11 @@ import (
 // but it looks like this is not possible using engines.
 // Now there has to be some research in a dedicated login system!
 
-// Item related
+// Item represents the items table.
 type Item struct {
 	gorm.Model
+	ID              uint   `gorm:"primaryKey"`
+	ItemName        string `gorm:"size:100"`
 	number          int
 	Project         string
 	Path            string
@@ -36,7 +38,7 @@ type Item struct {
 //
 //	Number of digits of the number length.
 //	If ndigits is -1 the length is just the length.
-func (self Item) CreateItemNumber(n int) string {
+func (i Item) CreateItemNumber(n int) string {
 	// call_proj := Project{} // BUG: This needs to be something that is running because of the number which would be zero.
 
 	item_nr := createNumber()
@@ -48,17 +50,17 @@ func (self Item) CreateItemNumber(n int) string {
 
 // https://stackoverflow.com/questions/73887390/handle-multiple-users-login-database-with-sqlalchemy
 
-func (self *Item) CreateItem(project, path string, number *int, name, description, full_description string) {
-	self.Project = project // User works on current project
-	self.Path = path       // TODO: create path automatically
-	self.Name = name
-	self.Description = description
-	self.FullDescription = full_description
+func (i *Item) CreateItem(project, path string, number *int, name, description, full_description string) {
+	i.Project = project // User works on current project
+	i.Path = path       // TODO: create path automatically
+	i.Name = name
+	i.Description = description
+	i.FullDescription = full_description
 	// TODO: How to handle other related properties
 
 	if number == nil {
 		// TODO: get latest number and ndigits from conf / db
-		self.number = self.CreateItemNumber()
+		i.number = i.CreateItemNumber()
 	}
 
 	// proj := new(Project)
@@ -80,7 +82,7 @@ func (self *Item) CreateItem(project, path string, number *int, name, descriptio
 }
 
 // Remove existing item
-func (self *Item) RemoveItem() {
+func (i *Item) RemoveItem() {
 	// check if item is new (local == no state)
 	// -> if True user can remove
 	// -> if False Check if user == admin
@@ -89,12 +91,12 @@ func (self *Item) RemoveItem() {
 }
 
 // Update existing item
-func (self *Item) UpdateItem() {
+func (i *Item) UpdateItem() {
 	// raise NotImplementedError("Function update_item is not implemented yet")
 }
 
 // Update existing item
-func (self *Item) AddItemImage() {
+func (i *Item) AddItemImage() {
 	// TODO: Auto generate image from models
 
 	// raise NotImplementedError("Function add_item_image is not implemented yet")
@@ -107,7 +109,7 @@ type Model struct {
 }
 
 // Create new model
-func (self Model) CreateModel() {
+func (m Model) CreateModel() {
 	// create copy with iter: 0
 	// Create model for:
 	// -> Existing item
@@ -118,7 +120,7 @@ func (self Model) CreateModel() {
 }
 
 // Remove existing model
-func (self Model) RemoveModel() {
+func (m Model) RemoveModel() {
 	// check if model is new (local == no state)
 	// -> if True user can remove
 	// -> if False Check if user == admin
@@ -129,14 +131,14 @@ func (self Model) RemoveModel() {
 }
 
 // Update existing model
-func (self Model) UpdateModel() {
+func (m Model) UpdateModel() {
 	// create copy with iter: N
 
 	// raise NotImplementedError("Function update_model is not implemented yet")
 }
 
 // Get model that is not latest version
-func (self Model) GetVersion( /*save_iter*/ ) {
+func (m Model) GetVersion( /*save_iter*/ ) {
 	// in UI set only release versions or all
 	// Optional two versions to compare
 	// is FC able to reload when model is changed?
@@ -155,7 +157,7 @@ type OwnerStates struct { // Access States
 }
 
 // Check in Items, Models, Documents
-func (self OwnerStates) CheckIn( /*objects*/ ) {
+func (o OwnerStates) CheckIn( /*objects*/ ) {
 	// check if new item?
 	// create copy (for Model, Document) and add copy to DataBase
 
@@ -163,7 +165,7 @@ func (self OwnerStates) CheckIn( /*objects*/ ) {
 }
 
 // Check in Items, Models, Documents
-func (self OwnerStates) CheckOut( /*objects*/ ) {
+func (o OwnerStates) CheckOut( /*objects*/ ) {
 	// check latest version (only for Models and Documents)
 	// check if checked-out by other user
 
@@ -171,7 +173,7 @@ func (self OwnerStates) CheckOut( /*objects*/ ) {
 }
 
 // Check in Items, Models, Documents
-func (self OwnerStates) CheckInCheckOut( /*objects*/ ) {
+func (o OwnerStates) CheckInCheckOut( /*objects*/ ) {
 	// check if new item?
 	// create copy (for Model, Document) and add copy to DataBase
 	//
@@ -185,35 +187,35 @@ type ReleaseStates struct {
 }
 
 // new Item, Model, Document
-func (self ReleaseStates) ChangeReleaseState() {
+func (r ReleaseStates) ChangeReleaseState() {
 	// All new items, models, documents have state new - until they are checked in.
 
 	// raise NotImplementedError("Function new is not implemented yet")
 }
 
 // New Item, Model, Document
-func (self ReleaseStates) New( /*objects*/ ) {
+func (r ReleaseStates) New( /*objects*/ ) {
 	// All new items, models, documents have state new - until they are checked in.
 
 	// raise NotImplementedError("Function new is not implemented yet")
 }
 
 // Prototype Item, Model, Document
-func (self ReleaseStates) Prototype( /*objects*/ ) {
+func (r ReleaseStates) Prototype( /*objects*/ ) {
 	// All items, models, documents get state prototype on first checkin - until they are released.
 
 	// raise NotImplementedError("Function prototype is not implemented yet")
 }
 
 // Check in Items, Models, Documents
-func (self ReleaseStates) Release( /*objects*/ ) {
+func (r ReleaseStates) Release( /*objects*/ ) {
 	// All items, models, documents get state release after  - until they are released.
 
 	// raise NotImplementedError("Function check_in_check_out is not implemented yet")
 }
 
 // Check in Items, Models, Documents
-func (self ReleaseStates) NotForNew( /*objects*/ ) {
+func (r ReleaseStates) NotForNew( /*objects*/ ) {
 	// check latest version (only for Models and Documents)
 	// check if checked-out by other user
 
@@ -221,7 +223,7 @@ func (self ReleaseStates) NotForNew( /*objects*/ ) {
 }
 
 // Check in Items, Models, Documents
-func (self ReleaseStates) Depreciated( /*objects*/ ) {
+func (r ReleaseStates) Depreciated( /*objects*/ ) {
 	// check latest version (only for Models and Documents)
 	// check if checked-out by other user
 

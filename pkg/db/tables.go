@@ -1,9 +1,14 @@
+// Copyright 2023 The FreePDM team. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package db
 
 import (
 	"time"
 
 	"gorm.io/gorm"
+	"gorm.io/driver/postgres"
 )
 
 // Base struct to embed in other models
@@ -187,8 +192,11 @@ type PdmVendor struct {
 
 // To initialize the database
 func InitDB() {
+
 	var err error
-	db, err := gorm.Open(gorm.Open("postgres", "user=your_user password=your_password dbname=your_dbname sslmode=disable"))
+
+	dsn := "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Europe/Amsterdam"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect to the database")
 	}

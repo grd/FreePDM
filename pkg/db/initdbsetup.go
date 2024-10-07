@@ -1,3 +1,7 @@
+// Copyright 2023 The FreePDM team. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package db
 
 import (
@@ -20,18 +24,6 @@ type UserAccount struct {
 type UserRole struct {
 	ID       uint   `gorm:"primaryKey"`
 	RoleName string `gorm:"size:100"`
-}
-
-// Project represents the projects table.
-type Project struct {
-	ID          uint   `gorm:"primaryKey"`
-	ProjectName string `gorm:"size:100"`
-}
-
-// Item represents the items table.
-type Item struct {
-	ID       uint   `gorm:"primaryKey"`
-	ItemName string `gorm:"size:100"`
 }
 
 // CreateDefaultTables creates default tables in the database.
