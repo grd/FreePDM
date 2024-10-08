@@ -15,12 +15,12 @@ type Role struct {
 }
 
 // Create new role
-func (self Role) AddRole() {
+func (r Role) AddRole() {
 	fmt.Println("new role created")
 }
 
 // Delete existing role
-func (self Role) RemoveRole() {
+func (r Role) RemoveRole() {
 	fmt.Println("existing role deleted")
 }
 
@@ -29,20 +29,20 @@ func (self Role) RemoveRole() {
 type User struct {
 }
 
-func (self User) AddUserToSql(username string) {
+func (r User) AddUserToSql(username string) {
 	fmt.Println("This is basically the interface")
 }
 
 // Delete existing user
-func (self User) RemoveUserFromSql(user_id int, username string) {
+func (r User) RemoveUserFromSql(user_id int, username string) {
 	fmt.Println("existing user deleted")
 }
 
-func (self User) AddUserToLdap(username string) {
+func (r User) AddUserToLdap(username string) {
 	fmt.Println("This is basically the interface")
 }
 
 // Delete existing user
-func (self User) RemoveUserFromLdap(user_id int, username string) {
+func (r User) RemoveUserFromLdap(user_id int, username string) {
 	fmt.Println("existing user deleted")
 }
