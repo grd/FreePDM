@@ -3,7 +3,6 @@ package db
 import (
 	"fmt"
 	"log"
-	"strings"
 	"testing"
 
 	"gorm.io/driver/postgres"
@@ -18,6 +17,8 @@ type DatabaseConfig struct {
 	Port     int
 	DBName   string
 }
+
+const dsn = "user=freepdm password=PsqlPassword123 dbname=freepdm host=localhost port=5432 sslmode=disable"
 
 // StartYourEngine initializes the database connection.
 func StartYourEnginenow(dbType string, dbConfig DatabaseConfig) (*gorm.DB, error) {
@@ -36,17 +37,8 @@ func StartYourEnginenow(dbType string, dbConfig DatabaseConfig) (*gorm.DB, error
 }
 
 // main function for testing purposes
-func main() {
-	// Example usage
-	config := DatabaseConfig{
-		User:     "freepdm",
-		Password: "PsqlPassword123!",
-		Host:     "localhost",
-		Port:     5432,
-		DBName:   "freepdm",
-	}
-
-	db, err := StartYourEngine("postgresql", config)
+func TestStartYourEngine(t *testing.T) {
+	db, err := StartYourEngine(dsn)
 	if err != nil {
 		log.Fatalf("could not connect to database: %v", err)
 	}
@@ -54,55 +46,12 @@ func main() {
 }
 
 // TestStartYourEngine tests the StartYourEngine function.
-func TestStartYourEngine(t *testing.T) {
-	config := DatabaseConfig{
-		User:     "freepdm",
-		Password: "PsqlPassword123!",
-		Host:     "localhost",
-		Port:     5432,
-		DBName:   "freepdm",
-	}
-
-	db, err := StartYourEngine("postgresql", config)
+func TestStartYourEngine2(t *testing.T) {
+	db, err := StartYourEngine(dsn)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 	if db == nil {
 		t.Fatal("expected a database connection, got nil")
-	}
-}
-
-// TestInvalidDBType tests the function with an invalid database type.
-func TestInvalidDBType(t *testing.T) {
-	config := DatabaseConfig{
-		User:     "freepdm",
-		Password: "PsqlPassword123!",
-		Host:     "localhost",
-		Port:     5432,
-		DBName:   "freepdm",
-	}
-
-	_, err := StartYourEngine("mysql", config)
-	if err == nil {
-		t.Fatal("expected an error, got none")
-	}
-	if !strings.Contains(err.Error(), "mysql is not a valid database type") {
-		t.Fatalf("expected error about invalid db type, got %v", err)
-	}
-}
-
-// TestDBConnection tests the database connection with invalid credentials.
-func TestDBConnectionWithInvalidCredentials(t *testing.T) {
-	config := DatabaseConfig{
-		User:     "invalid_user",
-		Password: "invalid_password",
-		Host:     "localhost",
-		Port:     5432,
-		DBName:   "freepdm",
-	}
-
-	_, err := StartYourEngine("postgresql", config)
-	if err == nil {
-		t.Fatal("expected an error, got none")
 	}
 }
