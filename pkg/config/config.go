@@ -17,83 +17,86 @@ import (
 
 var (
 	appName    = "FreePDM"
-	homeDir    = os.Getenv("HOME") // TODO: dirty hack
+	homeDir, _ = os.UserHomeDir()
 	configDir  = path.Join(homeDir, ".config", appName)
 	configName = path.Join(configDir, appName+".toml")
 	Conf       = Config{}
 )
 
 type Config struct {
-	// show_fc_files_only      = 1
-	// hide_versioned_fc_files = 2
 	StartupDirectory string
 	LogFile          string
 	LogLevel         string
 	Users            map[string]int
 }
 
-// type UserUid struct {
-// 	UserName string
-// 	Uid      int
-// }
-
-// Returns the uid from a name or when not found -1
+// GetUid returns the uid for a given user name or -1 if not found.
 func GetUid(name string) int {
-	for k, v := range Conf.Users {
-		if name == k {
-			return v
-		}
+	if uid, ok := Conf.Users[name]; ok {
+		return uid
 	}
 	return -1
 }
 
-func ReadConfig() {
+// ReadConfig reads the configuration file into Conf, handling errors appropriately.
+func ReadConfig() error {
 	if !util.FileExists(configName) {
-		log.Printf("Config file = %s\n", configName)
-		os.Exit(1)
+		return fmt.Errorf("config file %s does not exist", configName)
 	}
+
 	_, err := toml.DecodeFile(configName, &Conf)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		return fmt.Errorf("error decoding config file %s: %v", configName, err)
 	}
+
 	if len(Conf.Users) == 0 {
-		log.Printf("The configuration file = %s\n", configName)
-		log.Printf("The configuration = %v\n", Conf)
+		log.Printf("Warning: No users found in configuration file %s", configName)
 	}
+
+	return nil
 }
 
-func WriteConfig() {
+// WriteConfig writes the current Conf structure to the config file.
+func WriteConfig() error {
 	buf := new(bytes.Buffer)
 	err := toml.NewEncoder(buf).Encode(&Conf)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("error encoding config to TOML: %v", err)
 	}
-	err = os.WriteFile(configName, buf.Bytes(), 0644)
-	util.CheckErr(err)
 
+	if err := os.WriteFile(configName, buf.Bytes(), 0644); err != nil {
+		return fmt.Errorf("error writing config file %s: %v", configName, err)
+	}
+
+	return nil
 }
 
+// String returns the configuration as a formatted string.
 func (cfg *Config) String() string {
 	buf := new(bytes.Buffer)
-	err := toml.NewEncoder(buf).Encode(cfg)
-	if err != nil {
-		log.Fatal(err)
+	if err := toml.NewEncoder(buf).Encode(cfg); err != nil {
+		log.Fatal(err) // Here it’s fine to be fatal as it's just the String method.
 	}
 	return buf.String()
 }
 
 func init() {
-	// create the new directory if it doesn't exist
+	// Ensure the config directory exists
 	if !util.DirExists(configDir) {
-		os.Mkdir(configDir, 0700)
+		if err := os.Mkdir(configDir, 0700); err != nil {
+			log.Fatalf("error creating config directory %s: %v", configDir, err)
+		}
 	}
 
-	// create a new config file when it doesn't exist
+	// Create a new config file if it doesn't exist
 	if !util.FileExists(configName) {
-		WriteConfig()
+		if err := WriteConfig(); err != nil {
+			log.Fatalf("error creating initial config file %s: %v", configName, err)
+		}
 	}
 
-	// Reading the configuration file
-	ReadConfig()
+	// Read the configuration file
+	if err := ReadConfig(); err != nil {
+		log.Fatalf("error reading config file: %v", err)
+	}
 }
