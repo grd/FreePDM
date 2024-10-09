@@ -43,22 +43,22 @@ func (db *DatabaseGen) MakeURL() string {
 
 // CreateDB not implemented yet
 func (db *DatabaseGen) CreateDB() error {
-	return fmt.Errorf("Function CreateDB is not implemented yet")
+	return fmt.Errorf("func CreateDB is not implemented yet")
 }
 
 // CreateTable not implemented yet
 func (db *DatabaseGen) CreateTable() error {
-	return fmt.Errorf("Function CreateTable is not implemented yet")
+	return fmt.Errorf("func CreateTable is not implemented yet")
 }
 
 // DeleteTable not implemented yet
 func (db *DatabaseGen) DeleteTable() error {
-	return fmt.Errorf("Function DeleteTable is not implemented yet")
+	return fmt.Errorf("func DeleteTable is not implemented yet")
 }
 
 // GetTables not implemented yet
 func (db *DatabaseGen) GetTables() error {
-	return fmt.Errorf("Function GetTables is not implemented yet")
+	return fmt.Errorf("func GetTables is not implemented yet")
 }
 
 // DataBasePostgreSQL struct feeds forward of generic SQL functions to PostgreSQL

@@ -19,9 +19,9 @@ import (
 // Item represents the items table.
 type Item struct {
 	gorm.Model
-	ID              uint   `gorm:"primaryKey"`
-	ItemName        string `gorm:"size:100"`
-	number          int
+	ID       uint   `gorm:"primaryKey"`
+	ItemName string `gorm:"size:100"`
+	// number          int
 	Project         string
 	Path            string
 	Name            string
@@ -38,48 +38,49 @@ type Item struct {
 //
 //	Number of digits of the number length.
 //	If ndigits is -1 the length is just the length.
-func (i Item) CreateItemNumber(n int) string {
-	// call_proj := Project{} // BUG: This needs to be something that is running because of the number which would be zero.
 
-	item_nr := createNumber()
+// func (i Item) CreateItemNumber(n int) string {
+// 	// call_proj := Project{} // BUG: This needs to be something that is running because of the number which would be zero.
 
-	return item_nr
+// 	item_nr := createNumber()
 
-	return ""
-}
+// 	return item_nr
+
+// 	return ""
+// }
 
 // https://stackoverflow.com/questions/73887390/handle-multiple-users-login-database-with-sqlalchemy
 
-func (i *Item) CreateItem(project, path string, number *int, name, description, full_description string) {
-	i.Project = project // User works on current project
-	i.Path = path       // TODO: create path automatically
-	i.Name = name
-	i.Description = description
-	i.FullDescription = full_description
-	// TODO: How to handle other related properties
+// func (i *Item) CreateItem(project, path string, number *int, name, description, full_description string) {
+// 	i.Project = project // User works on current project
+// 	i.Path = path       // TODO: create path automatically
+// 	i.Name = name
+// 	i.Description = description
+// 	i.FullDescription = full_description
+// 	// TODO: How to handle other related properties
 
-	if number == nil {
-		// TODO: get latest number and ndigits from conf / db
-		i.number = i.CreateItemNumber()
-	}
+// 	if number == nil {
+// 		// TODO: get latest number and ndigits from conf / db
+// 		i.number = i.CreateItemNumber()
+// 	}
 
-	// proj := new(Project)
-	// self.project_id = proj.get_id(self.project)
-	// // self.project_id = Select()  // get project id based on project number / project name
-	// new_item = PdmItem(item_number=self.number, item_name=self.name, item_description=self.description, item_full_description=self.full_description, path=self.path, project_id=self.project_id)
+// proj := new(Project)
+// self.project_id = proj.get_id(self.project)
+// // self.project_id = Select()  // get project id based on project number / project name
+// new_item = PdmItem(item_number=self.number, item_name=self.name, item_description=self.description, item_full_description=self.full_description, path=self.path, project_id=self.project_id)
 
-	// // TODO: Import Engine - From where?
-	// Session.configure(bind=engine, future=True)
+// // TODO: Import Engine - From where?
+// Session.configure(bind=engine, future=True)
 
-	// // https://docs.sqlalchemy.org/en/14/orm/session_basics.html#id1
-	// with Session() as session:
-	//     try:
-	//         session.add(new_item)
-	//     except:
-	//         Session.rollback()
-	//     finally:
-	//         Session.close()
-}
+// // https://docs.sqlalchemy.org/en/14/orm/session_basics.html#id1
+// with Session() as session:
+//     try:
+//         session.add(new_item)
+//     except:
+//         Session.rollback()
+//     finally:
+//         Session.close()
+// }
 
 // Remove existing item
 func (i *Item) RemoveItem() {

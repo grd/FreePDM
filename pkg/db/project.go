@@ -27,7 +27,7 @@ type Project struct {
 }
 
 // Get id with Project number
-func (self Project) GetId(number string) int {
+func (p Project) GetId(number string) int {
 	// raise NotImplementedError("Function get_id is not implemented yet")
 
 	return -1 // BUG: Watch out !!!

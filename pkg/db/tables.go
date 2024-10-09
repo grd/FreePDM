@@ -7,8 +7,8 @@ package db
 import (
 	"time"
 
-	"gorm.io/gorm"
 	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 // Base struct to embed in other models
@@ -78,13 +78,13 @@ type PdmItem struct {
 	ItemPath              string `gorm:"not null"`
 	ItemPreview           []byte // For LargeBinary
 
-	UserID     uint          `gorm:"foreignKey:UserID"`
-	User       PdmUser       `gorm:"foreignKey:UserID"`
-	ProjectID  uint          `gorm:"foreignKey:ProjectID"`
-	Models     []PdmModel    `gorm:"foreignKey:ItemID"`
-	Documents  []PdmDocument `gorm:"foreignKey:ItemID"`
-	Material   PdmMaterial   `gorm:"foreignKey:ItemID"`
-	Purchasing PdmPurchase   `gorm:"foreignKey:ItemID"`
+	UserID    uint          `gorm:"foreignKey:UserID"`
+	User      PdmUser       `gorm:"foreignKey:UserID"`
+	ProjectID uint          `gorm:"foreignKey:ProjectID"`
+	Models    []PdmModel    `gorm:"foreignKey:ItemID"`
+	Documents []PdmDocument `gorm:"foreignKey:ItemID"`
+	// Material   PdmMaterial   `gorm:"foreignKey:ItemID"`
+	// Purchasing PdmPurchase   `gorm:"foreignKey:ItemID"`
 }
 
 // PdmProjectItemLink is the association table for projects and items
@@ -141,10 +141,10 @@ type PdmMaterial struct {
 	MaterialSurfaceArea     float64
 	MaterialSurfaceAreaUnit string // Enum can be defined later
 
-	ModelID uint     `gorm:"foreignKey:ModelID"`
-	Model   PdmModel `gorm:"foreignKey:ModelID"`
-	ItemID  uint     `gorm:"foreignKey:ItemID"`
-	Item    PdmItem  `gorm:"foreignKey:ItemID"`
+	// ModelID uint     `gorm:"foreignKey:ModelID"`
+	// Model   PdmModel `gorm:"foreignKey:ModelID"`
+	ItemID uint    `gorm:"foreignKey:ItemID"`
+	Item   PdmItem `gorm:"foreignKey:ItemID"`
 }
 
 // PdmHistory represents the history table
