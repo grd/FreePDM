@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"encoding/csv"
 	"fmt"
+	"log"
 	"os"
 	"path"
 
@@ -39,7 +40,7 @@ type FileIndex struct {
 	indexNumber    int64
 }
 
-func InitFileIndex(fs *FileSystem) (ret FileIndex) {
+func NewFileIndex(fs *FileSystem) (ret FileIndex, err error) {
 
 	ret.fs = fs
 
@@ -55,89 +56,201 @@ func InitFileIndex(fs *FileSystem) (ret FileIndex) {
 
 	ret.fileList = make([]FileList, 0, ret.indexNumber)
 
-	ret.Read() // read the indexes
+	if err := ret.Read(); err != nil { // read the indexes
+		return ret, err
+	}
 
-	return ret
+	return ret, nil
 }
 
 // Reads the values from "FileList.txt"
-func (fix *FileIndex) Read() {
-
+func (fix *FileIndex) Read() error {
+	// Clear the existing file list
 	fix.fileList = nil
 
-	var fl FileList
-
-	records, err := fix.readCsv()
-	util.CheckErr(err)
-
-	for _, record := range records {
-
-		fl.index, _ = util.Atoi64(record[0])
-		fl.file = record[1]
-		fl.previousFile = record[2]
-		fl.dir = record[3]
-		fl.previousDir = record[4]
-
-		fix.fileList = append(fix.fileList, fl)
+	// Read and parse the CSV records
+	records, err := fix.readFileListCsv()
+	if err != nil {
+		return fmt.Errorf("failed to read file list: %w", err)
 	}
+
+	// Process each record
+	for _, record := range records {
+		// Check for correct number of fields
+		if len(record) < 5 {
+			return fmt.Errorf("invalid record format: %v", record)
+		}
+
+		// Parse the record into FileList struct
+		index, err := util.Atoi64(record[0])
+		if err != nil {
+			return fmt.Errorf("invalid index format in record %v: %w", record, err)
+		}
+
+		fix.fileList = append(fix.fileList, FileList{
+			index:        index,
+			file:         record[1],
+			previousFile: record[2],
+			dir:          record[3],
+			previousDir:  record[4],
+		})
+	}
+
+	return nil
 }
 
-func (fix FileIndex) readCsv() ([][]string, error) {
-
+// readFileListCsv reads the CSV contents of the "FileList.txt" file
+func (fix FileIndex) readFileListCsv() ([][]string, error) {
+	// Read the file into a buffer
 	buf, err := os.ReadFile(fix.fileListCsv)
-	util.CheckErr(err)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read file %s: %w", fix.fileListCsv, err)
+	}
 
+	// Parse the CSV using a reader with colon as delimiter
 	r := csv.NewReader(bytes.NewBuffer(buf))
-	r.Comma = ':'
+	r.Comma = ':' // Using ':' as a delimiter
 
+	// Read all records from the CSV
 	records, err := r.ReadAll()
 	if err != nil {
-		return [][]string{}, fmt.Errorf("error reading file %s with error: %v", fix.fileListCsv, err)
+		return nil, fmt.Errorf("error parsing CSV in file %s: %w", fix.fileListCsv, err)
 	}
 
+	// Ensure there are records and skip the header
 	if len(records) == 0 {
-		return [][]string{}, fmt.Errorf("error reading file %s with error: No header included", fix.fileListCsv)
+		return nil, fmt.Errorf("file %s contains no data or is missing a header", fix.fileListCsv)
 	}
 
-	records = records[1:]
-
-	return records, nil
+	// Skip the header and return the data
+	return records[1:], nil
 }
 
-// Writes the values to "FileList.csv"
-func (fix *FileIndex) Write() {
+// // Reads the values from "FileList.txt"
+// func (fix *FileIndex) Read() {
 
+// 	fix.fileList = nil
+
+// 	var fl FileList
+
+// 	records, err := fix.readCsv()
+// 	util.CheckErr(err)
+
+// 	for _, record := range records {
+
+// 		fl.index, _ = util.Atoi64(record[0])
+// 		fl.file = record[1]
+// 		fl.previousFile = record[2]
+// 		fl.dir = record[3]
+// 		fl.previousDir = record[4]
+
+// 		fix.fileList = append(fix.fileList, fl)
+// 	}
+// }
+
+// func (fix FileIndex) readCsv() ([][]string, error) {
+
+// 	buf, err := os.ReadFile(fix.fileListCsv)
+// 	util.CheckErr(err)
+
+// 	r := csv.NewReader(bytes.NewBuffer(buf))
+// 	r.Comma = ':'
+
+// 	records, err := r.ReadAll()
+// 	if err != nil {
+// 		return [][]string{}, fmt.Errorf("error reading file %s with error: %v", fix.fileListCsv, err)
+// 	}
+
+// 	if len(records) == 0 {
+// 		return [][]string{}, fmt.Errorf("error reading file %s with error: No header included", fix.fileListCsv)
+// 	}
+
+// 	records = records[1:]
+
+// 	return records, nil
+// }
+
+// // Writes the values to "FileList.csv"
+// func (fix *FileIndex) Write() {
+
+// 	records := [][]string{
+// 		{"Index", "FileName", "PreviousFile", "Dir", "PreviousDir"},
+// 	}
+
+// 	for _, item := range fix.fileList {
+
+// 		records = append(records, []string{
+// 			util.I64toa(item.index),
+// 			item.file,
+// 			item.previousFile,
+// 			item.dir,
+// 			item.previousDir})
+// 	}
+
+// 	var buf []byte
+// 	buffer := bytes.NewBuffer(buf)
+
+// 	writer := csv.NewWriter(buffer)
+// 	writer.Comma = ':'
+
+// 	err := writer.WriteAll(records) // calls Flush internally
+// 	util.CheckErr(err)
+
+// 	err = writer.Error()
+// 	util.CheckErr(err)
+
+// 	err = os.WriteFile(fix.fileListCsv, buffer.Bytes(), 0644)
+// 	util.CheckErr(err)
+
+// 	err = os.Chown(fix.fileListCsv, fix.fs.userUid, fix.fs.vaultUid)
+// 	util.CheckErr(err)
+// }
+
+// Writes the values to "FileList.csv"
+func (fix *FileIndex) Write() error {
+	// Initialize the CSV header
 	records := [][]string{
 		{"Index", "FileName", "PreviousFile", "Dir", "PreviousDir"},
 	}
 
+	// Add records from fileList
 	for _, item := range fix.fileList {
-
 		records = append(records, []string{
 			util.I64toa(item.index),
 			item.file,
 			item.previousFile,
 			item.dir,
-			item.previousDir})
+			item.previousDir,
+		})
 	}
 
-	var buf []byte
-	buffer := bytes.NewBuffer(buf)
-
+	// Create a buffer for writing CSV data
+	buffer := &bytes.Buffer{}
 	writer := csv.NewWriter(buffer)
 	writer.Comma = ':'
 
-	err := writer.WriteAll(records) // calls Flush internally
-	util.CheckErr(err)
+	// Write the CSV records
+	if err := writer.WriteAll(records); err != nil {
+		return fmt.Errorf("failed to write CSV data: %w", err)
+	}
+	writer.Flush()
 
-	err = writer.Error()
-	util.CheckErr(err)
+	// Check for errors during CSV writing
+	if err := writer.Error(); err != nil {
+		return fmt.Errorf("error flushing CSV writer: %w", err)
+	}
 
-	err = os.WriteFile(fix.fileListCsv, buffer.Bytes(), 0644)
-	util.CheckErr(err)
+	// Write the buffer content to the file
+	if err := os.WriteFile(fix.fileListCsv, buffer.Bytes(), 0644); err != nil {
+		return fmt.Errorf("failed to write file %s: %w", fix.fileListCsv, err)
+	}
 
-	err = os.Chown(fix.fileListCsv, fix.fs.userUid, fix.fs.vaultUid)
-	util.CheckErr(err)
+	// Set the correct ownership of the file
+	if err := os.Chown(fix.fileListCsv, fix.fs.userUid, fix.fs.vaultUid); err != nil {
+		return fmt.Errorf("failed to change ownership of %s: %w", fix.fileListCsv, err)
+	}
+
+	return nil
 }
 
 func (fl FileList) Index() string {
@@ -262,8 +375,9 @@ func (fix *FileIndex) increase_index_number() int64 {
 // It does not add a file on disk.
 func (fix *FileIndex) AddItem(filename, dirname string) int64 {
 
-	fix.Read() // refreshing the index
-
+	if err := fix.Read(); err != nil { // refreshing the index
+		log.Fatalf("error reading FileIndex.csv, %v", err)
+	}
 	// getting rid of the path
 	_, split_file := path.Split(filename)
 	fname := split_file
@@ -274,7 +388,9 @@ func (fix *FileIndex) AddItem(filename, dirname string) int64 {
 
 	fix.fileList = append(fix.fileList, fl)
 
-	fix.Write()
+	if err := fix.Write(); err != nil {
+		log.Fatalf("error writing FileIndex.csv, %v", err)
+	}
 
 	return index
 }
@@ -294,7 +410,9 @@ func (fix *FileIndex) moveItem(fileNname, directory string) error {
 		}
 	}
 
-	fix.Write()
+	if err := fix.Write(); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -303,7 +421,9 @@ func (fix *FileIndex) moveItem(fileNname, directory string) error {
 // but only in the FileList, not on disk.
 func (fix *FileIndex) renameItem(src, dest string) error {
 
-	fix.Read() // refreshing index
+	if err := fix.Read(); err != nil { // refreshing index
+		return err
+	}
 
 	// check whether new name already exist
 
@@ -328,7 +448,9 @@ func (fix *FileIndex) renameItem(src, dest string) error {
 
 	// save
 
-	fix.Write()
+	if err := fix.Write(); err != nil {
+		return err
+	}
 
 	return nil
 }
