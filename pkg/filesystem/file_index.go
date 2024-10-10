@@ -118,93 +118,13 @@ func (fix FileIndex) readFileListCsv() ([][]string, error) {
 	}
 
 	// Ensure there are records and skip the header
-	if len(records) == 0 {
+	if len(records) <= 1 {
 		return nil, fmt.Errorf("file %s contains no data or is missing a header", fix.fileListCsv)
 	}
 
 	// Skip the header and return the data
 	return records[1:], nil
 }
-
-// // Reads the values from "FileList.txt"
-// func (fix *FileIndex) Read() {
-
-// 	fix.fileList = nil
-
-// 	var fl FileList
-
-// 	records, err := fix.readCsv()
-// 	util.CheckErr(err)
-
-// 	for _, record := range records {
-
-// 		fl.index, _ = util.Atoi64(record[0])
-// 		fl.file = record[1]
-// 		fl.previousFile = record[2]
-// 		fl.dir = record[3]
-// 		fl.previousDir = record[4]
-
-// 		fix.fileList = append(fix.fileList, fl)
-// 	}
-// }
-
-// func (fix FileIndex) readCsv() ([][]string, error) {
-
-// 	buf, err := os.ReadFile(fix.fileListCsv)
-// 	util.CheckErr(err)
-
-// 	r := csv.NewReader(bytes.NewBuffer(buf))
-// 	r.Comma = ':'
-
-// 	records, err := r.ReadAll()
-// 	if err != nil {
-// 		return [][]string{}, fmt.Errorf("error reading file %s with error: %v", fix.fileListCsv, err)
-// 	}
-
-// 	if len(records) == 0 {
-// 		return [][]string{}, fmt.Errorf("error reading file %s with error: No header included", fix.fileListCsv)
-// 	}
-
-// 	records = records[1:]
-
-// 	return records, nil
-// }
-
-// // Writes the values to "FileList.csv"
-// func (fix *FileIndex) Write() {
-
-// 	records := [][]string{
-// 		{"Index", "FileName", "PreviousFile", "Dir", "PreviousDir"},
-// 	}
-
-// 	for _, item := range fix.fileList {
-
-// 		records = append(records, []string{
-// 			util.I64toa(item.index),
-// 			item.file,
-// 			item.previousFile,
-// 			item.dir,
-// 			item.previousDir})
-// 	}
-
-// 	var buf []byte
-// 	buffer := bytes.NewBuffer(buf)
-
-// 	writer := csv.NewWriter(buffer)
-// 	writer.Comma = ':'
-
-// 	err := writer.WriteAll(records) // calls Flush internally
-// 	util.CheckErr(err)
-
-// 	err = writer.Error()
-// 	util.CheckErr(err)
-
-// 	err = os.WriteFile(fix.fileListCsv, buffer.Bytes(), 0644)
-// 	util.CheckErr(err)
-
-// 	err = os.Chown(fix.fileListCsv, fix.fs.userUid, fix.fs.vaultUid)
-// 	util.CheckErr(err)
-// }
 
 // Writes the values to "FileList.csv"
 func (fix *FileIndex) Write() error {
@@ -251,6 +171,15 @@ func (fix *FileIndex) Write() error {
 	}
 
 	return nil
+}
+
+func NewFileList(index int64, file, previousFile, dir, previousDir string) FileList {
+	return FileList{
+		index:        index,
+		file:         file,
+		previousFile: previousFile,
+		dir:          dir,
+		previousDir:  previousDir}
 }
 
 func (fl FileList) Index() string {

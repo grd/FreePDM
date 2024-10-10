@@ -52,7 +52,7 @@ type FileVersion struct {
 // fsm is necessary because of this struct
 // dir means the directory in where to put the file structure
 // fileNumber means the file number, which is an int64
-func InitFileDirectory(fsm *FileSystem, dir string, fileNumber int64) FileDirectory {
+func NewFileDirectory(fsm *FileSystem, dir string, fileNumber int64) FileDirectory {
 	return FileDirectory{fs: fsm, dir: dir, fileNumber: fileNumber}
 }
 

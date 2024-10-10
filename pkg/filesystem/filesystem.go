@@ -186,7 +186,7 @@ func (fs *FileSystem) ImportFile(fname string) int64 {
 
 	dir := fmt.Sprintf("%d", index)
 
-	fd := InitFileDirectory(fs, dir, index)
+	fd := NewFileDirectory(fs, dir, index)
 
 	newDir := fd.NewDirectory()
 	newDir.ImportNewFile(fname)
@@ -218,7 +218,7 @@ func (fs *FileSystem) NewVersion(indexNr int64) (FileVersion, error) {
 
 	dir := path.Join(fs.vaultDir, dirIdx)
 
-	fd := InitFileDirectory(fs, dir, indexNr)
+	fd := NewFileDirectory(fs, dir, indexNr)
 
 	newVersion := fd.NewVersion()
 
@@ -399,7 +399,7 @@ func (fs *FileSystem) CheckOut(itemNr int64, version FileVersion) error {
 	dir, err := fs.index.DirIndex(itemNr)
 	util.CheckErr(err)
 
-	fd := InitFileDirectory(fs, path.Join(fs.vaultDir, dir), itemNr)
+	fd := NewFileDirectory(fs, path.Join(fs.vaultDir, dir), itemNr)
 	fd.OpenItemVersion(version)
 
 	// check whether the itemnr is locked
@@ -432,7 +432,7 @@ func (fs *FileSystem) CheckIn(itemNr int64, version FileVersion, descr, longdesc
 	dir, err := fs.index.DirIndex(itemNr)
 	util.CheckErr(err)
 
-	fd := InitFileDirectory(fs, path.Join(fs.vaultDir, dir), itemNr)
+	fd := NewFileDirectory(fs, path.Join(fs.vaultDir, dir), itemNr)
 
 	fd.StoreData(version, descr, longdescr)
 
@@ -494,7 +494,7 @@ func (fs *FileSystem) FileRename(src, dest string) error {
 		return fmt.Errorf("failed to get file list for %s: %w", src, err)
 	}
 
-	fd := InitFileDirectory(fs, idx.Index(), fileName)
+	fd := NewFileDirectory(fs, idx.Index(), fileName)
 
 	if err = fd.fileRename(src, dest); err != nil {
 		return fmt.Errorf("failed to rename file from %s to %s: %w", src, dest, err)
@@ -551,7 +551,7 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 		return fmt.Errorf("failed to get file list for %s: %w", src, err)
 	}
 
-	srcFd := InitFileDirectory(fs, srcIndex.Index(), file.index)
+	srcFd := NewFileDirectory(fs, srcIndex.Index(), file.index)
 
 	_, destFile := path.Split(dest)
 	destIndex := fs.index.AddItem(destFile, dst)
@@ -561,7 +561,7 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 		return fmt.Errorf("failed to get file list for %s: %w", destFile, err)
 	}
 
-	destFd := InitFileDirectory(fs, destDir.Index(), destIndex)
+	destFd := NewFileDirectory(fs, destDir.Index(), destIndex)
 	destFd.NewDirectory()
 
 	// Copy the file from src to dest
