@@ -16,7 +16,7 @@ removevault:
 	removevault
 
 test:
-	go test cmd/testvault/main_test.go
+	go test -v ./...
 
 serverapp: 
 	go build -o $(BIN_DIR)/serverapp cmd/serverapp/main.go
