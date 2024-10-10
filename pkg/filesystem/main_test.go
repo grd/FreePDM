@@ -4,7 +4,7 @@
 
 // Tests for the filesystem.
 
-package main
+package filesystem_test
 
 import (
 	"encoding/csv"
@@ -24,7 +24,7 @@ import (
 const testpdm = "testpdm"
 
 var (
-	fs fsm.FileSystem
+	fism *fsm.FileSystem
 
 	testvaults     = path.Join(fsm.Vaults, testpdm)
 	testvaultsdata = path.Join(fsm.VaultsData, testpdm)
@@ -37,17 +37,20 @@ var (
 func TestInitFileSystem(t *testing.T) {
 	userName, err := user.Current()
 	util.CheckErr(err)
-	fs = fsm.InitFileSystem(testpdm, userName.Username)
+	fism, err = fsm.NewFileSystem(testpdm, userName.Username)
+	if err != nil {
+		log.Fatalf("initialization failed, %v", err)
+	}
 }
 
 func TestMkDir(t *testing.T) {
-	err := fs.Mkdir("Standard Parts")
+	err := fism.Mkdir("Standard Parts")
 	if err != nil {
 		t.Errorf("Error message = %s", err)
 	}
 
-	fs.Mkdir("Projects")
-	fs.Mkdir("test")
+	fism.Mkdir("Projects")
+	fism.Mkdir("test")
 
 }
 
@@ -73,77 +76,77 @@ func TestTheRest(t *testing.T) {
 
 	listWd()
 
-	err = fs.Chdir("Projects")
+	err = fism.Chdir("Projects")
 	util.CheckErr(err)
 
 	{
-		f1 := fs.ImportFile(file1)
+		f1 := fism.ImportFile(file1)
 		{
 			compareFileListLine(1, "1:0001.FCStd::Projects:")
 			checkOutStatus(1, 0)
 		}
-		fs.CheckIn(f1, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf1-0", "Testf1-0")
+		fism.CheckIn(f1, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf1-0", "Testf1-0")
 		{
 			checkInStatus(1, 0)
 		}
 
-		ver, _ := fs.NewVersion(f1)
+		ver, _ := fism.NewVersion(f1)
 
 		{
 			checkOutStatus(1, 1)
 		}
-		fs.CheckIn(f1, ver, "Testf1-1", "Test1-1")
+		fism.CheckIn(f1, ver, "Testf1-1", "Test1-1")
 		{
 			checkInStatus(1, 1)
 		}
 
-		ver, _ = fs.NewVersion(f1)
+		ver, _ = fism.NewVersion(f1)
 		{
 			checkOutStatus(1, 2)
 		}
-		fs.CheckIn(f1, ver, "Testf1-2", "Test1-2")
+		fism.CheckIn(f1, ver, "Testf1-2", "Test1-2")
 		{
 			checkInStatus(1, 2)
 		}
 
-		ver, _ = fs.NewVersion(f1)
+		ver, _ = fism.NewVersion(f1)
 		{
 			checkOutStatus(1, 3)
 		}
-		fs.CheckIn(f1, ver, "Testf1-3", "Test1-3")
+		fism.CheckIn(f1, ver, "Testf1-3", "Test1-3")
 		{
 			checkInStatus(1, 3)
 		}
 	}
 
 	{
-		f2 := fs.ImportFile(file2)
+		f2 := fism.ImportFile(file2)
 		{
 			compareFileListLine(2, "2:0002.FCStd::Projects:")
 			checkOutStatus(2, 0)
 		}
-		fs.CheckIn(f2, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf2-0", "")
+		fism.CheckIn(f2, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf2-0", "")
 		{
 			checkInStatus(2, 0)
 		}
 	}
 
 	{
-		f3 := fs.ImportFile(file3)
+		f3 := fism.ImportFile(file3)
 		{
 			compareFileListLine(3, "3:0003.FCStd::Projects:")
 			checkOutStatus(3, 0)
 		}
-		fs.CheckIn(f3, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf3-0", "")
+		fism.CheckIn(f3, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf3-0", "")
 		{
 			checkInStatus(3, 0)
 		}
 
-		ver, _ := fs.NewVersion(f3)
+		ver, _ := fism.NewVersion(f3)
 		{
 			checkOutStatus(3, 1)
 		}
-		fs.CheckIn(f3, ver, "Testf3-1", "Test3-1")
+		fism.CheckIn(f3, ver, "Testf3-1", "Test3-1")
 		{
 			checkInStatus(3, 1)
 		}
@@ -156,7 +159,7 @@ func TestTheRest(t *testing.T) {
 	//
 
 	{
-		err = fs.FileRename("0001.FCStd", "0007.FCStd")
+		err = fism.FileRename("0001.FCStd", "0007.FCStd")
 		util.CheckErr(err)
 		{
 			compareFileListLine(1, "1:0007.FCStd:0001.FCStd:Projects:")
@@ -164,7 +167,7 @@ func TestTheRest(t *testing.T) {
 	}
 
 	{
-		err = fs.FileCopy("0002.FCStd", "0008.FCStd")
+		err = fism.FileCopy("0002.FCStd", "0008.FCStd")
 		util.CheckErr(err)
 		{
 			compareFileListLine(4, "4:0008.FCStd::Projects:")
@@ -172,7 +175,7 @@ func TestTheRest(t *testing.T) {
 	}
 
 	{
-		err = fs.FileCopy("0002.FCStd", "../test/0008a.FCStd")
+		err = fism.FileCopy("0002.FCStd", "../test/0008a.FCStd")
 		util.CheckErr(err)
 		{
 			compareFileListLine(5, "5:0008a.FCStd::test:")
@@ -181,11 +184,11 @@ func TestTheRest(t *testing.T) {
 
 	listWd()
 
-	err = fs.Mkdir("temp")
+	err = fism.Mkdir("temp")
 	util.CheckErr(err)
 
 	{
-		err = fs.FileMove("0002.FCStd", "temp")
+		err = fism.FileMove("0002.FCStd", "temp")
 		util.CheckErr(err)
 		{
 			compareFileListLine(2, "2:0002.FCStd::Projects/temp:Projects")
@@ -193,7 +196,7 @@ func TestTheRest(t *testing.T) {
 	}
 
 	{
-		err = fs.FileMove("0003.FCStd", "..")
+		err = fism.FileMove("0003.FCStd", "..")
 		util.CheckErr(err)
 		{
 			compareFileListLine(3, "3:0003.FCStd:::Projects")
@@ -202,28 +205,28 @@ func TestTheRest(t *testing.T) {
 
 	listWd()
 
-	err = fs.Chdir("../Standard Parts")
+	err = fism.Chdir("../Standard Parts")
 	util.CheckErr(err)
 
 	{
-		f4 := fs.ImportFile(file4)
-		fs.CheckIn(f4, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf4-0", "Testf4-0")
+		f4 := fism.ImportFile(file4)
+		fism.CheckIn(f4, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf4-0", "Testf4-0")
 		{
 			compareFileListLine(6, "6:0004.FCStd::Standard Parts:")
 		}
 	}
 
 	{
-		f5 := fs.ImportFile(file5)
-		fs.CheckIn(f5, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf5-0", "Testf5-0")
+		f5 := fism.ImportFile(file5)
+		fism.CheckIn(f5, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf5-0", "Testf5-0")
 		{
 			compareFileListLine(7, "7:0005.FCStd::Standard Parts:")
 		}
 	}
 
 	{
-		f6 := fs.ImportFile(file6)
-		fs.CheckIn(f6, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf6-0", "Testf6-0")
+		f6 := fism.ImportFile(file6)
+		fism.CheckIn(f6, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf6-0", "Testf6-0")
 		{
 			compareFileListLine(8, "8:0006.FCStd::Standard Parts:")
 		}
@@ -231,14 +234,17 @@ func TestTheRest(t *testing.T) {
 
 	listWd()
 
-	err = fs.Chdir("../Projects")
+	err = fism.Chdir("../Projects")
 	util.CheckErr(err)
 
 	listWd()
 
-	fs.Chdir("..")
+	fism.Chdir("..")
 
-	list := fs.ListWD()
+	list, err := fism.ListWD()
+	if err != nil {
+		log.Fatal("listwd failed")
+	}
 
 	for _, elem := range list {
 		fmt.Println(elem)
@@ -377,7 +383,10 @@ func listWd() {
 	wd, err := os.Getwd()
 	util.CheckErr(err)
 	fmt.Printf("\n\nList directory of %s\n\n", wd)
-	fileInfo := fs.ListWD()
+	fileInfo, err := fism.ListWD()
+	if err != nil {
+		log.Fatal("listwd error")
+	}
 	for _, info := range fileInfo {
 		fmt.Println(info.FileName)
 	}
