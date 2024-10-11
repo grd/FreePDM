@@ -118,7 +118,7 @@ func (fix FileIndex) readFileListCsv() ([][]string, error) {
 	}
 
 	// Ensure there are records and skip the header
-	if len(records) <= 1 {
+	if len(records) == 0 {
 		return nil, fmt.Errorf("file %s contains no data or is missing a header", fix.fileListCsv)
 	}
 
