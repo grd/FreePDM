@@ -169,17 +169,17 @@ func (fs *FileSystem) WriteLockedIndex() {
 	util.CheckErr(err)
 }
 
-// import a file inside the PDM. When you import a file the meta-data also gets imported,
+// import a file inside the PDM. When you import a file the attributes also gets imported,
 // which means uploaded to the server.
 // When you import a file or files you are placing the new file in the current directory.
 // The new file inside the PDM gets a revision number automatically.
-// The function returns the number of the imported file.
-func (fs *FileSystem) ImportFile(fname string) int64 {
+// The function returns the number of the imported file or an error.
+func (fs *FileSystem) ImportFile(fname string) (int64, error) {
 
 	// check wether a file exist
 
 	if !util.FileExists(fname) {
-		log.Fatalf("File %s could not be found.", fname)
+		return -1, fmt.Errorf("file %s could not be found", fname)
 	}
 
 	index := fs.index.AddItem(fname, fs.currentWorkingDir)
@@ -192,16 +192,19 @@ func (fs *FileSystem) ImportFile(fname string) int64 {
 	newDir.ImportNewFile(fname)
 
 	name, err := fs.index.ContainerName(fd.dir)
-	util.CheckErr(err)
+	if err != nil {
+		return -1, err
+	}
 
 	log.Printf("imported %s into %s with version %d", fname, name.file, 0)
 
 	// Checking out the new file so no one else can see it.
 
-	err = fs.CheckOut(index, FileVersion{0, "0", util.Now()})
-	util.CheckErr(err)
+	if err = fs.CheckOut(index, FileVersion{0, "0", util.Now()}); err != nil {
+		return -1, err
+	}
 
-	return index
+	return index, nil
 }
 
 // Generates a new version of a file. Returns the FileVersion and an error.
@@ -318,7 +321,7 @@ func (fs FileSystem) ListDir(dirName string) ([]FileInfo, error) {
 			})
 		} else {
 			// Handle directory entries
-			list = append(list, FileInfo{Dir: true, FileName: subDir.Name()})
+			list = append(list, FileInfo{Dir: true, FileName: subDir.Name(), FilePath: dirName})
 		}
 	}
 
@@ -346,9 +349,16 @@ func (fs FileSystem) listTree(dirName string) ([]FileInfo, error) {
 		return nil, err
 	}
 
-	var list []FileInfo
-	for _, elem := range dirList {
-		list = append(list, elem)
+	if len(dirList) >= 1 {
+		if dirList[0].Name() == ".." {
+			dirList = dirList[1:]
+		}
+	}
+
+	list := make([]FileInfo, len(dirList))
+
+	for i, elem := range dirList {
+		list[i] = elem
 
 		if elem.IsDir() {
 			// Recursively append subdirectory contents
