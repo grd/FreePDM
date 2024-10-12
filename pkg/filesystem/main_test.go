@@ -37,7 +37,9 @@ var (
 
 func TestInitFileSystem(t *testing.T) {
 	userName, err := user.Current()
-	util.CheckErr(err)
+	if err != nil {
+		t.Errorf("user.Current() error: %s", err)
+	}
 	fs, err = fsm.NewFileSystem(testpdm, userName.Username)
 	if err != nil {
 		log.Fatalf("initialization failed, %v", err)
@@ -60,7 +62,9 @@ func TestImportFile(t *testing.T) {
 func TestTheRest(t *testing.T) {
 
 	userName, err := user.Current()
-	util.CheckErr(err)
+	if err != nil {
+		t.Errorf("user.Current() error: %s", err)
+	}
 
 	fmt.Printf("Vault dir: %s\n", testvaults)
 	fmt.Printf("Vault data dir: %s\n", testvaultsdata)
@@ -170,24 +174,27 @@ func TestTheRest(t *testing.T) {
 	//
 
 	{
-		err = fs.FileRename("0001.FCStd", "0007.FCStd")
-		util.CheckErr(err)
+		if err = fs.FileRename("0001.FCStd", "0007.FCStd"); err != nil {
+			t.Errorf("FileRename %s error: %s", file1, err)
+		}
 		{
 			compareFileListLine(1, "1:0007.FCStd:0001.FCStd:Projects:")
 		}
 	}
 
 	{
-		err = fs.FileCopy("0002.FCStd", "0008.FCStd")
-		util.CheckErr(err)
+		if err = fs.FileCopy("0002.FCStd", "0008.FCStd"); err != nil {
+			t.Errorf("FileCopy %s error: %s", file1, err)
+		}
 		{
 			compareFileListLine(4, "4:0008.FCStd::Projects:")
 		}
 	}
 
 	{
-		err = fs.FileCopy("0002.FCStd", "../test/0008a.FCStd")
-		util.CheckErr(err)
+		if err = fs.FileCopy("0002.FCStd", "../test/0008a.FCStd"); err != nil {
+			t.Errorf("FileCopy %s error: %s", file1, err)
+		}
 		{
 			compareFileListLine(5, "5:0008a.FCStd::test:")
 		}
@@ -267,8 +274,9 @@ func TestTheRest(t *testing.T) {
 
 	listWd()
 
-	err = fs.Chdir("../Projects")
-	util.CheckErr(err)
+	if err = fs.Chdir("../Projects"); err != nil {
+		t.Errorf("Chdir %s error: %s", file1, err)
+	}
 
 	listWd()
 
@@ -336,7 +344,7 @@ func TestListTree(t *testing.T) {
 		"Projects/0010.FCStd",
 		"Projects/temp/0002.FCStd",
 	}
-	for i, _ := range list {
+	for i := range list {
 		assert.Equal(t, list[i], test[i])
 
 	}
