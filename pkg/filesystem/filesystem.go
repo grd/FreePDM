@@ -358,6 +358,10 @@ func (fs FileSystem) listTree(dirName string) ([]FileInfo, error) {
 		}
 	}
 
+	if len(dirList) == 0 {
+		return nil, fmt.Errorf("directory is empty")
+	}
+
 	list := make([]FileInfo, len(dirList))
 
 	for i, elem := range dirList {
@@ -712,6 +716,10 @@ func (fs *FileSystem) DirectoryRename(src, dest string) error {
 		return err
 	}
 
+	if srcFiles == nil {
+		return fmt.Errorf("empty source directory")
+	}
+
 	// Check wether dest directory exists
 	if util.DirExists(dest) {
 		return fmt.Errorf("directory %s exists", dest)
@@ -791,12 +799,10 @@ func (fs FileSystem) DirectoryMove(src, dst string) error {
 		} else {
 			dstFiles[k].dir = dst
 		}
-		fmt.Println(dstFiles[k].dir)
 	}
 	// Move the file(s) in the index
 	for k, elem := range srcFiles {
 		if !elem.IsDir() {
-			fmt.Println(elem)
 			if err := fs.index.moveItem(elem.Name(), dstFiles[k].dir); err != nil {
 				return err
 			}
