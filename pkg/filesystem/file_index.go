@@ -40,36 +40,36 @@ type FileIndex struct {
 	indexNumber    int64
 }
 
-func NewFileIndex(fs *FileSystem) (ret FileIndex, err error) {
+func NewFileIndex(fs *FileSystem) (fi FileIndex, err error) {
 
-	ret.fs = fs
+	fi.fs = fs
 
-	ret.fileListCsv = path.Join(ret.fs.dataDir, "FileList.csv")
-	ret.indexNumberTxt = path.Join(ret.fs.dataDir, "IndexNumber.txt")
+	fi.fileListCsv = path.Join(fi.fs.dataDir, "FileList.csv")
+	fi.indexNumberTxt = path.Join(fi.fs.dataDir, "IndexNumber.txt")
 
 	// check wether the critical files exists.
 
-	util.CriticalFileExist(ret.fileListCsv)
-	util.CriticalFileExist(ret.indexNumberTxt)
+	util.CriticalFileExist(fi.fileListCsv)
+	util.CriticalFileExist(fi.indexNumberTxt)
 
-	ret.getIndexNumber()
+	fi.getIndexNumber()
 
-	ret.fileList = make([]FileList, 0, ret.indexNumber)
+	fi.fileList = make([]FileList, 0, fi.indexNumber)
 
-	if err := ret.Read(); err != nil { // read the indexes
-		return ret, err
+	if err := fi.Read(); err != nil { // read the indexes
+		return fi, err
 	}
 
-	return ret, nil
+	return fi, nil
 }
 
 // Reads the values from "FileList.txt"
-func (fix *FileIndex) Read() error {
+func (fi *FileIndex) Read() error {
 	// Clear the existing file list
-	fix.fileList = nil
+	fi.fileList = nil
 
 	// Read and parse the CSV records
-	records, err := fix.readFileListCsv()
+	records, err := fi.readFileListCsv()
 	if err != nil {
 		return fmt.Errorf("failed to read file list: %w", err)
 	}
@@ -87,7 +87,7 @@ func (fix *FileIndex) Read() error {
 			return fmt.Errorf("invalid index format in record %v: %w", record, err)
 		}
 
-		fix.fileList = append(fix.fileList, FileList{
+		fi.fileList = append(fi.fileList, FileList{
 			index:        index,
 			file:         record[1],
 			previousFile: record[2],
@@ -100,11 +100,11 @@ func (fix *FileIndex) Read() error {
 }
 
 // readFileListCsv reads the CSV contents of the "FileList.txt" file
-func (fix FileIndex) readFileListCsv() ([][]string, error) {
+func (fi FileIndex) readFileListCsv() ([][]string, error) {
 	// Read the file into a buffer
-	buf, err := os.ReadFile(fix.fileListCsv)
+	buf, err := os.ReadFile(fi.fileListCsv)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read file %s: %w", fix.fileListCsv, err)
+		return nil, fmt.Errorf("failed to read file %s: %w", fi.fileListCsv, err)
 	}
 
 	// Parse the CSV using a reader with colon as delimiter
@@ -114,12 +114,12 @@ func (fix FileIndex) readFileListCsv() ([][]string, error) {
 	// Read all records from the CSV
 	records, err := r.ReadAll()
 	if err != nil {
-		return nil, fmt.Errorf("error parsing CSV in file %s: %w", fix.fileListCsv, err)
+		return nil, fmt.Errorf("error parsing CSV in file %s: %w", fi.fileListCsv, err)
 	}
 
 	// Ensure there are records and skip the header
 	if len(records) == 0 {
-		return nil, fmt.Errorf("file %s contains no data or is missing a header", fix.fileListCsv)
+		return nil, fmt.Errorf("file %s contains no data or is missing a header", fi.fileListCsv)
 	}
 
 	// Skip the header and return the data
@@ -127,14 +127,14 @@ func (fix FileIndex) readFileListCsv() ([][]string, error) {
 }
 
 // Writes the values to "FileList.csv"
-func (fix *FileIndex) Write() error {
+func (fi *FileIndex) Write() error {
 	// Initialize the CSV header
 	records := [][]string{
 		{"Index", "FileName", "PreviousFile", "Dir", "PreviousDir"},
 	}
 
 	// Add records from fileList
-	for _, item := range fix.fileList {
+	for _, item := range fi.fileList {
 		records = append(records, []string{
 			util.I64toa(item.index),
 			item.file,
@@ -161,13 +161,13 @@ func (fix *FileIndex) Write() error {
 	}
 
 	// Write the buffer content to the file
-	if err := os.WriteFile(fix.fileListCsv, buffer.Bytes(), 0644); err != nil {
-		return fmt.Errorf("failed to write file %s: %w", fix.fileListCsv, err)
+	if err := os.WriteFile(fi.fileListCsv, buffer.Bytes(), 0644); err != nil {
+		return fmt.Errorf("failed to write file %s: %w", fi.fileListCsv, err)
 	}
 
 	// Set the correct ownership of the file
-	if err := os.Chown(fix.fileListCsv, fix.fs.userUid, fix.fs.vaultUid); err != nil {
-		return fmt.Errorf("failed to change ownership of %s: %w", fix.fileListCsv, err)
+	if err := os.Chown(fi.fileListCsv, fi.fs.userUid, fi.fs.vaultUid); err != nil {
+		return fmt.Errorf("failed to change ownership of %s: %w", fi.fileListCsv, err)
 	}
 
 	return nil
@@ -207,18 +207,18 @@ func (fl FileList) PreviousPath() string {
 }
 
 // Reads the index number and stores it.
-func (fix *FileIndex) getIndexNumber() {
+func (fi *FileIndex) getIndexNumber() {
 
-	buf, err := os.ReadFile(fix.indexNumberTxt)
+	buf, err := os.ReadFile(fi.indexNumberTxt)
 	util.CheckErr(err)
 
-	_, err = fmt.Sscanf(string(buf), "%d", &fix.indexNumber)
+	_, err = fmt.Sscanf(string(buf), "%d", &fi.indexNumber)
 	util.CheckErr(err)
 }
 
 // Returns the complete directory name of a file number, or an error when not found.
-func (fix *FileIndex) DirIndex(index int64) (string, error) {
-	for _, item := range fix.fileList {
+func (fi *FileIndex) DirIndex(index int64) (string, error) {
+	for _, item := range fi.fileList {
 		if index == item.index {
 			num := fmt.Sprintf("%d", item.index)
 			str := path.Join(item.dir, num)
@@ -230,8 +230,8 @@ func (fix *FileIndex) DirIndex(index int64) (string, error) {
 
 // Returns the index number of the file name,
 // or an error when the file is not found.
-func (fx *FileIndex) FileNameToIndex(fileName string) (int64, error) {
-	for _, item := range fx.fileList {
+func (fi *FileIndex) FileNameToIndex(fileName string) (int64, error) {
+	for _, item := range fi.fileList {
 		if fileName == item.file {
 			return item.index, nil
 		}
@@ -242,8 +242,8 @@ func (fx *FileIndex) FileNameToIndex(fileName string) (int64, error) {
 
 // Input parameter is the file name.
 // Returns the path and name of a file, or an error when not found.
-func (fix *FileIndex) FileNameToFileList(fileName string) (FileList, error) {
-	for _, item := range fix.fileList {
+func (fi *FileIndex) FileNameToFileList(fileName string) (FileList, error) {
+	for _, item := range fi.fileList {
 		if fileName == item.file {
 			return item, nil
 		}
@@ -251,13 +251,13 @@ func (fix *FileIndex) FileNameToFileList(fileName string) (FileList, error) {
 	return FileList{}, fmt.Errorf("file %s not found", fileName)
 }
 
-// Returns the file name of a file number.
-func (fix *FileIndex) ContainerName(index string) (FileList, error) {
+// Returns the file list when a file number is found, else an error.
+func (fi *FileIndex) ContainerName(index string) (FileList, error) {
 	num, err := util.Atoi64(index)
 	if err != nil {
 		return FileList{}, err
 	}
-	for _, item := range fix.fileList {
+	for _, item := range fi.fileList {
 		if num == item.index {
 			return item, nil
 		}
@@ -266,8 +266,8 @@ func (fix *FileIndex) ContainerName(index string) (FileList, error) {
 }
 
 // Returns the file name of a file number.
-func (fix *FileIndex) IndexToFileName(index int64) (string, error) {
-	for _, item := range fix.fileList {
+func (fi *FileIndex) IndexToFileName(index int64) (string, error) {
+	for _, item := range fi.fileList {
 		if index == item.index {
 			return item.file, nil
 		}
@@ -277,69 +277,84 @@ func (fix *FileIndex) IndexToFileName(index int64) (string, error) {
 
 // Increases the index number, that is stored in the file 'IndexNumber.txt'
 // in the root directory of the vault.
-func (fix *FileIndex) increase_index_number() int64 {
+func (fi *FileIndex) increase_index_number() (int64, error) {
 
-	buf, err := os.ReadFile(fix.indexNumberTxt)
-	util.CheckErr(err)
-	_, err = fmt.Sscanf(string(buf), "%d", &fix.indexNumber)
-	util.CheckErr(err)
+	buf, err := os.ReadFile(fi.indexNumberTxt)
+	if err != nil {
+		return -1, err
+	}
+	_, err = fmt.Sscanf(string(buf), "%d", &fi.indexNumber)
+	if err != nil {
+		return -1, err
+	}
 
 	// Increase index number
 
-	fix.indexNumber++
+	fi.indexNumber++
 
-	str := fmt.Sprintf("%d", fix.indexNumber)
+	str := fmt.Sprintf("%d", fi.indexNumber)
 
-	err = os.WriteFile(fix.indexNumberTxt, []byte(str), 0644)
-	util.CheckErr(err)
+	if err = os.WriteFile(fi.indexNumberTxt, []byte(str), 0644); err != nil {
+		return -1, err
+	}
 
-	err = os.Chown(fix.indexNumberTxt, fix.fs.userUid, fix.fs.vaultUid)
-	util.CheckErr(err)
+	if err = os.Chown(fi.indexNumberTxt, fi.fs.userUid, fi.fs.vaultUid); err != nil {
+		return -1, err
+	}
 
-	return fix.indexNumber
+	return fi.indexNumber, nil
 }
 
 // Adds the item from both self.fileIndex and self.fileLocationList
 // and store the information on disk. Returns the index number.
 // It does not add a file on disk.
-func (fix *FileIndex) AddItem(filename, dirname string) int64 {
+func (fi *FileIndex) AddItem(filename, dirname string) (int64, error) {
 
-	if err := fix.Read(); err != nil { // refreshing the index
+	if err := fi.Read(); err != nil { // refreshing the index
 		log.Fatalf("error reading FileIndex.csv, %v", err)
 	}
 	// getting rid of the path
 	_, split_file := path.Split(filename)
 	fname := split_file
 
-	index := fix.increase_index_number()
+	index, err := fi.increase_index_number()
+	if err != nil {
+		return -1, err
+	}
 
 	fl := FileList{index: index, file: fname, dir: dirname}
 
-	fix.fileList = append(fix.fileList, fl)
+	fi.fileList = append(fi.fileList, fl)
 
-	if err := fix.Write(); err != nil {
+	if err := fi.Write(); err != nil {
 		log.Fatalf("error writing FileIndex.csv, %v", err)
 	}
 
-	return index
+	return index, nil
 }
 
 // Moves the filename to an other directory,
 // but only in the FileList, not on disk.
-func (fix *FileIndex) moveItem(fileNname, directory string) error {
+func (fi *FileIndex) moveItem(fileNname, directory string) error {
 
-	var movefile *FileList
+	i := -1
 
-	for index, v := range fix.fileList {
+	for index, v := range fi.fileList {
 		if fileNname == v.file {
-			movefile = &fix.fileList[index]
-			movefile.previousDir = v.dir
-			movefile.dir = directory
+			i = index
 			break
 		}
 	}
 
-	if err := fix.Write(); err != nil {
+	if i == -1 {
+		return fmt.Errorf("filename %s is not inside the FileIndex", fileNname)
+	}
+
+	// Moving the item
+	fi.fileList[i].previousDir = fi.fileList[i].dir
+	fi.fileList[i].dir = directory
+
+	if err := fi.Write(); err != nil {
 		return err
 	}
 
@@ -348,15 +363,15 @@ func (fix *FileIndex) moveItem(fileNname, directory string) error {
 
 // Renames the filename from src to dest,
 // but only in the FileList, not on disk.
-func (fix *FileIndex) renameItem(src, dest string) error {
+func (fi *FileIndex) renameItem(src, dest string) error {
 
-	if err := fix.Read(); err != nil { // refreshing index
+	if err := fi.Read(); err != nil { // refreshing index
 		return err
 	}
 
 	// check whether new name already exist
 
-	for _, v := range fix.fileList {
+	for _, v := range fi.fileList {
 		if dest == v.file {
 			return fmt.Errorf("duplicate file in index: %s", dest)
 		}
@@ -366,9 +381,9 @@ func (fix *FileIndex) renameItem(src, dest string) error {
 
 	var renamefile *FileList
 
-	for index, v := range fix.fileList {
+	for index, v := range fi.fileList {
 		if v.file == src {
-			renamefile = &fix.fileList[index]
+			renamefile = &fi.fileList[index]
 			renamefile.previousFile = v.file
 			renamefile.file = dest
 			break
@@ -377,7 +392,7 @@ func (fix *FileIndex) renameItem(src, dest string) error {
 
 	// save
 
-	if err := fix.Write(); err != nil {
+	if err := fi.Write(); err != nil {
 		return err
 	}
 

@@ -13,16 +13,16 @@ import (
 
 // The FileInfo struct
 type FileInfo struct {
-	Dir             bool             `json:"Dir"` // Is it a directory or a file?
-	FileName        string           `json:"FileName"`
-	FilePath        string           `json:"FilePath"`
-	FileDescription string           `json:"FileDescription"`
-	FileSecondDescr string           `json:"FileSecondDescr"`
-	FileVersion     string           `json:"FileVersion"`
-	FileLocked      bool             `json:"FileLocked"`      // Is the file locked out?
-	FileLockedOutBy string           `json:"FileLockedOutBy"` // Who checked out the file?
-	FileIcon        []byte           `json:"FileIcon"`
-	FileProperties  []FileProperties `json:"FileProperties"`
+	Dir             bool // Is it a directory or a file?
+	FileName        string
+	FilePath        string
+	FileDescription string
+	FileSecondDescr string
+	FileVersion     string
+	FileLocked      bool   // Is the file locked out?
+	FileLockedOutBy string // Who checked out the file?
+	FileIcon        []byte
+	FileProperties  []FileProperties
 }
 
 // The File Properties

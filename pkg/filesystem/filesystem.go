@@ -182,7 +182,10 @@ func (fs *FileSystem) ImportFile(fname string) (int64, error) {
 		return -1, fmt.Errorf("file %s could not be found", fname)
 	}
 
-	index := fs.index.AddItem(fname, fs.currentWorkingDir)
+	index, err := fs.index.AddItem(fname, fs.currentWorkingDir)
+	if err != nil {
+		return -1, err
+	}
 
 	dir := fmt.Sprintf("%d", index)
 
@@ -564,7 +567,10 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 	srcFd := NewFileDirectory(fs, srcIndex.Index(), file.index)
 
 	_, destFile := path.Split(dest)
-	destIndex := fs.index.AddItem(destFile, dst)
+	destIndex, err := fs.index.AddItem(destFile, dst)
+	if err != nil {
+		return err
+	}
 
 	destDir, err := fs.index.FileNameToFileList(destFile)
 	if err != nil {
@@ -697,7 +703,6 @@ func (fs *FileSystem) DirectoryCopy(src, dest string) error {
 func (fs *FileSystem) DirectoryRename(src, dest string) error {
 
 	// Check wether dest is a number
-
 	if util.IsNumber(dest) {
 		return fmt.Errorf("directory %s is a number", dest)
 	}
@@ -708,13 +713,11 @@ func (fs *FileSystem) DirectoryRename(src, dest string) error {
 	}
 
 	// Check wether dest directory exists
-
 	if util.DirExists(dest) {
 		return fmt.Errorf("directory %s exists", dest)
 	}
 
 	// Check wether files are Checked-Out
-
 	if err := fs.checkOutFiles(srcFiles); err != nil {
 		return err
 	}
@@ -724,34 +727,32 @@ func (fs *FileSystem) DirectoryRename(src, dest string) error {
 	//
 
 	// Rename the file in the index
-
 	for _, elem := range srcFiles {
+		fmt.Println(elem)
 		if !elem.IsDir() {
-			if err := fs.index.renameItem(src, dest); err != nil {
+			if err := fs.index.renameItem(elem.Name(), dest); err != nil {
 				return err
 			}
 		}
 	}
 
 	// Directory rename
-
 	if err := os.Rename(src, dest); err != nil {
 		return err
 	}
 
 	// Logging
-
 	log.Printf("Directory %s renamed to %s\n", src, dest)
 
 	return nil
 }
 
 // Move a directory.
-func (fs FileSystem) DirectoryMove(src, dest string) error {
+func (fs FileSystem) DirectoryMove(src, dst string) error {
 
 	// Check wether dest is a number
-	if util.IsNumber(dest) {
-		return fmt.Errorf("destination directory %s cannot be a number", dest)
+	if util.IsNumber(dst) {
+		return fmt.Errorf("destination directory %s cannot be a number", dst)
 	}
 
 	// Check if source directory exists
@@ -760,8 +761,8 @@ func (fs FileSystem) DirectoryMove(src, dest string) error {
 	}
 
 	// Check wether dest directory exists
-	if util.DirExists(dest) {
-		return fmt.Errorf("destination directory %s already exists", dest)
+	if util.DirExists(dst) {
+		return fmt.Errorf("destination directory %s already exists", dst)
 	}
 
 	// List files in the source directory
@@ -779,22 +780,44 @@ func (fs FileSystem) DirectoryMove(src, dest string) error {
 	// Move the directory
 	//
 
+	dstFiles := make([]FileList, len(srcFiles))
+
+	for k, v := range srcFiles {
+		l := strings.Index(v.Path(), src)
+		if len(v.Path())-(l+len(src)) != 0 {
+			rest := v.Path()[l+len(src)+1:]
+			dstFiles[k].dir = path.Join(dst, rest)
+
+		} else {
+			dstFiles[k].dir = dst
+		}
+		fmt.Println(dstFiles[k].dir)
+	}
 	// Move the file(s) in the index
-	for _, elem := range srcFiles {
+	for k, elem := range srcFiles {
 		if !elem.IsDir() {
-			if err := fs.index.moveItem(src, dest); err != nil {
+			fmt.Println(elem)
+			if err := fs.index.moveItem(elem.Name(), dstFiles[k].dir); err != nil {
 				return err
 			}
 		}
 	}
 
 	// Move the directory and its contents
-	if err := os.Rename(src, dest); err != nil {
+	if err := os.Rename(src, dst); err != nil {
 		return err
 	}
 
+	// Check wether files and directories are moved and in the right place
+	for _, elem := range dstFiles {
+		_, err := os.Stat(path.Join(fs.vaultDir, elem.file))
+		if err != nil {
+			return fmt.Errorf("unable to locate file %s, error %s", elem.file, err)
+		}
+	}
+
 	// Log the successful move operation
-	log.Printf("Successfully moved directory from %s to %s", src, dest)
+	log.Printf("Successfully moved directory from %s to %s", src, dst)
 
 	return nil
 }

@@ -350,6 +350,55 @@ func TestListTree(t *testing.T) {
 	}
 }
 
+// func TestFileCopy(t *testing.T) {
+// 	fs := fsm.FileSystem{
+// 		// Initialize mock FileSystem or dependencies here
+// 	}
+
+// 	fs.Chdir("Projects")
+// 	err := fs.FileCopy("0003.FCStd", "0011.FCStd")
+// 	if err != nil {
+// 		t.Errorf("FileCopy failed: %v", err)
+// 	}
+
+// 	// // Test locked file
+// 	// err = fs.FileCopy("lockedFile.txt", "newFile.txt")
+// 	// if err == nil || err.Error() != "FileCopy error: File lockedFile.txt is checked out by user" {
+// 	// 	t.Errorf("Expected lock error, got: %v", err)
+// 	// }
+
+// 	// // Test for file already existing at destination
+// 	// err = fs.FileCopy("src.txt", "existingFile.txt")
+// 	// if err == nil || err.Error() != "file existingFile.txt already exists" {
+// 	// 	t.Errorf("Expected existing file error, got: %v", err)
+// 	// }
+// }
+
+func TestDirectoryMove(t *testing.T) {
+	err := fs.DirectoryMove("Projects", "test/Projects3")
+	if err != nil {
+		t.Errorf("DirectoryMove failed: %v", err)
+	}
+
+	// // Test for destination directory being a number
+	// err = fs.DirectoryMove("srcDir", "123")
+	// if err == nil || err.Error() != "destination directory 123 cannot be a number" {
+	// 	t.Errorf("Expected number error, got: %v", err)
+	// }
+
+	// // Test for source directory not existing
+	// err = fs.DirectoryMove("nonExistentDir", "destDir")
+	// if err == nil || err.Error() != "source directory nonExistentDir does not exist" {
+	// 	t.Errorf("Expected source directory error, got: %v", err)
+	// }
+
+	// // Test for empty source directory
+	// err = fs.DirectoryMove("nonExistentDir", "destDir")
+	// if err == nil || err.Error() != "source directory nonExistentDir does not exist" {
+	// 	t.Errorf("Expected source directory error, got: %v", err)
+
+}
+
 func TestMain(m *testing.M) {
 
 	setup()
