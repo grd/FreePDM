@@ -191,8 +191,13 @@ func (fs *FileSystem) ImportFile(fname string) (int64, error) {
 
 	fd := NewFileDirectory(fs, dir, index)
 
-	newDir := fd.NewDirectory()
-	newDir.ImportNewFile(fname)
+	if err = fd.CreateDirectory(); err != nil {
+		return -1, err
+	}
+
+	if err = fd.ImportNewFile(fname); err != nil {
+		return -1, err
+	}
 
 	name, err := fs.index.ContainerName(fd.dir)
 	if err != nil {
@@ -239,6 +244,11 @@ func (fs *FileSystem) NewVersion(indexNr int64) (FileVersion, error) {
 	util.CheckErr(err)
 
 	return newVersion, nil
+}
+
+// Returns the number of an item
+func (fs FileSystem) GetItem(file string) (FileList, error) {
+	return fs.index.FileNameToFileList(file)
 }
 
 // Creates a new directory inside the current directory, with the correct uid and gid.
@@ -582,13 +592,17 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 	}
 
 	destFd := NewFileDirectory(fs, destDir.Index(), destIndex)
-	destFd.NewDirectory()
+	if err := destFd.CreateDirectory(); err != nil {
+		return err
+	}
 
 	// Copy the file from src to dest
 	version := srcFd.LatestVersion()
 	srcFile := path.Join(srcFd.dir, version.Pretty, src)
 
-	destFd.ImportNewFile(srcFile)
+	if err = destFd.ImportNewFile(srcFile); err != nil {
+		return err
+	}
 
 	if err := destFd.fileRename(src, destFile); err != nil {
 		return fmt.Errorf("failed to rename file from %s to %s: %w", src, destFile, err)

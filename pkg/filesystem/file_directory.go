@@ -57,7 +57,7 @@ func NewFileDirectory(fsm *FileSystem, dir string, fileNumber int64) FileDirecto
 }
 
 // Creates a new directory inside the current working directory.
-func (fd *FileDirectory) NewDirectory() FileDirectory {
+func (fd *FileDirectory) CreateDirectory() error {
 
 	dirName := fd.dir
 
@@ -74,11 +74,11 @@ func (fd *FileDirectory) NewDirectory() FileDirectory {
 	log.Printf("Created file structure %s\n",
 		path.Join(fd.dir, name))
 
-	return *fd
+	return nil
 }
 
 // Imports a file from an external source.
-func (fd FileDirectory) ImportNewFile(fname string) FileDirectory {
+func (fd FileDirectory) ImportNewFile(fname string) error {
 
 	// create a new version string
 
@@ -92,10 +92,12 @@ func (fd FileDirectory) ImportNewFile(fname string) FileDirectory {
 
 	// create a new version dir
 
-	err := os.Mkdir(versionDir, 0777)
-	util.CheckErr(err)
-	err = os.Chown(versionDir, fd.fs.userUid, fd.fs.vaultUid)
-	util.CheckErr(err)
+	if err := os.Mkdir(versionDir, 0777); err != nil {
+		return err
+	}
+	if err := os.Chown(versionDir, fd.fs.userUid, fd.fs.vaultUid); err != nil {
+		return err
+	}
 
 	// create a new file reference text inside FileName.txt
 
@@ -105,12 +107,15 @@ func (fd FileDirectory) ImportNewFile(fname string) FileDirectory {
 
 	// copy the file inside the new version
 
-	util.CopyFile(fname, copiedFile)
+	if err := util.CopyFile(fname, copiedFile); err != nil {
+		return err
+	}
 
-	err = os.Chown(copiedFile, fd.fs.userUid, fd.fs.vaultUid)
-	util.CheckErr(err)
+	if err := os.Chown(copiedFile, fd.fs.userUid, fd.fs.vaultUid); err != nil {
+		return err
+	}
 
-	return fd
+	return nil
 }
 
 // Creates a new version from copying the previous version.
