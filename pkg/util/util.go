@@ -77,17 +77,26 @@ func FileExists(fileName string) bool {
 	}
 }
 
-// Copies a file from src to dest with file permission 0666
-func CopyFile(src, dest string) {
+// Copies a file from src to dest with file permission 0666.
+// Returns an error.
+func CopyFile(src, dest string) error {
 	from, err := os.Open(src)
-	CheckErr(err)
+	if err != nil {
+		return err
+	}
 
 	to, err := os.OpenFile(dest, os.O_RDWR|os.O_CREATE, 0666)
-	CheckErr(err)
+	if err != nil {
+		return err
+	}
 	defer to.Close()
 
 	_, err = io.Copy(to, from)
-	CheckErr(err)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Converts a string into an int16

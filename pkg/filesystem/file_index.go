@@ -216,16 +216,33 @@ func (fi *FileIndex) getIndexNumber() {
 	util.CheckErr(err)
 }
 
-// Returns the complete directory name of a file number, or an error when not found.
-func (fi *FileIndex) DirIndex(index int64) (string, error) {
+// Returns the FileList struct from an index number, or an error when not found.
+func (fi *FileIndex) IndexToFileList(index int64) (FileList, error) {
 	for _, item := range fi.fileList {
 		if index == item.index {
-			num := fmt.Sprintf("%d", item.index)
-			str := path.Join(item.dir, num)
-			return str, nil
+			return item, nil
 		}
 	}
-	return "", fmt.Errorf("index number %d not found", index)
+	return FileList{}, fmt.Errorf("index number %d not found", index)
+}
+
+// Returns the complete directory name of a file number, or an error when not found.
+func (fi *FileIndex) IndexDir(index int64) (string, error) {
+	fl, err := fi.IndexToFileList(index)
+	if err != nil {
+		return "", fmt.Errorf("index number %d not found", index)
+	}
+	num := fmt.Sprintf("%d", fl.index)
+	return path.Join(fl.dir, num), nil
+}
+
+// Returns the file name of a file number.
+func (fi *FileIndex) IndexToFileName(index int64) (string, error) {
+	fl, err := fi.IndexToFileList(index)
+	if err != nil {
+		return "", fmt.Errorf("file %d not found", index)
+	}
+	return fl.file, nil
 }
 
 // Returns the index number of the file name,
@@ -263,16 +280,6 @@ func (fi *FileIndex) ContainerName(index string) (FileList, error) {
 		}
 	}
 	return FileList{}, fmt.Errorf("file %s not found in the index", index)
-}
-
-// Returns the file name of a file number.
-func (fi *FileIndex) IndexToFileName(index int64) (string, error) {
-	for _, item := range fi.fileList {
-		if index == item.index {
-			return item.file, nil
-		}
-	}
-	return "", fmt.Errorf("file %d not found", index)
 }
 
 // Increases the index number, that is stored in the file 'IndexNumber.txt'

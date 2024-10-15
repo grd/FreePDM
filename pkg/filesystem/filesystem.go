@@ -220,7 +220,7 @@ func (fs *FileSystem) NewVersion(indexNr int64) (FileVersion, error) {
 
 	// Check wether src is locked or not
 
-	dirIdx, err := fs.index.DirIndex(indexNr)
+	dirIdx, err := fs.index.IndexDir(indexNr)
 	util.CheckErr(err)
 
 	if name := fs.IsLockedItem(indexNr); name != "" {
@@ -423,7 +423,7 @@ func (fs *FileSystem) CheckOut(itemNr int64, version FileVersion) error {
 
 	// Set file mode 0700
 
-	dir, err := fs.index.DirIndex(itemNr)
+	dir, err := fs.index.IndexDir(itemNr)
 	util.CheckErr(err)
 
 	fd := NewFileDirectory(fs, path.Join(fs.vaultDir, dir), itemNr)
@@ -456,7 +456,7 @@ func (fs *FileSystem) CheckIn(itemNr int64, version FileVersion, descr, longdesc
 
 	// Set file mode 0755
 
-	dir, err := fs.index.DirIndex(itemNr)
+	dir, err := fs.index.IndexDir(itemNr)
 	util.CheckErr(err)
 
 	fd := NewFileDirectory(fs, path.Join(fs.vaultDir, dir), itemNr)
