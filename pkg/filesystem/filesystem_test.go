@@ -93,26 +93,3 @@ func TestDirectoryCopy(t *testing.T) {
 		t.Errorf("Expected existing directory error, got: %v", err)
 	}
 }
-
-func TestDirectoryRename(t *testing.T) {
-	fs := fsm.FileSystem{
-		// Initialize mock FileSystem or dependencies here
-	}
-
-	err := fs.DirectoryRename("srcDir", "destDir")
-	if err != nil {
-		t.Errorf("DirectoryRename failed: %v", err)
-	}
-
-	// Test renaming a directory to a number
-	err = fs.DirectoryRename("srcDir", "123")
-	if err == nil || err.Error() != "directory 123 is a number" {
-		t.Errorf("Expected number error, got: %v", err)
-	}
-
-	// Test for existing destination directory
-	err = fs.DirectoryRename("srcDir", "existingDir")
-	if err == nil || err.Error() != "directory existingDir exists" {
-		t.Errorf("Expected existing directory error, got: %v", err)
-	}
-}

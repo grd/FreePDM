@@ -717,58 +717,6 @@ func (fs *FileSystem) DirectoryCopy(src, dest string) error {
 	return nil
 }
 
-// Rename a directory.
-func (fs *FileSystem) DirectoryRename(src, dest string) error {
-
-	// Check wether dest is a number
-	if util.IsNumber(dest) {
-		return fmt.Errorf("directory %s is a number", dest)
-	}
-
-	srcFiles, err := fs.ListTree(src)
-	if err != nil {
-		return err
-	}
-
-	if srcFiles == nil {
-		return fmt.Errorf("empty source directory")
-	}
-
-	// Check wether dest directory exists
-	if util.DirExists(dest) {
-		return fmt.Errorf("directory %s exists", dest)
-	}
-
-	// Check wether files are Checked-Out
-	if err := fs.checkOutFiles(srcFiles); err != nil {
-		return err
-	}
-
-	//
-	// Rename the directory
-	//
-
-	// Rename the file in the index
-	for _, elem := range srcFiles {
-		fmt.Println(elem)
-		if !elem.IsDir() {
-			if err := fs.index.renameItem(elem.Name(), dest); err != nil {
-				return err
-			}
-		}
-	}
-
-	// Directory rename
-	if err := os.Rename(src, dest); err != nil {
-		return err
-	}
-
-	// Logging
-	log.Printf("Directory %s renamed to %s\n", src, dest)
-
-	return nil
-}
-
 // Move a directory.
 func (fs FileSystem) DirectoryMove(src, dst string) error {
 
