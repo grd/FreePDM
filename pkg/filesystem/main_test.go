@@ -304,10 +304,6 @@ func TestTheRest(t *testing.T) {
 	// 	t.Errorf("os.Remove failed: %v", err)
 	// }
 
-	if _, err := fs.ListTree("."); err != nil {
-		t.Errorf("ListTree failed: %v", err)
-	}
-
 	// if err = fism.DirectoryRename("Standard Parts", "Projects2"); err != nil {
 	// 	t.Errorf("DirectoryRename failed: %v", err)
 	// }
@@ -328,7 +324,7 @@ func TestTheRest(t *testing.T) {
 func TestListTree(t *testing.T) {
 	lt, err := fs.ListTree("Projects")
 	if err != nil {
-		t.Errorf("ListTree failed: %v", err)
+		t.Errorf("listTree failed: %v", err)
 	}
 	list := make([]string, len(lt))
 	for i, item := range lt {

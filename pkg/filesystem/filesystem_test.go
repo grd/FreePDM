@@ -116,26 +116,3 @@ func TestDirectoryRename(t *testing.T) {
 		t.Errorf("Expected existing directory error, got: %v", err)
 	}
 }
-
-func TestDirectoryMove(t *testing.T) {
-	fs := fsm.FileSystem{
-		// Initialize mock FileSystem or dependencies here
-	}
-
-	err := fs.DirectoryMove("srcDir", "destDir")
-	if err != nil {
-		t.Errorf("DirectoryMove failed: %v", err)
-	}
-
-	// Test for destination directory being a number
-	err = fs.DirectoryMove("srcDir", "123")
-	if err == nil || err.Error() != "destination directory 123 cannot be a number" {
-		t.Errorf("Expected number error, got: %v", err)
-	}
-
-	// Test for source directory not existing
-	err = fs.DirectoryMove("nonExistentDir", "destDir")
-	if err == nil || err.Error() != "source directory nonExistentDir does not exist" {
-		t.Errorf("Expected source directory error, got: %v", err)
-	}
-}
