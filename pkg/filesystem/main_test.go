@@ -292,33 +292,6 @@ func TestTheRest(t *testing.T) {
 			compareFileListLine(3, "3:0003.FCStd::Projects:")
 		}
 	}
-
-	// err = fs.Mkdir("Projects2")
-	// ex.CheckErr(err)
-
-	// if err = fism.FileMove("Projects/temp/0002.FCStd", "Projects"); err != nil {
-	// 	t.Errorf("FileMove failed: %v", err)
-	// }
-
-	// if err = os.Remove("Projects/temp"); err != nil {
-	// 	t.Errorf("os.Remove failed: %v", err)
-	// }
-
-	// if err = fism.DirectoryRename("Standard Parts", "Projects2"); err != nil {
-	// 	t.Errorf("DirectoryRename failed: %v", err)
-	// }
-
-	// err = fs.Chdir("Projects (copy)")
-	// ex.CheckErr(err)
-
-	// fmt.Printf("\nstart listtree\n")
-	// list = fs.ListTree(fs.VaultDir())
-	// for _, elem := range list {
-	// 	fmt.Printf("%v\n", elem)
-	// }
-
-	// fmt.Printf("\n\n")
-	// log.Fatal("oeps")
 }
 
 func TestListTree(t *testing.T) {
@@ -389,6 +362,7 @@ func TestDirectoryMove(t *testing.T) {
 		t.Errorf("Expected source directory error, got: %v", err)
 	}
 
+	// Test for creating new directory
 	if err := fs.Mkdir("temp"); err != nil {
 		t.Errorf("Expected to create dir temp got %v", err)
 	}
@@ -397,6 +371,24 @@ func TestDirectoryMove(t *testing.T) {
 	err = fs.DirectoryMove("temp", "destDir")
 	if err == nil || err.Error() != "directory is empty" {
 		t.Errorf("Expected source directory to be empty, got: %v", err)
+	}
+
+	// Test with removal of the test directory
+	err = os.Remove("temp")
+	if err != nil {
+		t.Errorf("Removal of directory temp failed: %v", err)
+	}
+
+	// Test with live data, including sub-dirs, return to Projects3
+	err = fs.DirectoryMove("test/Projects3", "Projects3")
+	if err != nil {
+		t.Errorf("DirectoryMove failed: %v", err)
+	}
+
+	// Test with live data, including sub-dirs, rename Projects3 to Projects again
+	err = fs.DirectoryMove("Projects3", "Projects")
+	if err != nil {
+		t.Errorf("DirectoryMove failed: %v", err)
 	}
 }
 
