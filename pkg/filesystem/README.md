@@ -11,17 +11,16 @@ The Filesystem is a major part of FreePDM. It is primarily a storage of files th
 - [x] Renaming files
 - [x] Copying files
 - [x] Moving files
-- [ ] Renaming directories (branch mvcpren)
-- [ ] Moving directories (branch mvcpren)
-- [ ] Copying directories (branch mvcpren)
+- [x] Renaming directories
+- [ ] Copying directories
 - [x] Dealing with versions.
 - [x] Disable / enable versioned files (mode 0700)
 - [x] Dealing with checkin and checkout.
 - [x] Dealing with users.
 - [ ] Reporting with json (dir list, properties, etc.)
 - [x] Logging the activities.
-- [ ] Checks about checkout during file operations (move, rename, copy) and new versions. (branch checkout)
-- [ ] Make it working for multi-user, multi-vaults (branch multi)
+- [ ] Checks about checkout during file operations (move, rename, copy) and new versions.
+- [ ] Make it working for multi-user, multi-vaults
 - [ ] Checks about CheckIn comments (descr and longDescr)
 - [ ] Checks about the VER.txt in file versions
 - [ ] Change directory and file structure to Read Only for security. That way no accidental issues can happen.
