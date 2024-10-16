@@ -319,6 +319,25 @@ func TestListTree(t *testing.T) {
 	}
 }
 
+func TestFileRename(t *testing.T) {
+	fs := fsm.FileSystem{
+		// Initialize mock FileSystem or dependencies here
+	}
+
+	err := fs.FileRename("src.txt", "dest.txt")
+	if err != nil {
+		t.Errorf("FileRename failed: %v", err)
+	}
+
+	// Test cases for locking, existing destination, etc.
+	err = fs.FileRename("lockedFile.txt", "newFile.txt")
+	if err == nil || err.Error() != "FileRename error: File lockedFile.txt is checked out by user" {
+		t.Errorf("Expected lock error, got: %v", err)
+	}
+
+	// Further test cases, e.g., file already exists.
+}
+
 // func TestFileCopy(t *testing.T) {
 // 	fs := fsm.FileSystem{
 // 		// Initialize mock FileSystem or dependencies here
@@ -390,6 +409,8 @@ func TestDirectoryRename(t *testing.T) {
 	if err != nil {
 		t.Errorf("DirectoryMove failed: %v", err)
 	}
+
+	// TODO: Test for checked-out file(s)
 }
 
 func TestMain(m *testing.M) {

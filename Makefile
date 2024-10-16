@@ -19,7 +19,7 @@ test:
 	go test -v ./...
 
 fstest:
-	go test -v pkg/filesystem/main_test.go
+	go test pkg/filesystem/main_test.go
 
 serverapp: 
 	go build -o $(BIN_DIR)/serverapp cmd/serverapp/main.go

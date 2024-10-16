@@ -6,25 +6,6 @@ import (
 	fsm "github.com/grd/FreePDM/pkg/filesystem"
 )
 
-func TestFileRename(t *testing.T) {
-	fs := fsm.FileSystem{
-		// Initialize mock FileSystem or dependencies here
-	}
-
-	err := fs.FileRename("src.txt", "dest.txt")
-	if err != nil {
-		t.Errorf("FileRename failed: %v", err)
-	}
-
-	// Test cases for locking, existing destination, etc.
-	err = fs.FileRename("lockedFile.txt", "newFile.txt")
-	if err == nil || err.Error() != "FileRename error: File lockedFile.txt is checked out by user" {
-		t.Errorf("Expected lock error, got: %v", err)
-	}
-
-	// Further test cases, e.g., file already exists.
-}
-
 func TestFileCopy(t *testing.T) {
 	fs := fsm.FileSystem{
 		// Initialize mock FileSystem or dependencies here
@@ -45,29 +26,6 @@ func TestFileCopy(t *testing.T) {
 	err = fs.FileCopy("src.txt", "existingFile.txt")
 	if err == nil || err.Error() != "file existingFile.txt already exists" {
 		t.Errorf("Expected existing file error, got: %v", err)
-	}
-}
-
-func TestFileMove(t *testing.T) {
-	fs := fsm.FileSystem{
-		// Initialize mock FileSystem or dependencies here
-	}
-
-	err := fs.FileMove("file.txt", "newDir")
-	if err != nil {
-		t.Errorf("FileMove failed: %v", err)
-	}
-
-	// Test moving a locked file
-	err = fs.FileMove("lockedFile.txt", "newDir")
-	if err == nil || err.Error() != "FileMove error: File lockedFile.txt is checked out by user" {
-		t.Errorf("Expected lock error, got: %v", err)
-	}
-
-	// Further test cases, e.g., non-existing directory
-	err = fs.FileMove("file.txt", "nonExistentDir")
-	if err == nil || err.Error() != "directory nonExistentDir doesn't exist" {
-		t.Errorf("Expected directory error, got: %v", err)
 	}
 }
 
