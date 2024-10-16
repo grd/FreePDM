@@ -718,7 +718,7 @@ func (fs *FileSystem) DirectoryCopy(src, dest string) error {
 }
 
 // Move a directory.
-func (fs FileSystem) DirectoryMove(src, dst string) error {
+func (fs FileSystem) DirectoryRename(src, dst string) error {
 
 	// Check wether dest is a number
 	if util.IsNumber(dst) {

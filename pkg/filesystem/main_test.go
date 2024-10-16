@@ -343,21 +343,21 @@ func TestListTree(t *testing.T) {
 // 	// }
 // }
 
-func TestDirectoryMove(t *testing.T) {
+func TestDirectoryRename(t *testing.T) {
 	// Test with live data, including sub-dirs
-	err := fs.DirectoryMove("Projects", "test/Projects3")
+	err := fs.DirectoryRename("Projects", "test/Projects3")
 	if err != nil {
 		t.Errorf("DirectoryMove failed: %v", err)
 	}
 
 	// Test for destination directory being a number
-	err = fs.DirectoryMove("Standard Parts", "123")
+	err = fs.DirectoryRename("Standard Parts", "123")
 	if err == nil || err.Error() != "destination directory 123 cannot be a number" {
 		t.Errorf("Expected number error, got: %v", err)
 	}
 
 	// Test for source directory not existing
-	err = fs.DirectoryMove("nonExistentDir", "destDir")
+	err = fs.DirectoryRename("nonExistentDir", "destDir")
 	if err == nil || err.Error() != "source directory nonExistentDir does not exist" {
 		t.Errorf("Expected source directory error, got: %v", err)
 	}
@@ -368,7 +368,7 @@ func TestDirectoryMove(t *testing.T) {
 	}
 
 	// Test for empty source directory
-	err = fs.DirectoryMove("temp", "destDir")
+	err = fs.DirectoryRename("temp", "destDir")
 	if err == nil || err.Error() != "directory is empty" {
 		t.Errorf("Expected source directory to be empty, got: %v", err)
 	}
@@ -380,13 +380,13 @@ func TestDirectoryMove(t *testing.T) {
 	}
 
 	// Test with live data, including sub-dirs, return to Projects3
-	err = fs.DirectoryMove("test/Projects3", "Projects3")
+	err = fs.DirectoryRename("test/Projects3", "Projects3")
 	if err != nil {
 		t.Errorf("DirectoryMove failed: %v", err)
 	}
 
 	// Test with live data, including sub-dirs, rename Projects3 to Projects again
-	err = fs.DirectoryMove("Projects3", "Projects")
+	err = fs.DirectoryRename("Projects3", "Projects")
 	if err != nil {
 		t.Errorf("DirectoryMove failed: %v", err)
 	}
