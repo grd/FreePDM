@@ -11,7 +11,7 @@ A PDM for FreeCAD
 - [ ] Adding an owner, checker, approver
 - [ ] Dealing with the history of the parts (this can be dealth with the meta-data DB)
 - [ ] Dealing with the -four- assembly types. I am sure that they all have their own quirks
-- [ ] Copying files (incl. it's dependencies. Everything below and drawings, all optional)
+- [ ] Copying files (incl. its dependencies. Everything below and drawings, all optional)
 - [ ] Storing and reading versions and releases
 - [ ] Dealing with states (temporary ones, before putting into a release), again in the data DB
 - [ ] Dealing with checkin and checkout

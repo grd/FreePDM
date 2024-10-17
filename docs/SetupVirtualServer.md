@@ -31,17 +31,17 @@ Now you can access your VM via [ssh](#ssh)
 
 A static IP address is an address that doesn't change (as opposed to dynamic IP addresses). Setting up a _static_ _IP address_ is recommended, but not required.
 If preferred to leave the _IP address_ as is, see below how to check your _IP address_.
-For changing the _IP address_ to _static_ one see for example [this blog](https://www.rosehosting.com/blog/how-to-configure-static-ip-address-on-ubuntu-20-04/) or [here](https://linuxconfig.org/how-to-setup-a-static-ip-address-on-debian-linux).
+For changing an _IP address_ to a _static_ one, see for example [this blog](https://www.rosehosting.com/blog/how-to-configure-static-ip-address-on-ubuntu-20-04/) or [here](https://linuxconfig.org/how-to-setup-a-static-ip-address-on-debian-linux).
 
 How to check your _IP address_:  
 The command `ip -a | grep inet` gives your current (local) _IP address_.
 ![getipaddress](./figures/get_IPadress.png)
-You can access this your server from your _terminal_ or via _Putty_. 
+You can access this through your server via your _terminal_ or via _Putty_. 
 
 ### `ssh`
 
-_ssh_ is a  Secure Shell protocol.
-As long as you have installed it on both your server and on you system you should be able to remote login.
+_ssh_ is a Secure Shell protocol.
+As long as you have installed it on both your server and on you system you should be able to remotely login.
 
 Login works as follows:
 
@@ -49,7 +49,7 @@ Login works as follows:
 ssh USERNAME@###.###.###.###
 ```
 
-Then type in your password. 
+You should be prompted for you password. Type in your password.
 
 ![ssh_login](./figures/ssh_login.png)
 

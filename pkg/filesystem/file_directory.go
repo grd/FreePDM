@@ -433,7 +433,7 @@ func (fd *FileDirectory) increaseVersionNumber(version string) {
 	util.CheckErr(err)
 }
 
-// Renames the filename. Returns an error when not succeed.
+// Renames the filename. Returns an error when unsuccessful.
 func (fd *FileDirectory) fileRename(src, dest string) error {
 
 	versions, err := fd.AllFileVersions()

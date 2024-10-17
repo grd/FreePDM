@@ -8,11 +8,14 @@ FreePDM is a PDM that works external to FreeCAD. It can interoperate with FreeCA
 
 #### Python
 
-Since we are working with outside of FreeCAD we need to install Python.
+Since we are working externally of FreeCAD we need to install the Python interpreter.
 
 TODO: Show how to
 
 #### `pip`
+
+`pip` is a package installer for python. It will be utilized to install specific 3rd parthy python modules / libraries.
+
 TODO: Show how to
 
 ##### `pip` modules

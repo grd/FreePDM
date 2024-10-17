@@ -16,16 +16,16 @@
 
 Version management is a difficult topic. A main issue is that it should be able to create releases of every individual part, assembly (and optional drawing.) 
 
-There are serval different (Open source)version control systems available.
-The main difficulty is that those are most written for software. 
-Where software is released as a whole that is not always the case within the mechanical world. see: @ref to story 
+There are serveral different (open source) version control systems available.
+The main difficulty is that these software are most targetting software development.
+The difference is that, where software is released as a whole project, that is not always the case within the mechanical world. see: @ref to story 
 _Note Grd: But there are also closed source versions. I think that we should also accept those because in a company they might only allow this kind of software._
 This has to be tackled. 
-Currently the most promising implementation is the svn version system (a Client-server). 
+Currently the most promising implementation is the SVN version system (a Client-server). 
 The most well known Distributed version systems are [git](https://git-scm.com/) and [mercurial](https://www.mercurial-scm.org/).
 _Note Grd: Why does it need to be tackled? You can also allow them all. But in that case we need to have an admin page in where we can select which one we use. They all work roughly the same, but we need to make all work of course. But we are gonna start with SVN._
 
-_Note: We have to decide if the model(part / assembly) gets an update,  the drawing get also an update. The same issue applied in revers order._
+_Note: We have to decide if the model(part / assembly) gets an update, the drawing get also an update. The same issue applied in revers order._
 Note grd: This is never gonna work. When a part is changed you aso need to update the drawing of that part, the assy (or assies) in where it belongs and the drawings of those too.
 
 ### Database
@@ -65,8 +65,8 @@ See also Comment of user1234 in the related [topic](https://forum.freecad.org/vi
 
 Looking at the local storage there are two tastes available(for now).
 
-- A in-depended tool
-- inside FreeCAD (for example [_Add-on manager_](https://wiki.freecad.org/Std_AddonMgr))
+- An independent tool
+- Inside FreeCAD (for example [_Add-on manager_](https://wiki.freecad.org/Std_AddonMgr))
   - If Using the _Add-on Manager_ see: the [Workebench start kit](https://github.com/FreeCAD/freecad.workbench_starterkit)
   - Another important Thread about the [_Add-on Manager_ Redesign](https://forum.freecad.org/viewtopic.php?f=9&t=64628)
 
@@ -76,18 +76,19 @@ _Note: How does the GUI interact with the user?_
 
 ### Used programming language
 
-In case of the web interface can be programmed with for example Javascript or python (there are more but these are most well known).
+In the case of the web interface, it can be programmed with Javascript or Python (there are more but these are most well known).
 
-In case of a local program Python can be a good option too.
-This is also because it works good together with FreeCAD and so the FreeCAD [Add-on Manager](https://wiki.freecad.org/Std_AddonMgr). 
-What are pro's cons of the Add-on manager: 
+In the case of a local program, Python can be a good option too.
+This is also due to its interoperating well with FreeCAD and the FreeCAD [Add-on Manager](https://wiki.freecad.org/Std_AddonMgr). 
 
-Pro's                          | Con's
------------------------------- | --------------------------
+What are pros/cons of the Add-on manager: 
+
+Pros                           | Cons
+-------------------------------| --------------------------
 Semi Centralised updates       | Not direct integration
-Fast(er) update speed⁰ | python only
+Fast(er) update speed⁰         | python only
 Translation to other languages | More difficult user handling
- Maintainability             | 
+ Maintainability               | 
 
 ⁰ Faster is compared to FreeCAD when every chance goes through checks(Except when WMayer fix it). <!-- unicode superscript see: https://stackoverflow.com/questions/15155778/superscript-in-markdown-github-flavored -->
  
