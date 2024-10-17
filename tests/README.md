@@ -8,7 +8,7 @@ First you need to install Ubuntu Server (or Debian) and after that you need to w
 
 To understand the IP address of your server, type in `ip a`
 
-### Loggin in the server
+### Log into the server
 `ssh ubuntu@10.0.0.11`
 
 The password is `ubuntu`. The loginscreen asks you to modify the password.

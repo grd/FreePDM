@@ -4,7 +4,7 @@ The specs for a file server are minimal. Right now I am using a Raspberry Pi 4 a
 This program uses Ubuntu Server. They support both the Intel and ARM platforms.
 First you need to install Ubuntu Server and after that you need to write down the ip address of the server. When you need to have access outside of the LAN you are gonna need port forwarding and also a certificate (certbot for instance). This is the ip address of my server: 10.0.0.11 
 
-### Loggin in the server
+### Log into the server
 `ssh ubuntu@10.0.0.11`
 
 The password is `ubuntu`. The loginscreen asks you to modify the password.

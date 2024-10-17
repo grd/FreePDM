@@ -10,7 +10,7 @@ import (
 
 // https://www.osohq.com/post/sqlalchemy-role-rbac-basics
 
-// struct for genrating Roles
+// struct for generating Roles
 type TempRole struct {
 }
 

@@ -321,7 +321,7 @@ func (fd *FileDirectory) Restoreversion(item int) {
 }
 
 // Opens the latest item for editing the SMB mount.
-// This "Checkes Out" the item.
+// This "Checks Out" the item.
 func (fd *FileDirectory) OpenLatestsVersion() {
 	ver := fd.LatestVersion()
 	fd.OpenItemVersion(ver)
@@ -334,7 +334,7 @@ func (fd *FileDirectory) CloseLatestsVersion() {
 }
 
 // Opens the item number for editing.
-// This "Checkes Out" the item.
+// This "Checks Out" the item.
 func (fd *FileDirectory) OpenItemVersion(version FileVersion) {
 
 	dirVersion := path.Join(fd.dir, version.Pretty)

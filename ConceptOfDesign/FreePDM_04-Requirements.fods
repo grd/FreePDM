@@ -1276,7 +1276,7 @@
       <text:p>29</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>The System provide capability to copy / Duplicate assembly (Strucutures)</text:p>
+      <text:p>The System provide capability to copy / Duplicate assembly (Structures)</text:p>
      </table:table-cell>
      <table:table-cell table:number-columns-repeated="1020"/>
     </table:table-row>

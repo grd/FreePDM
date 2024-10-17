@@ -24,15 +24,15 @@ const (
 
 func setup() {
 	fmt.Println("")
-	fmt.Println("Welcome to the create new vault program.")
+	fmt.Println("Welcome to the new vault creation program.")
 	fmt.Println("")
-	fmt.Println("Now a small questionaire is coming for the creation of the new vault.")
-	fmt.Println("For more info look at https://github.com/grd/FreePDM/tests/README.md")
+	fmt.Println("Some information will be necessary prior to creating a new vault.")
+	fmt.Println("For more info please refer to https://github.com/grd/FreePDM/tests/README.md")
 	fmt.Println("")
 	fmt.Println("The necessary information is the login user, user uid, the vault uid,")
 	fmt.Println("and the name of the new vault.")
 	fmt.Println("")
-	fmt.Println("Are you ready? [Y/n]")
+	fmt.Println("Continue? [Y/n]")
 	var mounting_point string
 	fmt.Scan(&mounting_point)
 	if strings.ToLower(mounting_point) == "n" {
