@@ -14,12 +14,12 @@ I still believe that a website would be the right choice for most of the PDM act
 - Rename (/admin/rename) - a form to rename the admin account.
 - Home (/admin) - the home page for the admin user.
 - User List (/admin/users) - the default page of the users section for performing CRUD operations. Displays a list of all users with buttons to add (/admin/user/user_name/add) and edit (/admin/user/user_name).
-- User (/admin/user/user_name) - a form to modify a specific user acccount.
+- User (/admin/user/user_name) - a form to modify a specific user account.
 - Unactivate (/admin/user/user_name/unactivate) and reactivate (/admin/user/user_name/reactivate).
 
 ### Vaults
 - Vaults (/admin/vaults) - a list of the existing vaults, incl. buttons for add, edit, remove.
-- Vault (/admin/vault/vault_name) Setting up name of the vault, it's versioning scheme, numbering scheme and wether it is mandatory. Also the user access. Who has access and what role?
+- Vault (/admin/vault/vault_name) Setting up name of the vault, it's versioning scheme, numbering scheme and whether it is mandatory. Also the user access. Who has access and what role?
 - Unlock (/admin/vault/vault_name/unlock) a file or item revision.
 - Unremove (/admin/vault/vault_name/unremove) "Un-remove" a file or an item-revision.
 - Vault logs (/admin/vault/logs) Show the logs.

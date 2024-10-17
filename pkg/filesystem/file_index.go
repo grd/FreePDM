@@ -47,7 +47,7 @@ func NewFileIndex(fs *FileSystem) (fi FileIndex, err error) {
 	fi.fileListCsv = path.Join(fi.fs.dataDir, "FileList.csv")
 	fi.indexNumberTxt = path.Join(fi.fs.dataDir, "IndexNumber.txt")
 
-	// check wether the critical files exists.
+	// check whether the critical files exists.
 
 	util.CriticalFileExist(fi.fileListCsv)
 	util.CriticalFileExist(fi.indexNumberTxt)

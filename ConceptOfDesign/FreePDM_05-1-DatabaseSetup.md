@@ -143,7 +143,7 @@ Difference
 - [Freecodecamp relational vs non-relational](https://www.freecodecamp.org/news/relational-vs-nonrelational-databases-difference-between-sql-db-and-nosql-db/)
 - [Techtarget SQL vs No-sql vs new-sql](https://www.techtarget.com/whatis/feature/SQL-vs-NoSQL-vs-NewSQL-How-do-they-compare)
 
-Explnation
+Explanation
 
 - [Databases in plain english](https://www.freecodecamp.org/news/sql-and-databases-explained-in-plain-english/)
 - [Geek for Geeks SQL tutorial](https://www.geeksforgeeks.org/sql-tutorial/)

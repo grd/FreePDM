@@ -63,7 +63,7 @@ func NewFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
 
 	fs.user = userName
 
-	// check wether the critical directories exist.
+	// check whether the critical directories exist.
 
 	util.CriticalDirExist(fs.vaultDir)
 	util.CriticalDirExist(fs.dataDir)
@@ -176,7 +176,7 @@ func (fs *FileSystem) WriteLockedIndex() {
 // The function returns the number of the imported file or an error.
 func (fs *FileSystem) ImportFile(fname string) (int64, error) {
 
-	// check wether a file exist
+	// check whether a file exist
 
 	if !util.FileExists(fname) {
 		return -1, fmt.Errorf("file %s could not be found", fname)
@@ -218,7 +218,7 @@ func (fs *FileSystem) ImportFile(fname string) (int64, error) {
 // Generates a new version of a file. Returns the FileVersion and an error.
 func (fs *FileSystem) NewVersion(indexNr int64) (FileVersion, error) {
 
-	// Check wether src is locked or not
+	// Check whether src is locked or not
 
 	dirIdx, err := fs.index.IndexDir(indexNr)
 	util.CheckErr(err)
@@ -254,7 +254,7 @@ func (fs FileSystem) GetItem(file string) (FileList, error) {
 // Creates a new directory inside the current directory, with the correct uid and gid.
 func (fs FileSystem) Mkdir(dir string) error {
 
-	// Check wether dname is an int. We don't want that, because the number could interfere with the fileindex.
+	// Check whether dname is an int. We don't want that, because the number could interfere with the fileindex.
 	if _, err := strconv.Atoi(dir); err == nil {
 		return fmt.Errorf("please change %s into a string, now it is a number", dir)
 	}
@@ -671,7 +671,7 @@ func (fs *FileSystem) FileMove(fileName, destDir string) error {
 // Copy a directory.
 func (fs *FileSystem) DirectoryCopy(src, dest string) error {
 
-	// Check wether dest is a number
+	// Check whether dest is a number
 
 	if util.IsNumber(dest) {
 		return fmt.Errorf("directory %s is a number", dest)
@@ -682,13 +682,13 @@ func (fs *FileSystem) DirectoryCopy(src, dest string) error {
 		return err
 	}
 
-	// Check wether dest directory exists
+	// Check whether dest directory exists
 
 	if util.DirExists(dest) {
 		return fmt.Errorf("directory %s exists", dest)
 	}
 
-	// Check wether files are Checked-Out
+	// Check whether files are Checked-Out
 
 	if err := fs.checkOutFiles(srcFiles); err != nil {
 		return err
@@ -720,7 +720,7 @@ func (fs *FileSystem) DirectoryCopy(src, dest string) error {
 // Move a directory.
 func (fs FileSystem) DirectoryRename(src, dst string) error {
 
-	// Check wether dest is a number
+	// Check whether dest is a number
 	if util.IsNumber(dst) {
 		return fmt.Errorf("destination directory %s cannot be a number", dst)
 	}
@@ -730,7 +730,7 @@ func (fs FileSystem) DirectoryRename(src, dst string) error {
 		return fmt.Errorf("source directory %s does not exist", src)
 	}
 
-	// Check wether dest directory exists
+	// Check whether dest directory exists
 	if util.DirExists(dst) {
 		return fmt.Errorf("destination directory %s already exists", dst)
 	}
@@ -776,7 +776,7 @@ func (fs FileSystem) DirectoryRename(src, dst string) error {
 		return err
 	}
 
-	// Check wether files and directories are moved and in the right place
+	// Check whether files and directories are moved and in the right place
 	for _, elem := range dstFiles {
 		_, err := os.Stat(path.Join(fs.vaultDir, elem.file))
 		if err != nil {

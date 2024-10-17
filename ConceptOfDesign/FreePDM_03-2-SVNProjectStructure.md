@@ -211,7 +211,7 @@ An example:
     K -.- O[CAD files 1 ... N];
     K --- O[CAD files 1 ... N];
     K ----P(Drawings);
-    K ----Q(FEM anaysis);
+    K ----Q(FEM analysis);
     P --- R[Drawing file 1 .. N];
     P --- R[Drawing file 1 .. N];
     P -.- R[Drawing file 1 .. N];

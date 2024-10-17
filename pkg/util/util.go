@@ -41,7 +41,7 @@ func CheckErr(err error) {
 	}
 }
 
-// Check wether a critical file exists.
+// Check whether a critical file exists.
 func CriticalFileExist(fileName string) {
 	_, err := os.Stat(fileName)
 	if err != nil {
@@ -49,7 +49,7 @@ func CriticalFileExist(fileName string) {
 	}
 }
 
-// Check wether a critical directory exists.
+// Check whether a critical directory exists.
 func CriticalDirExist(dirName string) {
 	_, err := os.Stat(dirName)
 	if err != nil {
@@ -57,7 +57,7 @@ func CriticalDirExist(dirName string) {
 	}
 }
 
-// Check wether a directory exists. The return value is a bool.
+// Check whether a directory exists. The return value is a bool.
 func DirExists(dirName string) bool {
 	_, err := os.Stat(dirName)
 	if os.IsNotExist(err) {
@@ -67,7 +67,7 @@ func DirExists(dirName string) bool {
 	}
 }
 
-// Check wether a file exists. The return value is a bool.
+// Check whether a file exists. The return value is a bool.
 func FileExists(fileName string) bool {
 	_, err := os.Stat(fileName)
 	if os.IsNotExist(err) {

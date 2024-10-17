@@ -63,7 +63,7 @@ func WriteLockedFiles() {
 }
 
 func main() {
-	// Check wether we are inside the right folder...
+	// Check whether we are inside the right folder...
 	if !util.FileExists("IndexNumber.txt") {
 		log.Fatal("Wrong directory...")
 	}

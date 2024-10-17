@@ -1,6 +1,6 @@
 # The vcs tool
 
-The vcs (version control system) is a tool that interacts with the vfs (virtual filesystem). It is roughly based onto https://github.com/Abdulsametileri/vX for the "status" part, but for the rest this will be compeltely different.
+The vcs (version control system) is a tool that interacts with the vfs (virtual filesystem). It is roughly based onto https://github.com/Abdulsametileri/vX for the "status" part, but for the rest this will be compeletly different.
 
 ## Commands
 
