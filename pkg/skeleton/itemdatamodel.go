@@ -24,9 +24,9 @@ import (
 
 // The arguments:
 //     first argument is the name
-//     the second is the type of the item
-//     the third is the location of the item file
-//     the fourth is the date stamp
+//     second is the type of the item
+//     third is the location of the item file
+//     fourth is the date stamp
 
 // The overall document XML structure
 type Document struct {
@@ -115,7 +115,7 @@ func read() {
 	prop := `
 	<?xml version='1.0' encoding='utf-8'?>
 	<!--
-	 FreeCAD Document, see https://www.freecadweb.org for more information...
+	 FreeCAD Document, see https://www.freecad.org for more information...
 	-->
 	<Document SchemaVersion="4" ProgramVersion="0.20R28647 (Git)" FileVersion="1">
 		<Properties Count="15" TransientCount="3">
@@ -287,7 +287,7 @@ func InitItemDataModel(filename string) (ret ItemDataModel) {
 }
 
 func (idm *ItemDataModel) ReadFcFile() {
-	// Note that this temp-directory and all it's contents is automatically being deleted
+	// Note that this temp-directory and all its contents is automatically being deleted
 	tempDir, err := os.MkdirTemp("/etc", "*-FC-File")
 	util.CheckErr(err)
 	defer os.RemoveAll(tempDir) // clean up
