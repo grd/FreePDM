@@ -13,16 +13,16 @@ import (
 
 // The FileInfo struct
 type FileInfo struct {
-	Dir             bool // Is it a directory or a file?
-	FileName        string
-	FilePath        string
-	FileDescription string
-	FileSecondDescr string
-	FileVersion     string
-	FileLocked      bool   // Is the file locked out?
-	FileLockedOutBy string // Who checked out the file?
-	FileIcon        []byte
-	FileProperties  []FileProperties
+	isDir           bool // Is it a directory or a file?
+	name            string
+	dir             string
+	fileDescription string
+	fileSecondDescr string
+	fileVersion     string
+	fileLocked      bool   // Is the file locked out?
+	fileLockedOutBy string // Who checked out the file?
+	// fileIcon        []byte
+	fileProperties []FileProperties
 }
 
 // The File Properties
@@ -34,7 +34,7 @@ func (fi FileInfo) String() string {
 	return path.Join(fi.Path(), fi.Name())
 }
 func (fi FileInfo) IsDir() bool {
-	return fi.Dir
+	return fi.isDir
 }
 
 func (fi FileInfo) DirSort() int {
@@ -47,34 +47,34 @@ func (fi FileInfo) DirSort() int {
 
 // Returns the directory or file name
 func (fi FileInfo) Name() string {
-	return fi.FileName
+	return fi.name
 }
 
 // Returns the path of the file or dir
 func (fi FileInfo) Path() string {
-	return fi.FilePath
+	return fi.dir
 }
 
 func (fi FileInfo) Description() string {
-	return fi.FileDescription
+	return fi.fileDescription
 }
 
 func (fi FileInfo) SecondDescription() string {
-	return fi.FileSecondDescr
+	return fi.fileSecondDescr
 }
 
 func (fi FileInfo) Version() string {
-	return fi.FileVersion
+	return fi.fileVersion
 }
 
 func (fi FileInfo) IsLocked() bool {
-	return fi.FileLocked
+	return fi.fileLocked
 }
 
 func (fi FileInfo) LockedOutBy() string {
-	return fi.FileLockedOutBy
+	return fi.fileLockedOutBy
 }
 
 func (fi FileInfo) Properties() []FileProperties {
-	return fi.FileProperties
+	return fi.fileProperties
 }

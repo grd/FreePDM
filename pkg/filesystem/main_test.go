@@ -426,6 +426,26 @@ func TestDirectoryRename(t *testing.T) {
 	checkInStatus(2, 0)
 }
 
+func TestDirectoryCopy(t *testing.T) {
+	// // Test with live data, including sub-dirs
+	// err := fs.DirectoryCopy("Projects", "Projects2")
+	// if err != nil {
+	// 	t.Errorf("DirectoryCopy failed: %v", err)
+	// }
+
+	// // Test cases, e.g., destination is a number
+	// err = fs.DirectoryCopy("srcDir", "123")
+	// if err == nil || err.Error() != "directory 123 is a number" {
+	// 	t.Errorf("Expected number error, got: %v", err)
+	// }
+
+	// // Test if destination directory already exists
+	// err = fs.DirectoryCopy("srcDir", "existingDir")
+	// if err == nil || err.Error() != "directory existingDir exists" {
+	// 	t.Errorf("Expected existing directory error, got: %v", err)
+	// }
+}
+
 func TestMain(m *testing.M) {
 
 	setup()
@@ -545,7 +565,7 @@ func listWd() {
 		log.Fatal("listwd error")
 	}
 	for _, info := range fileInfo {
-		fmt.Println(info.FileName)
+		fmt.Println(info.Name())
 	}
 	fmt.Println("")
 

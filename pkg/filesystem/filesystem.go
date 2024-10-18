@@ -308,7 +308,7 @@ func (fs FileSystem) ListDir(dirName string) ([]FileInfo, error) {
 
 	// Add parent directory option if not at the vault root
 	if path.Clean(dirName) != fs.VaultDir() {
-		list = append(list, FileInfo{Dir: true, FileName: ".."})
+		list = append(list, FileInfo{isDir: true, name: ".."})
 	}
 
 	for _, subDir := range dirList {
@@ -326,22 +326,22 @@ func (fs FileSystem) ListDir(dirName string) ([]FileInfo, error) {
 
 			lockedUser := fs.IsLockedItem(idx)
 			list = append(list, FileInfo{
-				Dir:             false,
-				FileName:        fileName,
-				FilePath:        dirName,
-				FileLocked:      lockedUser != "",
-				FileLockedOutBy: lockedUser,
+				isDir:           false,
+				name:            fileName,
+				dir:             dirName,
+				fileLocked:      lockedUser != "",
+				fileLockedOutBy: lockedUser,
 			})
 		} else {
 			// Handle directory entries
-			list = append(list, FileInfo{Dir: true, FileName: subDir.Name(), FilePath: dirName})
+			list = append(list, FileInfo{isDir: true, name: subDir.Name(), dir: dirName})
 		}
 	}
 
 	// Sort the list by directory and then by file name
 	sort.Slice(list, func(i, j int) bool {
-		if list[i].Dir != list[j].Dir {
-			return list[i].Dir // Directories first
+		if list[i].isDir != list[j].isDir {
+			return list[i].isDir // Directories first
 		}
 		return strings.ToUpper(list[i].Name()) < strings.ToUpper(list[j].Name())
 	})
@@ -669,27 +669,30 @@ func (fs *FileSystem) FileMove(fileName, destDir string) error {
 }
 
 // Copy a directory.
-func (fs *FileSystem) DirectoryCopy(src, dest string) error {
+func (fs *FileSystem) DirectoryCopy(src, dst string) error {
 
 	// Check whether dest is a number
-
-	if util.IsNumber(dest) {
-		return fmt.Errorf("directory %s is a number", dest)
+	if util.IsNumber(dst) {
+		return fmt.Errorf("directory %s is a number", dst)
 	}
 
+	// Check if source directory exists
+	if !util.DirExists(src) {
+		return fmt.Errorf("source directory %s does not exist", src)
+	}
+
+	// Check whether dest directory exists
+	if util.DirExists(dst) {
+		return fmt.Errorf("directory %s exists", dst)
+	}
+
+	// List files in the source directory
 	srcFiles, err := fs.ListTree(src)
 	if err != nil {
 		return err
 	}
 
-	// Check whether dest directory exists
-
-	if util.DirExists(dest) {
-		return fmt.Errorf("directory %s exists", dest)
-	}
-
-	// Check whether files are Checked-Out
-
+	// Check if files are Checked-Out
 	if err := fs.checkOutFiles(srcFiles); err != nil {
 		return err
 	}
@@ -698,21 +701,44 @@ func (fs *FileSystem) DirectoryCopy(src, dest string) error {
 	// Copy the directory
 	//
 
-	// Copy the file in the index
+	dstFiles := make([]FileInfo, len(srcFiles))
 
-	for _, elem := range srcFiles {
-		if elem.IsDir() {
-			fs.Mkdir(path.Join(fs.currentWorkingDir, elem.Name()))
+	for k, v := range srcFiles {
+		l := strings.Index(v.Path(), src)
+		if len(v.Path())-(l+len(src)) != 0 {
+			rest := v.Path()[l+len(src)+1:]
+			dstFiles[k].dir = path.Join(dst, rest)
+			dstFiles[k].name = srcFiles[k].name
 		} else {
-			if err := fs.FileCopy(elem.Name(), dest); err != nil {
+			dstFiles[k].dir = dst
+		}
+	}
+
+	fmt.Printf("%v\n", srcFiles)
+	fmt.Printf("%v\n", dstFiles)
+
+	for k, elem := range srcFiles {
+		if elem.IsDir() {
+			if err := fs.Mkdir(dstFiles[k].dir); err != nil {
+				return err
+			}
+		} else {
+			if err := fs.FileCopy(srcFiles[k].Name(), path.Join(dstFiles[k].dir, srcFiles[k].name)); err != nil {
 				return err
 			}
 		}
 	}
 
-	// Logging
+	// Check whether files and directories are copied to the right place
+	for _, elem := range dstFiles {
+		_, err := os.Stat(path.Join(fs.vaultDir, elem.name))
+		if err != nil {
+			return fmt.Errorf("unable to locate file %s, error %s", elem.name, err)
+		}
+	}
 
-	log.Printf("Directory %s copied to %s\n", src, dest)
+	// Logging
+	log.Printf("Directory %s copied to %s\n", src, dst)
 
 	return nil
 }
@@ -750,14 +776,13 @@ func (fs FileSystem) DirectoryRename(src, dst string) error {
 	// Move the directory
 	//
 
-	dstFiles := make([]FileList, len(srcFiles))
+	dstFiles := make([]FileInfo, len(srcFiles))
 
 	for k, v := range srcFiles {
 		l := strings.Index(v.Path(), src)
 		if len(v.Path())-(l+len(src)) != 0 {
 			rest := v.Path()[l+len(src)+1:]
 			dstFiles[k].dir = path.Join(dst, rest)
-
 		} else {
 			dstFiles[k].dir = dst
 		}
@@ -778,9 +803,9 @@ func (fs FileSystem) DirectoryRename(src, dst string) error {
 
 	// Check whether files and directories are moved and in the right place
 	for _, elem := range dstFiles {
-		_, err := os.Stat(path.Join(fs.vaultDir, elem.file))
+		_, err := os.Stat(path.Join(fs.vaultDir, elem.name))
 		if err != nil {
-			return fmt.Errorf("unable to locate file %s, error %s", elem.file, err)
+			return fmt.Errorf("unable to locate file %s, error %s", elem.name, err)
 		}
 	}
 
