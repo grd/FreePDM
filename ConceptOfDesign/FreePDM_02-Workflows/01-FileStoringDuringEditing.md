@@ -15,7 +15,7 @@
 
 The user goes to the PDM and searches for the required file. Subsequently, the file is downloaded to a local folder. 
 - If this is a part, they can open the part
-- If it is an assembly it downloads all part(s) / assembly(ies) that are required for opening the assembly. There should also be checkboxes for downloading the individual drawings of the items
+- If it is an assembly, it downloads all part(s) / assembly(ies) that are required for opening the assembly. There should also be checkboxes for downloading the individual drawings of the items
 - If it is a drawing... it automatically downloads the required part(s) / assembly(ies) dependent on what type of drawing it is
 After editing the part / assembly / drawing it can be saved in the local folder.
 When completing edits to the file(s), it/they be checked in and then all the data is uploaded to the PDM. 

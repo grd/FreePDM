@@ -105,7 +105,7 @@ Adding a item to a menu/toolbar:
 if your command is added with python you have to run this code:
 in `src/module/Gui/AppModuleGui.cpp` add to `PyMOD_INIT_FUNC`:
 
-```c++
+```cpp
 // try to instantiate a python module
 try{
     Base::Interpreter().runStringObject("import MyCommands");
