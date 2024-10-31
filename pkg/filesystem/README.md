@@ -19,7 +19,7 @@ The Filesystem is a major part of FreePDM. It is primarily a storage of files th
 - [x] Dealing with users.
 - [ ] Reporting with json (dir list, properties, etc.)
 - [x] Logging the activities.
-- [ ] Checks about checkout during file operations (move, rename, copy) and new versions.
+- [ ] Checks about checkout during file operations (rename, copy) and new versions.
 - [ ] Make it working for multi-user, multi-vaults
 - [ ] Checks about CheckIn comments (descr and longDescr)
 - [ ] Checks about the VER.txt in file versions

@@ -200,6 +200,18 @@ func TestTheRest(t *testing.T) {
 		}
 	}
 
+	// TODO: Make it working for copying a file to a directory only without a file name.
+	// Then it should also be possible to properly copy a directory
+
+	// {
+	// 	if err = fs.FileCopy("0002.FCStd", "../test/"); err != nil {
+	// 		t.Errorf("FileCopy %s error: %s", file1, err)
+	// 	}
+	// 	{
+	// 		compareFileListLine(5, "5:0008a.FCStd::test:")
+	// 	}
+	// }
+
 	{
 		if err = fs.FileCopy("0002.FCStd", "../test/0010.FCStd"); err != nil {
 			t.Errorf("FileCopy failed: %v", err)

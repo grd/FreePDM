@@ -541,7 +541,15 @@ func (fs *FileSystem) FileRename(src, dest string) error {
 // Copy the latest version of a file.
 func (fs *FileSystem) FileCopy(src, dest string) error {
 	// Check whether src is locked or not
-	fileName, err := fs.index.FileNameToIndex(src)
+	var srcName string
+	idx := strings.LastIndex(src, "/")
+	if idx != -1 {
+		srcName = src[idx+1:]
+	} else {
+		srcName = src
+	}
+
+	fileName, err := fs.index.FileNameToIndex(srcName)
 	if err != nil {
 		return fmt.Errorf("failed to get index for %s: %w", src, err)
 	}
@@ -549,13 +557,20 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 	if name := fs.IsLockedItem(fileName); name != "" {
 		return fmt.Errorf("FileCopy error: File %s is checked out by %s", src, name)
 	}
+	fmt.Println("hello")
+
+	// Check whether dest is a file or directory
+	if len(dest) > 1 {
+		if len(dest)-1 == '/' {
+			dest = dest + srcName
+			fmt.Printf("dest = %s\n", dest)
+		}
+	}
 
 	var dst string
 	if strings.Contains(dest, "/") {
 		num := strings.LastIndexByte(dest, '/')
 		dst = path.Join(fs.currentWorkingDir, dest[:num])
-		fmt.Printf("dst = %s\n", dst)
-
 		destPath := path.Join(fs.vaultDir, dst)
 		if !util.DirExists(destPath) {
 			return fmt.Errorf("directory %s doesn't exist", destPath)
@@ -563,17 +578,18 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 	} else {
 		dst = fs.currentWorkingDir
 	}
+	fmt.Println("hello")
 
 	if _, err = fs.index.FileNameToFileList(dest); err == nil {
 		return fmt.Errorf("file %s already exists", dest)
 	}
 
-	file, err := fs.index.ContainerName(src)
+	file, err := fs.index.ContainerName(srcName)
 	if err != nil {
 		return fmt.Errorf("failed to get container name for %s: %w", src, err)
 	}
 
-	srcIndex, err := fs.index.FileNameToFileList(src)
+	srcIndex, err := fs.index.FileNameToFileList(srcName)
 	if err != nil {
 		return fmt.Errorf("failed to get file list for %s: %w", src, err)
 	}
@@ -586,6 +602,7 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 		return err
 	}
 
+	fmt.Println("hello")
 	destDir, err := fs.index.FileNameToFileList(destFile)
 	if err != nil {
 		return fmt.Errorf("failed to get file list for %s: %w", destFile, err)
@@ -703,14 +720,29 @@ func (fs *FileSystem) DirectoryCopy(src, dst string) error {
 
 	dstFiles := make([]FileInfo, len(srcFiles))
 
+	// Populating dstFiles with data from srcFiles
 	for k, v := range srcFiles {
 		l := strings.Index(v.Path(), src)
+		dstFiles[k].isDir = srcFiles[k].isDir
 		if len(v.Path())-(l+len(src)) != 0 {
 			rest := v.Path()[l+len(src)+1:]
-			dstFiles[k].dir = path.Join(dst, rest)
-			dstFiles[k].name = srcFiles[k].name
+			if !dstFiles[k].IsDir() {
+				dstFiles[k].dir = path.Join(dst, rest)
+				idx := strings.Index(srcFiles[k].Name(), ".")
+				str := srcFiles[k].name[0:idx] + " (copy)" + srcFiles[k].name[idx:]
+				dstFiles[k].name = str
+			} else {
+				dstFiles[k].dir = path.Join(dst, rest)
+			}
 		} else {
-			dstFiles[k].dir = dst
+			if !dstFiles[k].IsDir() {
+				dstFiles[k].dir = dst
+				idx := strings.Index(srcFiles[k].Name(), ".")
+				str := srcFiles[k].name[0:idx] + " (copy)" + srcFiles[k].name[idx:]
+				dstFiles[k].name = str
+			} else {
+				dstFiles[k].dir = dst
+			}
 		}
 	}
 
@@ -723,7 +755,8 @@ func (fs *FileSystem) DirectoryCopy(src, dst string) error {
 				return err
 			}
 		} else {
-			if err := fs.FileCopy(srcFiles[k].Name(), path.Join(dstFiles[k].dir, srcFiles[k].name)); err != nil {
+			if err := fs.FileCopy(path.Join(srcFiles[k].Path(), srcFiles[k].Name()),
+				path.Join(dstFiles[k].dir, srcFiles[k].name)); err != nil {
 				return err
 			}
 		}
@@ -778,6 +811,7 @@ func (fs FileSystem) DirectoryRename(src, dst string) error {
 
 	dstFiles := make([]FileInfo, len(srcFiles))
 
+	// Populating dstFiles with data from srcFiles
 	for k, v := range srcFiles {
 		l := strings.Index(v.Path(), src)
 		if len(v.Path())-(l+len(src)) != 0 {
