@@ -16,17 +16,17 @@ import (
 )
 
 // The FileList is a struct with five fields:
-// * The index number.
+// * The container number.
 // * The file name.
-// * The previous name of the file, including the date when the file was renamed.
+// * The previous name of the file.
 // * The dir name of the storage. This is an offset of "mainPdmDir".
-// * The previous directory name, including the date when the file was moves.
+// * The previous directory name.
 type FileList struct {
-	index        int64
-	file         string
-	previousFile string
-	dir          string
-	previousDir  string
+	containerNumber string
+	fileName        string
+	previousName    string
+	dir             string
+	previousDir     string
 }
 
 // File Index Files in the root
@@ -52,7 +52,7 @@ func NewFileIndex(fs *FileSystem) (fi FileIndex, err error) {
 	util.CriticalFileExist(fi.fileListCsv)
 	util.CriticalFileExist(fi.indexNumberTxt)
 
-	fi.getIndexNumber()
+	fi.getContainerNumber()
 
 	fi.fileList = make([]FileList, 0, fi.indexNumber)
 
@@ -81,18 +81,12 @@ func (fi *FileIndex) Read() error {
 			return fmt.Errorf("invalid record format: %v", record)
 		}
 
-		// Parse the record into FileList struct
-		index, err := util.Atoi64(record[0])
-		if err != nil {
-			return fmt.Errorf("invalid index format in record %v: %w", record, err)
-		}
-
 		fi.fileList = append(fi.fileList, FileList{
-			index:        index,
-			file:         record[1],
-			previousFile: record[2],
-			dir:          record[3],
-			previousDir:  record[4],
+			containerNumber: record[0],
+			fileName:        record[1],
+			previousName:    record[2],
+			dir:             record[3],
+			previousDir:     record[4],
 		})
 	}
 
@@ -136,9 +130,9 @@ func (fi *FileIndex) Write() error {
 	// Add records from fileList
 	for _, item := range fi.fileList {
 		records = append(records, []string{
-			util.I64toa(item.index),
-			item.file,
-			item.previousFile,
+			item.containerNumber,
+			item.fileName,
+			item.previousName,
 			item.dir,
 			item.previousDir,
 		})
@@ -173,33 +167,29 @@ func (fi *FileIndex) Write() error {
 	return nil
 }
 
-func NewFileList(index int64, file, previousFile, dir, previousDir string) FileList {
+func NewFileList(containerName, file, previousFile, dir, previousDir string) FileList {
 	return FileList{
-		index:        index,
-		file:         file,
-		previousFile: previousFile,
-		dir:          dir,
-		previousDir:  previousDir}
+		containerNumber: containerName,
+		fileName:        file,
+		previousName:    previousFile,
+		dir:             dir,
+		previousDir:     previousDir}
 }
 
-func (fl FileList) Index() string {
-	return fmt.Sprintf("%d", fl.index)
+func (fl FileList) ContainerNumber() string {
+	return fl.containerNumber
 }
 
-func (fl FileList) IndexInt64() int64 {
-	return fl.index
-}
-
-func (fl FileList) PathAndIndex() string {
-	return path.Join(fl.Path(), fl.Index())
+func (fl FileList) PathAndContainerNumber() string {
+	return path.Join(fl.Path(), fl.ContainerNumber())
 }
 
 func (fl FileList) Name() string {
-	return fl.file
+	return fl.fileName
 }
 
 func (fl FileList) PreviousName() string {
-	return fl.previousFile
+	return fl.previousName
 }
 
 func (fl FileList) Path() string {
@@ -211,7 +201,7 @@ func (fl FileList) PreviousPath() string {
 }
 
 // Reads the index number and stores it.
-func (fi *FileIndex) getIndexNumber() {
+func (fi *FileIndex) getContainerNumber() {
 
 	buf, err := os.ReadFile(fi.indexNumberTxt)
 	util.CheckErr(err)
@@ -220,83 +210,68 @@ func (fi *FileIndex) getIndexNumber() {
 	util.CheckErr(err)
 }
 
-// Returns the FileList struct from an index number, or an error when not found.
-func (fi *FileIndex) IndexToFileList(index int64) (FileList, error) {
+// Returns the FileList struct from an container number, or an error when not found.
+func (fi *FileIndex) ContainerNumberToFileList(containerNumber string) (FileList, error) {
 	for _, item := range fi.fileList {
-		if index == item.index {
+		if containerNumber == item.containerNumber {
 			return item, nil
 		}
 	}
-	return FileList{}, fmt.Errorf("index number %d not found", index)
+	return FileList{}, fmt.Errorf("index number %s not found", containerNumber)
 }
 
-// Returns the complete directory name of a file number, or an error when not found.
-func (fi *FileIndex) IndexDir(index int64) (string, error) {
-	fl, err := fi.IndexToFileList(index)
+// Returns the complete directory name of a container number, or an error when not found.
+func (fi *FileIndex) ContainerNumberDir(containerNumber string) (string, error) {
+	fl, err := fi.ContainerNumberToFileList(containerNumber)
 	if err != nil {
-		return "", fmt.Errorf("index number %d not found", index)
+		return "", fmt.Errorf("index number %s not found", containerNumber)
 	}
-	num := fmt.Sprintf("%d", fl.index)
-	return path.Join(fl.dir, num), nil
+	return path.Join(fl.dir, fl.containerNumber), nil
 }
 
-// Returns the file name of a file number.
-func (fi *FileIndex) IndexToFileName(index int64) (string, error) {
-	fl, err := fi.IndexToFileList(index)
+// Returns the file name of a container number.
+func (fi *FileIndex) ContainerNumberToFileName(containerNumber string) (string, error) {
+	fl, err := fi.ContainerNumberToFileList(containerNumber)
 	if err != nil {
-		return "", fmt.Errorf("file %d not found", index)
+		return "", fmt.Errorf("file %s not found", containerNumber)
 	}
-	return fl.file, nil
+	return fl.fileName, nil
 }
 
 // Returns the index number of the file name,
 // or an error when the file is not found.
-func (fi *FileIndex) FileNameToIndex(fileName string) (int64, error) {
+func (fi *FileIndex) FileNameToContainerNumber(fileName string) (string, error) {
 	for _, item := range fi.fileList {
-		if fileName == item.file {
-			return item.index, nil
+		if fileName == item.fileName {
+			return item.containerNumber, nil
 		}
 	}
 
-	return 0, fmt.Errorf("file %s is not found in the index", fileName)
+	return "", fmt.Errorf("file %s is not found in the index", fileName)
 }
 
 // Input parameter is the file name.
-// Returns the path and name of a file, or an error when not found.
+// Returns the FileList and an error when not found.
 func (fi *FileIndex) FileNameToFileList(fileName string) (FileList, error) {
 	for _, item := range fi.fileList {
-		if fileName == item.file {
+		if fileName == item.fileName {
 			return item, nil
 		}
 	}
 	return FileList{}, fmt.Errorf("file %s not found", fileName)
 }
 
-// Returns the file list when a file number is found, else an error.
-func (fi *FileIndex) ContainerName(index string) (FileList, error) {
-	num, err := util.Atoi64(index)
-	if err != nil {
-		return FileList{}, err
-	}
-	for _, item := range fi.fileList {
-		if num == item.index {
-			return item, nil
-		}
-	}
-	return FileList{}, fmt.Errorf("file %s not found in the index", index)
-}
-
-// Increases the index number, that is stored in the file 'IndexNumber.txt'
+// Increases the container number, that is stored in the file 'IndexNumber.txt'
 // in the root directory of the vault.
-func (fi *FileIndex) increase_index_number() (int64, error) {
+func (fi *FileIndex) increaseContainerNumber() (string, error) {
 
 	buf, err := os.ReadFile(fi.indexNumberTxt)
 	if err != nil {
-		return -1, err
+		return "", err
 	}
 	_, err = fmt.Sscanf(string(buf), "%d", &fi.indexNumber)
 	if err != nil {
-		return -1, err
+		return "", err
 	}
 
 	// Increase index number
@@ -306,20 +281,20 @@ func (fi *FileIndex) increase_index_number() (int64, error) {
 	str := fmt.Sprintf("%d", fi.indexNumber)
 
 	if err = os.WriteFile(fi.indexNumberTxt, []byte(str), 0644); err != nil {
-		return -1, err
+		return "", err
 	}
 
 	if err = os.Chown(fi.indexNumberTxt, fi.fs.userUid, fi.fs.vaultUid); err != nil {
-		return -1, err
+		return "", err
 	}
 
-	return fi.indexNumber, nil
+	return str, nil
 }
 
 // Adds the item from both self.fileIndex and self.fileLocationList
 // and store the information on disk. Returns the index number.
 // It does not add a file on disk.
-func (fi *FileIndex) AddItem(filename, dirname string) (int64, error) {
+func (fi *FileIndex) AddItem(filename, dirname string) (string, error) {
 
 	if err := fi.Read(); err != nil { // refreshing the index
 		log.Fatalf("error reading FileIndex.csv, %v", err)
@@ -328,12 +303,12 @@ func (fi *FileIndex) AddItem(filename, dirname string) (int64, error) {
 	_, split_file := path.Split(filename)
 	fname := split_file
 
-	index, err := fi.increase_index_number()
+	index, err := fi.increaseContainerNumber()
 	if err != nil {
-		return -1, err
+		return "", err
 	}
 
-	fl := FileList{index: index, file: fname, dir: dirname}
+	fl := FileList{containerNumber: index, fileName: fname, dir: dirname}
 
 	fi.fileList = append(fi.fileList, fl)
 
@@ -351,7 +326,7 @@ func (fi *FileIndex) moveItem(fileNname, directory string) error {
 	i := -1
 
 	for index, v := range fi.fileList {
-		if fileNname == v.file {
+		if fileNname == v.fileName {
 			i = index
 			break
 		}
@@ -383,7 +358,7 @@ func (fi *FileIndex) renameItem(src, dest string) error {
 	// check whether new name already exist
 
 	for _, v := range fi.fileList {
-		if dest == v.file {
+		if dest == v.fileName {
 			return fmt.Errorf("duplicate file in index: %s", dest)
 		}
 	}
@@ -393,10 +368,10 @@ func (fi *FileIndex) renameItem(src, dest string) error {
 	var renamefile *FileList
 
 	for index, v := range fi.fileList {
-		if v.file == src {
+		if v.fileName == src {
 			renamefile = &fi.fileList[index]
-			renamefile.previousFile = v.file
-			renamefile.file = dest
+			renamefile.previousName = v.fileName
+			renamefile.fileName = dest
 			break
 		}
 	}

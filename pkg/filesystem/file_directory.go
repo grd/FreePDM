@@ -30,7 +30,7 @@ const (
 type FileDirectory struct {
 	fs         *FileSystem
 	dir        string
-	fileNumber int64
+	fileNumber string
 }
 
 // File versions struct
@@ -52,7 +52,7 @@ type FileVersion struct {
 // fsm is necessary because of this struct
 // dir means the directory in where to put the file structure
 // fileNumber means the file number, which is an int64
-func NewFileDirectory(fsm *FileSystem, dir string, fileNumber int64) FileDirectory {
+func NewFileDirectory(fsm *FileSystem, dir, fileNumber string) FileDirectory {
 	return FileDirectory{fs: fsm, dir: dir, fileNumber: fileNumber}
 }
 
@@ -68,7 +68,7 @@ func (fd *FileDirectory) CreateDirectory() error {
 
 	// Write version file
 	fd.writeInitialVersionFile()
-	name, err := fd.fs.index.IndexToFileName(fd.fileNumber)
+	name, err := fd.fs.index.ContainerNumberToFileName(fd.fileNumber)
 	util.CheckErr(err)
 
 	log.Printf("Created file structure %s\n",
@@ -132,7 +132,7 @@ func (fd FileDirectory) NewVersion() FileVersion {
 
 	// generate the new file name
 
-	filename, err := fd.fs.index.IndexToFileName(fd.fileNumber)
+	filename, err := fd.fs.index.ContainerNumberToFileName(fd.fileNumber)
 	util.CheckErr(err)
 
 	fname := path.Join(fd.dir, oldVersion.Pretty, filename)
@@ -253,7 +253,7 @@ func (fd *FileDirectory) LatestVersion() FileVersion {
 
 	versions, err := fd.AllFileVersions()
 	if err != nil {
-		name, err := fd.fs.index.IndexToFileName(fd.fileNumber)
+		name, err := fd.fs.index.ContainerNumberToFileName(fd.fileNumber)
 		util.CheckErr(err)
 		log.Fatalf("Error reading file %s, version %v", name, err)
 	}
@@ -264,8 +264,6 @@ func (fd *FileDirectory) LatestVersion() FileVersion {
 
 	return versions[len(versions)-1]
 }
-
-// TODO get rid of error return
 
 // Returns all file versions name from file or an error.
 func (fd *FileDirectory) AllFileVersions() ([]FileVersion, error) {
@@ -350,8 +348,7 @@ func (fd *FileDirectory) OpenItemVersion(version FileVersion) {
 	// And that guy has filemode 0644 for the file itself.
 
 	base := path.Base(fd.dir)
-	num, _ := util.Atoi64(base)
-	name, err := fd.fs.index.IndexToFileName(num)
+	name, err := fd.fs.index.ContainerNumberToFileName(base)
 	util.CheckErr(err)
 	file := path.Join(dirVersion, name)
 
@@ -374,8 +371,7 @@ func (fd *FileDirectory) CloseItemVersion(version FileVersion) {
 	// And the file can't be edited anymore with filemode 0444.
 
 	base := path.Base(fd.dir)
-	num, _ := util.Atoi64(base)
-	name, err := fd.fs.index.IndexToFileName(num)
+	name, err := fd.fs.index.ContainerNumberToFileName(base)
 	util.CheckErr(err)
 	file := path.Join(dirVersion, name)
 
