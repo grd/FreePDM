@@ -424,7 +424,7 @@ func writeIndexFileList() {
 	w.Comma = ':'
 
 	firstRecord := []string{
-		"Index", "FileName", "PreviousFile", "Directory", "PreviousDir",
+		"Container", "FileName", "PreviousFile", "Directory", "PreviousDir",
 	}
 
 	if err := w.Write(firstRecord); err != nil {

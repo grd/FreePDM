@@ -317,7 +317,7 @@ func (fs FileSystem) ListDir(dirName string) ([]FileInfo, error) {
 				return nil, fmt.Errorf("failed to convert index to file name: %w", err)
 			}
 
-			idx, err := fs.index.FileNameToContainerNumber(fileName)
+			idx, err := fs.index.FileNameToContainerNumber(dirName, fileName)
 			if err != nil {
 				return nil, fmt.Errorf("failed to convert file name to index: %w", err)
 			}
@@ -495,22 +495,22 @@ func (fs *FileSystem) CheckIn(itemNr string, version FileVersion, descr, longdes
 	}
 }
 
-// Rename a file, for instance when the user wants to use a file
-// with a specified numbering system.
-func (fs *FileSystem) FileRename(src, dest string) error {
+// Rename a file, for instance when the user wants to use a file with
+// a specified numbering system, or move the file to a different location.
+func (fs *FileSystem) FileRename(src, dst string) error {
 	// Check whether src is locked or not
-	fileName, err := fs.index.FileNameToContainerNumber(src)
+	containerNum, err := fs.index.FileNameToContainerNumber(fs.currentWorkingDir, src)
 	if err != nil {
 		return fmt.Errorf("failed to get index for %s: %w", src, err)
 	}
 
-	if name := fs.IsLockedItem(fileName); name != "" {
+	if name := fs.IsLockedItem(containerNum); name != "" {
 		return fmt.Errorf("FileRename error: File %s is checked out by %s", src, name)
 	}
 
 	// Check whether dest exists
-	if item, err := fs.index.FileNameToFileList(dest); err == nil {
-		return fmt.Errorf("file %s already exists and is stored in %s", dest, item.ContainerNumber())
+	if item, err := fs.index.FileNameToFileList(dst); err == nil {
+		return fmt.Errorf("file %s already exists and is stored in %s", dst, item.ContainerNumber())
 	}
 
 	// Rename the file from src to dest
@@ -519,19 +519,19 @@ func (fs *FileSystem) FileRename(src, dest string) error {
 		return fmt.Errorf("failed to get file list for %s: %w", src, err)
 	}
 
-	fd := NewFileDirectory(fs, idx.ContainerNumber(), fileName)
+	fd := NewFileDirectory(fs, idx.ContainerNumber(), containerNum)
 
-	if err = fd.fileRename(src, dest); err != nil {
-		return fmt.Errorf("failed to rename file from %s to %s: %w", src, dest, err)
+	if err = fd.fileRename(src, dst); err != nil {
+		return fmt.Errorf("failed to rename file from %s to %s: %w", src, dst, err)
 	}
 
 	// Rename the file in the index
-	if err = fs.index.renameItem(src, dest); err != nil {
+	if err = fs.index.renameItem(src, dst); err != nil {
 		return fmt.Errorf("failed to rename item in index: %w", err)
 	}
 
 	// Logging
-	log.Printf("File %s renamed to %s\n", src, dest)
+	log.Printf("File %s renamed to %s\n", src, dst)
 
 	return nil
 }
@@ -547,7 +547,7 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 		srcName = src
 	}
 
-	fileName, err := fs.index.FileNameToContainerNumber(srcName)
+	fileName, err := fs.index.FileNameToContainerNumber(fs.currentWorkingDir, srcName)
 	if err != nil {
 		return fmt.Errorf("failed to get index for %s: %w", src, err)
 	}
@@ -632,7 +632,7 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 // Moves a file to a different directory.
 func (fs *FileSystem) FileMove(fileName, destDir string) error {
 	// Check whether src is locked or not
-	fileNr, err := fs.index.FileNameToContainerNumber(fileName)
+	fileNr, err := fs.index.FileNameToContainerNumber(fs.currentWorkingDir, fileName)
 	if err != nil {
 		return fmt.Errorf("failed to get index for %s: %w", fileName, err)
 	}

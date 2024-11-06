@@ -124,7 +124,7 @@ func (fi FileIndex) readFileListCsv() ([][]string, error) {
 func (fi *FileIndex) Write() error {
 	// Initialize the CSV header
 	records := [][]string{
-		{"Index", "FileName", "PreviousFile", "Dir", "PreviousDir"},
+		{"Container", "FileName", "PreviousFile", "Dir", "PreviousDir"},
 	}
 
 	// Add records from fileList
@@ -240,9 +240,9 @@ func (fi *FileIndex) ContainerNumberToFileName(containerNumber string) (string, 
 
 // Returns the index number of the file name,
 // or an error when the file is not found.
-func (fi *FileIndex) FileNameToContainerNumber(fileName string) (string, error) {
+func (fi *FileIndex) FileNameToContainerNumber(dir, fileName string) (string, error) {
 	for _, item := range fi.fileList {
-		if fileName == item.fileName {
+		if dir == item.dir && fileName == item.fileName {
 			return item.containerNumber, nil
 		}
 	}
