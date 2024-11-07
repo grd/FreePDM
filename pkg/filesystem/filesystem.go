@@ -197,7 +197,7 @@ func (fs *FileSystem) ImportFile(fname string) (string, error) {
 		return "", err
 	}
 
-	name, err := fs.index.ContainerNumberToFileList(fd.dir)
+	name, err := fs.index.ContainerNumberToFileList(fd.containerNumber)
 	if err != nil {
 		return "", err
 	}
@@ -245,8 +245,8 @@ func (fs *FileSystem) NewVersion(indexNr string) (FileVersion, error) {
 }
 
 // Returns the number of an item
-func (fs FileSystem) GetItem(file string) (FileList, error) {
-	return fs.index.FileNameToFileList(file)
+func (fs FileSystem) GetItem(dir, file string) (FileList, error) {
+	return fs.index.FileNameToFileList(dir, file)
 }
 
 // Creates a new directory inside the current directory, with the correct uid and gid.
@@ -496,30 +496,67 @@ func (fs *FileSystem) CheckIn(itemNr string, version FileVersion, descr, longdes
 }
 
 // Rename a file, for instance when the user wants to use a file with
-// a specified numbering system, or move the file to a different location.
+// a specified numbering system
 func (fs *FileSystem) FileRename(src, dst string) error {
 	// Check whether src is locked or not
 	containerNum, err := fs.index.FileNameToContainerNumber(fs.currentWorkingDir, src)
 	if err != nil {
-		return fmt.Errorf("failed to get index for %s: %w", src, err)
+		return fmt.Errorf("failed to get container number for %s: %w", src, err)
 	}
 
+	// Check for file locked
 	if name := fs.IsLockedItem(containerNum); name != "" {
 		return fmt.Errorf("FileRename error: File %s is checked out by %s", src, name)
 	}
 
-	// Check whether dest exists
-	if item, err := fs.index.FileNameToFileList(dst); err == nil {
+	// Check whether dst ends with '/'. In that case it is a file move.
+	if dst[len(dst)-1] == '/' {
+		return fs.fileMove(src, dst)
+	}
+
+	// Splitting dst for later use
+	dstDir, dstFile := path.Split(dst)
+
+	// Check whether dst exists
+	// TODO: dunno howto deal with this dstDir. I just use currentworkingdir as parameter
+	// I think that te best way is to join fs.cwd and dstDir.
+	if item, err := fs.index.FileNameToFileList(path.Join(fs.currentWorkingDir, dstDir), dst); err == nil {
 		return fmt.Errorf("file %s already exists and is stored in %s", dst, item.ContainerNumber())
 	}
 
-	// Rename the file from src to dest
-	idx, err := fs.index.FileNameToFileList(src)
+	// Check whether dst contains a directory. In that case it is a file move,
+	// and after that a file rename.
+	if dstDir != "" {
+		if err = fs.fileMove(src, dstDir); err != nil {
+			return err
+		}
+		if dstFile != src { // file rename
+			wd, err := os.Getwd()
+			wcd := fs.currentWorkingDir
+			if err != nil {
+				return err
+			}
+			if err = fs.Chdir(dstDir); err != nil {
+				return err
+			}
+			if err = fs.FileRename(src, dstFile); err != nil {
+				return err
+			}
+			if err = os.Chdir(wd); err != nil {
+				return err
+			}
+			fs.currentWorkingDir = wcd
+			return nil
+		}
+	}
+
+	// Rename the file from src to dest in the FileList
+	fl, err := fs.index.FileNameToFileList(fs.currentWorkingDir, src)
 	if err != nil {
 		return fmt.Errorf("failed to get file list for %s: %w", src, err)
 	}
 
-	fd := NewFileDirectory(fs, idx.ContainerNumber(), containerNum)
+	fd := NewFileDirectory(fs, fl.ContainerNumber(), containerNum)
 
 	if err = fd.fileRename(src, dst); err != nil {
 		return fmt.Errorf("failed to rename file from %s to %s: %w", src, dst, err)
@@ -537,17 +574,10 @@ func (fs *FileSystem) FileRename(src, dst string) error {
 }
 
 // Copy the latest version of a file.
-func (fs *FileSystem) FileCopy(src, dest string) error {
+func (fs *FileSystem) FileCopy(src, dst string) error {
 	// Check whether src is locked or not
-	var srcName string
-	idx := strings.LastIndex(src, "/")
-	if idx != -1 {
-		srcName = src[idx+1:]
-	} else {
-		srcName = src
-	}
 
-	fileName, err := fs.index.FileNameToContainerNumber(fs.currentWorkingDir, srcName)
+	fileName, err := fs.index.FileNameToContainerNumber(fs.currentWorkingDir, src)
 	if err != nil {
 		return fmt.Errorf("failed to get index for %s: %w", src, err)
 	}
@@ -558,50 +588,48 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 	fmt.Println("hello")
 
 	// Check whether dest is a file or directory
-	if len(dest) > 1 {
-		if len(dest)-1 == '/' {
-			dest = dest + srcName
-			fmt.Printf("dest = %s\n", dest)
+	if len(dst) > 1 {
+		if len(dst)-1 == '/' {
+			dst = dst + src
+			fmt.Printf("dest = %s\n", dst)
 		}
 	}
 
-	var dst string
-	if strings.Contains(dest, "/") {
-		num := strings.LastIndexByte(dest, '/')
-		dst = path.Join(fs.currentWorkingDir, dest[:num])
-		destPath := path.Join(fs.vaultDir, dst)
-		if !util.DirExists(destPath) {
-			return fmt.Errorf("directory %s doesn't exist", destPath)
+	var dstPath, dstFile string
+	if strings.Contains(dst, "/") {
+		num := strings.LastIndexByte(dst, '/')
+		dstFile = path.Join(fs.currentWorkingDir, dst[:num])
+		dstPath = path.Join(fs.vaultDir, dstFile)
+		if !util.DirExists(dstPath) {
+			return fmt.Errorf("directory %s doesn't exist", dstPath)
 		}
 	} else {
-		dst = fs.currentWorkingDir
-	}
-	fmt.Println("hello")
-
-	if _, err = fs.index.FileNameToFileList(dest); err == nil {
-		return fmt.Errorf("file %s already exists", dest)
+		dstFile = fs.currentWorkingDir
 	}
 
-	file, err := fs.index.ContainerNumberToFileList(srcName)
+	if _, err = fs.index.FileNameToFileList(dstPath, dstFile); err == nil {
+		return fmt.Errorf("file %s already exists", dst)
+	}
+
+	file, err := fs.index.ContainerNumberToFileList(src)
 	if err != nil {
 		return fmt.Errorf("failed to get container name for %s: %w", src, err)
 	}
 
-	srcIndex, err := fs.index.FileNameToFileList(srcName)
+	srcIndex, err := fs.index.FileNameToFileList(fs.currentWorkingDir, src)
 	if err != nil {
 		return fmt.Errorf("failed to get file list for %s: %w", src, err)
 	}
 
 	srcFd := NewFileDirectory(fs, srcIndex.ContainerNumber(), file.containerNumber)
 
-	_, destFile := path.Split(dest)
-	destIndex, err := fs.index.AddItem(destFile, dst)
+	_, destFile := path.Split(dst)
+	destIndex, err := fs.index.AddItem(destFile, dstFile)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("hello")
-	destDir, err := fs.index.FileNameToFileList(destFile)
+	destDir, err := fs.index.FileNameToFileList(dstPath, dstFile)
 	if err != nil {
 		return fmt.Errorf("failed to get file list for %s: %w", destFile, err)
 	}
@@ -613,7 +641,7 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 
 	// Copy the file from src to dest
 	version := srcFd.LatestVersion()
-	srcFile := path.Join(srcFd.dir, version.Pretty, src)
+	srcFile := path.Join(srcFd.containerNumber, version.Pretty, src)
 
 	if err = destFd.ImportNewFile(srcFile); err != nil {
 		return err
@@ -624,13 +652,13 @@ func (fs *FileSystem) FileCopy(src, dest string) error {
 	}
 
 	// Logging
-	log.Printf("File %s copied to %s\n", src, dest)
+	log.Printf("File %s copied to %s\n", src, dst)
 
 	return nil
 }
 
 // Moves a file to a different directory.
-func (fs *FileSystem) FileMove(fileName, destDir string) error {
+func (fs *FileSystem) fileMove(fileName, destDir string) error {
 	// Check whether src is locked or not
 	fileNr, err := fs.index.FileNameToContainerNumber(fs.currentWorkingDir, fileName)
 	if err != nil {
@@ -658,7 +686,7 @@ func (fs *FileSystem) FileMove(fileName, destDir string) error {
 	}
 
 	// Move file
-	fname, err := fs.index.FileNameToFileList(fileName)
+	fname, err := fs.index.FileNameToFileList(fs.currentWorkingDir, fileName)
 	if err != nil {
 		return fmt.Errorf("failed to get file list for %s: %w", fileName, err)
 	}

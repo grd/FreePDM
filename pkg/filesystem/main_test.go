@@ -8,6 +8,7 @@ package filesystem_test
 
 import (
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -19,6 +20,7 @@ import (
 	"github.com/grd/FreePDM/pkg/config"
 	fsm "github.com/grd/FreePDM/pkg/filesystem"
 	"github.com/grd/FreePDM/pkg/util"
+	"github.com/stretchr/testify/assert"
 )
 
 const testpdm = "testpdm"
@@ -135,30 +137,26 @@ func TestImportFile(t *testing.T) {
 		t.Errorf("Mkdir failed: %v", err)
 	}
 
-	if err = fs.Chdir("../Standard Parts"); err != nil {
-		t.Errorf("Chdir failed: %v", err)
-	}
-
 	f4, err := fs.ImportFile(file4)
 	if err != nil {
 		t.Errorf("ImportFile %s error: %s", file1, err)
 	}
 	fs.CheckIn(f4, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf4-0", "Testf4-0")
-	compareFileListLine(4, "4:0004.FCStd::Standard Parts:")
+	compareFileListLine(4, "4:0004.FCStd::Projects:")
 
 	f5, err := fs.ImportFile(file5)
 	if err != nil {
 		t.Errorf("ImportFile %s error: %s", file1, err)
 	}
 	fs.CheckIn(f5, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf5-0", "Testf5-0")
-	compareFileListLine(5, "5:0005.FCStd::Standard Parts:")
+	compareFileListLine(5, "5:0005.FCStd::Projects:")
 
 	f6, err := fs.ImportFile(file6)
 	if err != nil {
 		t.Errorf("ImportFile %s error: %s", file1, err)
 	}
 	fs.CheckIn(f6, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf6-0", "Testf6-0")
-	compareFileListLine(6, "6:0006.FCStd::Standard Parts:")
+	compareFileListLine(6, "6:0006.FCStd::Projects:")
 
 	fs.Chdir("..")
 }
@@ -174,33 +172,44 @@ func TestFileRename(t *testing.T) {
 	}
 	compareFileListLine(1, "1:0007.FCStd:0001.FCStd:Projects:")
 
-	// TODO rename FileMove to FileRename (and make it working, and place it into TestFileRename)
+	// source file is equal to dest file
+	if err := fs.FileRename("0007.FCStd", "0007.FCStd"); err != nil {
+		assert.Equal(t, err, errors.New("file 0007.FCStd already exists and is stored in 1"))
+	}
 
 	// Ordinary file move
-	if err := fs.FileMove("0003.FCStd", "temp"); err != nil {
+	if err := fs.FileRename("0003.FCStd", "temp/"); err != nil {
 		t.Errorf("FileMove failed: %v", err)
 	}
 	compareFileListLine(3, "3:0003.FCStd::Projects/temp:Projects")
 
 	// More complex file move
-	if err := fs.FileMove("0007.FCStd", ".."); err != nil {
+	if err := fs.FileRename("0007.FCStd", "../"); err != nil {
 		t.Errorf("FileMove failed: %v", err)
 	}
 	compareFileListLine(1, "1:0007.FCStd:0001.FCStd::Projects")
 
-	// TODO end of todo
-
-	// 	// Test cases for locking, existing destination, etc.
-	// 	err = fs.FileRename("lockedFile.txt", "newFile.txt")
-	// 	if err == nil || err.Error() != "FileRename error: File lockedFile.txt is checked out by user" {
-	// 		t.Errorf("Expected lock error, got: %v", err)
-	// 	}
-
-	// 	// Further test cases, e.g., file already exists.
+	// file move with a sub directory
+	if err := fs.FileRename("0006.FCStd", "temp/0006a.FCStd"); err != nil {
+		t.Errorf("FileMove failed: %v", err)
+	}
+	compareFileListLine(6, "6:0006a.FCStd:0006.FCStd:Projects/temp:Projects")
 
 	if err := fs.Chdir(".."); err != nil {
 		t.Error("chdir failed")
 	}
+
+	// file move with a sub directory
+	if err := fs.FileRename("0007.FCStd", "Projects/0001.FCStd"); err != nil {
+		t.Errorf("FileMove failed: %v", err)
+	}
+	compareFileListLine(1, "1:0001.FCStd:0007.FCStd:Projects:")
+
+	// Test case for locking
+	// 	err = fs.FileRename("lockedFile.txt", "newFile.txt")
+	// 	if err == nil || err.Error() != "FileRename error: File lockedFile.txt is checked out by user" {
+	// 		t.Errorf("Expected lock error, got: %v", err)
+	// 	}
 }
 
 // // func TestFileCopy(t *testing.T) {

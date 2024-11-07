@@ -28,9 +28,9 @@ const (
 
 // File Directory related struct.
 type FileDirectory struct {
-	fs         *FileSystem
-	dir        string
-	fileNumber string
+	fs              *FileSystem
+	containerNumber string
+	fileNumber      string
 }
 
 // File versions struct
@@ -50,16 +50,16 @@ type FileVersion struct {
 
 // Initializes the FileDirectory struct. Parameters:
 // fsm is necessary because of this struct
-// dir means the directory in where to put the file structure
+// containerNumber means the directory in where to put the file structure
 // fileNumber means the file number, which is an int64
-func NewFileDirectory(fsm *FileSystem, dir, fileNumber string) FileDirectory {
-	return FileDirectory{fs: fsm, dir: dir, fileNumber: fileNumber}
+func NewFileDirectory(fsm *FileSystem, containerNumber, fileNumber string) FileDirectory {
+	return FileDirectory{fs: fsm, containerNumber: containerNumber, fileNumber: fileNumber}
 }
 
 // Creates a new directory inside the current working directory.
 func (fd *FileDirectory) CreateDirectory() error {
 
-	dirName := fd.dir
+	dirName := fd.containerNumber
 
 	err := os.Mkdir(dirName, 0755)
 	util.CheckErr(err)
@@ -72,7 +72,7 @@ func (fd *FileDirectory) CreateDirectory() error {
 	util.CheckErr(err)
 
 	log.Printf("Created file structure %s\n",
-		path.Join(fd.dir, name))
+		path.Join(fd.containerNumber, name))
 
 	return nil
 }
@@ -86,7 +86,7 @@ func (fd FileDirectory) ImportNewFile(fname string) error {
 
 	version := fmt.Sprintf("%d", new_version)
 
-	versionDir := path.Join(fd.dir, version)
+	versionDir := path.Join(fd.containerNumber, version)
 
 	fd.increaseVersionNumber(version)
 
@@ -126,7 +126,7 @@ func (fd FileDirectory) NewVersion() FileVersion {
 	oldVersion := fd.LatestVersion()
 	newVersion := FileVersion{Number: oldVersion.Number + 1, Date: util.Now()}
 	newVersion.Pretty = util.I16toa(newVersion.Number)
-	versionDir := path.Join(fd.dir, newVersion.Pretty)
+	versionDir := path.Join(fd.containerNumber, newVersion.Pretty)
 
 	fd.increaseVersionNumber(newVersion.Pretty)
 
@@ -135,7 +135,7 @@ func (fd FileDirectory) NewVersion() FileVersion {
 	filename, err := fd.fs.index.ContainerNumberToFileName(fd.fileNumber)
 	util.CheckErr(err)
 
-	fname := path.Join(fd.dir, oldVersion.Pretty, filename)
+	fname := path.Join(fd.containerNumber, oldVersion.Pretty, filename)
 
 	// create a new version dir
 
@@ -165,7 +165,7 @@ func (fd FileDirectory) StoreData(version FileVersion, descr, longDescr string) 
 
 	// create a version directory
 
-	versionDir := path.Join(fd.dir, version.Pretty)
+	versionDir := path.Join(fd.containerNumber, version.Pretty)
 
 	if !util.DirExists(versionDir) {
 		log.Fatalf("Directory %s doesn't exist.", versionDir)
@@ -201,7 +201,7 @@ func (fd FileDirectory) StoreData(version FileVersion, descr, longDescr string) 
 // The number of the directory
 func (fd FileDirectory) FileNumber() int64 {
 	var num int64
-	fmt.Sscanf(fd.dir, "%d", &num)
+	fmt.Sscanf(fd.containerNumber, "%d", &num)
 	return num
 }
 
@@ -268,7 +268,7 @@ func (fd *FileDirectory) LatestVersion() FileVersion {
 // Returns all file versions name from file or an error.
 func (fd *FileDirectory) AllFileVersions() ([]FileVersion, error) {
 
-	version := path.Join(fd.dir, Ver)
+	version := path.Join(fd.containerNumber, Ver)
 
 	file, err := os.Open(version)
 	util.CheckErr(err)
@@ -282,7 +282,7 @@ func (fd *FileDirectory) AllFileVersions() ([]FileVersion, error) {
 
 	if len(records) == 0 {
 		return nil, fmt.Errorf("file %s is empty",
-			path.Join(fd.fs.currentWorkingDir, fd.dir, Ver))
+			path.Join(fd.fs.currentWorkingDir, fd.containerNumber, Ver))
 	}
 
 	if len(records) == 1 {
@@ -335,7 +335,7 @@ func (fd *FileDirectory) CloseLatestsVersion() {
 // This "Checks Out" the item.
 func (fd *FileDirectory) OpenItemVersion(version FileVersion) {
 
-	dirVersion := path.Join(fd.dir, version.Pretty)
+	dirVersion := path.Join(fd.containerNumber, version.Pretty)
 
 	err := os.Chown(dirVersion, fd.fs.userUid, fd.fs.vaultUid)
 	util.CheckErr(err)
@@ -347,7 +347,7 @@ func (fd *FileDirectory) OpenItemVersion(version FileVersion) {
 
 	// And that guy has filemode 0644 for the file itself.
 
-	base := path.Base(fd.dir)
+	base := path.Base(fd.containerNumber)
 	name, err := fd.fs.index.ContainerNumberToFileName(base)
 	util.CheckErr(err)
 	file := path.Join(dirVersion, name)
@@ -359,7 +359,7 @@ func (fd *FileDirectory) OpenItemVersion(version FileVersion) {
 // Closes item number for editing.
 func (fd *FileDirectory) CloseItemVersion(version FileVersion) {
 
-	dirVersion := path.Join(fd.dir, version.Pretty)
+	dirVersion := path.Join(fd.containerNumber, version.Pretty)
 
 	// Filemode 0755 means that the directory is open for anyone.
 
@@ -370,7 +370,7 @@ func (fd *FileDirectory) CloseItemVersion(version FileVersion) {
 
 	// And the file can't be edited anymore with filemode 0444.
 
-	base := path.Base(fd.dir)
+	base := path.Base(fd.containerNumber)
 	name, err := fd.fs.index.ContainerNumberToFileName(base)
 	util.CheckErr(err)
 	file := path.Join(dirVersion, name)
@@ -381,7 +381,7 @@ func (fd *FileDirectory) CloseItemVersion(version FileVersion) {
 
 func (fd *FileDirectory) writeInitialVersionFile() {
 
-	ver := path.Join(fd.dir, Ver)
+	ver := path.Join(fd.containerNumber, Ver)
 
 	records := [][]string{{"Version", "Pretty", "Date"}}
 
@@ -405,7 +405,7 @@ func (fd *FileDirectory) increaseVersionNumber(version string) {
 
 	date := util.Now()
 
-	ver := path.Join(fd.dir, Ver)
+	ver := path.Join(fd.containerNumber, Ver)
 
 	record := []string{version, version, date}
 
@@ -430,17 +430,17 @@ func (fd *FileDirectory) increaseVersionNumber(version string) {
 }
 
 // Renames the filename. Returns an error when unsuccessful.
-func (fd *FileDirectory) fileRename(src, dest string) error {
-
+func (fd *FileDirectory) fileRename(src, dst string) error {
 	versions, err := fd.AllFileVersions()
-	util.CheckErr(err)
+	if err != nil {
+		return err
+	}
 
+	// Rename all versioned files
 	for _, version := range versions {
-
-		// Rename
-
-		err = os.Rename(path.Join(fd.dir, version.Pretty, src), path.Join(fd.dir, version.Pretty, dest))
-		util.CheckErr(err)
+		if err = os.Rename(path.Join(fd.containerNumber, version.Pretty, src), path.Join(fd.containerNumber, version.Pretty, dst)); err != nil {
+			return err
+		}
 	}
 
 	return nil
