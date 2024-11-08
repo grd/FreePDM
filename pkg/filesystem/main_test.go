@@ -199,17 +199,21 @@ func TestFileRename(t *testing.T) {
 		t.Error("chdir failed")
 	}
 
+	// Test case for locking
+	ver, _ := fs.NewVersion("1")
+	checkOutStatus(1, 4)
+	err := fs.FileRename("0007.FCStd", "0001.FCStd")
+	if err == nil || err.Error() != "file 0007.FCStd is checked out by user" {
+		t.Errorf("Expected lock error, got: %v", err)
+	}
+	fs.CheckIn("1", ver, "Test", "Test")
+	checkInStatus(1, 4)
+
 	// file move with a sub directory
 	if err := fs.FileRename("0007.FCStd", "Projects/0001.FCStd"); err != nil {
 		t.Errorf("FileMove failed: %v", err)
 	}
 	compareFileListLine(1, "1:0001.FCStd:0007.FCStd:Projects:")
-
-	// Test case for locking
-	// 	err = fs.FileRename("lockedFile.txt", "newFile.txt")
-	// 	if err == nil || err.Error() != "FileRename error: File lockedFile.txt is checked out by user" {
-	// 		t.Errorf("Expected lock error, got: %v", err)
-	// 	}
 }
 
 // // func TestFileCopy(t *testing.T) {
@@ -433,7 +437,7 @@ func writeIndexFileList() {
 	w.Comma = ':'
 
 	firstRecord := []string{
-		"Container", "FileName", "PreviousFile", "Directory", "PreviousDir",
+		"ContainerNumber", "FileName", "PreviousFile", "Directory", "PreviousDir",
 	}
 
 	if err := w.Write(firstRecord); err != nil {
@@ -459,7 +463,7 @@ func writeLockedFiles() {
 
 	w.Comma = ':'
 
-	firstRecord := []string{"FileNumber", "Version", "UserName"}
+	firstRecord := []string{"ContainerNumber", "Version", "UserName"}
 
 	if err := w.Write(firstRecord); err != nil {
 		log.Fatalln("error writing record to file", err)

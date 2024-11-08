@@ -23,9 +23,9 @@ import (
 
 // LockedIndex is the list of locked files
 type LockedIndex struct {
-	fileNr   string // The number of the file
-	version  int16  // The number of the version
-	userName string // Who checked this file out
+	containerNumber string // The number of the file
+	version         int16  // The number of the version
+	userName        string // Who checked this file out
 }
 
 // File System related Class
@@ -88,7 +88,10 @@ func NewFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
 
 	fs.lockedCvs = path.Join(fs.dataDir, LockedFileCsv)
 
-	fs.ReadLockedIndex() // retrieve the values
+	// retrieve the values
+	if err = fs.ReadLockedIndex(); err != nil {
+		return nil, err
+	}
 
 	err = os.Chdir(fs.vaultDir)
 	util.CheckErr(err)
@@ -104,19 +107,23 @@ func (fs *FileSystem) VaultDir() string {
 }
 
 // Updates the locked index by reading from the lockedTxt file.
-func (fs *FileSystem) ReadLockedIndex() {
+func (fs *FileSystem) ReadLockedIndex() error {
 
 	buf, err := os.ReadFile(fs.lockedCvs)
-	util.CheckErr(err)
+	if err != nil {
+		return fmt.Errorf("error reading %s. The error is %w", fs.lockedCvs, err)
+	}
 
 	r := csv.NewReader(bytes.NewBuffer(buf))
 	r.Comma = ':'
 
 	records, err := r.ReadAll()
-	util.CheckErr(err)
+	if err != nil {
+		return fmt.Errorf("error processing csv file %s", fs.lockedCvs)
+	}
 
-	if len(records) <= 1 {
-		return
+	if len(records) == 0 {
+		return fmt.Errorf("too less lines in file %s", fs.lockedCvs)
 	}
 
 	records = records[1:]
@@ -126,28 +133,27 @@ func (fs *FileSystem) ReadLockedIndex() {
 	var list = LockedIndex{}
 
 	for _, record := range records {
-
-		list.fileNr = record[0]
+		list.containerNumber = record[0]
 		list.version, _ = util.Atoi16(record[1])
 		list.userName = record[2]
 
 		fs.lockedIndex = append(fs.lockedIndex, list)
 	}
+
+	return nil
 }
 
-func (fs *FileSystem) WriteLockedIndex() {
+func (fs *FileSystem) WriteLockedIndex() error {
 
 	records := [][]string{
-		{"FileNumber", "Version", "UserName"},
+		{"ContainerNumber", "Version", "UserName"},
 	}
 
 	for _, list := range fs.lockedIndex {
-
 		records = append(records, []string{
-			list.fileNr,
+			list.containerNumber,
 			util.I16toa(list.version),
 			list.userName})
-
 	}
 
 	var buf []byte
@@ -162,11 +168,14 @@ func (fs *FileSystem) WriteLockedIndex() {
 	err = writer.Error()
 	util.CheckErr(err)
 
-	err = os.WriteFile(fs.lockedCvs, buffer.Bytes(), 0644)
-	util.CheckErr(err)
+	if err = os.WriteFile(fs.lockedCvs, buffer.Bytes(), 0644); err != nil {
+		return fmt.Errorf("error writing %s", fs.lockedCvs)
+	}
 
 	err = os.Chown(fs.lockedCvs, fs.userUid, fs.vaultUid)
 	util.CheckErr(err)
+
+	return nil
 }
 
 // import a file inside the PDM. When you import a file the attributes also gets imported,
@@ -388,58 +397,58 @@ func (fs FileSystem) listTree(dirName string) ([]FileInfo, error) {
 	return list, nil
 }
 
-// Check whether the itemnr is locked.
+// Check whether the conatiner number is locked.
 // Returns the name of the user who locked it or empty when not locked.
-func (fs FileSystem) IsLocked(itemNr string, version FileVersion) string {
-
+func (fs FileSystem) IsLocked(containerNumber string, version FileVersion) string {
 	for _, item := range fs.lockedIndex {
-		if item.fileNr == itemNr && item.version == version.Number {
+		if item.containerNumber == containerNumber && item.version == version.Number {
 			return item.userName
 		}
 	}
-
 	return "" // Nothing found
 }
 
-// Check whether the itemnr is locked.
+// Check whether the container number is locked.
 // Returns the name of the user who locked it or empty when not locked.
-func (fs FileSystem) IsLockedItem(itemNr string) string {
-
+func (fs FileSystem) IsLockedItem(containerNumber string) string {
 	for _, item := range fs.lockedIndex {
-		if item.fileNr == itemNr {
+		if item.containerNumber == containerNumber {
 			return item.userName
 		}
 	}
-
 	return "" // Nothing found
 }
 
-// Checkout means locking a itemnr so that only you can use it.
-func (fs *FileSystem) CheckOut(itemNr string, version FileVersion) error {
-
-	fs.ReadLockedIndex() // update the index
+// Checkout means locking a conainer number so that only you can use it.
+func (fs *FileSystem) CheckOut(containerNumber string, version FileVersion) error {
+	// update the index
+	if err := fs.ReadLockedIndex(); err != nil {
+		return err
+	}
 
 	// Set file mode 0700
 
-	dir, err := fs.index.ContainerNumberDir(itemNr)
+	dir, err := fs.index.ContainerNumberDir(containerNumber)
 	util.CheckErr(err)
 
-	fd := NewFileDirectory(fs, path.Join(fs.vaultDir, dir), itemNr)
+	fd := NewFileDirectory(fs, path.Join(fs.vaultDir, dir), containerNumber)
 	fd.OpenItemVersion(version)
 
 	// check whether the itemnr is locked
 
-	if usr := fs.IsLocked(itemNr, version); usr != "" {
+	if usr := fs.IsLocked(containerNumber, version); usr != "" {
 
-		return fmt.Errorf("file %s-%d is locked by user %v", itemNr, version.Number, usr)
+		return fmt.Errorf("file %s-%d is locked by user %v", containerNumber, version.Number, usr)
 
 	} else {
 
-		fs.lockedIndex = append(fs.lockedIndex, LockedIndex{itemNr, version.Number, fs.user})
+		fs.lockedIndex = append(fs.lockedIndex, LockedIndex{containerNumber, version.Number, fs.user})
 
-		fs.WriteLockedIndex()
+		if err = fs.WriteLockedIndex(); err != nil {
+			return err
+		}
 
-		name, err := fs.index.ContainerNumberToFileName(itemNr)
+		name, err := fs.index.ContainerNumberToFileName(containerNumber)
 		util.CheckErr(err)
 
 		log.Printf("Checked out version %d of file %s\n", version.Number, name)
@@ -448,16 +457,16 @@ func (fs *FileSystem) CheckOut(itemNr string, version FileVersion) error {
 	}
 }
 
-// Checkin means unlocking an itemnr.
+// Checkin means unlocking a container number.
 // The description and long description are meant for storage.
-func (fs *FileSystem) CheckIn(itemNr string, version FileVersion, descr, longdescr string) error {
+func (fs *FileSystem) CheckIn(containerNumber string, version FileVersion, descr, longdescr string) error {
 
 	// Set file mode 0755
 
-	dir, err := fs.index.ContainerNumberDir(itemNr)
+	dir, err := fs.index.ContainerNumberDir(containerNumber)
 	util.CheckErr(err)
 
-	fd := NewFileDirectory(fs, path.Join(fs.vaultDir, dir), itemNr)
+	fd := NewFileDirectory(fs, path.Join(fs.vaultDir, dir), containerNumber)
 
 	fd.StoreData(version, descr, longdescr)
 
@@ -465,11 +474,11 @@ func (fs *FileSystem) CheckIn(itemNr string, version FileVersion, descr, longdes
 
 	// check whether the itemnr is locked
 
-	usr := fs.IsLocked(itemNr, version)
+	usr := fs.IsLocked(containerNumber, version)
 
 	if usr != fs.user {
 
-		return fmt.Errorf("file %s-%d is locked by user %s", itemNr, version.Number, usr)
+		return fmt.Errorf("file %s-%d is locked by user %s", containerNumber, version.Number, usr)
 
 	} else {
 
@@ -477,16 +486,18 @@ func (fs *FileSystem) CheckIn(itemNr string, version FileVersion, descr, longdes
 
 		var nr int
 		for i, y := range fs.lockedIndex {
-			if y.fileNr == itemNr && y.version == version.Number {
+			if y.containerNumber == containerNumber && y.version == version.Number {
 				nr = i
 			}
 		}
 
 		fs.lockedIndex = slices.Delete(fs.lockedIndex, nr, nr+1)
 
-		fs.WriteLockedIndex()
+		if err = fs.WriteLockedIndex(); err != nil {
+			return err
+		}
 
-		name, err := fs.index.ContainerNumberToFileName(itemNr)
+		name, err := fs.index.ContainerNumberToFileName(containerNumber)
 		util.CheckErr(err)
 
 		log.Printf("Checked in version %d of file %s", version.Number, name)
@@ -506,7 +517,7 @@ func (fs *FileSystem) FileRename(src, dst string) error {
 
 	// Check for file locked
 	if name := fs.IsLockedItem(containerNum); name != "" {
-		return fmt.Errorf("FileRename error: File %s is checked out by %s", src, name)
+		return fmt.Errorf("file %s is checked out by %s", src, name)
 	}
 
 	// Check whether dst ends with '/'. In that case it is a file move.
