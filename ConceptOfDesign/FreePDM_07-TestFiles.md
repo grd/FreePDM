@@ -3,7 +3,7 @@
 
 ## TestFiles
 
-For testing purposes there are a bunch of files created.
+For testing purposes there are several files created:
 
 - 0001.FCStd _Part 01_
 - 0002.FCStd _Part 02_
@@ -15,9 +15,9 @@ For testing purposes there are a bunch of files created.
 - SKF_6004.stp _SKF 6004 Bearing step file_
 - 6004_20220519.pdf _SKF 6004 Technical Information_
 
-### Why Created These Models
+### Purpose
 
-These Models are created with for testing purposes.
-When a first Model is build for the PDM system there are some files needed where we are able to test the different properties.
+These Models are created for testing purposes.
+When a model is first introduced to the PDM system there are various files needed to test the against different properties.
 
 [<< Previous Chapter](FreePDM_06-Roadmap.md) | [Content Table](README.md) | [Next Chapter >>]()

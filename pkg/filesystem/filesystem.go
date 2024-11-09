@@ -519,7 +519,7 @@ func (fs *FileSystem) FileRename(src, dst string) error {
 
 	// Check whether dst exists
 	// TODO: dunno howto deal with this dstDir. I just use currentworkingdir as parameter
-	// I think that te best way is to join fs.cwd and dstDir.
+	// I think that the best way is to join fs.cwd and dstDir.
 	if item, err := fs.index.FileNameToFileList(path.Join(fs.currentWorkingDir, dstDir), dst); err == nil {
 		return fmt.Errorf("file %s already exists and is stored in %s", dst, item.ContainerNumber())
 	}

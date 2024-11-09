@@ -16,8 +16,8 @@
 
 Version management is a difficult topic. A main issue is that it should be able to create releases of every individual part, assembly (and optional drawing.) 
 
-There are serveral different (open source) version control systems available.
-The main difficulty is that these software are most targetting software development.
+There are several different (open source) version control systems available.
+The main difficulty is that these software are usually targeting software engineering/development.
 The difference is that, where software is released as a whole project, that is not always the case within the mechanical world. see: @ref to story 
 _Note Grd: But there are also closed source versions. I think that we should also accept those because in a company they might only allow this kind of software._
 This has to be tackled. 
@@ -30,7 +30,7 @@ Note grd: This is never gonna work. When a part is changed you aso need to updat
 
 ### Database
 
-Within databases there are two main types of databases.
+There are two main types of databases:  
 [SQL](https://en.wikipedia.org/wiki/SQL) based databases. Examples of SQL like databases are [SQLite](https://sqlite.org/index.html), [MariaDB](https://mariadb.org/), [PostgreSQL](https://www.postgresql.org/). 
 <!--On https://sqlite.org/fileformat2.html is written:-->
 <!--The main database file consists of one or more pages. The size of a page is a power of two between 512 and 65536 inclusive. All pages within the same database are the same size. The page size for a database file is determined by the 2-byte integer located at an offset of 16 bytes from the beginning of the database file.--> 
@@ -46,7 +46,7 @@ _Note Grd: Why do we need such a database? That is the question. We need it beca
 ### User interface
 ![Block diagram interface design](FreePDM_CoD-Figures/BDD_UI-design.png)
 
-For the user interface there are two main issues but both are related. the issue about the programming language is described below.
+For the user interface there are two main issues - although both are related, the issue relevant to the programming language is described below.
 What i mean with the figure<!--(report me(==Jee-Bee) when i'm wrong also explain why)--> above is that there are two main options of interfaces.
 
 1. Web interface
@@ -59,9 +59,9 @@ Pro's                      | Con's
 Centralised updates        | Security is more difficult(specially .js)
 More easy to add other SW  | More data transport
                            | 
-(Maintainability?)           | (Maintainability?)
+(Maintainability?)         | (Maintainability?)
 
-See also Comment of user1234 in the related [topic](https://forum.freecad.org/viewtopic.php?f=8&t=68350&p=594331#p594252)
+Seegrd user1234's comment in the related [topic](https://forum.freecad.org/viewtopic.php?f=8&t=68350&p=594331#p594252)
 
 Looking at the local storage there are two tastes available(for now).
 
@@ -70,16 +70,16 @@ Looking at the local storage there are two tastes available(for now).
   - If Using the _Add-on Manager_ see: the [Workebench start kit](https://github.com/FreeCAD/freecad.workbench_starterkit)
   - Another important Thread about the [_Add-on Manager_ Redesign](https://forum.freecad.org/viewtopic.php?f=9&t=64628)
 
-Specially the Add-on manager can help for at least (semi-)centralised updates. 
+Specially and at the very least, the Add-on manager can help with (semi-)centralised updates. 
 
 _Note: How does the GUI interact with the user?_
 
 ### Used programming language
 
-In the case of the web interface, it can be programmed with Javascript or Python (there are more but these are most well known).
+In the case of the web interface, it can be programmed with Javascript or Python (there are other options but these two are most well known languages).
 
 In the case of a local program, Python can be a good option too.
-This is also due to its interoperating well with FreeCAD and the FreeCAD [Add-on Manager](https://wiki.freecad.org/Std_AddonMgr). 
+This is also due to it interoperating well with FreeCAD and the FreeCAD [Add-on Manager](https://wiki.freecad.org/Std_AddonMgr). 
 
 What are pros/cons of the Add-on manager: 
 
@@ -88,13 +88,14 @@ Pros                           | Cons
 Semi Centralised updates       | Not direct integration
 Fast(er) update speed⁰         | python only
 Translation to other languages | More difficult user handling
- Maintainability               | 
+Maintainability                | 
 
 ⁰ Faster is compared to FreeCAD when every chance goes through checks(Except when WMayer fix it). <!-- unicode superscript see: https://stackoverflow.com/questions/15155778/superscript-in-markdown-github-flavored -->
  
 _What i meant with user handling see story later on_
 
-By using the add-on manager it is possible to change quickly when a change / update is needed.
+By using the add-on manager, pushing hotfixes are fast and direct (no need to wait for upstream review) 
+
 _Note: We have to decide to:
 - Make a FreeCAD Add-on
 - ?_
