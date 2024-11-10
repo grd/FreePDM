@@ -292,10 +292,9 @@ func (fi *FileIndex) increaseContainerNumber() (string, error) {
 	return str, nil
 }
 
-// Adds the item from both self.fileIndex and self.fileLocationList
-// and store the information on disk. Returns the index number.
+// Adds the filename to the filelist. Returns the index number, and an error.
 // It does not add a file on disk.
-func (fi *FileIndex) AddItem(filename, dirname string) (string, error) {
+func (fi *FileIndex) AddItem(filename, dirname string) (*FileList, error) {
 
 	if err := fi.Read(); err != nil { // refreshing the index
 		log.Fatalf("error reading FileIndex.csv, %v", err)
@@ -306,7 +305,7 @@ func (fi *FileIndex) AddItem(filename, dirname string) (string, error) {
 
 	index, err := fi.increaseContainerNumber()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	fl := FileList{containerNumber: index, fileName: fname, dir: dirname}
@@ -317,7 +316,7 @@ func (fi *FileIndex) AddItem(filename, dirname string) (string, error) {
 		log.Fatalf("error writing FileIndex.csv, %v", err)
 	}
 
-	return index, nil
+	return &fl, nil
 }
 
 // Moves the filename to an other directory,
