@@ -4,7 +4,7 @@
 ## Requirements Document
 
 The file below contains 4 tabs.
-In the following paragraphs are a explanation of every tab.
+In the following paragraphs there are explanations of each tab.
 
 [Spreadsheet with requirements](FreePDM_04-Requirements.fods)
 

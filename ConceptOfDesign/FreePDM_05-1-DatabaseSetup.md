@@ -36,13 +36,14 @@ List of all item numbers
 
 _Notes:_
 
-- _Do we allow that there exist files that don't have(And never get) any related CAD file but are accepted in the PDM? For example a financial document?_
+- _Do we allow the existence of files that don't have (and never get) any related CAD file but are accepted in the PDM? For example a financial document?_
 - _Do we allow non "Just the next number approach"? For example that (Module) assemblies get a certain range OR that a project get a certain range(of for example 1000 numbers)_
 
-### File(s) belongs to Item
+### File(s) belonging to Item
 
 Are we creating one single database list for _ALL_ files.
-OR Are we creating a database file for every Item?
+OR  
+Are we creating a database file for every Item?
 
 General attributes
 
