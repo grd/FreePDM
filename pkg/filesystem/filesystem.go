@@ -210,7 +210,7 @@ func (fs *FileSystem) ImportFile(fileName string) (*FileList, error) {
 
 	// Checking out the new file so no one else can see it.
 
-	if err = fs.CheckOut(fl.containerNumber, FileVersion{0, "0", util.Now()}); err != nil {
+	if err = fs.CheckOut(*fl, FileVersion{0, "0", util.Now()}); err != nil {
 		return nil, err
 	}
 
@@ -218,14 +218,11 @@ func (fs *FileSystem) ImportFile(fileName string) (*FileList, error) {
 }
 
 // Generates a new version of a file. Returns the FileVersion and an error.
-func (fs *FileSystem) NewVersion(containerNumber string) (FileVersion, error) {
+func (fs *FileSystem) NewVersion(fl FileList) (FileVersion, error) {
 
 	// Check whether src is locked or not
 
-	fl, err := fs.index.ContainerNumberToFileList(containerNumber)
-	util.CheckErr(err)
-
-	if name := fs.IsLockedItem(containerNumber); name != "" {
+	if name := fs.IsLockedItem(fl.containerNumber); name != "" {
 		return FileVersion{}, fmt.Errorf("NewVersion error: File %s is checked out by %s", fl, name)
 	}
 
@@ -237,7 +234,7 @@ func (fs *FileSystem) NewVersion(containerNumber string) (FileVersion, error) {
 
 	log.Printf("Created version %d of file %s\n", newVersion.Number, fl.fileName)
 
-	err = fs.CheckOut(containerNumber, newVersion)
+	err := fs.CheckOut(fl, newVersion)
 	util.CheckErr(err)
 
 	return newVersion, nil
@@ -410,7 +407,7 @@ func (fs FileSystem) IsLockedItem(containerNumber string) string {
 }
 
 // Checkout means locking a conainer number so that only you can use it.
-func (fs *FileSystem) CheckOut(containerNumber string, version FileVersion) error {
+func (fs *FileSystem) CheckOut(fl FileList, version FileVersion) error {
 	// update the index
 	if err := fs.ReadLockedIndex(); err != nil {
 		return err
@@ -418,23 +415,20 @@ func (fs *FileSystem) CheckOut(containerNumber string, version FileVersion) erro
 
 	// Set file mode 0700
 
-	fl, err := fs.index.ContainerNumberToFileList(containerNumber)
-	util.CheckErr(err)
-
 	fd := NewFileDirectory(fs, fl)
 	fd.OpenItemVersion(version)
 
 	// check whether the itemnr is locked
 
-	if usr := fs.IsLocked(containerNumber, version); usr != "" {
+	if usr := fs.IsLocked(fl.containerNumber, version); usr != "" {
 
-		return fmt.Errorf("file %s-%d is locked by user %v", containerNumber, version.Number, usr)
+		return fmt.Errorf("file %s-%d is locked by user %v", fl.containerNumber, version.Number, usr)
 
 	} else {
 
-		fs.lockedIndex = append(fs.lockedIndex, LockedIndex{containerNumber, version.Number, fs.user})
+		fs.lockedIndex = append(fs.lockedIndex, LockedIndex{fl.containerNumber, version.Number, fs.user})
 
-		if err = fs.WriteLockedIndex(); err != nil {
+		if err := fs.WriteLockedIndex(); err != nil {
 			return err
 		}
 
@@ -446,12 +440,9 @@ func (fs *FileSystem) CheckOut(containerNumber string, version FileVersion) erro
 
 // Checkin means unlocking a container number.
 // The description and long description are meant for storage.
-func (fs *FileSystem) CheckIn(containerNumber string, version FileVersion, descr, longdescr string) error {
+func (fs *FileSystem) CheckIn(fl FileList, version FileVersion, descr, longdescr string) error {
 
 	// Set file mode 0755
-
-	fl, err := fs.index.ContainerNumberToFileList(containerNumber)
-	util.CheckErr(err)
 
 	fd := NewFileDirectory(fs, fl)
 
@@ -461,11 +452,11 @@ func (fs *FileSystem) CheckIn(containerNumber string, version FileVersion, descr
 
 	// check whether the itemnr is locked
 
-	usr := fs.IsLocked(containerNumber, version)
+	usr := fs.IsLocked(fl.containerNumber, version)
 
 	if usr != fs.user {
 
-		return fmt.Errorf("file %s-%d is locked by user %s", containerNumber, version.Number, usr)
+		return fmt.Errorf("file %s-%d is locked by user %s", fl.containerNumber, version.Number, usr)
 
 	} else {
 
@@ -473,14 +464,14 @@ func (fs *FileSystem) CheckIn(containerNumber string, version FileVersion, descr
 
 		var nr int
 		for i, y := range fs.lockedIndex {
-			if y.containerNumber == containerNumber && y.version == version.Number {
+			if y.containerNumber == fl.containerNumber && y.version == version.Number {
 				nr = i
 			}
 		}
 
 		fs.lockedIndex = slices.Delete(fs.lockedIndex, nr, nr+1)
 
-		if err = fs.WriteLockedIndex(); err != nil {
+		if err := fs.WriteLockedIndex(); err != nil {
 			return err
 		}
 

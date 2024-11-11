@@ -57,6 +57,11 @@ func NewFileDirectory(fsm *FileSystem, fl FileList) FileDirectory {
 		dir: path.Join(fsm.vaultDir, fl.dir, fl.containerNumber)}
 }
 
+// Returns the FileList because this field is unexported
+func (fd FileDirectory) FileList() FileList {
+	return fd.fl
+}
+
 // Creates a new directory inside the current working directory.
 func (fd *FileDirectory) CreateDirectory() error {
 
