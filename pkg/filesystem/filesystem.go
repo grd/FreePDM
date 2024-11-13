@@ -566,9 +566,8 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 	}
 
 	if name := fs.IsLockedItem(srcFl.containerNumber); name != "" {
-		return fmt.Errorf("FileCopy error: File %s is checked out by %s", src, name)
+		return fmt.Errorf("file %s is checked out by %s", src, name)
 	}
-	fmt.Println("hello")
 
 	// Check whether dest is a file or directory
 	if len(dst) > 1 {
@@ -593,6 +592,11 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 	srcFd := NewFileDirectory(fs, srcFl)
 
 	_, dstFile := path.Split(dst)
+
+	// Check whether dst exists
+	if _, err := fs.index.FileNameToFileList(dstDir, dstFile); err == nil {
+		return fmt.Errorf("file %s already exists and is stored in %s", dstFile, dstDir)
+	}
 
 	destFl, err := fs.index.AddItem(dstDir, dstFile)
 	if err != nil {

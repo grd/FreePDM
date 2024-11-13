@@ -236,10 +236,10 @@ func TestFileCopy(t *testing.T) {
 	compareFileListLine(7, "7:0011.FCStd::Projects:")
 
 	// copy to different dir and new file name
-	if err = fs.FileCopy("0002.FCStd", "../test/0008a.FCStd"); err != nil {
+	if err = fs.FileCopy("0002.FCStd", "../test/0012.FCStd"); err != nil {
 		t.Fatalf("FileCopy %s error: %s", file1, err)
 	}
-	compareFileListLine(8, "8:0008a.FCStd::test:")
+	compareFileListLine(8, "8:0012.FCStd::test:")
 
 	// // TODO: Make it working for copying a file to a directory only without a file name.
 	// // Then it should also be possible to properly copy a directory
@@ -249,17 +249,29 @@ func TestFileCopy(t *testing.T) {
 	// }
 	// compareFileListLine(5, "5:0008a.FCStd::test:")
 
-	// // Test locked file
-	// err = fs.FileCopy("lockedFile.txt", "newFile.txt")
-	// if err == nil || err.Error() != "FileCopy error: File lockedFile.txt is checked out by user" {
-	// 	t.Fatalf("Expected lock error, got: %v", err)
-	// }
+	// Test locked file
+	item, err := fs.GetItem("Projects", "0002.FCStd")
+	if err != nil {
+		t.Fatalf("unable to find: %v", err)
+	}
+	f2 := fsm.NewFileDirectory(fs, item)
+	ver, err := fs.NewVersion(f2.FileList())
+	if err != nil {
+		t.Fatalf("Expected lock error, got: %v", err)
+	}
+	checkOutStatus(2, 1)
+	err = fs.FileCopy("0002.FCStd", "0013.FCStd")
+	if err == nil || err.Error() != "file 0002.FCStd is checked out by user" {
+		t.Fatalf("Expected lock error, got: %v", err)
+	}
+	fs.CheckIn(f2.FileList(), ver, "Test", "Test")
+	checkInStatus(2, 1)
 
-	// // Test for file already existing at destination
-	// err = fs.FileCopy("src.txt", "existingFile.txt")
-	// if err == nil || err.Error() != "file existingFile.txt already exists" {
-	// 	t.Fatalf("Expected existing file error, got: %v", err)
-	// }
+	// Test for file already existing at destination
+	err = fs.FileCopy("0004.FCStd", "0011.FCStd")
+	if err == nil || err.Error() != "file 0011.FCStd already exists and is stored in Projects" {
+		t.Fatalf("Expected existing file error, got: %v", err)
+	}
 
 	// back to root dir
 	fs.Chdir("..")
