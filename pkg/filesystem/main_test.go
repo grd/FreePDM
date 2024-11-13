@@ -177,6 +177,11 @@ func TestFileRename(t *testing.T) {
 		assert.Equal(t, err, errors.New("file 0007.FCStd already exists and is stored in 1"))
 	}
 
+	// // dest is empty
+	// if err := fs.FileRename("0007.FCStd", ""); err != nil {
+	// 	assert.Equal(t, err, errors.New("file 0007.FCStd already exists and is stored in 1"))
+	// }
+
 	// Ordinary file move
 	if err := fs.FileRename("0003.FCStd", "temp/"); err != nil {
 		t.Fatalf("FileMove failed: %v", err)
@@ -235,19 +240,23 @@ func TestFileCopy(t *testing.T) {
 	}
 	compareFileListLine(7, "7:0011.FCStd::Projects:")
 
+	// dest is empty
+	// err = fs.FileCopy("0002.FCStd", "")
+	// if err != nil {
+	// 	t.Fatalf("FileCopy failed: %v", err)
+	// }
+
 	// copy to different dir and new file name
 	if err = fs.FileCopy("0002.FCStd", "../test/0012.FCStd"); err != nil {
 		t.Fatalf("FileCopy %s error: %s", file1, err)
 	}
 	compareFileListLine(8, "8:0012.FCStd::test:")
 
-	// // TODO: Make it working for copying a file to a directory only without a file name.
-	// // Then it should also be possible to properly copy a directory
-
-	// if err = fs.FileCopy("0002.FCStd", "../test/"); err != nil {
-	// 	t.Fatalf("FileCopy %s error: %s", file1, err)
-	// }
-	// compareFileListLine(5, "5:0008a.FCStd::test:")
+	// Test for a file copy with only a directory as destination.
+	if err = fs.FileCopy("0002.FCStd", "../test/"); err != nil {
+		t.Fatalf("FileCopy %s error: %s", file1, err)
+	}
+	compareFileListLine(9, "9:0002.FCStd::test:")
 
 	// Test locked file
 	item, err := fs.GetItem("Projects", "0002.FCStd")

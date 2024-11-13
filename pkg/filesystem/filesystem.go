@@ -484,7 +484,7 @@ func (fs *FileSystem) CheckIn(fl FileList, version FileVersion, descr, longdescr
 // Rename a file, for instance when the user wants to use a file with
 // a specified numbering system
 func (fs *FileSystem) FileRename(src, dst string) error {
-	// Check whether src is locked or not
+
 	cn, err := fs.index.FileNameToContainerNumber(fs.currentWorkingDir, src)
 	if err != nil {
 		return fmt.Errorf("failed to get container number for %s: %w", src, err)
@@ -494,6 +494,8 @@ func (fs *FileSystem) FileRename(src, dst string) error {
 	if name := fs.IsLockedItem(cn); name != "" {
 		return fmt.Errorf("file %s is checked out by %s", src, name)
 	}
+
+	// TODO Check for empty dst
 
 	// Check whether dst ends with '/'. In that case it is a file move.
 	if dst[len(dst)-1] == '/' {
@@ -569,6 +571,8 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 		return fmt.Errorf("file %s is checked out by %s", src, name)
 	}
 
+	// TODO Check for empty dst
+
 	// Check whether dest is a file or directory
 	if len(dst) > 1 {
 		if len(dst)-1 == '/' {
@@ -577,7 +581,7 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 		}
 	}
 
-	var dstPath, dstDir string
+	var dstPath, dstDir, dstFile string
 	if strings.Contains(dst, "/") {
 		num := strings.LastIndexByte(dst, '/')
 		dstDir = path.Join(fs.currentWorkingDir, dst[:num])
@@ -591,7 +595,12 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 
 	srcFd := NewFileDirectory(fs, srcFl)
 
-	_, dstFile := path.Split(dst)
+	// Check wether dst ends with '/'
+	if dst[len(dst)-1] == '/' {
+		dstFile = src
+	} else {
+		_, dstFile = path.Split(dst)
+	}
 
 	// Check whether dst exists
 	if _, err := fs.index.FileNameToFileList(dstDir, dstFile); err == nil {
@@ -616,11 +625,13 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 		return err
 	}
 
-	// Rename file
-	dstVer := dstFd.LatestVersion()
-	dstStr := path.Join(dstFd.dir, dstVer.Pretty)
-	if err = os.Rename(path.Join(dstStr, src), path.Join(dstStr, dstFile)); err != nil {
-		return fmt.Errorf("failed to rename file from %s to %s: %w", src, dstFile, err)
+	// Rename file, but only when dst doesn't end with '/' (which means a directory)
+	if dst[len(dst)-1] != '/' {
+		dstVer := dstFd.LatestVersion()
+		dstStr := path.Join(dstFd.dir, dstVer.Pretty)
+		if err = os.Rename(path.Join(dstStr, src), path.Join(dstStr, dstFile)); err != nil {
+			return fmt.Errorf("failed to rename file from %s to %s: %w", src, dstFile, err)
+		}
 	}
 
 	// Logging
