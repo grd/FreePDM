@@ -7,6 +7,7 @@ package filesystem
 import (
 	"bytes"
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -495,7 +496,10 @@ func (fs *FileSystem) FileRename(src, dst string) error {
 		return fmt.Errorf("file %s is checked out by %s", src, name)
 	}
 
-	// TODO Check for empty dst
+	// Check whether dst is empty
+	if dst == "" {
+		return errors.New("empty destination")
+	}
 
 	// Check whether dst ends with '/'. In that case it is a file move.
 	if dst[len(dst)-1] == '/' {
@@ -571,13 +575,15 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 		return fmt.Errorf("file %s is checked out by %s", src, name)
 	}
 
-	// TODO Check for empty dst
+	// Check whether dst is empty
+	if dst == "" {
+		return errors.New("empty destination")
+	}
 
-	// Check whether dest is a file or directory
+	// Check whether dst is a file or directory
 	if len(dst) > 1 {
 		if len(dst)-1 == '/' {
 			dst = dst + src
-			fmt.Printf("dest = %s\n", dst)
 		}
 	}
 

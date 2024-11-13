@@ -172,15 +172,15 @@ func TestFileRename(t *testing.T) {
 	}
 	compareFileListLine(1, "1:0007.FCStd:0001.FCStd:Projects:")
 
-	// source file is equal to dest file
+	// Source file is equal to dest file
 	if err := fs.FileRename("0007.FCStd", "0007.FCStd"); err != nil {
 		assert.Equal(t, err, errors.New("file 0007.FCStd already exists and is stored in 1"))
 	}
 
-	// // dest is empty
-	// if err := fs.FileRename("0007.FCStd", ""); err != nil {
-	// 	assert.Equal(t, err, errors.New("file 0007.FCStd already exists and is stored in 1"))
-	// }
+	// Dest is empty
+	if err := fs.FileRename("0007.FCStd", ""); err != nil {
+		assert.Equal(t, err, errors.New("empty destination"))
+	}
 
 	// Ordinary file move
 	if err := fs.FileRename("0003.FCStd", "temp/"); err != nil {
@@ -241,10 +241,10 @@ func TestFileCopy(t *testing.T) {
 	compareFileListLine(7, "7:0011.FCStd::Projects:")
 
 	// dest is empty
-	// err = fs.FileCopy("0002.FCStd", "")
-	// if err != nil {
-	// 	t.Fatalf("FileCopy failed: %v", err)
-	// }
+	err = fs.FileCopy("0002.FCStd", "")
+	if err != nil {
+		assert.Equal(t, err, errors.New("empty destination"))
+	}
 
 	// copy to different dir and new file name
 	if err = fs.FileCopy("0002.FCStd", "../test/0012.FCStd"); err != nil {
