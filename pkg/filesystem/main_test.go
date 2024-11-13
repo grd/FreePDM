@@ -229,16 +229,17 @@ func TestFileCopy(t *testing.T) {
 	fs.Chdir("Projects")
 
 	// ordanary file copy
-	// err := fs.FileCopy("0002.FCStd", "0011.FCStd")
-	// if err != nil {
-	// 	t.Fatalf("FileCopy failed: %v", err)
-	// }
-	// compareFileListLine(7, "7:0011.FCStd::Projects:")
+	err := fs.FileCopy("0002.FCStd", "0011.FCStd")
+	if err != nil {
+		t.Fatalf("FileCopy failed: %v", err)
+	}
+	compareFileListLine(7, "7:0011.FCStd::Projects:")
 
-	// if err = fs.FileCopy("0002.FCStd", "../test/0008a.FCStd"); err != nil {
-	// 	t.Fatalf("FileCopy %s error: %s", file1, err)
-	// }
-	// compareFileListLine(5, "5:0008a.FCStd::test:")
+	// copy to different dir and new file name
+	if err = fs.FileCopy("0002.FCStd", "../test/0008a.FCStd"); err != nil {
+		t.Fatalf("FileCopy %s error: %s", file1, err)
+	}
+	compareFileListLine(8, "8:0008a.FCStd::test:")
 
 	// // TODO: Make it working for copying a file to a directory only without a file name.
 	// // Then it should also be possible to properly copy a directory
@@ -247,11 +248,6 @@ func TestFileCopy(t *testing.T) {
 	// 	t.Fatalf("FileCopy %s error: %s", file1, err)
 	// }
 	// compareFileListLine(5, "5:0008a.FCStd::test:")
-
-	// if err = fs.FileCopy("0002.FCStd", "../test/0010.FCStd"); err != nil {
-	// 	t.Fatalf("FileCopy failed: %v", err)
-	// }
-	// compareFileListLine(6, "6:0010.FCStd::test:")
 
 	// // Test locked file
 	// err = fs.FileCopy("lockedFile.txt", "newFile.txt")

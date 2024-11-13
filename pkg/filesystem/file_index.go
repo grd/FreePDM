@@ -294,13 +294,13 @@ func (fi *FileIndex) increaseContainerNumber() (string, error) {
 
 // Adds the filename to the filelist. Returns the index number, and an error.
 // It does not add a file on disk.
-func (fi *FileIndex) AddItem(filename, dirname string) (*FileList, error) {
+func (fi *FileIndex) AddItem(dirName, fileName string) (*FileList, error) {
 
 	if err := fi.Read(); err != nil { // refreshing the index
 		log.Fatalf("error reading FileIndex.csv, %v", err)
 	}
 	// getting rid of the path
-	_, split_file := path.Split(filename)
+	_, split_file := path.Split(fileName)
 	fname := split_file
 
 	index, err := fi.increaseContainerNumber()
@@ -308,7 +308,7 @@ func (fi *FileIndex) AddItem(filename, dirname string) (*FileList, error) {
 		return nil, err
 	}
 
-	fl := FileList{containerNumber: index, fileName: fname, dir: dirname}
+	fl := FileList{containerNumber: index, fileName: fname, dir: dirName}
 
 	fi.fileList = append(fi.fileList, fl)
 

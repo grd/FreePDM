@@ -191,7 +191,7 @@ func (fs *FileSystem) ImportFile(fileName string) (*FileList, error) {
 		return nil, fmt.Errorf("file %s could not be found", fileName)
 	}
 
-	fl, err := fs.index.AddItem(fileName, fs.currentWorkingDir)
+	fl, err := fs.index.AddItem(fs.currentWorkingDir, fileName)
 	if err != nil {
 		return nil, err
 	}
@@ -504,8 +504,6 @@ func (fs *FileSystem) FileRename(src, dst string) error {
 	dstDir, dstFile := path.Split(dst)
 
 	// Check whether dst exists
-	// TODO: dunno howto deal with this dstDir. I just use currentworkingdir as parameter
-	// I think that the best way is to join fs.cwd and dstDir.
 	if item, err := fs.index.FileNameToFileList(path.Join(fs.currentWorkingDir, dstDir), dst); err == nil {
 		return fmt.Errorf("file %s already exists and is stored in %s", dst, item.ContainerNumber())
 	}
@@ -559,7 +557,7 @@ func (fs *FileSystem) FileRename(src, dst string) error {
 	return nil
 }
 
-// Copy the latest version of a file.
+// Copy the latest file from src to dst and returns an error.
 func (fs *FileSystem) FileCopy(src, dst string) error {
 	// Check whether src is locked
 	srcFl, err := fs.index.FileNameToFileList(fs.currentWorkingDir, src)
@@ -580,37 +578,29 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 		}
 	}
 
-	var dstPath, dstFile string
+	var dstPath, dstDir string
 	if strings.Contains(dst, "/") {
 		num := strings.LastIndexByte(dst, '/')
-		dstFile = path.Join(fs.currentWorkingDir, dst[:num])
-		dstPath = path.Join(fs.vaultDir, dstFile)
+		dstDir = path.Join(fs.currentWorkingDir, dst[:num])
+		dstPath = path.Join(fs.vaultDir, dstDir)
 		if !util.DirExists(dstPath) {
 			return fmt.Errorf("directory %s doesn't exist", dstPath)
 		}
 	} else {
-		dstFile = fs.currentWorkingDir
-	}
-
-	if _, err = fs.index.FileNameToFileList(dstPath, dstFile); err == nil {
-		return fmt.Errorf("file %s already exists", dst)
+		dstDir = fs.currentWorkingDir
 	}
 
 	srcFd := NewFileDirectory(fs, srcFl)
 
-	_, destFile := path.Split(dst)
-	// destFl, err := fs.index.AddItem(destFile, dstFile)
-	// if err != nil {
-	// 	return err
-	// }
+	_, dstFile := path.Split(dst)
 
-	destDir, err := fs.index.FileNameToFileList(dstPath, dstFile)
+	destFl, err := fs.index.AddItem(dstDir, dstFile)
 	if err != nil {
-		return fmt.Errorf("failed to get file list for %s: %w", destFile, err)
+		return err
 	}
 
-	destFd := NewFileDirectory(fs, destDir)
-	if err := destFd.CreateDirectory(); err != nil {
+	dstFd := NewFileDirectory(fs, *destFl)
+	if err := dstFd.CreateDirectory(); err != nil {
 		return err
 	}
 
@@ -618,12 +608,15 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 	version := srcFd.LatestVersion()
 	srcFile := path.Join(srcFd.dir, version.Pretty, src)
 
-	if err = destFd.ImportNewFile(srcFile); err != nil {
+	if err = dstFd.ImportNewFile(srcFile); err != nil {
 		return err
 	}
 
-	if err := destFd.fileRename(src, destFile); err != nil {
-		return fmt.Errorf("failed to rename file from %s to %s: %w", src, destFile, err)
+	// Rename file
+	dstVer := dstFd.LatestVersion()
+	dstStr := path.Join(dstFd.dir, dstVer.Pretty)
+	if err = os.Rename(path.Join(dstStr, src), path.Join(dstStr, dstFile)); err != nil {
+		return fmt.Errorf("failed to rename file from %s to %s: %w", src, dstFile, err)
 	}
 
 	// Logging
