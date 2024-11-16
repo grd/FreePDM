@@ -26,6 +26,8 @@ Relevant:
 * The FreeCAD [Reporting workbench](https://github.com/furti/FreeCAD-Reporting) addon that uses SQL to extract information out of a FreeCAD document.
 * The [fcinfo](https://wiki.freecad.org/Macro_FCInfo) macro for measuring the weight of a model.
 
+## Install
+Proposed [Install](ConceptOfDesign/FreePDM_Install/README.md).
 
 ## Concept
 

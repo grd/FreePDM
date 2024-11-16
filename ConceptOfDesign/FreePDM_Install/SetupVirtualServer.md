@@ -57,4 +57,4 @@ Note: if this is the first time connecting via `ssh` you'll be prompted to confi
 
 Now you are ready to go.
 
-[<< Previous Chapter](commands.md) | [Content Table](README.md) | [Next Chapter >>]()
+[<< Previous Chapter](Docker-Compose.md) | [Content Table](README.md) | [Next Chapter >>](Commands.md)
