@@ -1,5 +1,5 @@
-CONTAINER_NAME := freepdm
-CONTAINER_DATA_FOLDER := /home/user/docker/freepdm
+CONTAINER_NAME := samba
+CONTAINER_DATA_FOLDER := /home/user/docker
 
 full: stop rm start
 
