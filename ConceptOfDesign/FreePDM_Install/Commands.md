@@ -1,5 +1,15 @@
 ## FreePDM Documentation
 
+### Show icons of FreeCAD files
+
+This option provides the possibility to display a screenshot of the model within the FreeCAD file as the file thumbnail.  
+
+Within FreeCAD:  
+
+`Edit` ➡️ `Preferences` ➡️ `General` ➡️ `Document` ➡️ `Save thumbnail into project when saving document`  
+
+Note: leave the 128 number
+
 ### Code Snippets
 There is no way to add a button/menu entry from python to a workbench which is added with cpp (c++). So here is a comparison how to do that with python and with cpp.
 
