@@ -1,6 +1,8 @@
 module github.com/grd/FreePDM
 
-go 1.20
+go 1.22.7
+
+toolchain go1.23.3
 
 require github.com/BurntSushi/toml v1.3.2
 
@@ -15,6 +17,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/crypto v0.28.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
@@ -25,7 +29,7 @@ require (
 	github.com/jacobsa/reqtrace v0.0.0-20150505043853-245c9e0234cb // indirect
 	github.com/jacobsa/syncutil v0.0.0-20180201203307-228ac8e5a6c3 // indirect
 	github.com/jacobsa/timeutil v0.0.0-20170205232429-577e5acbbcf6
-	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/net v0.29.0 // indirect
 )
 
 require (
@@ -49,6 +53,7 @@ require (
 	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/term v0.25.0 // indirect
 	golang.org/x/text v0.19.0 // indirect
+	google.golang.org/grpc v1.68.0
 	gorm.io/driver/mysql v1.5.1
 	gorm.io/driver/postgres v1.5.9
 )

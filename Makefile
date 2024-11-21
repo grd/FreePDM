@@ -19,7 +19,7 @@ test:
 	go test -v ./...
 
 fstest:
-	go test pkg/filesystem/main_test.go
+	go test -failfast pkg/filesystem/main_test.go
 
 serverapp: 
 	go build -o $(BIN_DIR)/serverapp cmd/serverapp/main.go
@@ -45,3 +45,11 @@ glob-walkdir:
 list-share-names:
 	go build -o $(BIN_DIR)/list-share-names temp/list-share-names/list-share-names.go
 
+docker:
+	docker-compose up --build -d
+
+stop_docker:
+	docker-compose down
+
+rm_docker:
+	docker-compose down -v

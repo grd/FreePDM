@@ -48,14 +48,16 @@ services:
     ports:
       - "139:139"
       - "445:445"
-    # environment:
+    environment:
+      - TZ=Europe/Amsterdam
+
     #   - SAMBA_USERS="youruser:yourpassword"
     #   - SAMBA_SHARES="[shared];path=/mount;guest_ok=n;writable=y"
     volumes:
       - ${SHARE_PATH}:/mount  # Directory shared via Samba
     command: >
-      -u "${USER1};${PASSWORD1}"
-      -u "${USER2};${PASSWORD2}"
+      -u "${USER1};${PASSWORD1};${UID1}; ${GID}"
+      -u "${USER2};${PASSWORD2};${UID2}; ${GID}"
       -s "${SHARE_NAME};/mount;yes;no;yes"
     networks:
       - app-network
