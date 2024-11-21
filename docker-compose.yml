@@ -56,8 +56,8 @@ services:
     volumes:
       - ${SHARE_PATH}:/mount  # Directory shared via Samba
     command: >
-      -u "${USER1};${PASSWORD1};${UID1}; ${GID}"
-      -u "${USER2};${PASSWORD2};${UID2}; ${GID}"
+      -u "${USER1};${PASSWORD1};${UID1};${GID}"
+      -u "${USER2};${PASSWORD2};${UID2};${GID}"
       -s "${SHARE_NAME};/mount;yes;no;yes"
     networks:
       - app-network
