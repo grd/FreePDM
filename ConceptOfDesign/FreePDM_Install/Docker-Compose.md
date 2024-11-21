@@ -16,12 +16,36 @@ Type the following to stop samba:
 sudo systemctl stop smbd
 sudo systemctl disable smbd
 ```
-Go to the `FreePDM/docker` directory.
+Go to the `FreePDM` directory. Such as `cd FreePDM`
+
+Compiling FreePDM.
+```
+docker build -t freepdm .
+```
+That should compile. Once that is done:
+```
+docker run --rm -p 8080:8080 freepdm
+```
+
 
 Open the file `docker-compose.yml`. The TZ field you can modify to your own TimeZone. Right now the last line inside the volumes section is fixed and hard coded. This should of course in the future be modifyable.
 
-Type `make start`
+Compile docker-compose:
+```
+docker-compose up --build -d
+```
+
+Delelte the docker-compose file:
+```
+docker-compose down
+```
 
 Test whether the network drive is still working and log in. If that is done then docker works.
+
+Also check with curl
+```
+curl http://localhost:50051
+```
+The output should be `404 page not found`
 
 [<< Previous Chapter](Install.md) | [Content Table](README.md) | [Next Chapter >>](SetupVirtualServer.md)

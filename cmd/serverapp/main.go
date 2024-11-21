@@ -33,5 +33,5 @@ func main() {
 	// Create route to love-mountains web page
 	http.HandleFunc("/love-mountains", loveMountains)
 	// Launch web server on port 80
-	http.ListenAndServe(":80", nil)
+	http.ListenAndServe(":50051", nil)
 }
