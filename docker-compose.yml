@@ -8,14 +8,14 @@ services:
     ports:
       - "50051:50051"  # gRPC service port
     environment:
-      - GO_DIRECTORY=${GO_DIRECTORY}
-      - GO_WORKDIR=${GO_WORKDIR}
+      - GO_DIRECTORY=/home/user/FreePDM
+      - GO_WORKDIR=/home/user/FreePDM/cmd/serverapp
 
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=yourusername
+      - DB_PASSWORD=yourpassword
+      - DB_NAME=FreePDM
     depends_on:
       - db
     volumes:
@@ -25,43 +25,53 @@ services:
     networks:
       - app-network
     command: /app/freepdm
-    # command: go run cmd/serverapp/main.go  # Start your gRPC server (adjust if needed)
-    env_file:
-      - .env
 
   # PostgreSQL Database
   db:
     image: postgres:14
     restart: always
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: yourusername
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: FreePDM
     volumes:
       - db_data:/var/lib/postgresql/data  # Persist database data
     networks:
       - app-network
 
-  # Samba Service
   samba:
-    image: dperson/samba
-    ports:
-      - "139:139"
-      - "445:445"
+    image: ghcr.io/servercontainers/samba:latest
+    restart: always
+    network_mode: host
+    cap_add:
+      - CAP_NET_ADMIN
     environment:
-      - TZ=Europe/Amsterdam
+      TZ: Europe/Amsterdam
 
-    #   - SAMBA_USERS="youruser:yourpassword"
-    #   - SAMBA_SHARES="[shared];path=/mount;guest_ok=n;writable=y"
+      SAMBA_CONF_LOG_LEVEL: 3
+
+      GROUP_sambashare: 125
+
+      ACCOUNT_user1: passwd1
+      UID_user: 1000
+      GROUPS_user: sambashare
+
+      ACCOUNT_user2: passwd1
+      UID_user2: 1001
+      GROUPS_user2: sambashare
+
+      SAMBA_VOLUME_CONFIG_vaults: |
+        [vaults]
+          path = /samba/vaults
+          valid users = user1 user2
+          guest ok = no
+          browseable = yes
+          read only = no
+          writeable = yes
+          create mask = 0660
+          directory mask = 2770
     volumes:
-      - ${SHARE_PATH}:/mount  # Directory shared via Samba
-    command: >
-      -u "${USER1};${PASSWORD1};${UID1};${GID}"
-      -u "${USER2};${PASSWORD2};${UID2};${GID}"
-      -s "${SHARE_NAME};/mount;yes;no;yes"
-    networks:
-      - app-network
-    restart: unless-stopped
+      - /samba/vaults:/samba/vaults
 
 # Volumes
 volumes:
