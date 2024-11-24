@@ -54,6 +54,19 @@ docker compose pull
 docker-compose down && docker-compose up --build -d
 ```
 
+### Okay. It compiles. Now what?
+Check wether the share works:
+```
+smbclient -L //localhost/vaults -U yourusername
+```
+This should result in a prompt, not an error.
+
+Open the file browser. Type
+```
+smb://localhost/vaults
+```
+That should work after you log in.
+
 Also check with curl
 ```
 curl http://localhost:50051
