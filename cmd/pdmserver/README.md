@@ -1,13 +1,14 @@
 # FreePDM
-A PDM for FreeCAD
+A PDM for FreeCAD.
 
-## The Server App page. 
+After a long time of thinking I came to the conclusion that only having JSON interfaces with the client would be sufficient. That is, I think, *now* is the best way to communicate with the client. I don't think that having a web page is the right choice, but having a client is a better approach because then the server would have to do a lot less, which means more stable, and also the client can be anything such as a Windows app, Linux app and a Mac app, and maybe in the long future a mobile app.
 
-This page is a long list of things that need to be done. Don't expect everything working. It just isn't done yet. The list of TODO's is very long.
+## The PDM Server page
 
-### After serious considertation I came to the conclusion that Angular probably isn't the right choice. An ordinary webpage with Go icw HTMX and Tailwind CSS would be sufficient. Pff! No JS / TS !!!
+This page is a long list of things that need to be done. Don't expect one thing working. It just isn't done yet. The list of TODO's is very long.
 
-I still believe that a website would be the right choice for most of the PDM activities (as long as it is simple). Of course this will be pretty well organized, with subdirectories and access rights.
+### Basic functionality
+- Commands (/command) for ordinary functions such a ls, mv, rename, copy, chdir
 
 ### User accounts
 - Login (/admin/login) - a simple login form with username admin and password admin.

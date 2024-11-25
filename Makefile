@@ -3,7 +3,7 @@ FREECAD_FILES=$(FREEPDM)/ConceptOfDesign/TestFiles
 BIN_DIR=${HOME}/bin
 
 
-all: add_users createvault removevault testvault serverapp setup vcs vfs
+all: add_users createvault removevault testvault pdmserver pdmterm pdmclient vcs vfs 
 
 add_users: 
 	go build -o $(BIN_DIR)/add_users cmd/add_users/main.go
@@ -21,8 +21,14 @@ test:
 fstest:
 	go test -failfast pkg/filesystem/main_test.go
 
-serverapp: 
-	go build -o $(BIN_DIR)/serverapp cmd/serverapp/main.go
+pdmserver: 
+	go build -o $(BIN_DIR)/pdmserver cmd/pdmserver/main.go
+
+pdmterm: 
+	go build -o $(BIN_DIR)/pdmterm cmd/pdmterm/main.go
+
+pdmclient:
+	go build -o $(BIN_DIR)/pdmclient cmd/pdmclient/main.go
 
 vcs: 
 	go build -o $(BIN_DIR)/vcs cmd/vcs/main.go
@@ -45,11 +51,16 @@ glob-walkdir:
 list-share-names:
 	go build -o $(BIN_DIR)/list-share-names temp/list-share-names/list-share-names.go
 
+docker_all:
+	docker_rm
+	docker
+
 docker:
+	docker_compose pull
 	docker-compose up --build -d
 
-stop_docker:
+docker_stop:
 	docker-compose down
 
-rm_docker:
+docker_rm:
 	docker-compose down -v

@@ -7,9 +7,10 @@ services:
       dockerfile: Dockerfile # Dockerfile to build your Golang app
     ports:
       - "50051:50051"  # gRPC service port
+    restart: always
     environment:
       - GO_DIRECTORY=/home/user/FreePDM
-      - GO_WORKDIR=/home/user/FreePDM/cmd/serverapp
+      - GO_WORKDIR=/home/user/FreePDM/cmd/pdmserver
 
       - DB_HOST=db
       - DB_PORT=5432
@@ -22,6 +23,7 @@ services:
       - ./app:/go/src/app  # Mount your app source code for easier development
       - ./data:/app/data
       - ./logs:/app/logs
+      - /samba/vaultsdata:/samba/vaultsdata
     networks:
       - app-network
     command: /app/freepdm
@@ -52,18 +54,22 @@ services:
 
       GROUP_sambashare: 125
 
-      ACCOUNT_user1: passwd1
+      ACCOUNT_user: passwd
       UID_user: 1000
       GROUPS_user: sambashare
 
-      ACCOUNT_user2: passwd1
-      UID_user2: 1001
-      GROUPS_user2: sambashare
+      ACCOUNT_josh: josh1
+      UID_josh: 1001
+      GROUPS_josh: sambashare
+
+      ACCOUNT_user1: passwd1
+      UID_user1: 1001
+      GROUPS_user1: sambashare
 
       SAMBA_VOLUME_CONFIG_vaults: |
         [vaults]
           path = /samba/vaults
-          valid users = user1 user2
+          valid users = user josh user1
           guest ok = no
           browseable = yes
           read only = no

@@ -1,5 +1,5 @@
 # FreePDM Documentation
-Docker-Compose is a very interesting platform because of scaleability and security. In this case I am afraid it doesn't really suit very well because it is complicated and also right now it doesn't have the database options yet.
+Docker-Compose is a very interesting platform because of immutability, scaleability and security.
 
 ## Install Docker-Compose
 
