@@ -1,6 +1,7 @@
 FREEPDM=https://github.com/grd/FreePDM
 FREECAD_FILES=$(FREEPDM)/ConceptOfDesign/TestFiles
 BIN_DIR=${HOME}/bin
+CONTAINER_NAME := freepdm
 
 
 all: add_users createvault removevault testvault pdmserver pdmterm pdmclient vcs vfs 
@@ -51,11 +52,11 @@ glob-walkdir:
 list-share-names:
 	go build -o $(BIN_DIR)/list-share-names temp/list-share-names/list-share-names.go
 
-docker_all:
-	docker_rm
-	docker
-
 docker:
+	docker_rm
+	docker_start
+
+docker_start:
 	docker_compose pull
 	docker-compose up --build -d
 
@@ -64,3 +65,11 @@ docker_stop:
 
 docker_rm:
 	docker-compose down -v
+	docker rm ${CONTAINER_NAME} || true
+
+docker_shell:
+	docker exec -it ${CONTAINER_NAME} /bin/sh
+
+docker_logs:
+	docker logs ${CONTAINER_NAME}
+

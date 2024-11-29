@@ -45,8 +45,8 @@ type FileSystem struct {
 const (
 	LockedFileCsv = "LockedFiles.csv"
 
-	Vaults     = "/samba/vaults"
-	VaultsData = "/samba/vaultsdata"
+	vaults     = "/samba/vaults"
+	vaultsData = "/samba/vaultsdata"
 )
 
 // Constructor
@@ -56,8 +56,8 @@ func NewFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
 
 	parts := strings.Split(vaultDir, "/")
 	if len(parts) == 1 {
-		fs.vaultDir = path.Join(Vaults, vaultDir)
-		fs.dataDir = path.Join(VaultsData, vaultDir)
+		fs.vaultDir = path.Join(vaults, vaultDir)
+		fs.dataDir = path.Join(vaultsData, vaultDir)
 	} else {
 		log.Fatalf("multi-level vaultDir parameter: %s", vaultDir)
 	}
@@ -254,11 +254,13 @@ func (fs FileSystem) Mkdir(dir string) error {
 		return fmt.Errorf("please change %s into a string, now it is a number", dir)
 	}
 
-	err := os.Mkdir(dir, 0777)
-	util.CheckErr(err)
+	if err := os.Mkdir(dir, 0777); err != nil {
+		return err
+	}
 
-	err = os.Chown(dir, fs.userUid, fs.vaultUid)
-	util.CheckErr(err)
+	if err := os.Chown(dir, fs.userUid, fs.vaultUid); err != nil {
+		return err
+	}
 
 	log.Printf("Created directory: %s\n", dir)
 
@@ -294,7 +296,7 @@ func (fs FileSystem) ListWD() ([]FileInfo, error) {
 // ListDir lists the sorted directories and files within the specified directory name,
 // as long as the directory is inside the vault.
 func (fs FileSystem) ListDir(dirName string) ([]FileInfo, error) {
-	dirList, err := os.ReadDir(dirName)
+	dirList, err := os.ReadDir(path.Join(fs.vaultDir, dirName))
 	if err != nil {
 		return nil, fmt.Errorf("failed to read directory %s: %w", dirName, err)
 	}
@@ -587,6 +589,7 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 		}
 	}
 
+	// Check for a subdirectory inside dst
 	var dstPath, dstDir, dstFile string
 	if strings.Contains(dst, "/") {
 		num := strings.LastIndexByte(dst, '/')
@@ -703,6 +706,11 @@ func (fs *FileSystem) fileMove(fileName, destDir string) error {
 // Copy a directory.
 func (fs *FileSystem) DirectoryCopy(src, dst string) error {
 
+	// Check whether dst is empty
+	if dst == "" {
+		return errors.New("empty destination")
+	}
+
 	// Check whether dest is a number
 	if util.IsNumber(dst) {
 		return fmt.Errorf("directory %s is a number", dst)
@@ -729,6 +737,18 @@ func (fs *FileSystem) DirectoryCopy(src, dst string) error {
 		return err
 	}
 
+	// check there is a subdirectory which is not allowed
+	for _, elem := range srcFiles {
+		if strings.Contains(elem.dir, "/") {
+			return errors.New("subdirectories are not allowed for directory copy")
+		}
+	}
+
+	// append the src directory to srcFiles
+	srcZero := make([]FileInfo, 1)
+	srcZero[0] = FileInfo{dir: src, isDir: true}
+	srcFiles = append(srcZero, srcFiles...)
+
 	//
 	// Copy the directory
 	//
@@ -736,46 +756,34 @@ func (fs *FileSystem) DirectoryCopy(src, dst string) error {
 	dstFiles := make([]FileInfo, len(srcFiles))
 
 	// Populating dstFiles with data from srcFiles
+	l := len(srcFiles[0].dir)
 	for k, v := range srcFiles {
-		l := strings.Index(v.Path(), src)
 		dstFiles[k].isDir = srcFiles[k].isDir
-		if len(v.Path())-(l+len(src)) != 0 {
-			rest := v.Path()[l+len(src)+1:]
-			if !dstFiles[k].IsDir() {
-				dstFiles[k].dir = path.Join(dst, rest)
-				idx := strings.Index(srcFiles[k].Name(), ".")
-				str := srcFiles[k].name[0:idx] + " (copy)" + srcFiles[k].name[idx:]
-				dstFiles[k].name = str
-			} else {
-				dstFiles[k].dir = path.Join(dst, rest)
-			}
-		} else {
-			if !dstFiles[k].IsDir() {
-				dstFiles[k].dir = dst
-				idx := strings.Index(srcFiles[k].Name(), ".")
-				str := srcFiles[k].name[0:idx] + " (copy)" + srcFiles[k].name[idx:]
-				dstFiles[k].name = str
-			} else {
-				dstFiles[k].dir = dst
-			}
-		}
+		dstFiles[k].dir = dst + v.dir[l:]
+		dstFiles[k].name = v.name
 	}
 
 	fmt.Printf("%v\n", srcFiles)
 	fmt.Printf("%v\n", dstFiles)
 
-	for k, elem := range srcFiles {
+	cwd := fs.currentWorkingDir
+
+	for k, elem := range dstFiles {
 		if elem.IsDir() {
-			if err := fs.Mkdir(dstFiles[k].dir); err != nil {
+			if err := fs.Mkdir(path.Join(elem.dir, elem.name)); err != nil {
 				return err
 			}
 		} else {
-			if err := fs.FileCopy(path.Join(srcFiles[k].Path(), srcFiles[k].Name()),
-				path.Join(dstFiles[k].dir, srcFiles[k].name)); err != nil {
+			fs.Chdir(srcFiles[k].Path())
+
+			if err := fs.FileCopy(srcFiles[k].Name(),
+				path.Join("..", dstFiles[k].dir, dstFiles[k].name)); err != nil {
 				return err
 			}
 		}
 	}
+
+	fs.currentWorkingDir = cwd
 
 	// Check whether files and directories are copied to the right place
 	for _, elem := range dstFiles {
@@ -793,6 +801,11 @@ func (fs *FileSystem) DirectoryCopy(src, dst string) error {
 
 // Move a directory.
 func (fs FileSystem) DirectoryRename(src, dst string) error {
+
+	// Check whether dst is empty
+	if dst == "" {
+		return errors.New("empty destination")
+	}
 
 	// Check whether dest is a number
 	if util.IsNumber(dst) {
@@ -887,4 +900,53 @@ func SplitExt(path string) (base, ext string) {
 	ext = filepath.Ext(path)
 	base = path[:len(path)-len(ext)]
 	return
+}
+
+// Root returns the root of the vaults directory
+func Root() string {
+	return vaults
+}
+
+// RootData returns the root of the vaultsdata directory
+func RootData() string {
+	return vaultsData
+}
+
+// VaultName returns the name of the current vault
+func (fs *FileSystem) VaultName() string {
+	i := len(Root())
+	return fs.vaultDir[i+1:]
+}
+
+// ListVaults returns the vault names
+func ListVaults() ([]string, error) {
+	dir, err := os.Open(RootData())
+	if err != nil {
+		return nil, err
+	}
+	defer dir.Close()
+
+	files, err := dir.Readdir(-1)
+	if err != nil {
+		return nil, err
+	}
+
+	strList := make([]string, len(files))
+	for i, file := range files {
+		if file.IsDir() {
+			strList[i] = file.Name()
+		}
+	}
+	return strList, nil
+}
+
+func (fs FileSystem) DirExists(dir string) bool {
+	str := path.Join(fs.vaultDir, dir)
+	info, err := os.Stat(str)
+	if err != nil {
+		// Return false if there's an error and it's not a "file not found" error
+		return !os.IsNotExist(err)
+	}
+	// Check if the path is a directory
+	return info.IsDir()
 }

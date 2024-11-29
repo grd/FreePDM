@@ -1,12 +1,12 @@
 
 services:
-  # Golang gRPC Service
+  # Golang Service
   app:
     build:
       context: .
       dockerfile: Dockerfile # Dockerfile to build your Golang app
     ports:
-      - "50051:50051"  # gRPC service port
+      - "8080:8080"  # json service port
     restart: always
     environment:
       - GO_DIRECTORY=/home/user/FreePDM

@@ -28,8 +28,8 @@ const testpdm = "testpdm"
 var (
 	fs *fsm.FileSystem
 
-	testvaults     = path.Join(fsm.Vaults, testpdm)
-	testvaultsdata = path.Join(fsm.VaultsData, testpdm)
+	testvaults     = path.Join(fsm.Root(), testpdm)
+	testvaultsdata = path.Join(fsm.RootData(), testpdm)
 
 	file1, file2, file3, file4, file5, file6 string
 
@@ -287,8 +287,14 @@ func TestFileCopy(t *testing.T) {
 }
 
 func TestDirectoryRename(t *testing.T) {
+	// Test if dest is empty
+	err := fs.DirectoryRename("Projects", "")
+	if err != nil {
+		assert.Equal(t, err, errors.New("empty destination"))
+	}
+
 	// Test with live data, including sub-dirs
-	err := fs.DirectoryRename("Projects", "test/Projects3")
+	err = fs.DirectoryRename("Projects", "test/Projects3")
 	if err != nil {
 		t.Fatalf("DirectoryMove failed: %v", err)
 	}
@@ -355,23 +361,46 @@ func TestDirectoryRename(t *testing.T) {
 }
 
 func TestDirectoryCopy(t *testing.T) {
-	// // Test with live data, including sub-dirs
-	// err := fs.DirectoryCopy("Projects", "Projects2")
-	// if err != nil {
-	// 	t.Fatalf("DirectoryCopy failed: %v", err)
-	// }
+	// Test case with destination is a number
+	err := fs.DirectoryCopy("Projects", "123")
+	if err == nil || err.Error() != "directory 123 is a number" {
+		t.Fatalf("Expected number error, got: %v", err)
+	}
 
-	// // Test cases, e.g., destination is a number
-	// err = fs.DirectoryCopy("srcDir", "123")
-	// if err == nil || err.Error() != "directory 123 is a number" {
-	// 	t.Fatalf("Expected number error, got: %v", err)
-	// }
+	// Test if destination directory already exists
+	err = fs.DirectoryCopy("Projects", "test")
+	if err == nil || err.Error() != "directory test exists" {
+		t.Fatalf("Expected existing directory error, got: %v", err)
+	}
 
-	// // Test if destination directory already exists
-	// err = fs.DirectoryCopy("srcDir", "existingDir")
-	// if err == nil || err.Error() != "directory existingDir exists" {
-	// 	t.Fatalf("Expected existing directory error, got: %v", err)
-	// }
+	// Test if source exists
+	err = fs.DirectoryCopy("blah", "test")
+	if err == nil || err.Error() != "source directory blah does not exist" {
+		t.Fatalf("Expected an existing directory error, got: %v", err)
+	}
+
+	// Test if dest is empty
+	err = fs.DirectoryCopy("Projects", "")
+	if err != nil {
+		assert.Equal(t, err, errors.New("empty destination"))
+	}
+
+	// Test if dest is empty
+	err = fs.DirectoryCopy("Projects", "Project2")
+	if err != nil {
+		assert.Equal(t, err, errors.New("subdirectories are not allowed for directory copy"))
+	}
+
+	err = fs.DirectoryRename("Projects/temp", "temp/")
+	if err != nil {
+		t.Fatalf("DirectoryRename failed: %v", err)
+	}
+
+	// Test with live data, including sub-dirs
+	err = fs.DirectoryCopy("temp", "Project2")
+	if err != nil {
+		t.Fatalf("DirectoryCopy failed: %v", err)
+	}
 }
 
 // func TestListTree(t *testing.T) {
