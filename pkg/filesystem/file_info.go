@@ -13,6 +13,7 @@ import (
 
 // The FileInfo struct
 type FileInfo struct {
+	containerNumber string
 	isDir           bool // Is it a directory or a file?
 	name            string
 	dir             string

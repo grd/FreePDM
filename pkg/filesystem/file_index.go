@@ -321,19 +321,22 @@ func (fi *FileIndex) AddItem(dirName, fileName string) (*FileList, error) {
 
 // Moves the filename to an other directory,
 // but only in the FileList, not on disk.
-func (fi *FileIndex) moveItem(fileNname, directory string) error {
+func (fi *FileIndex) MoveItem(src FileList, directory string) error {
+	if directory == "." {
+		directory = ""
+	}
 
 	i := -1
 
 	for index, v := range fi.fileList {
-		if fileNname == v.fileName {
+		if src.ContainerNumber() == v.ContainerNumber() {
 			i = index
 			break
 		}
 	}
 
 	if i == -1 {
-		return fmt.Errorf("filename %s is not inside the FileIndex", fileNname)
+		return fmt.Errorf("filename %s is not inside the FileIndex", path.Join(src.Path(), src.Name()))
 	}
 
 	// Moving the item
@@ -349,7 +352,7 @@ func (fi *FileIndex) moveItem(fileNname, directory string) error {
 
 // Renames the filename from src to dest,
 // but only in the FileList, not on disk.
-func (fi *FileIndex) renameItem(src, dest string) error {
+func (fi *FileIndex) renameItem(src FileList, dest string) error {
 
 	if err := fi.Read(); err != nil { // refreshing index
 		return err
@@ -368,7 +371,7 @@ func (fi *FileIndex) renameItem(src, dest string) error {
 	var renamefile *FileList
 
 	for index, v := range fi.fileList {
-		if v.fileName == src {
+		if v.ContainerNumber() == src.ContainerNumber() {
 			renamefile = &fi.fileList[index]
 			renamefile.previousName = v.fileName
 			renamefile.fileName = dest

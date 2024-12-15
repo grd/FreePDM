@@ -13,7 +13,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 
@@ -31,15 +30,14 @@ type LockedIndex struct {
 
 // File System related Class
 type FileSystem struct {
-	index             FileIndex
-	vaultDir          string
-	dataDir           string
-	vaultUid          int
-	user              string
-	userUid           int
-	currentWorkingDir string
-	lockedCvs         string
-	lockedIndex       []LockedIndex
+	index       FileIndex
+	vaultDir    string
+	dataDir     string
+	vaultUid    int
+	user        string
+	userUid     int
+	lockedCvs   string
+	lockedIndex []LockedIndex
 }
 
 const (
@@ -65,11 +63,9 @@ func NewFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
 	fs.user = userName
 
 	// check whether the critical directories exist.
-
 	util.CriticalDirExist(fs.vaultDir)
 	util.CriticalDirExist(fs.dataDir)
 
-	fs.currentWorkingDir = ""
 	fs.vaultUid = config.GetUid("vault")
 	fs.userUid = config.GetUid(userName)
 
@@ -97,7 +93,7 @@ func NewFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
 	err = os.Chdir(fs.vaultDir)
 	util.CheckErr(err)
 
-	log.Printf("Vault dir: %s", fs.currentWorkingDir)
+	log.Printf("Vault dir: %s", fs.VaultDir())
 
 	return fs, nil
 }
@@ -181,18 +177,24 @@ func (fs *FileSystem) WriteLockedIndex() error {
 
 // import a file inside the PDM. When you import a file the attributes also gets imported,
 // which means uploaded to the server.
-// When you import a file or files you are placing the new file in the current directory.
+// When you import a file or files you are placing the new file in the directory dstDir.
 // The new file inside the PDM gets a revision number automatically.
 // The function returns the number of the imported file or an error.
-func (fs *FileSystem) ImportFile(fileName string) (*FileList, error) {
+func (fs *FileSystem) ImportFile(dstDir, fileName string) (*FileList, error) {
 
-	// check whether a file exist
-
+	// check whether the file exist
 	if !util.FileExists(fileName) {
 		return nil, fmt.Errorf("file %s could not be found", fileName)
 	}
 
-	fl, err := fs.index.AddItem(fs.currentWorkingDir, fileName)
+	complDstDir := path.Join(fs.vaultDir, dstDir)
+
+	// check whether the directory exist
+	if !util.DirExists(complDstDir) {
+		return nil, fmt.Errorf("directory %s could not be found", complDstDir)
+	}
+
+	fl, err := fs.index.AddItem(dstDir, fileName)
 	if err != nil {
 		return nil, err
 	}
@@ -267,46 +269,39 @@ func (fs FileSystem) Mkdir(dir string) error {
 	return nil
 }
 
+// Chdir creates a directory or an error
 func (fs *FileSystem) Chdir(dir string) error {
 
 	if !util.DirExists(dir) {
 		return fmt.Errorf("dir %s does not exist", dir)
 	}
 
-	newPath := path.Join(fs.vaultDir, fs.currentWorkingDir, dir)
-
-	fs.currentWorkingDir = path.Join(fs.currentWorkingDir, dir)
-
-	err := os.Chdir(newPath)
+	err := os.Chdir(dir)
 	if err != nil {
 		return err
 	}
 
-	log.Printf("Changed directory: %s\n", fs.currentWorkingDir)
-	log.Printf("Full path: %s\n", newPath)
+	log.Printf("Changed directory: %s\n", dir)
 
 	return nil
 }
 
 // ListWD lists the sorted directories and files of the current working directory.
 func (fs FileSystem) ListWD() ([]FileInfo, error) {
-	return fs.ListDir(path.Join(fs.vaultDir, fs.currentWorkingDir))
+	return fs.ListDir(fs.Getwd())
 }
 
 // ListDir lists the sorted directories and files within the specified directory name,
 // as long as the directory is inside the vault.
 func (fs FileSystem) ListDir(dirName string) ([]FileInfo, error) {
-	dirList, err := os.ReadDir(path.Join(fs.vaultDir, dirName))
+	joinDir := path.Join(fs.vaultDir, dirName)
+
+	dirList, err := os.ReadDir(joinDir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read directory %s: %w", dirName, err)
 	}
 
-	var list []FileInfo
-
-	// Add parent directory option if not at the vault root
-	if path.Clean(dirName) != fs.VaultDir() {
-		list = append(list, FileInfo{isDir: true, name: ".."})
-	}
+	list := make([]FileInfo, 0, len(dirList))
 
 	for _, subDir := range dirList {
 		if _, err := util.Atoi64(subDir.Name()); err == nil {
@@ -315,12 +310,10 @@ func (fs FileSystem) ListDir(dirName string) ([]FileInfo, error) {
 			if err != nil {
 				return nil, fmt.Errorf("failed to convert index to file name: %w", err)
 			}
-
 			idx, err := fs.index.FileNameToContainerNumber(dirName, fileName)
 			if err != nil {
 				return nil, fmt.Errorf("failed to convert file name to index: %w", err)
 			}
-
 			lockedUser := fs.IsLockedItem(idx)
 			list = append(list, FileInfo{
 				isDir:           false,
@@ -334,14 +327,6 @@ func (fs FileSystem) ListDir(dirName string) ([]FileInfo, error) {
 			list = append(list, FileInfo{isDir: true, name: subDir.Name(), dir: dirName})
 		}
 	}
-
-	// Sort the list by directory and then by file name
-	sort.Slice(list, func(i, j int) bool {
-		if list[i].isDir != list[j].isDir {
-			return list[i].isDir // Directories first
-		}
-		return strings.ToUpper(list[i].Name()) < strings.ToUpper(list[j].Name())
-	})
 
 	return list, nil
 }
@@ -359,20 +344,14 @@ func (fs FileSystem) listTree(dirName string) ([]FileInfo, error) {
 		return nil, err
 	}
 
-	if len(dirList) >= 1 {
-		if dirList[0].Name() == ".." {
-			dirList = dirList[1:]
-		}
+	if len(dirList) == 0 { // empty directory. Nothing to add but no error message
+		return nil, nil
 	}
 
-	if len(dirList) == 0 {
-		return nil, fmt.Errorf("directory is empty")
-	}
+	list := make([]FileInfo, 0, len(dirList))
 
-	list := make([]FileInfo, len(dirList))
-
-	for i, elem := range dirList {
-		list[i] = elem
+	for _, elem := range dirList {
+		list = append(list, elem)
 
 		if elem.IsDir() {
 			// Recursively append subdirectory contents
@@ -487,15 +466,27 @@ func (fs *FileSystem) CheckIn(fl FileList, version FileVersion, descr, longdescr
 // Rename a file, for instance when the user wants to use a file with
 // a specified numbering system
 func (fs *FileSystem) FileRename(src, dst string) error {
-
-	cn, err := fs.index.FileNameToContainerNumber(fs.currentWorkingDir, src)
-	if err != nil {
-		return fmt.Errorf("failed to get container number for %s: %w", src, err)
+	// Check whether src is empty
+	if src == "" {
+		return errors.New("empty source")
 	}
 
-	// Check for file locked
-	if name := fs.IsLockedItem(cn); name != "" {
-		return fmt.Errorf("file %s is checked out by %s", src, name)
+	// Splitting src
+	s, srcFile := path.Split(src)
+
+	srcAbs, err := filepath.Abs(s)
+	if err != nil {
+		return fmt.Errorf("failed to get absolute path for %s: %w", src, err)
+	}
+
+	srcDir, err := fs.AbsNormal(srcAbs)
+	if err != nil {
+		return err
+	}
+
+	srcFl, err := fs.index.FileNameToFileList(srcDir, srcFile)
+	if err != nil {
+		return fmt.Errorf("failed to get container number for %s: %w", src, err)
 	}
 
 	// Check whether dst is empty
@@ -503,72 +494,112 @@ func (fs *FileSystem) FileRename(src, dst string) error {
 		return errors.New("empty destination")
 	}
 
-	// Check whether dst ends with '/'. In that case it is a file move.
-	if dst[len(dst)-1] == '/' {
-		return fs.fileMove(src, dst)
+	dstAbs, err := filepath.Abs(dst)
+	if err != nil {
+		return fmt.Errorf("failed to get absolute path for %s: %w", dst, err)
 	}
 
-	// Splitting dst for later use
-	dstDir, dstFile := path.Split(dst)
+	// Check wether dst ends with a file or directory
+	info, err := os.Stat(dstAbs)
+	if err != nil {
+		if os.IsNotExist(err) { // Okay
+			goto cont
+		} else {
+			return err
+		}
+	}
+	if info.IsDir() {
+		dstAbs = path.Join(dstAbs, srcFile)
+	}
+
+cont:
+
+	// Splitting dst
+	d, dstFile := path.Split(dstAbs)
+
+	dstDir, err := fs.AbsNormal(d)
+	if err != nil {
+		return err
+	}
+
+	dstFl := FileList{dir: dstDir, fileName: dstFile, containerNumber: srcFl.ContainerNumber()}
 
 	// Check whether dst exists
-	if item, err := fs.index.FileNameToFileList(path.Join(fs.currentWorkingDir, dstDir), dst); err == nil {
+	if item, err := fs.index.FileNameToFileList(dstDir, dstFile); err == nil {
 		return fmt.Errorf("file %s already exists and is stored in %s", dst, item.ContainerNumber())
 	}
 
-	// Check whether dst contains a directory. In that case it is a file move,
-	// and after that a file rename.
-	if dstDir != "" {
-		if err = fs.fileMove(src, dstDir); err != nil {
+	// Check for file locked
+	if name := fs.IsLockedItem(srcFl.containerNumber); name != "" {
+		return fmt.Errorf("file %s is checked out by %s", src, name)
+	}
+
+	// Check whether a file rename has happened
+	if srcFl.Name() != dstFl.Name() {
+
+		fd := NewFileDirectory(fs, srcFl)
+
+		if err = fd.fileRename(srcFl.Name(), dstFl.Name()); err != nil {
+			return fmt.Errorf("failed to rename file from %s to %s: %w", src, dst, err)
+		}
+
+		// Rename the file in the index
+		if err = fs.index.renameItem(srcFl, dstFl.Name()); err != nil {
+			return fmt.Errorf("failed to rename item in index: %w", err)
+		}
+	}
+
+	// Check whether dst ends with '/' and dstDir contains a directory.
+	// In both cases it is a file move operation.
+	if dst[len(dst)-1] == '/' || srcDir != dstDir {
+		if err := fs.fileMove(srcFl, dstFl); err != nil {
 			return err
 		}
-		if dstFile != src { // file rename
-			wd, err := os.Getwd()
-			wcd := fs.currentWorkingDir
-			if err != nil {
-				return err
-			}
-			if err = fs.Chdir(dstDir); err != nil {
-				return err
-			}
-			if err = fs.FileRename(src, dstFile); err != nil {
-				return err
-			}
-			if err = os.Chdir(wd); err != nil {
-				return err
-			}
-			fs.currentWorkingDir = wcd
-			return nil
-		}
-	}
-
-	// Rename the file from src to dest in the FileList
-	fl, err := fs.index.FileNameToFileList(fs.currentWorkingDir, src)
-	if err != nil {
-		return fmt.Errorf("failed to get file list for %s: %w", src, err)
-	}
-
-	fd := NewFileDirectory(fs, fl)
-
-	if err = fd.fileRename(src, dst); err != nil {
-		return fmt.Errorf("failed to rename file from %s to %s: %w", src, dst, err)
-	}
-
-	// Rename the file in the index
-	if err = fs.index.renameItem(src, dst); err != nil {
-		return fmt.Errorf("failed to rename item in index: %w", err)
 	}
 
 	// Logging
-	log.Printf("File %s renamed to %s\n", src, dst)
+	log.Printf("File %s renamed to %s\n", path.Join(srcFl.Path(), srcFl.Name()), path.Join(dstDir, dstFile))
+
+	return nil
+}
+
+// Moves a file to a different directory.
+func (fs *FileSystem) fileMove(src, dst FileList) error {
+	source := path.Join(src.Path(), src.ContainerNumber())
+	dest := path.Join(dst.Path(), src.ContainerNumber())
+
+	pwd := fs.Getwd()
+	if err := os.Chdir(fs.vaultDir); err != nil {
+		return err
+	}
+	if err := os.Rename(source, dest); err != nil {
+		return fmt.Errorf("failed to move file from %s to %s: %w", source, dest, err)
+	}
+	if err := os.Chown(dest, fs.userUid, fs.vaultUid); err != nil {
+		return fmt.Errorf("failed to change ownership of %s: %w", dest, err)
+	}
+	if err := os.Chdir(pwd); err != nil {
+		return err
+	}
+
+	// Move file in FileIndex
+	if err := fs.index.MoveItem(src, dst.Path()); err != nil {
+		return fmt.Errorf("failed to move item in index: %w", err)
+	}
 
 	return nil
 }
 
 // Copy the latest file from src to dst and returns an error.
 func (fs *FileSystem) FileCopy(src, dst string) error {
+	// Splitting src
+	srcDir, srcFile := path.Split(src)
+	if srcDir == "" {
+		srcDir = fs.Getwd()
+	}
+
 	// Check whether src is locked
-	srcFl, err := fs.index.FileNameToFileList(fs.currentWorkingDir, src)
+	srcFl, err := fs.index.FileNameToFileList(srcDir, srcFile)
 	if err != nil {
 		return fmt.Errorf("failed to get index for %s: %w", src, err)
 	}
@@ -593,13 +624,13 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 	var dstPath, dstDir, dstFile string
 	if strings.Contains(dst, "/") {
 		num := strings.LastIndexByte(dst, '/')
-		dstDir = path.Join(fs.currentWorkingDir, dst[:num])
+		dstDir = path.Join(fs.Getwd(), dst[:num])
 		dstPath = path.Join(fs.vaultDir, dstDir)
 		if !util.DirExists(dstPath) {
 			return fmt.Errorf("directory %s doesn't exist", dstPath)
 		}
 	} else {
-		dstDir = fs.currentWorkingDir
+		dstDir = fs.Getwd()
 	}
 
 	srcFd := NewFileDirectory(fs, srcFl)
@@ -628,9 +659,9 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 
 	// Copy the file from src to dest
 	version := srcFd.LatestVersion()
-	srcFile := path.Join(srcFd.dir, version.Pretty, src)
+	newFile := path.Join(srcFd.dir, version.Pretty, src)
 
-	if err = dstFd.ImportNewFile(srcFile); err != nil {
+	if err = dstFd.ImportNewFile(newFile); err != nil {
 		return err
 	}
 
@@ -649,69 +680,19 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 	return nil
 }
 
-// Moves a file to a different directory.
-func (fs *FileSystem) fileMove(fileName, destDir string) error {
-	// Check whether src is locked or not
-	fileNr, err := fs.index.FileNameToContainerNumber(fs.currentWorkingDir, fileName)
-	if err != nil {
-		return fmt.Errorf("failed to get index for %s: %w", fileName, err)
-	}
-
-	if name := fs.IsLockedItem(fileNr); name != "" {
-		return fmt.Errorf("FileMove error: File %s is checked out by %s", fileName, name)
-	}
-
-	// "normalize" the destDir
-	dir, err := filepath.Abs(destDir)
-	if err != nil {
-		return fmt.Errorf("failed to get absolute path for %s: %w", destDir, err)
-	}
-
-	if !util.DirExists(dir) {
-		return fmt.Errorf("directory %s doesn't exist", destDir)
-	}
-
-	if len(dir) == len(fs.vaultDir) { // case when file moved to the root
-		dir = ""
-	} else if strings.HasPrefix(dir, fs.vaultDir) {
-		dir = dir[len(fs.vaultDir)+1:]
-	}
-
-	// Move file
-	fname, err := fs.index.FileNameToFileList(fs.currentWorkingDir, fileName)
-	if err != nil {
-		return fmt.Errorf("failed to get file list for %s: %w", fileName, err)
-	}
-
-	dest := path.Join(destDir, fname.ContainerNumber())
-	if err := os.Rename(fname.ContainerNumber(), dest); err != nil {
-		return fmt.Errorf("failed to move file from %s to %s: %w", fname.ContainerNumber(), dest, err)
-	}
-
-	if err := os.Chown(dest, fs.userUid, fs.vaultUid); err != nil {
-		return fmt.Errorf("failed to change ownership of %s: %w", dest, err)
-	}
-
-	// Move file in FileIndex
-	if err := fs.index.moveItem(fileName, dir); err != nil {
-		return fmt.Errorf("failed to move item in index: %w", err)
-	}
-
-	// Logging
-	log.Printf("File %s moved to %s\n", fileName, destDir)
-
-	return nil
-}
-
 // Copy a directory.
 func (fs *FileSystem) DirectoryCopy(src, dst string) error {
+	// Check whether src is empty
+	if src == "" {
+		return errors.New("empty source directory")
+	}
 
 	// Check whether dst is empty
 	if dst == "" {
-		return errors.New("empty destination")
+		return errors.New("empty destination directory")
 	}
 
-	// Check whether dest is a number
+	// Check whether dst is a number
 	if util.IsNumber(dst) {
 		return fmt.Errorf("directory %s is a number", dst)
 	}
@@ -740,7 +721,7 @@ func (fs *FileSystem) DirectoryCopy(src, dst string) error {
 	// check there is a subdirectory which is not allowed
 	for _, elem := range srcFiles {
 		if strings.Contains(elem.dir, "/") {
-			return errors.New("subdirectories are not allowed for directory copy")
+			return errors.New("subdirectories are (at the moment) not allowed for directory copy")
 		}
 	}
 
@@ -766,7 +747,7 @@ func (fs *FileSystem) DirectoryCopy(src, dst string) error {
 	fmt.Printf("%v\n", srcFiles)
 	fmt.Printf("%v\n", dstFiles)
 
-	cwd := fs.currentWorkingDir
+	cwd := fs.Getwd()
 
 	for k, elem := range dstFiles {
 		if elem.IsDir() {
@@ -783,7 +764,7 @@ func (fs *FileSystem) DirectoryCopy(src, dst string) error {
 		}
 	}
 
-	fs.currentWorkingDir = cwd
+	fs.Chdir(cwd)
 
 	// Check whether files and directories are copied to the right place
 	for _, elem := range dstFiles {
@@ -801,10 +782,14 @@ func (fs *FileSystem) DirectoryCopy(src, dst string) error {
 
 // Move a directory.
 func (fs FileSystem) DirectoryRename(src, dst string) error {
+	// Check whether src is empty
+	if src == "" {
+		return errors.New("empty source directory")
+	}
 
 	// Check whether dst is empty
 	if dst == "" {
-		return errors.New("empty destination")
+		return errors.New("empty destination directory")
 	}
 
 	// Check whether dest is a number
@@ -841,6 +826,7 @@ func (fs FileSystem) DirectoryRename(src, dst string) error {
 
 	// Populating dstFiles with data from srcFiles
 	for k, v := range srcFiles {
+		dstFiles[k] = v
 		l := strings.Index(v.Path(), src)
 		if len(v.Path())-(l+len(src)) != 0 {
 			rest := v.Path()[l+len(src)+1:]
@@ -849,27 +835,50 @@ func (fs FileSystem) DirectoryRename(src, dst string) error {
 			dstFiles[k].dir = dst
 		}
 	}
-	// Move the file(s) in the index
-	for k, elem := range srcFiles {
-		if !elem.IsDir() {
-			if err := fs.index.moveItem(elem.Name(), dstFiles[k].dir); err != nil {
+
+	// Adding the src directory itself to the list of files
+	srcFirst := FileInfo{name: src, isDir: true}
+	srcFiles = slices.Insert(srcFiles, 0, srcFirst)
+
+	// Adding the dest directory itself to the list of files
+	dstFirst := FileInfo{name: dst, isDir: true}
+	dstFiles = slices.Insert(dstFiles, 0, dstFirst)
+
+	// Moving the files from src to dst
+	for k, v := range srcFiles {
+		srcJoinPath := path.Join(srcFiles[k].Path(), srcFiles[k].Name())
+		dstJoinPath := path.Join(dstFiles[k].Path(), dstFiles[k].Name())
+		if v.IsDir() {
+			if err := os.Mkdir(dstJoinPath, 0775); err != nil {
+				return err
+			}
+		} else {
+			if err := fs.FileRename(srcJoinPath, dstJoinPath); err != nil {
 				return err
 			}
 		}
+
+		// Verification
+		dstPathContainer := path.Join(fs.vaultDir, dstFiles[k].dir, dstFiles[k].containerNumber)
+		_, err := os.Stat(dstPathContainer)
+		if err != nil {
+			return fmt.Errorf("unable to locate file %s, error %s", dstJoinPath, err)
+		}
+
 	}
 
-	// Move the directory and its contents
-	if err := os.Rename(src, dst); err != nil {
+	// Removing source dir(s)
+	if err := os.RemoveAll(src); err != nil {
 		return err
 	}
 
-	// Check whether files and directories are moved and in the right place
-	for _, elem := range dstFiles {
-		_, err := os.Stat(path.Join(fs.vaultDir, elem.name))
-		if err != nil {
-			return fmt.Errorf("unable to locate file %s, error %s", elem.name, err)
-		}
-	}
+	// // Check whether files and directories are moved and in the right place
+	// for _, elem := range dstFiles {
+	// 	_, err := os.Stat(path.Join(fs.vaultDir, elem.dir, elem.name))
+	// 	if err != nil {
+	// 		return fmt.Errorf("unable to locate file %s, error %s", elem.name, err)
+	// 	}
+	// }
 
 	// Log the successful move operation
 	log.Printf("Successfully moved directory from %s to %s", src, dst)
@@ -942,11 +951,37 @@ func ListVaults() ([]string, error) {
 
 func (fs FileSystem) DirExists(dir string) bool {
 	str := path.Join(fs.vaultDir, dir)
-	info, err := os.Stat(str)
-	if err != nil {
-		// Return false if there's an error and it's not a "file not found" error
-		return !os.IsNotExist(err)
+	return util.DirExists(str)
+}
+
+// Getwd returns the working directory
+func (fs FileSystem) Getwd() string {
+	str, _ := os.Getwd()
+	if len(str) > len(fs.vaultDir) {
+		return str[len(fs.vaultDir)+1:]
+	} else {
+		return fs.vaultDir
 	}
-	// Check if the path is a directory
-	return info.IsDir()
+}
+
+// AbsNormal returns a "normalized" path, with the offset from the vault directory
+func (fs FileSystem) AbsNormal(absolutePath string) (string, error) {
+	if len(absolutePath) < 1 {
+		return "", errors.New("string is too short")
+	}
+
+	if absolutePath[len(absolutePath)-1] == '/' {
+		absolutePath = absolutePath[:len(absolutePath)-1]
+	}
+
+	var dir string
+	if len(absolutePath) == len(fs.vaultDir) { // case when file moved to the root
+		dir = "."
+	} else if strings.HasPrefix(absolutePath, fs.vaultDir) {
+		dir = absolutePath[len(fs.vaultDir)+1:]
+	} else { // This only happens when the path is not part of the filesystem...
+		return "", fmt.Errorf("wrong path %s", absolutePath)
+	}
+
+	return dir, nil
 }

@@ -79,7 +79,7 @@ func TestImportFile(t *testing.T) {
 		t.Fatalf("Chdir error message = %s", err)
 	}
 
-	f1, err := fs.ImportFile(file1)
+	f1, err := fs.ImportFile("Projects", file1)
 	if err != nil {
 		t.Fatalf("ImportFile %s error: %s", file1, err)
 	}
@@ -107,7 +107,7 @@ func TestImportFile(t *testing.T) {
 	fs.CheckIn(*f1, ver, "Testf1-3", "Test1-3")
 	checkInStatus(1, 3)
 
-	f2, err := fs.ImportFile(file2)
+	f2, err := fs.ImportFile("Projects", file2)
 	if err != nil {
 		t.Fatalf("ImportFile %s error: %s", file1, err)
 	}
@@ -117,7 +117,7 @@ func TestImportFile(t *testing.T) {
 	fs.CheckIn(*f2, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf2-0", "")
 	checkInStatus(2, 0)
 
-	f3, err := fs.ImportFile(file3)
+	f3, err := fs.ImportFile("Projects", file3)
 	if err != nil {
 		t.Fatalf("ImportFile %s error: %s", file1, err)
 	}
@@ -137,32 +137,42 @@ func TestImportFile(t *testing.T) {
 		t.Fatalf("Mkdir failed: %v", err)
 	}
 
-	f4, err := fs.ImportFile(file4)
+	f4, err := fs.ImportFile("Projects", file4)
 	if err != nil {
 		t.Fatalf("ImportFile %s error: %s", file1, err)
 	}
 	fs.CheckIn(*f4, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf4-0", "Testf4-0")
 	compareFileListLine(4, "4:0004.FCStd::Projects:")
 
-	f5, err := fs.ImportFile(file5)
+	f5, err := fs.ImportFile("Projects", file5)
 	if err != nil {
 		t.Fatalf("ImportFile %s error: %s", file1, err)
 	}
 	fs.CheckIn(*f5, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf5-0", "Testf5-0")
 	compareFileListLine(5, "5:0005.FCStd::Projects:")
 
-	f6, err := fs.ImportFile(file6)
+	f6, err := fs.ImportFile("Projects", file6)
 	if err != nil {
 		t.Fatalf("ImportFile %s error: %s", file1, err)
 	}
 	fs.CheckIn(*f6, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf6-0", "Testf6-0")
 	compareFileListLine(6, "6:0006.FCStd::Projects:")
 
-	fs.Chdir("..")
+	os.Chdir("..")
 }
 
 func TestFileRename(t *testing.T) {
-	if err := fs.Chdir("Projects"); err != nil {
+	// userName, err := user.Current()
+	// if err != nil {
+	// 	t.Fatalf("user.Current() error: %s", err)
+	// }
+
+	// fs, err = fsm.NewFileSystem(testpdm, userName.Username)
+	// if err != nil {
+	// 	log.Fatalf("initialization failed, %v", err)
+	// }
+
+	if err := os.Chdir("Projects"); err != nil {
 		t.Fatal("chdir failed")
 	}
 
@@ -172,13 +182,19 @@ func TestFileRename(t *testing.T) {
 	}
 	compareFileListLine(1, "1:0007.FCStd:0001.FCStd:Projects:")
 
-	// Source file is equal to dest file
-	if err := fs.FileRename("0007.FCStd", "0007.FCStd"); err != nil {
+	// ... and put it back in place again
+	if err := fs.FileRename("0007.FCStd", "0001.FCStd"); err != nil {
 		assert.Equal(t, err, errors.New("file 0007.FCStd already exists and is stored in 1"))
+	}
+	compareFileListLine(1, "1:0001.FCStd:0007.FCStd:Projects:")
+
+	// Source file is equal to dest file
+	if err := fs.FileRename("0001.FCStd", "0001.FCStd"); err != nil {
+		assert.Equal(t, err, errors.New("file 0001.FCStd already exists and is stored in 1"))
 	}
 
 	// Dest is empty
-	if err := fs.FileRename("0007.FCStd", ""); err != nil {
+	if err := fs.FileRename("0001.FCStd", ""); err != nil {
 		assert.Equal(t, err, errors.New("empty destination"))
 	}
 
@@ -188,24 +204,38 @@ func TestFileRename(t *testing.T) {
 	}
 	compareFileListLine(3, "3:0003.FCStd::Projects/temp:Projects")
 
-	// More complex file move
-	if err := fs.FileRename("0007.FCStd", "../"); err != nil {
+	// And put it back again
+	if err := fs.FileRename("temp/0003.FCStd", "0003.FCStd"); err != nil {
 		t.Fatalf("FileMove failed: %v", err)
 	}
-	compareFileListLine(1, "1:0007.FCStd:0001.FCStd::Projects")
+	compareFileListLine(3, "3:0003.FCStd::Projects:Projects/temp")
 
-	// file move with a sub directory
+	// File move to root directory
+	if err := fs.FileRename("0001.FCStd", "../"); err != nil {
+		t.Fatalf("FileMove failed: %v", err)
+	}
+	compareFileListLine(1, "1:0001.FCStd:0007.FCStd::Projects")
+
+	// And place the file back
+	if err := fs.FileRename("../0001.FCStd", "./"); err != nil {
+		t.Fatalf("FileMove failed: %v", err)
+	}
+	compareFileListLine(1, "1:0001.FCStd:0007.FCStd:Projects:")
+
+	// File rename and move with a sub directory
 	if err := fs.FileRename("0006.FCStd", "temp/0006a.FCStd"); err != nil {
 		t.Fatalf("FileMove failed: %v", err)
 	}
 	compareFileListLine(6, "6:0006a.FCStd:0006.FCStd:Projects/temp:Projects")
 
-	if err := fs.Chdir(".."); err != nil {
-		t.Fatal("chdir failed")
+	// And put it back in the right place again
+	if err := fs.FileRename("temp/0006a.FCStd", "0006.FCStd"); err != nil {
+		t.Fatalf("FileMove failed: %v", err)
 	}
+	compareFileListLine(6, "6:0006.FCStd:0006a.FCStd:Projects:Projects/temp")
 
 	// Test case for locking
-	item, err := fs.GetItem(".", "0007.FCStd")
+	item, err := fs.GetItem("Projects", "0001.FCStd")
 	if err != nil {
 		t.Fatalf("unable to find: %v", err)
 	}
@@ -215,23 +245,20 @@ func TestFileRename(t *testing.T) {
 		t.Fatalf("Expected lock error, got: %v", err)
 	}
 	checkOutStatus(1, 4)
-	err = fs.FileRename("0007.FCStd", "0001.FCStd")
-	if err == nil || err.Error() != "file 0007.FCStd is checked out by user" {
+	err = fs.FileRename("0001.FCStd", "0007.FCStd")
+	if err == nil || err.Error() != "file 0001.FCStd is checked out by user" {
 		t.Fatalf("Expected lock error, got: %v", err)
 	}
 	fs.CheckIn(f7.FileList(), ver, "Test", "Test")
 	checkInStatus(1, 4)
 
-	// file move with a sub directory and different name
-	if err := fs.FileRename("0007.FCStd", "Projects/0001.FCStd"); err != nil {
-		t.Fatalf("FileMove failed: %v", err)
+	if err := os.Chdir(".."); err != nil {
+		t.Fatal("chdir failed")
 	}
-	compareFileListLine(1, "1:0001.FCStd:0007.FCStd:Projects:")
 }
 
 func TestFileCopy(t *testing.T) {
-
-	fs.Chdir("Projects")
+	os.Chdir("Projects")
 
 	// ordanary file copy
 	err := fs.FileCopy("0002.FCStd", "0011.FCStd")
@@ -283,18 +310,24 @@ func TestFileCopy(t *testing.T) {
 	}
 
 	// back to root dir
-	fs.Chdir("..")
+	os.Chdir("..")
 }
 
 func TestDirectoryRename(t *testing.T) {
-	// Test if dest is empty
-	err := fs.DirectoryRename("Projects", "")
+	// Test if source is empty
+	err := fs.DirectoryRename("", "temp")
 	if err != nil {
-		assert.Equal(t, err, errors.New("empty destination"))
+		assert.Equal(t, err, errors.New("empty source directory"))
 	}
 
-	// Test with live data, including sub-dirs
-	err = fs.DirectoryRename("Projects", "test/Projects3")
+	// Test if dest is empty
+	err = fs.DirectoryRename("Projects", "")
+	if err != nil {
+		assert.Equal(t, err, errors.New("empty destination directory"))
+	}
+
+	// Test with data, including sub-dirs
+	err = fs.DirectoryRename("Projects", "test/Projects2")
 	if err != nil {
 		t.Fatalf("DirectoryMove failed: %v", err)
 	}
@@ -311,30 +344,19 @@ func TestDirectoryRename(t *testing.T) {
 		t.Fatalf("Expected source directory error, got: %v", err)
 	}
 
-	// Test for creating new directory
-	if err := fs.Mkdir("temp"); err != nil {
-		t.Fatalf("Expected to create dir temp got %v", err)
-	}
-
 	// Test for empty source directory
 	err = fs.DirectoryRename("temp", "destDir")
-	if err == nil || err.Error() != "directory is empty" {
+	if err == nil || err.Error() != "source directory temp does not exist" {
 		t.Fatalf("Expected source directory to be empty, got: %v", err)
 	}
 
-	// Test with removal of the test directory
-	err = os.Remove("temp")
-	if err != nil {
-		t.Fatalf("Removal of directory temp failed: %v", err)
-	}
-
-	// Test with live data, including sub-dirs, return to Projects3
-	err = fs.DirectoryRename("test/Projects3", "Projects3")
+	// Test with data, including sub-dirs, return to Projects3
+	err = fs.DirectoryRename("test/Projects2", "Projects3")
 	if err != nil {
 		t.Fatalf("DirectoryMove failed: %v", err)
 	}
 
-	// Test with live data, including sub-dirs, rename Projects3 to Projects again
+	// Test with data, including sub-dirs, rename Projects3 to Projects again
 	err = fs.DirectoryRename("Projects3", "Projects")
 	if err != nil {
 		t.Fatalf("DirectoryMove failed: %v", err)
@@ -361,8 +383,20 @@ func TestDirectoryRename(t *testing.T) {
 }
 
 func TestDirectoryCopy(t *testing.T) {
+	// Test case with empty source
+	err := fs.DirectoryCopy("", "temp")
+	if err == nil || err.Error() != "empty source directory" {
+		t.Fatalf("Expected number error, got: %v", err)
+	}
+
+	// Test case with empty destination
+	err = fs.DirectoryCopy("Projects", "")
+	if err == nil || err.Error() != "empty destination directory" {
+		t.Fatalf("Expected number error, got: %v", err)
+	}
+
 	// Test case with destination is a number
-	err := fs.DirectoryCopy("Projects", "123")
+	err = fs.DirectoryCopy("Projects", "123")
 	if err == nil || err.Error() != "directory 123 is a number" {
 		t.Fatalf("Expected number error, got: %v", err)
 	}
@@ -379,24 +413,7 @@ func TestDirectoryCopy(t *testing.T) {
 		t.Fatalf("Expected an existing directory error, got: %v", err)
 	}
 
-	// Test if dest is empty
-	err = fs.DirectoryCopy("Projects", "")
-	if err != nil {
-		assert.Equal(t, err, errors.New("empty destination"))
-	}
-
-	// Test if dest is empty
-	err = fs.DirectoryCopy("Projects", "Project2")
-	if err != nil {
-		assert.Equal(t, err, errors.New("subdirectories are not allowed for directory copy"))
-	}
-
-	err = fs.DirectoryRename("Projects/temp", "temp/")
-	if err != nil {
-		t.Fatalf("DirectoryRename failed: %v", err)
-	}
-
-	// Test with live data, including sub-dirs
+	// Test with data, including sub-dirs
 	err = fs.DirectoryCopy("temp", "Project2")
 	if err != nil {
 		t.Fatalf("DirectoryCopy failed: %v", err)
@@ -542,7 +559,7 @@ func compareFileListLine(num int, line string) {
 	slice := strings.Split(s, "\n")
 
 	if slice[num] != line {
-		log.Fatalf("error comparing lines of FileList.csv\nRead line (line %d): %s\nLine parameter:     %s", num, slice[num], line)
+		log.Fatalf("error comparing lines of FileList.csv\nFile line (line %d): %s\nLine parameter:     %s", num, slice[num], line)
 	}
 }
 
