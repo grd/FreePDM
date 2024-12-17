@@ -260,18 +260,24 @@ func TestFileRename(t *testing.T) {
 func TestFileCopy(t *testing.T) {
 	os.Chdir("Projects")
 
-	// ordanary file copy
-	err := fs.FileCopy("0002.FCStd", "0011.FCStd")
+	// src is empty
+	err := fs.FileCopy("", "0010.FCStd")
 	if err != nil {
-		t.Fatalf("FileCopy failed: %v", err)
+		assert.Equal(t, err, errors.New("empty source file"))
 	}
-	compareFileListLine(7, "7:0011.FCStd::Projects:")
 
 	// dest is empty
 	err = fs.FileCopy("0002.FCStd", "")
 	if err != nil {
-		assert.Equal(t, err, errors.New("empty destination"))
+		assert.Equal(t, err, errors.New("empty destination file"))
 	}
+
+	// ordanary file copy
+	err = fs.FileCopy("0002.FCStd", "0011.FCStd")
+	if err != nil {
+		t.Fatalf("FileCopy failed: %v", err)
+	}
+	compareFileListLine(7, "7:0011.FCStd::Projects:")
 
 	// copy to different dir and new file name
 	if err = fs.FileCopy("0002.FCStd", "../test/0012.FCStd"); err != nil {
@@ -413,32 +419,88 @@ func TestDirectoryCopy(t *testing.T) {
 		t.Fatalf("Expected an existing directory error, got: %v", err)
 	}
 
-	// Test with data, including sub-dirs
-	err = fs.DirectoryCopy("temp", "Project2")
+	// Test with data
+	err = fs.DirectoryCopy("test", "Project5")
 	if err != nil {
 		t.Fatalf("DirectoryCopy failed: %v", err)
 	}
+	compareFileListLine(10, "10:0012.FCStd::Project5:")
+	compareFileListLine(11, "11:0002.FCStd::Project5:")
+
+	// Test with data, including an empty sub directory
+	err = fs.DirectoryCopy("Projects", "Project6")
+	if err != nil {
+		t.Fatalf("DirectoryCopy failed: %v", err)
+	}
+	compareFileListLine(12, "12:0001.FCStd::Project6:")
+	compareFileListLine(13, "13:0002.FCStd::Project6:")
+	compareFileListLine(14, "14:0003.FCStd::Project6:")
+	compareFileListLine(15, "15:0004.FCStd::Project6:")
+	compareFileListLine(16, "16:0005.FCStd::Project6:")
+	compareFileListLine(17, "17:0006.FCStd::Project6:")
+	compareFileListLine(18, "18:0011.FCStd::Project6:")
+
+	// Test with data, populating test directory
+	err = fs.DirectoryCopy("Project5", "test/Project7")
+	if err != nil {
+		t.Fatalf("DirectoryCopy failed: %v", err)
+	}
+	compareFileListLine(19, "19:0012.FCStd::test/Project7:")
+	compareFileListLine(20, "20:0002.FCStd::test/Project7:")
+
+	// Test with data, including sub directories
+	err = fs.DirectoryCopy("test", "Project8")
+	if err != nil {
+		t.Fatalf("DirectoryCopy failed: %v", err)
+	}
+	compareFileListLine(21, "21:0012.FCStd::Project8:")
+	compareFileListLine(22, "22:0002.FCStd::Project8:")
+	compareFileListLine(23, "23:0012.FCStd::Project8/Project7:")
+	compareFileListLine(24, "24:0002.FCStd::Project8/Project7:")
+
+	// Test with checked-out file
+
+	file, err := fs.GetItem("Project8", "0002.FCStd")
+	if err != nil {
+		t.Fatalf("GetItem %s error: %s", file.Name(), err)
+	}
+	if err = fs.CheckOut(file, fsm.FileVersion{Number: 0, Pretty: "0"}); err != nil {
+		t.Fatalf("Checkout %s error: %s", file.Name(), err)
+	}
+	checkOutStatus(22, 0)
+
+	err = fs.DirectoryCopy("Project8", "Project9")
+	if err == nil || err.Error() != "check out errors: [0002.FCStd is checked out by user]" {
+		t.Fatalf("Expected one file checked out, got: %v", err)
+	}
+
+	fs.CheckIn(file, fsm.FileVersion{Number: 0, Pretty: "0"}, "", "")
+	checkInStatus(2, 0)
 }
 
-// func TestListTree(t *testing.T) {
-// 	lt, err := fs.ListTree("Projects")
-// 	if err != nil {
-// 		t.Fatalf("listTree failed: %v", err)
-// 	}
-// 	list := make([]string, len(lt))
-// 	for i, item := range lt {
-// 		list[i] = path.Join(item.Path(), item.Name())
-// 	}
-// 	test := []string{
-// 		"Projects/temp",
-// 		"Projects/0001.FCStd",
-// 		"Projects/0002.FCStd",
-// 		"Projects/0003.FCStd",
-// 	}
-// 	for i := range list {
-// 		assert.Equal(t, list[i], test[i])
-// 	}
-// }
+func TestListTree(t *testing.T) {
+	lt, err := fs.ListTree("Projects")
+	if err != nil {
+		t.Fatalf("listTree failed: %v", err)
+	}
+	list := make([]string, len(lt))
+	for i, item := range lt {
+		list[i] = path.Join(item.Path(), item.Name())
+	}
+	test := []string{
+		"Projects/0001.FCStd",
+		"Projects/0002.FCStd",
+		"Projects/0003.FCStd",
+		"Projects/0004.FCStd",
+		"Projects/0005.FCStd",
+		"Projects/0006.FCStd",
+		"Projects/0011.FCStd",
+		"Projects/temp",
+	}
+	for i := range list {
+		assert.Equal(t, list[i], test[i])
+	}
+}
 
 func TestMain(m *testing.M) {
 

@@ -501,18 +501,11 @@ func (fs *FileSystem) FileRename(src, dst string) error {
 
 	// Check wether dst ends with a file or directory
 	info, err := os.Stat(dstAbs)
-	if err != nil {
-		if os.IsNotExist(err) { // Okay
-			goto cont
-		} else {
-			return err
+	if err == nil { // Note, it is not "!="" but "==" !!!
+		if info.IsDir() {
+			dstAbs = path.Join(dstAbs, srcFile)
 		}
 	}
-	if info.IsDir() {
-		dstAbs = path.Join(dstAbs, srcFile)
-	}
-
-cont:
 
 	// Splitting dst
 	d, dstFile := path.Split(dstAbs)
@@ -529,12 +522,13 @@ cont:
 		return fmt.Errorf("file %s already exists and is stored in %s", dst, item.ContainerNumber())
 	}
 
-	// Check for file locked
+	// Check for src file is locked
 	if name := fs.IsLockedItem(srcFl.containerNumber); name != "" {
 		return fmt.Errorf("file %s is checked out by %s", src, name)
 	}
 
-	// Check whether a file rename has happened
+	// Check whether a src and dst are not the same.
+	// If that is the case then a fileRename is required.
 	if srcFl.Name() != dstFl.Name() {
 
 		fd := NewFileDirectory(fs, srcFl)
@@ -555,6 +549,14 @@ cont:
 		if err := fs.fileMove(srcFl, dstFl); err != nil {
 			return err
 		}
+	}
+
+	// Verification
+	dstPathContainer := path.Join(fs.vaultDir, dstFl.dir, dstFl.containerNumber)
+	dstJoinPath := path.Join(fs.vaultDir, dstFl.dir, dstFl.fileName)
+	_, err = os.Stat(dstPathContainer)
+	if err != nil {
+		return fmt.Errorf("unable to locate file %s, error %s", dstJoinPath, err)
 	}
 
 	// Logging
@@ -592,13 +594,59 @@ func (fs *FileSystem) fileMove(src, dst FileList) error {
 
 // Copy the latest file from src to dst and returns an error.
 func (fs *FileSystem) FileCopy(src, dst string) error {
-	// Splitting src
-	srcDir, srcFile := path.Split(src)
-	if srcDir == "" {
-		srcDir = fs.Getwd()
+	// Check whether src is empty
+	if src == "" {
+		return errors.New("empty source file")
 	}
 
-	// Check whether src is locked
+	// Splitting src
+	s, srcFile := path.Split(src)
+
+	srcAbs, err := filepath.Abs(s)
+	if err != nil {
+		return fmt.Errorf("failed to get absolute path for %s: %w", src, err)
+	}
+
+	srcDir, err := fs.AbsNormal(srcAbs)
+	if err != nil {
+		return err
+	}
+
+	// Check whether dst is empty
+	if dst == "" {
+		return errors.New("empty destination file")
+	}
+
+	dstAbs, err := filepath.Abs(dst)
+	if err != nil {
+		return fmt.Errorf("failed to get absolute path for %s: %w", dst, err)
+	}
+
+	// Check wether dst ends with a file or directory
+	info, err := os.Stat(dstAbs)
+	if err == nil { // Note, it is not "!="" but "==" !!!
+		if info.IsDir() {
+			dstAbs = path.Join(dstAbs, srcFile)
+		}
+	}
+
+	// Splitting dst
+	d, dstFile := path.Split(dstAbs)
+
+	dstDir, err := fs.AbsNormal(d)
+	if err != nil {
+		return err
+	}
+
+	// // setting up a fake dstFl, without a container number inside
+	// dstFl := FileList{dir: dstDir, fileName: dstFile}
+
+	// Check whether dst exists
+	if item, err := fs.index.FileNameToFileList(dstDir, dstFile); err == nil {
+		return fmt.Errorf("file %s already exists and is stored in %s", dst, item.Path())
+	}
+
+	// Check for src file is locked
 	srcFl, err := fs.index.FileNameToFileList(srcDir, srcFile)
 	if err != nil {
 		return fmt.Errorf("failed to get index for %s: %w", src, err)
@@ -606,11 +654,6 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 
 	if name := fs.IsLockedItem(srcFl.containerNumber); name != "" {
 		return fmt.Errorf("file %s is checked out by %s", src, name)
-	}
-
-	// Check whether dst is empty
-	if dst == "" {
-		return errors.New("empty destination")
 	}
 
 	// Check whether dst is a file or directory
@@ -621,7 +664,7 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 	}
 
 	// Check for a subdirectory inside dst
-	var dstPath, dstDir, dstFile string
+	var dstPath string
 	if strings.Contains(dst, "/") {
 		num := strings.LastIndexByte(dst, '/')
 		dstDir = path.Join(fs.Getwd(), dst[:num])
@@ -647,12 +690,12 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 		return fmt.Errorf("file %s already exists and is stored in %s", dstFile, dstDir)
 	}
 
-	destFl, err := fs.index.AddItem(dstDir, dstFile)
+	dstFl, err := fs.index.AddItem(dstDir, dstFile)
 	if err != nil {
 		return err
 	}
 
-	dstFd := NewFileDirectory(fs, *destFl)
+	dstFd := NewFileDirectory(fs, *dstFl)
 	if err := dstFd.CreateDirectory(); err != nil {
 		return err
 	}
@@ -674,8 +717,17 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 		}
 	}
 
+	// Verification
+	dstPathContainer := path.Join(fs.vaultDir, dstFl.dir, dstFl.containerNumber)
+	dstJoinPath := path.Join(fs.vaultDir, dstFl.dir, dstFl.fileName)
+	_, err = os.Stat(dstPathContainer)
+	if err != nil {
+		return fmt.Errorf("unable to locate file %s, error %s", dstJoinPath, err)
+	}
+
 	// Logging
-	log.Printf("File %s copied to %s\n", src, dst)
+	log.Printf("File %s copied to %s\n", path.Join(srcFl.Path(), srcFl.Name()), path.Join(dstDir, dstFile))
+	// log.Printf("File %s copied to %s\n", src, dst)
 
 	return nil
 }
@@ -718,13 +770,6 @@ func (fs *FileSystem) DirectoryCopy(src, dst string) error {
 		return err
 	}
 
-	// check there is a subdirectory which is not allowed
-	for _, elem := range srcFiles {
-		if strings.Contains(elem.dir, "/") {
-			return errors.New("subdirectories are (at the moment) not allowed for directory copy")
-		}
-	}
-
 	// append the src directory to srcFiles
 	srcZero := make([]FileInfo, 1)
 	srcZero[0] = FileInfo{dir: src, isDir: true}
@@ -744,14 +789,12 @@ func (fs *FileSystem) DirectoryCopy(src, dst string) error {
 		dstFiles[k].name = v.name
 	}
 
-	fmt.Printf("%v\n", srcFiles)
-	fmt.Printf("%v\n", dstFiles)
-
 	cwd := fs.Getwd()
 
 	for k, elem := range dstFiles {
+		dstJoinPath := path.Join(dstFiles[k].Path(), dstFiles[k].Name())
 		if elem.IsDir() {
-			if err := fs.Mkdir(path.Join(elem.dir, elem.name)); err != nil {
+			if err := fs.Mkdir(path.Join(fs.vaultDir, elem.dir, elem.name)); err != nil {
 				return err
 			}
 		} else {
@@ -762,17 +805,16 @@ func (fs *FileSystem) DirectoryCopy(src, dst string) error {
 				return err
 			}
 		}
+
+		// Verification
+		dstPathContainer := path.Join(fs.vaultDir, dstFiles[k].dir, dstFiles[k].containerNumber)
+		_, err := os.Stat(dstPathContainer)
+		if err != nil {
+			return fmt.Errorf("unable to locate file %s, error %s", dstJoinPath, err)
+		}
 	}
 
 	fs.Chdir(cwd)
-
-	// Check whether files and directories are copied to the right place
-	for _, elem := range dstFiles {
-		_, err := os.Stat(path.Join(fs.vaultDir, elem.name))
-		if err != nil {
-			return fmt.Errorf("unable to locate file %s, error %s", elem.name, err)
-		}
-	}
 
 	// Logging
 	log.Printf("Directory %s copied to %s\n", src, dst)
@@ -864,7 +906,6 @@ func (fs FileSystem) DirectoryRename(src, dst string) error {
 		if err != nil {
 			return fmt.Errorf("unable to locate file %s, error %s", dstJoinPath, err)
 		}
-
 	}
 
 	// Removing source dir(s)
