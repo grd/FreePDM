@@ -68,7 +68,6 @@ func TestImportFile(t *testing.T) {
 	fmt.Printf("User name: %s\n", userName.Name)
 
 	filesDir := path.Join(freePdmDir, "ConceptOfDesign/TestFiles")
-	file1 = path.Join(filesDir, "0001.FCStd")
 	file2 = path.Join(filesDir, "0002.FCStd")
 	file3 = path.Join(filesDir, "0003.FCStd")
 	file4 = path.Join(filesDir, "0004.FCStd")
@@ -79,9 +78,10 @@ func TestImportFile(t *testing.T) {
 		t.Fatalf("Chdir error message = %s", err)
 	}
 
-	f1, err := fs.ImportFile("Projects", file1)
+	file1 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0001.FCStd"
+	f1, err := fs.ImportUrl("Projects", file1)
 	if err != nil {
-		t.Fatalf("ImportFile %s error: %s", file1, err)
+		t.Fatalf("ImportUrl %s error: %s", file1, err)
 	}
 	compareFileListLine(1, "1:0001.FCStd::Projects:")
 	checkOutStatus(1, 0)

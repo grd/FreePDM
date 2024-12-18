@@ -9,12 +9,15 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/grd/FreePDM/pkg/config"
 	"github.com/grd/FreePDM/pkg/util"
@@ -209,13 +212,96 @@ func (fs *FileSystem) ImportFile(dstDir, fileName string) (*FileList, error) {
 		return nil, err
 	}
 
-	log.Printf("imported %s into %s with version %d", fileName, fl.fileName, 0)
-
 	// Checking out the new file so no one else can see it.
 
 	if err = fs.CheckOut(*fl, FileVersion{0, "0", util.Now()}); err != nil {
 		return nil, err
 	}
+
+	log.Printf("imported %s into %s with version %d", fileName, fl.fileName, 0)
+
+	return fl, nil
+}
+
+// import a url inside the PDM. For the rest it works the same as ImportFile()
+func (fs *FileSystem) ImportUrl(dstDir, url string) (*FileList, error) {
+	// Reuse the same HTTP client with an extended timeout
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	// Check if the URL is reachable with a HEAD request
+	req, err := http.NewRequest("HEAD", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("invalid URL: %v", err)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to reach URL: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the HTTP status code
+	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
+		return nil, fmt.Errorf("URL returned status code %d", resp.StatusCode)
+	}
+
+	// Calculate the destination directory
+	complDstDir := path.Join(fs.vaultDir, dstDir)
+
+	// Check if the destination directory exists
+	if !util.DirExists(complDstDir) {
+		return nil, fmt.Errorf("directory %s could not be found", complDstDir)
+	}
+
+	// Download the file contents
+	resp, err = client.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("failed to download URL: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Extract the file name from the URL
+	_, file := path.Split(url)
+
+	// Save the URL contents to a local file
+	localFilePath := path.Join(complDstDir, file)
+	out, err := os.Create(localFilePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create local file: %v", err)
+	}
+	defer out.Close()
+	defer os.Remove(localFilePath)
+
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to save URL contents to local file: %v", err)
+	}
+
+	// Add the file to the index
+	fl, err := fs.index.AddItem(dstDir, file)
+	if err != nil {
+		return nil, fmt.Errorf("failed to add item to index: %v", err)
+	}
+
+	fd := NewFileDirectory(fs, *fl)
+
+	// Create the directory structure
+	if err = fd.CreateDirectory(); err != nil {
+		return nil, fmt.Errorf("failed to create directory: %v", err)
+	}
+
+	if err = fd.ImportNewFile(localFilePath); err != nil {
+		return nil, err
+	}
+
+	// Check out the file to make it inaccessible to others
+	if err = fs.CheckOut(*fl, FileVersion{0, "0", util.Now()}); err != nil {
+		return nil, fmt.Errorf("failed to check out file: %v", err)
+	}
+
+	log.Printf("imported %s into %s with version %d", url, fl.fileName, 0)
 
 	return fl, nil
 }
