@@ -4,7 +4,7 @@
 
 ## Table of Contents
 0. Introduction
-1. File Storing during Editing
+1. File Storage during Editing
 2. Checking out a file
 3. Revision Procedures
 4. UIFunctions
