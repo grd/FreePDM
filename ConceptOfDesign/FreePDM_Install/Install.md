@@ -34,8 +34,8 @@ FreePDM is a PDM that works external to FreeCAD. It can interoperate with FreeCA
    valid users = @sambashare user user1
    ```
 
-- path: You can put any path here. This is just how I do this.
-- valid users: This should note @sambashare and the users. Each time you add someone you should rerun the program. See #5.
+  - **`path`**: You can put any path here. This is just how I do this.
+  - **`valid users`**: This should note @sambashare and the users. Each time you add someone you should rerun the program. See #5.
 
 4. Verify your smb.conf with `testparm`
 5. Run `sudo systemctl restart smbd`
