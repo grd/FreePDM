@@ -218,6 +218,11 @@ func (fs *FileSystem) ImportFile(dstDir, fileName string) (*FileList, error) {
 		return nil, err
 	}
 
+	// Verfication
+	if err := fs.Verify(*fl); err != nil {
+		return nil, err
+	}
+
 	log.Printf("imported %s into %s with version %d", fileName, fl.fileName, 0)
 
 	return fl, nil
@@ -299,6 +304,11 @@ func (fs *FileSystem) ImportUrl(dstDir, url string) (*FileList, error) {
 	// Check out the file to make it inaccessible to others
 	if err = fs.CheckOut(*fl, FileVersion{0, "0", util.Now()}); err != nil {
 		return nil, fmt.Errorf("failed to check out file: %v", err)
+	}
+
+	// Verfication
+	if err := fs.Verify(*fl); err != nil {
+		return nil, err
 	}
 
 	log.Printf("imported %s into %s with version %d", url, fl.fileName, 0)
@@ -638,11 +648,12 @@ func (fs *FileSystem) FileRename(src, dst string) error {
 	}
 
 	// Verification
-	dstPathContainer := path.Join(fs.vaultDir, dstFl.dir, dstFl.containerNumber)
-	dstJoinPath := path.Join(fs.vaultDir, dstFl.dir, dstFl.fileName)
-	_, err = os.Stat(dstPathContainer)
+	item, err := fs.index.FileNameToFileList(dstDir, dstFile)
 	if err != nil {
-		return fmt.Errorf("unable to locate file %s, error %s", dstJoinPath, err)
+		return err
+	}
+	if err = fs.Verify(item); err != nil {
+		return err
 	}
 
 	// Logging
@@ -804,11 +815,12 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 	}
 
 	// Verification
-	dstPathContainer := path.Join(fs.vaultDir, dstFl.dir, dstFl.containerNumber)
-	dstJoinPath := path.Join(fs.vaultDir, dstFl.dir, dstFl.fileName)
-	_, err = os.Stat(dstPathContainer)
+	item, err := fs.index.FileNameToFileList(dstDir, dstFile)
 	if err != nil {
-		return fmt.Errorf("unable to locate file %s, error %s", dstJoinPath, err)
+		return err
+	}
+	if err = fs.Verify(item); err != nil {
+		return err
 	}
 
 	// Logging
@@ -999,14 +1011,6 @@ func (fs FileSystem) DirectoryRename(src, dst string) error {
 		return err
 	}
 
-	// // Check whether files and directories are moved and in the right place
-	// for _, elem := range dstFiles {
-	// 	_, err := os.Stat(path.Join(fs.vaultDir, elem.dir, elem.name))
-	// 	if err != nil {
-	// 		return fmt.Errorf("unable to locate file %s, error %s", elem.name, err)
-	// 	}
-	// }
-
 	// Log the successful move operation
 	log.Printf("Successfully moved directory from %s to %s", src, dst)
 
@@ -1111,4 +1115,39 @@ func (fs FileSystem) AbsNormal(absolutePath string) (string, error) {
 	}
 
 	return dir, nil
+}
+
+// Verifies wether the operation succeeded well. It checks
+// the location and also the entry inside the FileList.
+func (fs FileSystem) Verify(fl FileList) error {
+	pathContainer := path.Join(fs.vaultDir, fl.dir, fl.containerNumber)
+	joinPath := path.Join(fl.dir, fl.fileName)
+
+	_, err := os.Stat(pathContainer)
+	if err != nil {
+		return fmt.Errorf("unable to locate file %s, error %s", joinPath, err)
+	}
+
+	for _, v := range fs.index.fileList {
+		if fl.containerNumber == v.containerNumber {
+			if strings.Compare(v.fileName, fl.fileName) != 0 {
+				return fmt.Errorf("fileName comparison mismatch %s != %s", v.dir, fl.dir)
+			}
+			if strings.Compare(v.previousName, fl.previousName) != 0 {
+				return fmt.Errorf("previousName comparison mismatch %s != %s", v.dir, fl.dir)
+			}
+			if strings.Compare(v.dir, fl.dir) != 0 {
+				return fmt.Errorf("dir comparison mismatch %s != %s", v.dir, fl.dir)
+			}
+			if strings.Compare(v.previousDir, fl.previousDir) != 0 {
+				return fmt.Errorf("previousDir comparison mismatch %s != %s", v.dir, fl.dir)
+			}
+
+			// all tests completed. Returning nil
+			return nil
+		}
+	}
+
+	// Nothing found...
+	return fmt.Errorf("container %s not found", fl.containerNumber)
 }
