@@ -6,7 +6,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 
-RUN go build -o freepdm ./cmd/pdmserver/main.go
+RUN go build -o freepdm ./cmd/pdmserver
 
 FROM debian:bookworm-slim
 

@@ -53,23 +53,24 @@ list-share-names:
 	go build -o $(BIN_DIR)/list-share-names temp/list-share-names/list-share-names.go
 
 docker:
-	docker_rm
-	docker_start
+	@$(MAKE) docker_stop
+	@$(MAKE) docker_start
 
 docker_start:
-	docker_compose pull
+	@echo "Updating Docker containers..."
+	docker-compose pull
 	docker-compose up --build -d
+	@echo "Docker containers updated successfully."
 
 docker_stop:
-	docker-compose down
+	docker-compose down || true
 
 docker_rm:
-	docker-compose down -v
-	docker rm ${CONTAINER_NAME} || true
+	docker-compose down -v || true
+	docker rm -f ${CONTAINER_NAME} || true
 
 docker_shell:
 	docker exec -it ${CONTAINER_NAME} /bin/sh
 
 docker_logs:
 	docker logs ${CONTAINER_NAME}
-
