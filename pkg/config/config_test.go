@@ -1,7 +1,6 @@
 package config
 
 import (
-	"io/ioutil"
 	"os"
 	"path"
 	"testing"
@@ -33,7 +32,7 @@ func TestReadConfig(t *testing.T) {
 	// Prepare a temporary config file
 	tmpDir := t.TempDir()
 	tmpFile := path.Join(tmpDir, "FreePDM.toml")
-	ioutil.WriteFile(tmpFile, []byte(`
+	os.WriteFile(tmpFile, []byte(`
 		StartupDirectory = "/tmp"
 		LogFile = "log.txt"
 		LogLevel = "info"
@@ -86,7 +85,7 @@ func TestWriteConfig(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Read and check contents
-	content, err := ioutil.ReadFile(tmpFile)
+	content, err := os.ReadFile(tmpFile)
 	assert.NoError(t, err)
 	assert.Contains(t, string(content), "StartupDirectory = \"/home/test\"")
 }

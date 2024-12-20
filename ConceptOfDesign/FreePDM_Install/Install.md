@@ -10,7 +10,7 @@ FreePDM is a PDM that works external to FreeCAD. It can interoperate with FreeCA
 #### Install Go
   - Install Go https://golang.org
   - Make sure you have a directory `bin` inside your home directory and in your `$PATH`
-  - Play a bit with GOPATH in your `.bashrc` file (if you have bash). Make sure to have the line `export GOPATH=/home/user` where user is the user name. To reload the `.bashrc` file you can run `source ~/.bashrc`.
+  - Play a bit with GOPATH in your `.bashrc` file (if you have bash). Make sure to have the line `export GOPATH=/home/$user` where $user is the user name. Also place the line `export FREEPDM_DIR=/home/$user/FreePDM`. To reload the `.bashrc` file you can run `source ~/.bashrc`.
 
 #### Install Samba
   1. Install Samba (a FOSS version of the SMB file server protocol). There are plenty of examples in how to install Samba on your computer.
@@ -43,13 +43,13 @@ FreePDM is a PDM that works external to FreeCAD. It can interoperate with FreeCA
 
 #### Install FreePDM
   - `git clone github.com/grd/FreePDM.git`
-  - Go to directory FreePDM and type `make fstest`. This should test everything.
+  - Go to directory FreePDM and type `make fstest`. This should test and also put some sample data into the vault.
 
 #### Modify FreePDM.toml
 Read `cat /etc/group` 
 Write down the number after `sambashare` (in my case it is 125) and the the `users`.
 
-Next, add the following text to the end of your `FreePDM.toml`. The file is stored (in Ubuntu) in the `.config/FreePDM` directory:
+Next, add the following text to the end of your `FreePDM.toml`. The file is stored in the `FreePDM/data` directory:
 
 ```
 [Users]
