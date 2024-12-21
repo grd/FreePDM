@@ -55,6 +55,7 @@ func createLogFile() {
 	logFileName := path.Join(freePdmDir, fmt.Sprintf("logs/%s.log", today))
 
 	fmt.Printf("logFileName = %s\n", logFileName)
+
 	// Open or create the log file
 	var err error
 	logFile, err = os.OpenFile(logFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)

@@ -1,5 +1,4 @@
 FREEPDM=https://github.com/grd/FreePDM
-FREECAD_FILES=$(FREEPDM)/ConceptOfDesign/TestFiles
 BIN_DIR=${HOME}/bin
 CONTAINER_NAME := freepdm
 
@@ -19,14 +18,22 @@ removevault:
 test:
 	go test -v ./...
 
-fstest:
-	go test -failfast pkg/filesystem/main_test.go
+vaultstest:
+	go test -failfast internal/vaults/main_test.go
 
 pdmserver: 
-	go build -o $(BIN_DIR)/pdmserver cmd/pdmserver/main.go
+	go build -o $(BIN_DIR)/pdmserver ./cmd/pdmserver
+	pdmserver
+
+runserver: 
+	go run ./cmd/pdmserver
 
 pdmterm: 
-	go build -o $(BIN_DIR)/pdmterm cmd/pdmterm/main.go
+	go build -o $(BIN_DIR)/pdmterm ./cmd/pdmterm
+	pdmterm
+
+runterm: 
+	go run ./cmd/pdmterm
 
 pdmclient:
 	go build -o $(BIN_DIR)/pdmclient cmd/pdmclient/main.go

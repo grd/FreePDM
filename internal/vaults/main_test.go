@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package filesystem_test
+package vaults_test
 
 // Tests for the filesystem.
 
@@ -17,9 +17,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/grd/FreePDM/pkg/config"
-	fsm "github.com/grd/FreePDM/pkg/filesystem"
-	"github.com/grd/FreePDM/pkg/util"
+	"github.com/grd/FreePDM/internal/config"
+	"github.com/grd/FreePDM/internal/util"
+	fsm "github.com/grd/FreePDM/internal/vaults"
 	"github.com/stretchr/testify/assert"
 )
 

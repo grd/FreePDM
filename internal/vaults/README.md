@@ -1,6 +1,6 @@
-# The Filesystem page
+# The vaults page
 
-The Filesystem is a major part of FreePDM. It is primarily a storage of files that are stored into the server. The primary goals are to import / export files, the revision of files, moving -, copying and renaming of files, and all with access control. To make this happen you want to check-out and check-in of files, so that others know that you checked out a file and can't modify / edit the file without notifying you. The filesystem use directories, just like ordinary directories, to organize the files. The storage of files allows that you can also open a previous file.
+The vaults is a major part of FreePDM. It is primarily a storage of files that are stored into the server. The primary goals are to import / export files, the revision of files, moving -, copying and renaming of files, and all with access control. To make this happen you want to check-out and check-in of files, so that others know that you checked out a file and can't modify / edit the file without notifying you. The filesystem use directories, just like ordinary directories, to organize the files. The storage of files allows that you can also open a previous file.
 
 
 ## Todo:

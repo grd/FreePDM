@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/grd/FreePDM/pkg/shared"
+	"github.com/grd/FreePDM/internal/shared"
 )
 
 func sendCommand(command string, params map[string]string) (*shared.CommandResponse, error) {

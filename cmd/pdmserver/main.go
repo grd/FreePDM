@@ -8,7 +8,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/grd/FreePDM/pkg/shared"
+	"github.com/grd/FreePDM/internal/shared"
 )
 
 func main() {

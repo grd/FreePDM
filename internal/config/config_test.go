@@ -5,7 +5,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/grd/FreePDM/pkg/util"
+	"github.com/grd/FreePDM/internal/util"
 	"github.com/stretchr/testify/assert"
 )
 

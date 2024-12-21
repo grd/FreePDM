@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package filesystem
+package vaults
 
 // The FileDirectory struct deals with file versions.
 // Each file that is stored inside the vault has its own version.
@@ -15,7 +15,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/grd/FreePDM/pkg/util"
+	"github.com/grd/FreePDM/internal/util"
 )
 
 // Some handy file names

@@ -9,8 +9,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/grd/FreePDM/pkg/config"
-	"github.com/grd/FreePDM/pkg/util"
+	"github.com/grd/FreePDM/internal/config"
+	"github.com/grd/FreePDM/internal/util"
 )
 
 // A simple "quick and dirty" remove all files from testvault script

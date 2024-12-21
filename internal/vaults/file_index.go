@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package filesystem
+package vaults
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/grd/FreePDM/pkg/util"
+	"github.com/grd/FreePDM/internal/util"
 )
 
 // The FileList is a struct with five fields:

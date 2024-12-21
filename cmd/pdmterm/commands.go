@@ -44,11 +44,11 @@ var (
 )
 
 // handleCommand processes the input command and executes corresponding actions.
-func handleCommand(input string, directory *string) {
+func handleCommand(input string, directory string) {
 	// Split the command and arguments
 	parts := strings.Fields(input)
 	if len(parts) == 0 {
-		fmt.Println(Red + "No command entered.")
+		fmt.Println(Red + "No command entered." + Reset)
 		return
 	}
 
@@ -63,16 +63,18 @@ func handleCommand(input string, directory *string) {
 		handleList()
 	case "vault":
 		handleVault(args[0])
+	case "tree":
+		handleTree(args[0])
 	case "pwd":
 		handlePwd()
 	case "ls":
-		handleLs(*directory)
+		handleLs(directory)
 	case "cd":
 		if len(args) < 1 {
 			fmt.Println(Cyan + "Usage: cd <directory>" + Reset)
 			return
 		}
-		handleCd(args[0], directory)
+		handleCd(args[0])
 	case "exit", "quit":
 		fmt.Println(Cyan + "Exiting the shell." + Reset)
 		os.Exit(0)
@@ -115,10 +117,9 @@ func handleList() {
 	resp, err := sendCommand("list", nil)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
 	}
-	if resp.Status == "error" {
-		fmt.Println(Red + resp.Message + Reset)
+	if resp.Error == "Failed to show the list of vaults" {
+		fmt.Println(Red + resp.Error + Reset)
 	} else {
 		fmt.Printf(Cyan+"Data = %s\n"+Reset, resp.Data)
 	}
@@ -126,8 +127,41 @@ func handleList() {
 
 // handleVault changes the current vault.
 func handleVault(vault string) {
-	currentVault = vault
-	fmt.Printf(Cyan+"Switched to vault: %s\n", vault)
+	resp, err := sendCommand("list", nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if resp.Error == "Failed to show the list of vaults" {
+		fmt.Println(Cyan + resp.Error + Reset)
+		return
+	}
+
+	for _, elem := range resp.Data {
+		if vault == elem {
+			currentVault = elem
+			currentDir = "."
+			break
+		}
+	}
+	fmt.Printf(BrightGreen+"Switched to vault: %s\n"+Reset, vault)
+}
+
+// handleTree changes the current vault.
+func handleTree(path string) {
+	resp, err := sendCommand("tree", map[string]string{
+		"path": path,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+	if resp.Error == "Failed to show the tree" {
+		fmt.Println(Cyan + resp.Error + Reset)
+		return
+	}
+
+	for _, elem := range resp.Data {
+		fmt.Println(elem)
+	}
 }
 
 // handleLs lists files and directories in the current directory.
@@ -137,45 +171,44 @@ func handleLs(directory string) {
 	})
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
 	}
-	fmt.Printf("Status = %s\n", resp.Status)
-	fmt.Printf("Message = %s\n", resp.Message)
+	fmt.Printf("Error = %s\n", resp.Error)
 	fmt.Printf("Data = %s\n", resp.Data)
 }
 
 // handleCd changes the current working directory.
-func handleCd(target string, directory *string) {
+func handleCd(target string) {
+	fmt.Printf("dir = %s\n", target)
 	if currentVault == "" {
 		fmt.Println(Red + "First set the vault with the command vault" + Reset)
 		return
 	}
 	resp, err := sendCommand("direxists", map[string]string{
-		"path": *directory,
+		"path": target,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
-	if resp.Status != "success" {
-		fmt.Println(Red + "directory does not exist" + Reset)
+	if resp.Error != "" {
+		fmt.Printf(Red+"directory %s does not exist\n"+Reset, target)
 		return
 	}
 	if target == ".." { // Up one level
-		if *directory != "/" {
-			lastSlash := strings.LastIndex(*directory, "/")
-			*directory = (*directory)[:lastSlash]
-			if *directory == "" {
-				*directory = "/"
+		if target != "/" {
+			lastSlash := strings.LastIndex(target, "/")
+			target = (target)[:lastSlash]
+			if target == "" {
+				target = "/"
 			}
 		}
 	} else { // Subdirectory
-		if *directory == "/" {
-			*directory += target
+		if target == "/" {
+			target += target
 		} else {
-			*directory += "/" + target
+			target += "/" + target
 		}
 	}
-	fmt.Printf(Cyan+"Changed directory to: %s\n", *directory)
+	fmt.Printf(Cyan+"Changed directory to: %s\n", target)
 }
 
 // handlePwd prints the current working directory.
@@ -193,12 +226,12 @@ func newPrompt() {
 
 	for {
 		// Show prompt
-		fmt.Printf("\033[96m%s:%s> \033[0m", currentVault, currentDir)
+		fmt.Printf(BrightCyan+"%s:%s>"+Reset, currentVault, currentDir)
 
 		// Read input
 		if scanner.Scan() {
 			input := strings.TrimSpace(scanner.Text())
-			handleCommand(input, &currentDir)
+			handleCommand(input, currentDir)
 		} else {
 			break
 		}

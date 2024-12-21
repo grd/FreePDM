@@ -10,7 +10,7 @@ import (
 	"log"
 	"net/http"
 
-	fsm "github.com/grd/FreePDM/pkg/filesystem"
+	fsm "github.com/grd/FreePDM/internal/vaults"
 )
 
 func CommandHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +20,7 @@ func CommandHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(req.Params)
+	fmt.Println(req)
 
 	// Using the right command
 	switch req.Command {
@@ -32,19 +32,13 @@ func CommandHandler(w http.ResponseWriter, r *http.Request) {
 		path, ok := req.Params["path"]
 		if !ok {
 			writeJsonError(w, "Missing parameters", http.StatusBadRequest)
-			return
 		}
 		handleDirexists(w, req.User, req.Vault, path)
 	case "ls":
 		path, ok := req.Params["path"]
 		if !ok {
 			writeJsonError(w, "Missing parameters", http.StatusBadRequest)
-			return
 		}
-		// user := req.Params["user"]
-		// vault := req.Params["vault"]
-		// path := req.Params["path"]
-
 		handleLs(w, req.User, req.Vault, path)
 
 	// case "rename":
@@ -66,34 +60,25 @@ func writeJsonError(w http.ResponseWriter, message string, statusCode int) {
 func handleRoot(w http.ResponseWriter) {
 	var resp CommandResponse
 
-	// Logic to list directory contents
-
 	root := fsm.Root()
 	resp = CommandResponse{
-		Status:  "success",
-		Message: "Root directory",
-		Data:    map[string]interface{}{"items": root},
+		Data: []string{root},
 	}
 	json.NewEncoder(w).Encode(resp)
 }
 
+// Shows the existing vaults
 func handleList(w http.ResponseWriter) {
 	var resp CommandResponse
-
-	// Logic to list directory contents
 
 	list, err := fsm.ListVaults()
 	if err != nil {
 		resp = CommandResponse{
-			Status:  "error",
-			Message: "Failed to show the list of vaults",
-			Data:    map[string]interface{}{},
+			Error: "Failed to show the list of vaults",
 		}
 	} else {
 		resp = CommandResponse{
-			Status:  "success",
-			Message: "Directory listed successfully",
-			Data:    map[string]interface{}{"items": list},
+			Data: list,
 		}
 	}
 	json.NewEncoder(w).Encode(resp)
@@ -110,15 +95,11 @@ func handleDirexists(w http.ResponseWriter, user, vault, path string) {
 	ok := fs.DirExists(path)
 	if !ok {
 		resp = CommandResponse{
-			Status:  "error",
-			Message: "Directory " + path + " does not exists",
-			Data:    nil,
+			Error: "Directory " + path + " does not exists",
 		}
 	} else {
 		resp = CommandResponse{
-			Status:  "success",
-			Message: "Directory " + path + " exists",
-			Data:    nil,
+			Error: "Directory " + path + " exists",
 		}
 	}
 	json.NewEncoder(w).Encode(resp)
@@ -127,19 +108,17 @@ func handleDirexists(w http.ResponseWriter, user, vault, path string) {
 func handleLs(w http.ResponseWriter, user, vault, path string) {
 	var resp CommandResponse
 
-	// Logic to list directory contents
-
 	fs, err := fsm.NewFileSystem(vault, user)
 	if err != nil {
 		log.Fatalf("unable to access the filesystem : %s", err)
 	}
 
+	fmt.Printf("path = %s\n", path)
+
 	list, err := fs.ListDir(path)
 	if err != nil {
 		resp = CommandResponse{
-			Status:  "error",
-			Message: "Failed to show directory",
-			Data:    map[string]interface{}{},
+			Error: "Failed to show directory",
 		}
 	} else {
 		files := make([]string, len(list))
@@ -147,9 +126,7 @@ func handleLs(w http.ResponseWriter, user, vault, path string) {
 			files[i] = item.Name()
 		}
 		resp = CommandResponse{
-			Status:  "success",
-			Message: "Directory listed successfully",
-			Data:    map[string]interface{}{"items": files},
+			Data: files,
 		}
 	}
 	json.NewEncoder(w).Encode(resp)

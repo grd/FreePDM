@@ -4,6 +4,10 @@
 
 package shared
 
+import (
+	"encoding/json"
+)
+
 type CommandRequest struct {
 	User    string            `json:"user"`
 	Vault   string            `json:"vault,omitempty"`
@@ -12,7 +16,16 @@ type CommandRequest struct {
 }
 
 type CommandResponse struct {
-	Status  string      `json:"status"` // e.g., "success" or "error"
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
+	Error string   `json:"error,omitempty"`
+	Data  []string `json:"data,omitempty"`
+}
+
+func (req CommandRequest) String() string {
+	str, _ := json.Marshal(req)
+	return string(str)
+}
+
+func (res CommandResponse) String() string {
+	str, _ := json.Marshal(res)
+	return string(str)
 }
