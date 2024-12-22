@@ -2,6 +2,8 @@
 services:
   # Golang Service
   app:
+    image: freepdm-app
+    container_name: freepdm
     build:
       context: .
       dockerfile: Dockerfile # Dockerfile to build your Golang app
@@ -9,9 +11,9 @@ services:
       - "8080:8080"  # json service port
     restart: always
     environment:
-      - GO_DIRECTORY=/home/user/FreePDM
-      - GO_WORKDIR=/home/user/FreePDM/cmd/pdmserver
-
+      - FREEPDM_DIR=${FREEPDM_DIR}
+      - GO_DIRECTORY={FREEPDM_DIR}
+      - GO_WORKDIR={FREEPDM_DIR}/cmd/pdmserver
       - DB_HOST=db
       - DB_PORT=5432
       - DB_USER=yourusername
@@ -21,9 +23,9 @@ services:
       - db
     volumes:
       - ./app:/go/src/app  # Mount your app source code for easier development
-      - ./data:/app/data
-      - ./logs:/app/logs
-      - /samba/vaultsdata:/samba/vaultsdata
+      - ./data:${FREEPDM_DIR}/data
+      - ./logs:${FREEPDM_DIR}/logs
+      - /samba/vaultsdata:/samba/vaultsdata # I will get rid of this in the future!
     networks:
       - app-network
     command: /app/freepdm
@@ -31,6 +33,7 @@ services:
   # PostgreSQL Database
   db:
     image: postgres:14
+    container_name: db
     restart: always
     environment:
       POSTGRES_USER: yourusername
@@ -43,6 +46,7 @@ services:
 
   samba:
     image: ghcr.io/servercontainers/samba:latest
+    container_name: samba
     restart: always
     network_mode: host
     cap_add:
@@ -50,7 +54,7 @@ services:
     environment:
       TZ: Europe/Amsterdam
 
-      SAMBA_CONF_LOG_LEVEL: 3
+      SAMBA_CONF_LOG_LEVEL: 2
 
       GROUP_sambashare: 125
 

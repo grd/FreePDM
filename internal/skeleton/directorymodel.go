@@ -41,7 +41,7 @@ type DirectoryModel struct {
 	DirectoryList []DirectoryList
 }
 
-func fullPath(directory, file string) string {
+func FullPath(directory, file string) string {
 	return path.Join(directory, file)
 }
 

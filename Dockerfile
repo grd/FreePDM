@@ -16,6 +16,8 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
+EXPOSE 8080
+
 COPY --from=builder /go/src/app/freepdm /app/freepdm
 
 CMD ["/app/freepdm"]

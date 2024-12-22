@@ -6,13 +6,13 @@ CONTAINER_NAME := freepdm
 all: add_users createvault removevault testvault pdmserver pdmterm pdmclient vcs vfs 
 
 add_users: 
-	go build -o $(BIN_DIR)/add_users cmd/add_users/main.go
+	go build -o $(BIN_DIR)/add_users cmd/add_users
 
 createvault: 
-	go build -o $(BIN_DIR)/createvault cmd/createvault/main.go
+	go build -o $(BIN_DIR)/createvault cmd/createvault
 
 removevault: 
-	go build -o $(BIN_DIR)/removevault cmd/removevault/main.go
+	go build -o $(BIN_DIR)/removevault cmd/removevault
 	removevault
 
 test:
@@ -36,13 +36,13 @@ runterm:
 	go run ./cmd/pdmterm
 
 pdmclient:
-	go build -o $(BIN_DIR)/pdmclient cmd/pdmclient/main.go
+	go build -o $(BIN_DIR)/pdmclient cmd/pdmclient
 
 vcs: 
-	go build -o $(BIN_DIR)/vcs cmd/vcs/main.go
+	go build -o $(BIN_DIR)/vcs cmd/vcs
 
 vfs: 
-	go build -o $(BIN_DIR)/vfs cmd/vfs/main.go
+	go build -o $(BIN_DIR)/vfs cmd/vfs
 
 smb2:
 	go build -o $(BIN_DIR)/smb2 temp/smb2.go

@@ -73,7 +73,7 @@ func unzipFile(f *zip.File, destination string) error {
 	return nil
 }
 
-func zipSource(source, target string) error {
+func ZipSource(source, target string) error {
 	// 1. Create a ZIP file and zip.Writer
 	f, err := os.Create(target)
 	if err != nil {

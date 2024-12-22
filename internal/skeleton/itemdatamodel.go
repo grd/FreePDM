@@ -12,7 +12,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/grd/FreePDM/pkg/util"
+	"github.com/grd/FreePDM/internal/util"
 )
 
 // Getting file info from Document.xml that is stored within each FC file
@@ -111,7 +111,7 @@ type Extensions struct {
 	}
 }
 
-func read() {
+func Read() {
 	prop := `
 	<?xml version='1.0' encoding='utf-8'?>
 	<!--
@@ -276,8 +276,8 @@ type StringHolder struct {
 type ItemDataModel struct {
 	FileName string
 	// xml_document        XmlNode
-	thumbnail           []byte
-	document_properties []byte
+	Thumbnail          []byte
+	DocumentProperties []byte
 }
 
 func InitItemDataModel(filename string) (ret ItemDataModel) {
@@ -308,7 +308,7 @@ func (idm *ItemDataModel) ReadFcFile() {
 
 	// Check whether there is a thumbnail
 	if util.DirExists(path.Join(tempDir, "/thumbnails")) {
-		idm.thumbnail, err = os.ReadFile(path.Join(tempDir, "/thumbnails/Thumbnail.png"))
+		idm.Thumbnail, err = os.ReadFile(path.Join(tempDir, "/thumbnails/Thumbnail.png"))
 		util.CheckErr(err)
 	}
 }
