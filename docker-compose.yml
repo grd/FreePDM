@@ -54,7 +54,7 @@ services:
     environment:
       TZ: Europe/Amsterdam
 
-      SAMBA_CONF_LOG_LEVEL: 2
+      SAMBA_CONF_LOG_LEVEL: 3
 
       GROUP_sambashare: 125
 
@@ -66,14 +66,10 @@ services:
       UID_josh: 1001
       GROUPS_josh: sambashare
 
-      ACCOUNT_user1: passwd1
-      UID_user1: 1001
-      GROUPS_user1: sambashare
-
       SAMBA_VOLUME_CONFIG_vaults: |
         [vaults]
           path = /samba/vaults
-          valid users = user josh user1
+          valid users = user josh
           guest ok = no
           browseable = yes
           read only = no
