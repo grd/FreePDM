@@ -31,7 +31,7 @@ Proposed [Install](ConceptOfDesign/FreePDM_Install/README.md).
 
 ## Concept
 
-Proposed [concept](ConceptOfDesign/README.md) of design.
+Proposed [concept](ConceptOfDesign/FreePDM_01-Design/README.md) of design.
 
 ## Workflow
 
