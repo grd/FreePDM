@@ -25,7 +25,6 @@ services:
       - ./app:/go/src/app  # Mount your app source code for easier development
       - ./data:${FREEPDM_DIR}/data
       - ./logs:${FREEPDM_DIR}/logs
-      - /samba/vaultsdata:/samba/vaultsdata # I will get rid of this in the future!
     networks:
       - app-network
     command: /app/freepdm
@@ -54,7 +53,7 @@ services:
     environment:
       TZ: Europe/Amsterdam
 
-      SAMBA_CONF_LOG_LEVEL: 3
+      SAMBA_CONF_LOG_LEVEL: 1
 
       GROUP_sambashare: 125
 

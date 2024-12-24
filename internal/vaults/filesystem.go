@@ -47,7 +47,7 @@ const (
 	LockedFileCsv = "LockedFiles.csv"
 
 	vaults     = "/samba/vaults"
-	vaultsData = "/samba/vaultsdata"
+	vaultsData = vaults + "/.data"
 )
 
 // Constructor
@@ -143,6 +143,33 @@ func (fs *FileSystem) ReadLockedIndex() error {
 	return nil
 }
 
+// Writes a file in a read-only directory structure
+func (fs *FileSystem) DataWriteFile(name string, data []byte) error {
+	if err := os.Chmod(vaultsData, 0777); err != nil {
+		return fmt.Errorf("error setting directory permissions %s", fs.vaultDir)
+	}
+	if err := os.Chmod(fs.dataDir, 0777); err != nil {
+		return fmt.Errorf("error setting directory permissions %s", fs.dataDir)
+	}
+
+	if err := os.WriteFile(name, data, 0644); err != nil {
+		return fmt.Errorf("error writing %s", name)
+	}
+	if err := os.Chown(fs.lockedCvs, fs.userUid, fs.vaultUid); err != nil {
+		return fmt.Errorf("error changing ownership %s", name)
+	}
+
+	if err := os.Chmod(fs.dataDir, 0555); err != nil {
+		return fmt.Errorf("error setting directory permissions %s", fs.vaultDir)
+	}
+
+	if err := os.Chmod(vaultsData, 0555); err != nil {
+		return fmt.Errorf("error setting directory permissions %s", fs.dataDir)
+	}
+
+	return nil
+}
+
 func (fs *FileSystem) WriteLockedIndex() error {
 
 	records := [][]string{
@@ -168,12 +195,9 @@ func (fs *FileSystem) WriteLockedIndex() error {
 	err = writer.Error()
 	util.CheckErr(err)
 
-	if err = os.WriteFile(fs.lockedCvs, buffer.Bytes(), 0644); err != nil {
-		return fmt.Errorf("error writing %s", fs.lockedCvs)
+	if err = fs.DataWriteFile(fs.lockedCvs, buffer.Bytes()); err != nil {
+		return err
 	}
-
-	err = os.Chown(fs.lockedCvs, fs.userUid, fs.vaultUid)
-	util.CheckErr(err)
 
 	return nil
 }

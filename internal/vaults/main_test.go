@@ -513,7 +513,10 @@ func setup() {
 
 	// cleanup the testvaults
 
-	err := os.RemoveAll(testvaults)
+	err := os.Chmod(testvaults, 0775)
+	util.CheckErr(err)
+
+	err = os.RemoveAll(testvaults)
 	util.CheckErr(err)
 
 	err = os.Mkdir(testvaults, 0775)
@@ -526,13 +529,27 @@ func setup() {
 
 	// cleanup the testvaultsdata
 
+	err = os.Chmod(fsm.RootData(), 0775)
+	util.CheckErr(err)
+
+	err = os.Chmod(testvaultsdata, 0775)
+	util.CheckErr(err)
+
 	err = os.RemoveAll(testvaultsdata)
 	util.CheckErr(err)
+
+	if !util.DirExists(fsm.RootData()) {
+		err = os.Mkdir(fsm.RootData(), 0775)
+		util.CheckErr(err)
+	}
 
 	err = os.Mkdir(testvaultsdata, 0775)
 	util.CheckErr(err)
 
 	err = os.Chown(testvaultsdata, os.Geteuid(), vaultUid)
+	util.CheckErr(err)
+
+	err = os.Chmod(fsm.RootData(), 0775)
 	util.CheckErr(err)
 
 	// writing three files...

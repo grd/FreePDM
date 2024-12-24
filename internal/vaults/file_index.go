@@ -155,13 +155,8 @@ func (fi *FileIndex) Write() error {
 	}
 
 	// Write the buffer content to the file
-	if err := os.WriteFile(fi.fileListCsv, buffer.Bytes(), 0644); err != nil {
-		return fmt.Errorf("failed to write file %s: %w", fi.fileListCsv, err)
-	}
-
-	// Set the correct ownership of the file
-	if err := os.Chown(fi.fileListCsv, fi.fs.userUid, fi.fs.vaultUid); err != nil {
-		return fmt.Errorf("failed to change ownership of %s: %w", fi.fileListCsv, err)
+	if err := fi.fs.DataWriteFile(fi.fileListCsv, buffer.Bytes()); err != nil {
+		return err
 	}
 
 	return nil
@@ -281,11 +276,7 @@ func (fi *FileIndex) increaseContainerNumber() (string, error) {
 
 	str := fmt.Sprintf("%d", fi.indexNumber)
 
-	if err = os.WriteFile(fi.indexNumberTxt, []byte(str), 0644); err != nil {
-		return "", err
-	}
-
-	if err = os.Chown(fi.indexNumberTxt, fi.fs.userUid, fi.fs.vaultUid); err != nil {
+	if err = fi.fs.DataWriteFile(fi.indexNumberTxt, []byte(str)); err != nil {
 		return "", err
 	}
 

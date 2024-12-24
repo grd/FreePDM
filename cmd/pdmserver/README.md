@@ -17,12 +17,13 @@ This page is a long list of things that need to be done. Don't expect one thing 
 - User List (/admin/users) - the default page of the users section for performing CRUD operations. Displays a list of all users with buttons to add (/admin/user/user_name/add) and edit (/admin/user/user_name).
 - User (/admin/user/user_name) - a form to modify a specific user account.
 - Unactivate (/admin/user/user_name/unactivate) and reactivate (/admin/user/user_name/reactivate).
-
-### Vaults
-- Vaults (/admin/vaults) - a list of the existing vaults, incl. buttons for add, edit, remove.
-- Vault (/admin/vault/vault_name) Setting up name of the vault, it's versioning scheme, numbering scheme and whether it is mandatory. Also the user access. Who has access and what role?
-- Unlock (/admin/vault/vault_name/unlock) a file or item revision.
+- Vault (/admin/vault/vault_name) Setting up name of the vault, it's versioning scheme, numbering scheme and whether it is mandatory. Also the user access. 
 - Unremove (/admin/vault/vault_name/unremove) "Un-remove" a file or an item-revision.
 - Vault logs (/admin/vault/logs) Show the logs.
+
+### Vaults
+- Vaults (/vaults/list) - a list of the existing vaults.
+Who has access and what role?
+- Unlock (/vault/vault_name/unlock) a file.
 
 - And a lot more...
