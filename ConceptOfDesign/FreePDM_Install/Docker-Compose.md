@@ -22,12 +22,7 @@ In the root you can find two files that are important for Docker: `Dockerfile` a
 
 ### Note
 
-You can change the lines:
-```
-- GO_DIRECTORY=/home/user/FreePDM
-- GO_WORKDIR=/home/user/FreePDM/cmd/serverapp
-```
-But you should check *all the lines* inside all `environment:` sections!
+You should check *all the lines* inside all `environment:` sections!
 
 #### The samba group
 
