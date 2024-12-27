@@ -1,4 +1,4 @@
-StartupDirectory = ""
+VaultsDirectory = "/home/user/vaults"
 LogFile = ""
 LogLevel = ""
 

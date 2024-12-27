@@ -26,26 +26,20 @@ import (
 const testpdm = "testpdm"
 
 var (
-	fs *fsm.FileSystem
+	fs                         *fsm.FileSystem
+	testvaults, testvaultsdata string
 
-	testvaults     = path.Join(fsm.Root(), testpdm)
-	testvaultsdata = path.Join(fsm.RootData(), testpdm)
+	// testvaults     = path.Join(fsm.Root(), testpdm)
+	// testvaultsdata = path.Join(fsm.RootData(), testpdm)
 
 	file1, file2, file3, file4, file5, file6 string
 )
 
-func TestInitFileSystem(t *testing.T) {
-	userName, err := user.Current()
-	if err != nil {
-		t.Fatalf("user.Current() error: %s", err)
-	}
-	fs, err = fsm.NewFileSystem(testpdm, userName.Username)
-	if err != nil {
-		log.Fatalf("initialization failed, %v", err)
-	}
-}
-
 func TestMkDir(t *testing.T) {
+	dir := path.Join(fsm.Root(), fs.VaultName())
+	os.Chdir(dir)
+	wd, _ := os.Getwd()
+	fmt.Println(wd)
 	if err := fs.Mkdir("Standard Parts"); err != nil {
 		t.Fatalf("Mkdir error message = %s", err)
 	}
@@ -506,14 +500,40 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
+func initVault() {
+	userName, err := user.Current()
+	if err != nil {
+		log.Fatalf("user.Current() error: %s", err)
+	}
+
+	fs, err = fsm.NewFileSystem(testpdm, userName.Username)
+	if err != nil {
+		log.Fatalf("initialization failed, %v", err)
+	}
+
+	testvaults = path.Join(fsm.Root(), testpdm)
+	testvaultsdata = path.Join(fsm.RootData(), testpdm)
+}
+
 // A simple "quick and dirty" remove all files from testvault
 // but it also initializes the startup files again.
 
 func setup() {
 
+	initVault()
+
+	if !util.DirExists(testvaults) {
+		if err := os.Mkdir(testvaults, 0775); err != nil {
+			log.Fatal(err)
+		}
+	}
+
 	// cleanup the testvaults
 
 	err := os.Chmod(testvaults, 0775)
+	util.CheckErr(err)
+
+	err = os.Chmod(fsm.Root(), 0775)
 	util.CheckErr(err)
 
 	err = os.RemoveAll(testvaults)
@@ -617,7 +637,7 @@ func writeIndexNumber() {
 
 	vaultUid := config.GetUid("vault")
 
-	idxfile := path.Join(testvaultsdata, "IndexNumber.txt")
+	idxfile := path.Join(testvaultsdata, "ContainerNumber.txt")
 
 	err := os.WriteFile(idxfile, []byte{'0'}, 0644)
 	util.CheckErr(err)

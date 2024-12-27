@@ -48,7 +48,7 @@ func TestReadConfig(t *testing.T) {
 	t.Run("valid config", func(t *testing.T) {
 		err := ReadConfig()
 		assert.NoError(t, err)
-		assert.Equal(t, "/tmp", Conf.StartupDirectory)
+		assert.Equal(t, "/tmp", Conf.VaultsDirectory)
 		assert.Equal(t, 1001, Conf.Users["testuser"])
 	})
 
@@ -67,9 +67,9 @@ func TestWriteConfig(t *testing.T) {
 	tmpFile := path.Join(tmpDir, "FreePDM.toml")
 
 	Conf = Config{
-		StartupDirectory: "/home/test",
-		LogFile:          "test.log",
-		LogLevel:         "debug",
+		VaultsDirectory: "/home/test",
+		LogFile:         "test.log",
+		LogLevel:        "debug",
 		Users: map[string]int{
 			"testuser": 1001,
 		},
@@ -93,9 +93,9 @@ func TestWriteConfig(t *testing.T) {
 // Test Config.String()
 func TestConfigString(t *testing.T) {
 	Conf = Config{
-		StartupDirectory: "/home/test",
-		LogFile:          "test.log",
-		LogLevel:         "debug",
+		VaultsDirectory: "/home/test",
+		LogFile:         "test.log",
+		LogLevel:        "debug",
 		Users: map[string]int{
 			"testuser": 1001,
 		},

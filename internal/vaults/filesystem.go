@@ -45,13 +45,21 @@ type FileSystem struct {
 
 const (
 	LockedFileCsv = "LockedFiles.csv"
+)
 
-	vaults     = "/samba/vaults"
-	vaultsData = vaults + "/.data"
+var (
+	vaults, vaultsData string // vaults is the root directory, vaultsdata is the administration part
 )
 
 // Constructor
 func NewFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
+	// check about enivronment variable
+	var ok bool
+	vaults, ok = os.LookupEnv("FREEPDM_VAULTS_DIR")
+	if !ok {
+		vaults = "/samba/vaults"
+	}
+	vaultsData = path.Join(vaults, "/.data")
 
 	fs = new(FileSystem)
 

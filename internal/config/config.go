@@ -21,10 +21,10 @@ var (
 )
 
 type Config struct {
-	StartupDirectory string
-	LogFile          string
-	LogLevel         string
-	Users            map[string]int
+	VaultsDirectory string
+	LogFile         string
+	LogLevel        string
+	Users           map[string]int
 }
 
 // GetUid returns the uid for a given user name or -1 if not found.
@@ -48,6 +48,10 @@ func ReadConfig() error {
 
 	if len(Conf.Users) == 0 {
 		log.Printf("Warning: No users found in configuration file %s", configName)
+	}
+
+	if !util.DirExists(Conf.VaultsDirectory) {
+		log.Fatal("vaults directory doesn't exist. See the installation manual")
 	}
 
 	return nil
@@ -80,7 +84,7 @@ func (cfg *Config) String() string {
 func init() {
 	appName, ok := os.LookupEnv("FREEPDM_DIR")
 	if !ok {
-		log.Fatal("The environment FREEPDM_DIR is not set.")
+		log.Fatal("The environment FREEPDM_DIR is not set. Please read the installation page.")
 	}
 	configDir = path.Join(appName, "data")
 	configName = path.Join(configDir, "FreePDM.toml")

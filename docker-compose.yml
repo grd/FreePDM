@@ -12,8 +12,8 @@ services:
     restart: always
     environment:
       - FREEPDM_DIR=${FREEPDM_DIR}
-      - GO_DIRECTORY={FREEPDM_DIR}
-      - GO_WORKDIR={FREEPDM_DIR}/cmd/pdmserver
+      - GO_DIRECTORY=${FREEPDM_DIR}
+      - GO_WORKDIR=${FREEPDM_DIR}/cmd/pdmserver
       - DB_HOST=db
       - DB_PORT=5432
       - DB_USER=yourusername
@@ -67,7 +67,7 @@ services:
 
       SAMBA_VOLUME_CONFIG_vaults: |
         [vaults]
-          path = /samba/vaults
+          path = /home/user/vaults
           valid users = user josh
           guest ok = no
           browseable = yes
@@ -76,7 +76,7 @@ services:
           create mask = 0660
           directory mask = 2770
     volumes:
-      - /samba/vaults:/samba/vaults
+      - /home/user/vaults:/home/user/vaults
 
 # Volumes
 volumes:
