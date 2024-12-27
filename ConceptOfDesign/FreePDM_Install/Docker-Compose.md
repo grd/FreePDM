@@ -18,9 +18,9 @@ sudo systemctl disable smbd
 ```
 Go to the `FreePDM` directory. Such as `cd FreePDM`
 
-In the root you can find two files that are important for Docker: `Dockerfile`, `docker-compose.yml`. You only need to modify the `docker-compose.yml` file.
+In the root you can find two files that are important for Docker: `Dockerfile` and `docker-compose.yml`. You only need to modify the `docker-compose.yml` file.
 
-#### Note
+### Note
 
 You can change the lines:
 ```
@@ -29,9 +29,13 @@ You can change the lines:
 ```
 But you should check *all the lines* inside all `environment:` sections!
 
+#### The samba group
+
 The `TZ` field you can modify to your own TimeZone. 
 
-Right now the lines `- /samba/vaultsdata:/samba/vaultsdata` and `- /samba/vaults:/samba/vaults`inside the volumes sections are *hard coded*. This should of course in the future be modifyable.
+You can change the line `path = /home/user/vaults` to anywhere but you need to think about also need to modify this line:
+`- /home/user/vaults:/home/user/vaults`
+and look at the install page because you also need to modify the samba file.
 
 ### Compile docker-compose
 ```
