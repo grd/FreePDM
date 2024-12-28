@@ -94,7 +94,7 @@ Go to directory FreePDM and type:
 The directory shows the files after you mount the directory, so you can open a file. It is versioned, which means that each file has a version. The benefits of this is that it works roughly the same as ordinary commercial PDM's. The downside is that the paths of the files inside an assembly for instance need to be replaced but that is a normal operation inside a PDM.
 
 #### Start running the terminal application
-- `make pdmterm` should run the termimal program. When you run the command `help` you see all the commands that should run.
+- `make pdmterm` should run the termimal program. When you are running `pdmterm` and you run the command `help` you see all the commands that should run.
 
 #### Client application
 In the future there will be a client application. Right now I am still investigating how to do it right. See https://github.com/grd/FreePDM/discussions/77. It should run with the command `make pmdclient` but right now there is nothing.
