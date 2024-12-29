@@ -17,7 +17,7 @@ A PDM for FreeCAD. A PDM is a Product Data Management system. Per [wikipedia](ht
 ## Background
 The initial idea is to make a Skeleton (model), GUI and an Admin module. The GUI is based on Fyne, and will be a multi platform app.
 
-### Previous attempts made at creating a FOSS PDM
+### Previous attempts made at creating a FOSS PDM / PLM
 * [OpenPLM](https://github.com/cadracks-project/openplm) (abandoned)
 * German users on the FreeCAD forum attempted a PDM (see FreeCAD [forum thread](https://forum.freecad.org/viewtopic.php?f=22&t=63794))
 * [Taack PLM](https://github.com/Taack/taack-plm-freecad)
