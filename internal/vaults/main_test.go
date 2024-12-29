@@ -59,18 +59,32 @@ func TestImportFile(t *testing.T) {
 	fmt.Printf("Vault data dir: %s\n", testvaultsdata)
 	fmt.Printf("User name: %s\n", userName.Name)
 
-	file1 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0001.FCStd"
-	file2 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0002.FCStd"
-	file3 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0003.FCStd"
-	file4 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0004.FCStd"
-	file5 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0005.FCStd"
-	file6 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0006.FCStd"
+	freePdmDir, ok := os.LookupEnv("FREEPDM_DIR")
+	if !ok {
+		log.Fatal("Environment variable 'FREEPDM_DIR' not set. Please look at the install page.")
+	}
+
+	filesDir := path.Join(freePdmDir, "ConceptOfDesign/TestFiles")
+
+	// file1 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0001.FCStd"
+	// file2 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0002.FCStd"
+	// file3 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0003.FCStd"
+	// file4 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0004.FCStd"
+	// file5 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0005.FCStd"
+	// file6 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0006.FCStd"
+
+	file1 = path.Join(filesDir, "0001.FCStd")
+	file2 = path.Join(filesDir, "0002.FCStd")
+	file3 = path.Join(filesDir, "0003.FCStd")
+	file4 = path.Join(filesDir, "0004.FCStd")
+	file5 = path.Join(filesDir, "0005.FCStd")
+	file6 = path.Join(filesDir, "0006.FCStd")
 
 	if err = fs.Chdir("Projects"); err != nil {
 		t.Fatalf("Chdir error message = %s", err)
 	}
 
-	f1, err := fs.ImportUrl("Projects", file1)
+	f1, err := fs.ImportFile("Projects", file1)
 	if err != nil {
 		t.Fatalf("ImportUrl %s error: %s", file1, err)
 	}
@@ -98,7 +112,7 @@ func TestImportFile(t *testing.T) {
 	fs.CheckIn(*f1, ver, "Testf1-3", "Test1-3")
 	checkInStatus(1, 3)
 
-	f2, err := fs.ImportUrl("Projects", file2)
+	f2, err := fs.ImportFile("Projects", file2)
 	if err != nil {
 		t.Fatalf("ImportFile %s error: %s", file1, err)
 	}
@@ -108,7 +122,7 @@ func TestImportFile(t *testing.T) {
 	fs.CheckIn(*f2, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf2-0", "")
 	checkInStatus(2, 0)
 
-	f3, err := fs.ImportUrl("Projects", file3)
+	f3, err := fs.ImportFile("Projects", file3)
 	if err != nil {
 		t.Fatalf("ImportFile %s error: %s", file1, err)
 	}
@@ -128,21 +142,21 @@ func TestImportFile(t *testing.T) {
 		t.Fatalf("Mkdir failed: %v", err)
 	}
 
-	f4, err := fs.ImportUrl("Projects", file4)
+	f4, err := fs.ImportFile("Projects", file4)
 	if err != nil {
 		t.Fatalf("ImportFile %s error: %s", file1, err)
 	}
 	fs.CheckIn(*f4, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf4-0", "Testf4-0")
 	compareFileListLine(4, "4:0004.FCStd::Projects:")
 
-	f5, err := fs.ImportUrl("Projects", file5)
+	f5, err := fs.ImportFile("Projects", file5)
 	if err != nil {
 		t.Fatalf("ImportFile %s error: %s", file1, err)
 	}
 	fs.CheckIn(*f5, fsm.FileVersion{Number: 0, Pretty: "0"}, "Testf5-0", "Testf5-0")
 	compareFileListLine(5, "5:0005.FCStd::Projects:")
 
-	f6, err := fs.ImportUrl("Projects", file6)
+	f6, err := fs.ImportFile("Projects", file6)
 	if err != nil {
 		t.Fatalf("ImportFile %s error: %s", file1, err)
 	}
