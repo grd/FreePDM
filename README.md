@@ -22,6 +22,7 @@ The initial idea is to make a Skeleton (model), GUI and an Admin module. The GUI
 * German users on the FreeCAD forum attempted a PDM (see FreeCAD [forum thread](https://forum.freecad.org/viewtopic.php?f=22&t=63794))
 * [Taack PLM](https://github.com/Taack/taack-plm-freecad)
 * [Ondsel](https://ondsel.com/) A very promising design. Unfortunately it shut down.
+* [NanoPLM](https://github.com/alekssadowski95/nanoPLM)
 
 Relevant:
 * The FreeCAD [Reporting workbench](https://github.com/furti/FreeCAD-Reporting) addon that uses SQL to extract information out of a FreeCAD document.
