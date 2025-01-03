@@ -12,8 +12,11 @@ import (
 )
 
 func main() {
+	// start logging
+	startLogging()
 
-	startLogging() // start logging
+	// Periodically search for new files
+	shared.ImportSharedFiles()
 
 	http.HandleFunc("/command", shared.CommandHandler)
 	log.Println("Server running on :8080")

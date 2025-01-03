@@ -51,16 +51,23 @@ var (
 	vaults, vaultsData string // vaults is the root directory, vaultsdata is the administration part
 )
 
-// Constructor
-func NewFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
+func init() {
 	// check about enivronment variable
 	var ok bool
 	vaults, ok = os.LookupEnv("FREEPDM_VAULTS_DIR")
 	if !ok {
+		fmt.Println("Error: No FREEPDM_VAULTS_DIR environment set. See installation manual.")
 		vaults = "/samba/vaults"
 	}
 	vaultsData = path.Join(vaults, "/.data")
 
+	// check for critical directories
+	util.CriticalDirExist(vaults)
+	util.CriticalDirExist(vaultsData)
+}
+
+// Constructor
+func NewFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
 	fs = new(FileSystem)
 
 	parts := strings.Split(vaultDir, "/")
@@ -210,7 +217,8 @@ func (fs *FileSystem) WriteLockedIndex() error {
 	return nil
 }
 
-// import a file inside the PDM. When you import a file the attributes also gets imported,
+// import a file inside the PDM. The file name needs to be complete.
+// When you import a file the attributes also gets imported,
 // which means uploaded to the server.
 // When you import a file or files you are placing the new file in the directory dstDir.
 // The new file inside the PDM gets a revision number automatically.
