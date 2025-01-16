@@ -4,6 +4,9 @@
 
 </center> 
 
+# State of this project
+ATM only the server is working. There is no GUI yet. I think that one year from now the GUI will be working as expected.
+
 # FreePDM
 
 A PDM for FreeCAD. A PDM is a Product Data Management system. Per [wikipedia](https://en.wikipedia.org/wiki/Product_data_management): 
