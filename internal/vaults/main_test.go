@@ -166,6 +166,40 @@ func TestImportFile(t *testing.T) {
 	os.Chdir("..")
 }
 
+func TestFileAllocation(t *testing.T) {
+	// ordanary test
+	fl, err := fs.Allocate("Projects")
+	if err != nil {
+		t.Fatal("File allocation error")
+	}
+	compareFileListLine(7, "7:.empty_file::Projects:")
+
+	complDstDir := path.Join(fs.VaultDir(), "Projects/7")
+	ef := path.Join(complDstDir, "0", "bla.txt")
+
+	f, err := os.Create(ef)
+	if err != nil { // creating the file
+		t.Fatal(err)
+	}
+	defer f.Close()
+
+	if err = fs.Assign(fl.ContainerNumber, "bla.txt"); err != nil {
+		t.Fatal(err)
+	}
+	compareFileListLine(7, "7:bla.txt:.empty_file:Projects:")
+
+	fl.Name = "bla.txt"
+
+	if err = fs.CheckIn(*fl, fsm.FileVersion{Number: 0, Pretty: "0"}, "", ""); err != nil {
+		t.Fatal(err)
+	}
+
+	// Remove the file
+	if err = fs.FileRemove(fl.ContainerNumber); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestFileRename(t *testing.T) {
 	// userName, err := user.Current()
 	// if err != nil {
@@ -282,19 +316,19 @@ func TestFileCopy(t *testing.T) {
 	if err != nil {
 		t.Fatalf("FileCopy failed: %v", err)
 	}
-	compareFileListLine(7, "7:0011.FCStd::Projects:")
+	compareFileListLine(7, "8:0011.FCStd::Projects:")
 
 	// copy to different dir and new file name
 	if err = fs.FileCopy("0002.FCStd", "../test/0012.FCStd"); err != nil {
 		t.Fatalf("FileCopy %s error: %s", file1, err)
 	}
-	compareFileListLine(8, "8:0012.FCStd::test:")
+	compareFileListLine(8, "9:0012.FCStd::test:")
 
 	// Test for a file copy with only a directory as destination.
 	if err = fs.FileCopy("0002.FCStd", "../test/"); err != nil {
 		t.Fatalf("FileCopy %s error: %s", file1, err)
 	}
-	compareFileListLine(9, "9:0002.FCStd::test:")
+	compareFileListLine(9, "10:0002.FCStd::test:")
 
 	// Test locked file
 	item, err := fs.GetItem("Projects", "0002.FCStd")
@@ -377,10 +411,10 @@ func TestDirectoryRename(t *testing.T) {
 
 	file, err := fs.GetItem("Projects", "0002.FCStd")
 	if err != nil {
-		t.Fatalf("GetItem %s error: %s", file.Name(), err)
+		t.Fatalf("GetItem %s error: %s", file.Name, err)
 	}
 	if err = fs.CheckOut(file, fsm.FileVersion{Number: 0, Pretty: "0"}); err != nil {
-		t.Fatalf("Checkout %s error: %s", file.Name(), err)
+		t.Fatalf("Checkout %s error: %s", file.Name, err)
 	}
 	checkOutStatus(2, 0)
 
@@ -429,48 +463,48 @@ func TestDirectoryCopy(t *testing.T) {
 	if err != nil {
 		t.Fatalf("DirectoryCopy failed: %v", err)
 	}
-	compareFileListLine(10, "10:0012.FCStd::Project5:")
-	compareFileListLine(11, "11:0002.FCStd::Project5:")
+	compareFileListLine(10, "11:0002.FCStd::Project5:")
+	compareFileListLine(11, "12:0012.FCStd::Project5:")
 
 	// Test with data, including an empty sub directory
 	err = fs.DirectoryCopy("Projects", "Project6")
 	if err != nil {
 		t.Fatalf("DirectoryCopy failed: %v", err)
 	}
-	compareFileListLine(12, "12:0001.FCStd::Project6:")
-	compareFileListLine(13, "13:0002.FCStd::Project6:")
-	compareFileListLine(14, "14:0003.FCStd::Project6:")
-	compareFileListLine(15, "15:0004.FCStd::Project6:")
-	compareFileListLine(16, "16:0005.FCStd::Project6:")
-	compareFileListLine(17, "17:0006.FCStd::Project6:")
-	compareFileListLine(18, "18:0011.FCStd::Project6:")
+	compareFileListLine(12, "13:0001.FCStd::Project6:")
+	compareFileListLine(13, "14:0002.FCStd::Project6:")
+	compareFileListLine(14, "15:0003.FCStd::Project6:")
+	compareFileListLine(15, "16:0004.FCStd::Project6:")
+	compareFileListLine(16, "17:0005.FCStd::Project6:")
+	compareFileListLine(17, "18:0006.FCStd::Project6:")
+	compareFileListLine(18, "19:0011.FCStd::Project6:")
 
 	// Test with data, populating test directory
 	err = fs.DirectoryCopy("Project5", "test/Project7")
 	if err != nil {
 		t.Fatalf("DirectoryCopy failed: %v", err)
 	}
-	compareFileListLine(19, "19:0012.FCStd::test/Project7:")
-	compareFileListLine(20, "20:0002.FCStd::test/Project7:")
+	compareFileListLine(19, "20:0002.FCStd::test/Project7:")
+	compareFileListLine(20, "21:0012.FCStd::test/Project7:")
 
 	// Test with data, including sub directories
 	err = fs.DirectoryCopy("test", "Project8")
 	if err != nil {
 		t.Fatalf("DirectoryCopy failed: %v", err)
 	}
-	compareFileListLine(21, "21:0012.FCStd::Project8:")
-	compareFileListLine(22, "22:0002.FCStd::Project8:")
-	compareFileListLine(23, "23:0012.FCStd::Project8/Project7:")
-	compareFileListLine(24, "24:0002.FCStd::Project8/Project7:")
+	compareFileListLine(21, "22:0002.FCStd::Project8:")
+	compareFileListLine(22, "23:0012.FCStd::Project8:")
+	compareFileListLine(23, "24:0002.FCStd::Project8/Project7:")
+	compareFileListLine(24, "25:0012.FCStd::Project8/Project7:")
 
 	// Test with checked-out file
 
 	file, err := fs.GetItem("Project8", "0002.FCStd")
 	if err != nil {
-		t.Fatalf("GetItem %s error: %s", file.Name(), err)
+		t.Fatalf("GetItem %s error: %s", file.Name, err)
 	}
 	if err = fs.CheckOut(file, fsm.FileVersion{Number: 0, Pretty: "0"}); err != nil {
-		t.Fatalf("Checkout %s error: %s", file.Name(), err)
+		t.Fatalf("Checkout %s error: %s", file.Name, err)
 	}
 	checkOutStatus(22, 0)
 

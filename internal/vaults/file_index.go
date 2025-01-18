@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"slices"
 
 	"github.com/grd/FreePDM/internal/util"
 )
@@ -22,11 +23,11 @@ import (
 // * The dir name of the storage. This is an offset of "mainPdmDir".
 // * The previous directory name.
 type FileList struct {
-	containerNumber string
-	fileName        string
-	previousName    string
-	dir             string
-	previousDir     string
+	ContainerNumber string
+	Name            string
+	PreviousName    string
+	Path            string
+	PreviousPath    string
 }
 
 // File Index Files in the root
@@ -82,11 +83,11 @@ func (fi *FileIndex) Read() error {
 		}
 
 		fi.fileList = append(fi.fileList, FileList{
-			containerNumber: record[0],
-			fileName:        record[1],
-			previousName:    record[2],
-			dir:             record[3],
-			previousDir:     record[4],
+			ContainerNumber: record[0],
+			Name:            record[1],
+			PreviousName:    record[2],
+			Path:            record[3],
+			PreviousPath:    record[4],
 		})
 	}
 
@@ -130,11 +131,11 @@ func (fi *FileIndex) Write() error {
 	// Add records from fileList
 	for _, item := range fi.fileList {
 		records = append(records, []string{
-			item.containerNumber,
-			item.fileName,
-			item.previousName,
-			item.dir,
-			item.previousDir,
+			item.ContainerNumber,
+			item.Name,
+			item.PreviousName,
+			item.Path,
+			item.PreviousPath,
 		})
 	}
 
@@ -162,39 +163,6 @@ func (fi *FileIndex) Write() error {
 	return nil
 }
 
-func NewFileList(containerName, file, previousFile, dir, previousDir string) FileList {
-	return FileList{
-		containerNumber: containerName,
-		fileName:        file,
-		previousName:    previousFile,
-		dir:             dir,
-		previousDir:     previousDir}
-}
-
-func (fl FileList) ContainerNumber() string {
-	return fl.containerNumber
-}
-
-func (fl FileList) PathAndContainerNumber() string {
-	return path.Join(fl.Path(), fl.ContainerNumber())
-}
-
-func (fl FileList) Name() string {
-	return fl.fileName
-}
-
-func (fl FileList) PreviousName() string {
-	return fl.previousName
-}
-
-func (fl FileList) Path() string {
-	return fl.dir
-}
-
-func (fl FileList) PreviousPath() string {
-	return fl.previousDir
-}
-
 // Reads the index number and stores it.
 func (fi *FileIndex) getContainerNumber() {
 
@@ -208,7 +176,7 @@ func (fi *FileIndex) getContainerNumber() {
 // Returns the FileList struct from an container number, or an error when not found.
 func (fi *FileIndex) ContainerNumberToFileList(containerNumber string) (FileList, error) {
 	for _, item := range fi.fileList {
-		if containerNumber == item.containerNumber {
+		if containerNumber == item.ContainerNumber {
 			return item, nil
 		}
 	}
@@ -221,7 +189,7 @@ func (fi *FileIndex) ContainerNumberDir(containerNumber string) (string, error) 
 	if err != nil {
 		return "", err
 	}
-	return path.Join(fl.dir, fl.containerNumber), nil
+	return path.Join(fl.Path, fl.ContainerNumber), nil
 }
 
 // Returns the file name of a container number.
@@ -230,7 +198,7 @@ func (fi *FileIndex) ContainerNumberToFileName(containerNumber string) (string, 
 	if err != nil {
 		return "", err
 	}
-	return fl.fileName, nil
+	return fl.Name, nil
 }
 
 // Input parameter is the file name.
@@ -240,7 +208,7 @@ func (fi *FileIndex) FileNameToFileList(dir, fileName string) (FileList, error) 
 		dir = ""
 	}
 	for _, item := range fi.fileList {
-		if dir == item.dir && fileName == item.fileName {
+		if dir == item.Path && fileName == item.Name {
 			return item, nil
 		}
 	}
@@ -254,7 +222,7 @@ func (fi *FileIndex) FileNameToContainerNumber(dir, fileName string) (string, er
 	if err != nil {
 		return "", err
 	}
-	return fl.containerNumber, nil
+	return fl.ContainerNumber, nil
 }
 
 // Increases the container number, that is stored in the file 'IndexNumber.txt'
@@ -299,7 +267,7 @@ func (fi *FileIndex) AddItem(dirName, fileName string) (*FileList, error) {
 		return nil, err
 	}
 
-	fl := FileList{containerNumber: index, fileName: fname, dir: dirName}
+	fl := FileList{ContainerNumber: index, Name: fname, Path: dirName}
 
 	fi.fileList = append(fi.fileList, fl)
 
@@ -320,19 +288,19 @@ func (fi *FileIndex) MoveItem(src FileList, directory string) error {
 	i := -1
 
 	for index, v := range fi.fileList {
-		if src.ContainerNumber() == v.ContainerNumber() {
+		if src.ContainerNumber == v.ContainerNumber {
 			i = index
 			break
 		}
 	}
 
 	if i == -1 {
-		return fmt.Errorf("filename %s is not inside the FileIndex", path.Join(src.Path(), src.Name()))
+		return fmt.Errorf("filename %s is not inside the FileIndex", path.Join(src.Path, src.Name))
 	}
 
 	// Moving the item
-	fi.fileList[i].previousDir = fi.fileList[i].dir
-	fi.fileList[i].dir = directory
+	fi.fileList[i].PreviousPath = fi.fileList[i].Path
+	fi.fileList[i].Path = directory
 
 	if err := fi.Write(); err != nil {
 		return err
@@ -352,7 +320,7 @@ func (fi *FileIndex) renameItem(src FileList, dest string) error {
 	// check whether new name already exist
 
 	for _, v := range fi.fileList {
-		if dest == v.fileName {
+		if dest == v.Name {
 			return fmt.Errorf("duplicate file in index: %s", dest)
 		}
 	}
@@ -362,15 +330,38 @@ func (fi *FileIndex) renameItem(src FileList, dest string) error {
 	var renamefile *FileList
 
 	for index, v := range fi.fileList {
-		if v.ContainerNumber() == src.ContainerNumber() {
+		if v.ContainerNumber == src.ContainerNumber {
 			renamefile = &fi.fileList[index]
-			renamefile.previousName = v.fileName
-			renamefile.fileName = dest
+			renamefile.PreviousName = v.Name
+			renamefile.Name = dest
 			break
 		}
 	}
 
 	// save
+
+	if err := fi.Write(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Removes the container number from the list, or an error.
+func (fi *FileIndex) ContainerNumberRemove(containerNumber string) error {
+	ok := false
+	j := -1
+	for i, item := range fi.fileList {
+		if containerNumber == item.ContainerNumber {
+			ok = true
+			j = i
+		}
+	}
+	if !ok {
+		return fmt.Errorf("container number %s not found in the index", containerNumber)
+	}
+
+	fi.fileList = slices.Delete(fi.fileList, j, j+1)
 
 	if err := fi.Write(); err != nil {
 		return err

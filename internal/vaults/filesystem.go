@@ -33,18 +33,19 @@ type LockedIndex struct {
 
 // File System related Class
 type FileSystem struct {
-	index       FileIndex
-	vaultDir    string
-	dataDir     string
-	vaultUid    int
-	user        string
-	userUid     int
-	lockedCvs   string
-	lockedIndex []LockedIndex
+	index          FileIndex
+	vaultDir       string
+	dataDir        string
+	vaultUid       int
+	user           string
+	userUid        int
+	lockedFilesCvs string
+	lockedIndex    []LockedIndex
 }
 
 const (
 	LockedFileCsv = "LockedFiles.csv"
+	EmptyFile     = ".empty_file"
 )
 
 var (
@@ -101,7 +102,7 @@ func NewFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
 	}
 	fs.index = index
 
-	fs.lockedCvs = path.Join(fs.dataDir, LockedFileCsv)
+	fs.lockedFilesCvs = path.Join(fs.dataDir, LockedFileCsv)
 
 	// retrieve the values
 	if err = fs.ReadLockedIndex(); err != nil {
@@ -124,9 +125,9 @@ func (fs *FileSystem) VaultDir() string {
 // Updates the locked index by reading from the lockedTxt file.
 func (fs *FileSystem) ReadLockedIndex() error {
 
-	buf, err := os.ReadFile(fs.lockedCvs)
+	buf, err := os.ReadFile(fs.lockedFilesCvs)
 	if err != nil {
-		return fmt.Errorf("error reading %s. The error is %w", fs.lockedCvs, err)
+		return fmt.Errorf("error reading %s. The error is %w", fs.lockedFilesCvs, err)
 	}
 
 	r := csv.NewReader(bytes.NewBuffer(buf))
@@ -134,11 +135,11 @@ func (fs *FileSystem) ReadLockedIndex() error {
 
 	records, err := r.ReadAll()
 	if err != nil {
-		return fmt.Errorf("error processing csv file %s", fs.lockedCvs)
+		return fmt.Errorf("error processing csv file %s", fs.lockedFilesCvs)
 	}
 
 	if len(records) == 0 {
-		return fmt.Errorf("too less lines in file %s", fs.lockedCvs)
+		return fmt.Errorf("too less lines in file %s", fs.lockedFilesCvs)
 	}
 
 	records = records[1:]
@@ -170,7 +171,7 @@ func (fs *FileSystem) DataWriteFile(name string, data []byte) error {
 	if err := os.WriteFile(name, data, 0644); err != nil {
 		return fmt.Errorf("error writing %s", name)
 	}
-	if err := os.Chown(fs.lockedCvs, fs.userUid, fs.vaultUid); err != nil {
+	if err := os.Chown(fs.lockedFilesCvs, fs.userUid, fs.vaultUid); err != nil {
 		return fmt.Errorf("error changing ownership %s", name)
 	}
 
@@ -210,7 +211,7 @@ func (fs *FileSystem) WriteLockedIndex() error {
 	err = writer.Error()
 	util.CheckErr(err)
 
-	if err = fs.DataWriteFile(fs.lockedCvs, buffer.Bytes()); err != nil {
+	if err = fs.DataWriteFile(fs.lockedFilesCvs, buffer.Bytes()); err != nil {
 		return err
 	}
 
@@ -222,7 +223,7 @@ func (fs *FileSystem) WriteLockedIndex() error {
 // which means uploaded to the server.
 // When you import a file or files you are placing the new file in the directory dstDir.
 // The new file inside the PDM gets a revision number automatically.
-// The function returns the number of the imported file or an error.
+// The function returns the FileList structure of the imported file or an error.
 func (fs *FileSystem) ImportFile(dstDir, fileName string) (*FileList, error) {
 
 	// check whether the file exist
@@ -263,7 +264,7 @@ func (fs *FileSystem) ImportFile(dstDir, fileName string) (*FileList, error) {
 		return nil, err
 	}
 
-	log.Printf("imported %s into %s with version %d", fileName, fl.fileName, 0)
+	log.Printf("imported %s into %s with version %d", fileName, fl.Name, 0)
 
 	return fl, nil
 }
@@ -351,9 +352,78 @@ func (fs *FileSystem) ImportUrl(dstDir, url string) (*FileList, error) {
 		return nil, err
 	}
 
-	log.Printf("imported %s into %s with version %d", url, fl.fileName, 0)
+	log.Printf("imported %s into %s with version %d", url, fl.Name, 0)
 
 	return fl, nil
+}
+
+// Allocates an empty file container. This can be handy if you want to setup a structure.
+// The new container inside the PDM gets a revision number automatically and is checked out.
+// The function returns the FileList structure of the imported file or an error.
+func (fs *FileSystem) Allocate(dstDir string) (*FileList, error) {
+	file, err := os.CreateTemp("", EmptyFile)
+	if err != nil {
+		return nil, err
+	}
+	if err := file.Close(); err != nil {
+		return nil, err
+	}
+	i := strings.Index(file.Name(), EmptyFile)
+	newfile := file.Name()[0 : i+len(EmptyFile)]
+	if err := os.Rename(file.Name(), newfile); err != nil {
+		return nil, err
+	}
+
+	fl, err := fs.ImportFile(dstDir, newfile)
+	if err != nil {
+		return nil, err
+	}
+
+	return fl, nil
+}
+
+// Assigns the file name to the container.
+// The new container inside the PDM gets a revision number automatically.
+// The function returns the FileList structure of the imported file or an error.
+func (fs *FileSystem) Assign(containerNumber, fileName string) error {
+
+	fl, err := fs.index.ContainerNumberToFileList(containerNumber)
+	if err != nil {
+		return err
+	}
+
+	complDstDir := path.Join(fs.vaultDir, fl.Path, fl.ContainerNumber)
+	complDstFile := path.Join(complDstDir, "0", fileName)
+	ef := path.Join(complDstDir, "0", EmptyFile)
+
+	// check whether the directory exist
+	if !util.DirExists(complDstDir) {
+		return fmt.Errorf("directory %s could not be found", complDstDir)
+	}
+
+	// check whether the file exist
+	if !util.FileExists(complDstFile) {
+		return fmt.Errorf("file %s could not be found", fileName)
+	}
+
+	// check whether the EmptyFile exist
+	if !util.FileExists(ef) {
+		return fmt.Errorf("file %s could not be found", fileName)
+	}
+
+	// rename in the index
+	if err = fs.index.renameItem(fl, fileName); err != nil {
+		return err
+	}
+
+	// remove the empty file
+	if err = os.Remove(ef); err != nil {
+		return err
+	}
+
+	log.Printf("assigned %s into %s", fileName, fl.ContainerNumber)
+
+	return nil
 }
 
 // Generates a new version of a file. Returns the FileVersion and an error.
@@ -361,7 +431,7 @@ func (fs *FileSystem) NewVersion(fl FileList) (FileVersion, error) {
 
 	// Check whether src is locked or not
 
-	if name := fs.IsLockedItem(fl.containerNumber); name != "" {
+	if name := fs.IsLockedItem(fl.ContainerNumber); name != "" {
 		return FileVersion{}, fmt.Errorf("NewVersion error: File %s is checked out by %s", fl, name)
 	}
 
@@ -371,7 +441,7 @@ func (fs *FileSystem) NewVersion(fl FileList) (FileVersion, error) {
 
 	// Checking out the new file so no one else can see it.
 
-	log.Printf("Created version %d of file %s\n", newVersion.Number, fl.fileName)
+	log.Printf("Created version %d of file %s\n", newVersion.Number, fl.Name)
 
 	err := fs.CheckOut(fl, newVersion)
 	util.CheckErr(err)
@@ -538,19 +608,19 @@ func (fs *FileSystem) CheckOut(fl FileList, version FileVersion) error {
 
 	// check whether the itemnr is locked
 
-	if usr := fs.IsLocked(fl.containerNumber, version); usr != "" {
+	if usr := fs.IsLocked(fl.ContainerNumber, version); usr != "" {
 
-		return fmt.Errorf("file %s-%d is locked by user %v", fl.containerNumber, version.Number, usr)
+		return fmt.Errorf("file %s-%d is locked by user %v", fl.ContainerNumber, version.Number, usr)
 
 	} else {
 
-		fs.lockedIndex = append(fs.lockedIndex, LockedIndex{fl.containerNumber, version.Number, fs.user})
+		fs.lockedIndex = append(fs.lockedIndex, LockedIndex{fl.ContainerNumber, version.Number, fs.user})
 
 		if err := fs.WriteLockedIndex(); err != nil {
 			return err
 		}
 
-		log.Printf("Checked out version %d of file %s\n", version.Number, fl.fileName)
+		log.Printf("Checked out version %d of file %s\n", version.Number, fl.Name)
 
 		return nil
 	}
@@ -570,11 +640,11 @@ func (fs *FileSystem) CheckIn(fl FileList, version FileVersion, descr, longdescr
 
 	// check whether the itemnr is locked
 
-	usr := fs.IsLocked(fl.containerNumber, version)
+	usr := fs.IsLocked(fl.ContainerNumber, version)
 
 	if usr != fs.user {
 
-		return fmt.Errorf("file %s-%d is locked by user %s", fl.containerNumber, version.Number, usr)
+		return fmt.Errorf("file %s-%d is locked by user %s", fl.ContainerNumber, version.Number, usr)
 
 	} else {
 
@@ -582,7 +652,7 @@ func (fs *FileSystem) CheckIn(fl FileList, version FileVersion, descr, longdescr
 
 		var nr int
 		for i, y := range fs.lockedIndex {
-			if y.containerNumber == fl.containerNumber && y.version == version.Number {
+			if y.containerNumber == fl.ContainerNumber && y.version == version.Number {
 				nr = i
 			}
 		}
@@ -593,7 +663,7 @@ func (fs *FileSystem) CheckIn(fl FileList, version FileVersion, descr, longdescr
 			return err
 		}
 
-		log.Printf("Checked in version %d of file %s", version.Number, fl.fileName)
+		log.Printf("Checked in version %d of file %s", version.Number, fl.Name)
 
 		return nil
 	}
@@ -651,30 +721,30 @@ func (fs *FileSystem) FileRename(src, dst string) error {
 		return err
 	}
 
-	dstFl := FileList{dir: dstDir, fileName: dstFile, containerNumber: srcFl.ContainerNumber()}
+	dstFl := FileList{Path: dstDir, Name: dstFile, ContainerNumber: srcFl.ContainerNumber}
 
 	// Check whether dst exists
 	if item, err := fs.index.FileNameToFileList(dstDir, dstFile); err == nil {
-		return fmt.Errorf("file %s already exists and is stored in %s", dst, item.ContainerNumber())
+		return fmt.Errorf("file %s already exists and is stored in %s", dst, item.ContainerNumber)
 	}
 
 	// Check for src file is locked
-	if name := fs.IsLockedItem(srcFl.containerNumber); name != "" {
+	if name := fs.IsLockedItem(srcFl.ContainerNumber); name != "" {
 		return fmt.Errorf("file %s is checked out by %s", src, name)
 	}
 
 	// Check whether a src and dst are not the same.
 	// If that is the case then a fileRename is required.
-	if srcFl.Name() != dstFl.Name() {
+	if srcFl.Name != dstFl.Name {
 
 		fd := NewFileDirectory(fs, srcFl)
 
-		if err = fd.fileRename(srcFl.Name(), dstFl.Name()); err != nil {
+		if err = fd.fileRename(srcFl.Name, dstFl.Name); err != nil {
 			return fmt.Errorf("failed to rename file from %s to %s: %w", src, dst, err)
 		}
 
 		// Rename the file in the index
-		if err = fs.index.renameItem(srcFl, dstFl.Name()); err != nil {
+		if err = fs.index.renameItem(srcFl, dstFl.Name); err != nil {
 			return fmt.Errorf("failed to rename item in index: %w", err)
 		}
 	}
@@ -697,15 +767,15 @@ func (fs *FileSystem) FileRename(src, dst string) error {
 	}
 
 	// Logging
-	log.Printf("File %s renamed to %s\n", path.Join(srcFl.Path(), srcFl.Name()), path.Join(dstDir, dstFile))
+	log.Printf("File %s renamed to %s\n", path.Join(srcFl.Path, srcFl.Name), path.Join(dstDir, dstFile))
 
 	return nil
 }
 
 // Moves a file to a different directory.
 func (fs *FileSystem) fileMove(src, dst FileList) error {
-	source := path.Join(src.Path(), src.ContainerNumber())
-	dest := path.Join(dst.Path(), src.ContainerNumber())
+	source := path.Join(src.Path, src.ContainerNumber)
+	dest := path.Join(dst.Path, src.ContainerNumber)
 
 	pwd := fs.Getwd()
 	if err := os.Chdir(fs.vaultDir); err != nil {
@@ -722,7 +792,7 @@ func (fs *FileSystem) fileMove(src, dst FileList) error {
 	}
 
 	// Move file in FileIndex
-	if err := fs.index.MoveItem(src, dst.Path()); err != nil {
+	if err := fs.index.MoveItem(src, dst.Path); err != nil {
 		return fmt.Errorf("failed to move item in index: %w", err)
 	}
 
@@ -780,7 +850,7 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 
 	// Check whether dst exists
 	if item, err := fs.index.FileNameToFileList(dstDir, dstFile); err == nil {
-		return fmt.Errorf("file %s already exists and is stored in %s", dst, item.Path())
+		return fmt.Errorf("file %s already exists and is stored in %s", dst, item.Path)
 	}
 
 	// Check for src file is locked
@@ -789,7 +859,7 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 		return fmt.Errorf("failed to get index for %s: %w", src, err)
 	}
 
-	if name := fs.IsLockedItem(srcFl.containerNumber); name != "" {
+	if name := fs.IsLockedItem(srcFl.ContainerNumber); name != "" {
 		return fmt.Errorf("file %s is checked out by %s", src, name)
 	}
 
@@ -864,7 +934,7 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 	}
 
 	// Logging
-	log.Printf("File %s copied to %s\n", path.Join(srcFl.Path(), srcFl.Name()), path.Join(dstDir, dstFile))
+	log.Printf("File %s copied to %s\n", path.Join(srcFl.Path, srcFl.Name), path.Join(dstDir, dstFile))
 	// log.Printf("File %s copied to %s\n", src, dst)
 
 	return nil
@@ -1160,8 +1230,8 @@ func (fs FileSystem) AbsNormal(absolutePath string) (string, error) {
 // Verifies wether the operation succeeded well. It checks
 // the location and also the entry inside the FileList.
 func (fs FileSystem) Verify(fl FileList) error {
-	pathContainer := path.Join(fs.vaultDir, fl.dir, fl.containerNumber)
-	joinPath := path.Join(fl.dir, fl.fileName)
+	pathContainer := path.Join(fs.vaultDir, fl.Path, fl.ContainerNumber)
+	joinPath := path.Join(fl.Path, fl.Name)
 
 	_, err := os.Stat(pathContainer)
 	if err != nil {
@@ -1169,18 +1239,18 @@ func (fs FileSystem) Verify(fl FileList) error {
 	}
 
 	for _, v := range fs.index.fileList {
-		if fl.containerNumber == v.containerNumber {
-			if strings.Compare(v.fileName, fl.fileName) != 0 {
-				return fmt.Errorf("fileName comparison mismatch %s != %s", v.dir, fl.dir)
+		if fl.ContainerNumber == v.ContainerNumber {
+			if strings.Compare(v.Name, fl.Name) != 0 {
+				return fmt.Errorf("fileName comparison mismatch %s != %s", v.Path, fl.Path)
 			}
-			if strings.Compare(v.previousName, fl.previousName) != 0 {
-				return fmt.Errorf("previousName comparison mismatch %s != %s", v.dir, fl.dir)
+			if strings.Compare(v.PreviousName, fl.PreviousName) != 0 {
+				return fmt.Errorf("previousName comparison mismatch %s != %s", v.Path, fl.Path)
 			}
-			if strings.Compare(v.dir, fl.dir) != 0 {
-				return fmt.Errorf("dir comparison mismatch %s != %s", v.dir, fl.dir)
+			if strings.Compare(v.Path, fl.Path) != 0 {
+				return fmt.Errorf("dir comparison mismatch %s != %s", v.Path, fl.Path)
 			}
-			if strings.Compare(v.previousDir, fl.previousDir) != 0 {
-				return fmt.Errorf("previousDir comparison mismatch %s != %s", v.dir, fl.dir)
+			if strings.Compare(v.PreviousPath, fl.PreviousPath) != 0 {
+				return fmt.Errorf("previousDir comparison mismatch %s != %s", v.Path, fl.Path)
 			}
 
 			// all tests completed. Returning nil
@@ -1189,5 +1259,67 @@ func (fs FileSystem) Verify(fl FileList) error {
 	}
 
 	// Nothing found...
-	return fmt.Errorf("container %s not found", fl.containerNumber)
+	return fmt.Errorf("container %s not found", fl.ContainerNumber)
+}
+
+// Removes the container from disk. Returns nil or an error.
+func (fs *FileSystem) FileRemove(containerNumber string) error {
+	// Check empty string
+	if containerNumber == "" {
+		return errors.New("empty container number")
+	}
+
+	// Check whether dest is a number
+	if !util.IsNumber(containerNumber) {
+		return fmt.Errorf("container numbers are a number, not %s", containerNumber)
+	}
+
+	// Check whether the item exists in the list
+	fl, err := fs.index.ContainerNumberToFileList(containerNumber)
+	if err != nil {
+		return err
+	}
+
+	cmpl := path.Join(fs.vaultDir, fl.Path, fl.ContainerNumber)
+
+	// Check if source directory exists
+	if !util.DirExists(cmpl) {
+		return fmt.Errorf("container directory %s does not exist", containerNumber)
+	}
+
+	// Check if file versions are Checked-Out
+	if user := fs.IsLockedItem(containerNumber); user != "" {
+		return fmt.Errorf("container %s is checked out by %s", containerNumber, user)
+	}
+
+	// Remove from the index
+	if err = fs.index.ContainerNumberRemove(containerNumber); err != nil {
+		return err
+	}
+
+	// Remove the container from disk
+	fd := NewFileDirectory(fs, fl)
+	if err = fd.DeleteAll(); err != nil {
+		return err
+	}
+
+	// Verification
+	// TODO
+
+	// Log the successful move operation
+	log.Printf("Successfully removed container %s", containerNumber)
+
+	return nil
+}
+
+// Removes the container from disk. Returns nil or an error.
+func (fs *FileSystem) FileRemoveItem(containerNumber string, version int16) error {
+	// check, check, check
+	// do, do, do
+	// verify
+
+	// Log the successful move operation
+	log.Printf("Successfully removed item %d from container %s", version, containerNumber)
+
+	return nil
 }

@@ -54,7 +54,7 @@ type FileVersion struct {
 // fileNumber means the file number, which is an int64
 func NewFileDirectory(fsm *FileSystem, fl FileList) FileDirectory {
 	return FileDirectory{fs: fsm, fl: fl,
-		dir: path.Join(fsm.vaultDir, fl.dir, fl.containerNumber)}
+		dir: path.Join(fsm.vaultDir, fl.Path, fl.ContainerNumber)}
 }
 
 // Returns the FileList because this field is unexported
@@ -74,7 +74,7 @@ func (fd *FileDirectory) CreateDirectory() error {
 	fd.writeInitialVersionFile()
 
 	log.Printf("Created file structure %s\n",
-		path.Join(fd.fl.containerNumber, fd.fl.fileName))
+		path.Join(fd.fl.ContainerNumber, fd.fl.Name))
 
 	return nil
 }
@@ -86,7 +86,7 @@ func (fd FileDirectory) ImportNewFile(fname string) error {
 
 	new_version := fd.LatestVersion().Number + 1
 
-	version := fmt.Sprintf("%d", new_version)
+	version := fmt.Sprint(new_version)
 
 	versionDir := path.Join(fd.dir, version)
 
@@ -133,7 +133,7 @@ func (fd FileDirectory) NewVersion() FileVersion {
 	fd.increaseVersionNumber(newVersion.Pretty)
 
 	// generate the new file name
-	fname := path.Join(fd.dir, oldVersion.Pretty, fd.fl.fileName)
+	fname := path.Join(fd.dir, oldVersion.Pretty, fd.fl.Name)
 
 	// create a new version dir
 
@@ -244,7 +244,7 @@ func (fd *FileDirectory) LatestVersion() FileVersion {
 
 	versions, err := fd.AllFileVersions()
 	if err != nil {
-		log.Fatalf("Error reading file %s, version %v", fd.fl.fileName, err)
+		log.Fatalf("Error reading file %s, version %v", fd.fl.Name, err)
 	}
 
 	if len(versions) == 1 {
@@ -292,19 +292,43 @@ func (fd *FileDirectory) AllFileVersions() ([]FileVersion, error) {
 	return ret, nil
 }
 
-// Delete one version, not the file on its own.
-// The stored file should be put in the archive, but not deleted AND
-// also not visible.
-func (fd *FileDirectory) DeleteVersion(item int) {
-	// TODO: How? By giving the directory file mode 0700.
-	// And to set a field inside the database.
-	// User Admin should be able to undo this action.
+// Delete all versions and files of the container from disk.
+// Returns nil or an error.
+func (fd *FileDirectory) DeleteAll() error {
+	// Get all file versions
+	versions, err := fd.AllFileVersions()
+	if err != nil {
+		return err
+	}
+
+	// Put 0777 for the main directory
+	if err := os.Chmod(fd.dir, 0777); err != nil {
+		return err
+	}
+
+	// Put 0777 for all file version directories
+	for _, item := range versions {
+		s := path.Join(fd.dir, fmt.Sprint(item.Number))
+		if err := os.Chmod(s, 0777); err != nil {
+			return err
+		}
+	}
+
+	// Remove All
+	if err := os.RemoveAll(fd.dir); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-// Restore one version.
-// Also restore the item from the filesystem indexes.
-func (fd *FileDirectory) Restoreversion(item int) {
-	// TODO: Implement this. Undo the function DeleteVersion().
+// TODO: How?
+// Delete one version of the container.
+// Returns nil or an error.
+func (fd *FileDirectory) DeleteVersion(item int16) error {
+	// Check
+	// Do
+	return nil
 }
 
 // Opens the latest item for editing the SMB mount.
@@ -334,7 +358,7 @@ func (fd *FileDirectory) OpenItemVersion(version FileVersion) {
 	util.CheckErr(err)
 
 	// And that guy has filemode 0644 for the file itself.
-	file := path.Join(dirVersion, fd.fl.fileName)
+	file := path.Join(dirVersion, fd.fl.Name)
 	err = os.Chmod(file, 0644)
 	util.CheckErr(err)
 }
@@ -351,7 +375,7 @@ func (fd *FileDirectory) CloseItemVersion(version FileVersion) {
 	util.CheckErr(err)
 
 	// And the file can't be edited anymore with filemode 0444.
-	file := path.Join(dirVersion, fd.fl.fileName)
+	file := path.Join(dirVersion, fd.fl.Name)
 	err = os.Chmod(file, 0444)
 	util.CheckErr(err)
 }
