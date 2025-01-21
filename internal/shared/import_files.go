@@ -4,6 +4,9 @@
 
 package shared
 
+// This allows automatic import of files from the file share
+// with drag-and-drop.
+
 import (
 	"fmt"
 	"io/fs"
@@ -101,8 +104,7 @@ func importAndDeleteFile(ppath string) error {
 		d := strings.Split(dir, "/")
 		if len(d) > 0 {
 			vault := d[0]
-			rest := dir[len(vault)+1:] // remove first '/'
-			rest = rest[:len(rest)-1]  // and last '/'
+			rest := strings.Trim(vault, "/") // remove first and last '/'
 
 			// fmt.Printf("vault = %s, file =%s, rest=%s\n", vault, ppath, rest)
 			v, err := vaults.NewFileSystem(vault, user)
