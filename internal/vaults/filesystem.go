@@ -53,12 +53,17 @@ var (
 )
 
 func init() {
-	// check about enivronment variable
-	var ok bool
-	vaults, ok = os.LookupEnv("FREEPDM_VAULTS_DIR")
-	if !ok {
-		fmt.Println("Error: No FREEPDM_VAULTS_DIR environment set. See installation manual.")
-		vaults = "/samba/vaults"
+	// check for config file
+	vaults = config.Conf.VaultsDirectory
+
+	// or check of enivronment variable
+	if vaults == "" {
+		var ok bool
+		vaults, ok = os.LookupEnv("FREEPDM_VAULTS_DIR")
+		if !ok {
+			fmt.Println("Error: No FREEPDM_VAULTS_DIR environment set. See installation manual.")
+			vaults = "/samba/vaults"
+		}
 	}
 	vaultsData = path.Join(vaults, "/.data")
 
