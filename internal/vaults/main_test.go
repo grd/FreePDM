@@ -419,7 +419,8 @@ func TestDirectoryRename(t *testing.T) {
 	checkOutStatus(2, 0)
 
 	err = fs.DirectoryRename("Projects", "Projects4")
-	if err == nil || err.Error() != "check out errors: [0002.FCStd is checked out by user]" {
+	user, _ := user.Current()
+	if err == nil || err != fmt.Errorf("check out errors: [0002.FCStd is checked out by %s]", user) {
 		t.Fatalf("Expected one file checked out, got: %v", err)
 	}
 
