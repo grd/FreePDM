@@ -286,7 +286,8 @@ func TestFileRename(t *testing.T) {
 	checkOutStatus(1, 4)
 	err = fs.FileRename("0001.FCStd", "0007.FCStd")
 	user, _ := user.Current()
-	if err == nil || err != fmt.Errorf("file 0001.FCStd is checked out by %s", user) {
+	if err == nil || err.Error() != fmt.Sprintf("file 0001.FCStd is checked out by %s", user.Username) {
+
 		t.Fatalf("Expected lock error, got: %v", err)
 	}
 	fs.CheckIn(f7.FileList(), ver, "Test", "Test")
@@ -344,7 +345,7 @@ func TestFileCopy(t *testing.T) {
 	checkOutStatus(2, 1)
 	err = fs.FileCopy("0002.FCStd", "0013.FCStd")
 	user, _ := user.Current()
-	if err == nil || err != fmt.Errorf("file 0002.FCStd is checked out by %s", user) {
+	if err == nil || err.Error() != fmt.Sprintf("file 0002.FCStd is checked out by %s", user.Username) {
 		t.Fatalf("Expected lock error, got: %v", err)
 	}
 	fs.CheckIn(f2.FileList(), ver, "Test", "Test")
@@ -422,7 +423,7 @@ func TestDirectoryRename(t *testing.T) {
 
 	err = fs.DirectoryRename("Projects", "Projects4")
 	user, _ := user.Current()
-	if err == nil || err != fmt.Errorf("check out errors: [0002.FCStd is checked out by %s]", user) {
+	if err == nil || err.Error() != fmt.Sprintf("check out errors: [0002.FCStd is checked out by %s]", user.Username) {
 		t.Fatalf("Expected one file checked out, got: %v", err)
 	}
 
@@ -513,7 +514,7 @@ func TestDirectoryCopy(t *testing.T) {
 
 	user, _ := user.Current()
 	err = fs.DirectoryCopy("Project8", "Project9")
-	if err == nil || err != fmt.Errorf("check out errors: [0002.FCStd is checked out by %s]", user) {
+	if err == nil || err.Error() != fmt.Sprintf("check out errors: [0002.FCStd is checked out by %s]", user.Username) {
 		t.Fatalf("Expected one file checked out, got: %v", err)
 	}
 
