@@ -4,6 +4,8 @@
 
 ### [Install Docker-Compose](Docker-Compose.md)
 
+## [Install External Server](ExternalServer.md)
+
 ### [Setup Virtual Server](SetupVirtualServer.md)
 
 ### [Code snippets](Commands.md)
