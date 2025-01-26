@@ -20,9 +20,9 @@ The vaults is a major part of FreePDM. It is primarily a storage of files that a
 - [ ] Reporting with json (dir list, properties, etc.)
 - [x] Logging the activities.
 - [x] Checks about checkout during file operations (rename, copy) and new versions.
-- [ ] Make it working for multi-user, multi-vaults
+- [x] Make it working for multi-user, multi-vaults
 - [ ] Checks about CheckIn comments (descr and longDescr)
 - [ ] Checks about the VER.txt in file versions
 - [ ] Change directory and file structure to Read Only for security. That way no accidental issues can happen.
-- [ ] Move the vaultsdata dir to the root of the vault dir under `.data` and the files are read only.
+- [x] Move the vaultsdata dir to the root of the vault dir under `.data` and the files are read only.
 - [ ] Set the owner of the vault root dir to `root:sambashare`. This means that some apps needs `sudo`.
