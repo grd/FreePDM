@@ -64,6 +64,11 @@ func processFiles(vaultDir string) error {
 			return fs.SkipDir
 		}
 
+		// Excluse Trash directory
+		// if trashDir(path) {
+		// 	return fs.SkipDir
+		// }
+
 		// Exclude the containers that exist
 		if skipContainer(d.Name()) {
 			return fs.SkipDir
@@ -78,6 +83,18 @@ func processFiles(vaultDir string) error {
 		return nil
 	})
 }
+
+// // skip trash director[y|ies]
+// func trashDir(path string) bool {
+// 	if len(path) < 6 {
+// 		return false
+// 	}
+// 	if path[0:5] == ".Trash" {
+// 		return true
+// 	} else {
+// 		return false
+// 	}
+// }
 
 // skipContainer checks wheter a file is a container
 func skipContainer(file string) bool {
@@ -104,7 +121,9 @@ func importAndDeleteFile(ppath string) error {
 		d := strings.Split(dir, "/")
 		if len(d) > 0 {
 			vault := d[0]
-			rest := strings.Trim(vault, "/") // remove first and last '/'
+
+			rest := dir[len(vault)+1:]     // maybe this can crash
+			rest = strings.Trim(rest, "/") // remove first and last '/'
 
 			// fmt.Printf("vault = %s, file =%s, rest=%s\n", vault, ppath, rest)
 			v, err := vaults.NewFileSystem(vault, user)
