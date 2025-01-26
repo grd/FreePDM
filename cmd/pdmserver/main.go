@@ -8,12 +8,13 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/grd/FreePDM/internal/logs"
 	"github.com/grd/FreePDM/internal/shared"
 )
 
 func main() {
 	// start logging
-	startLogging()
+	logs.StartLogging()
 
 	// Periodically search for new files
 	shared.ImportSharedFiles()

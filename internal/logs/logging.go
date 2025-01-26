@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package main
+package logs
 
 import (
 	"fmt"
@@ -20,8 +20,8 @@ var (
 	freePdmDir string
 )
 
-// startLogging initializes and manages the log file
-func startLogging() {
+// StartLogging initializes and manages the log file
+func StartLogging() {
 	// Create the first log file based on the current date
 	createLogFile()
 

@@ -16,6 +16,11 @@ import (
 
 // This is a helper module of arbitrary functions.
 
+// Convert a string to a slice of strings
+func StringToSlice(input string) []string {
+	return []string{input}
+}
+
 // today returns the date of today in the format "YYYY-MM-DD".
 func Today() string {
 	t := time.Now().String()
