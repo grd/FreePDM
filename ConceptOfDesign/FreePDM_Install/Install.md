@@ -12,7 +12,7 @@ When you use a server from an external party that use a VPN such as NordVPN then
 #### Setting up some environment variables
 - Inside the file `.bashrc` (if you have bash), place two lines at the end:
 - `export GOPATH=/home/$user` where $user is the user name.
-- `export FREEPDM_DIR=/home/$user/FreePDM` (nto necessary when you write in the /data/FreePDM.toml the line vaultsData = "[data dir]/vaults")
+- `export FREEPDM_DIR=/home/$user/FreePDM`
 - To reload the `.bashrc` file you can run `source ~/.bashrc`.
 
 #### Install Go

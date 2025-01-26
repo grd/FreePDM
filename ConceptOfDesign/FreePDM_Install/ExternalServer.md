@@ -1,10 +1,8 @@
 # FreePDM Documentation
-The specs for a file server are minimal (a RPI4/5 should work but is not tested yet). At this moment, I am using a desktop and it works for me. If there are multiple users, then consider using a [proper server](https://github.com/grd/FreePDM/blob/main/ConceptOfDesign/FreePDM_Install/Docker-Compose.md).
-
-## How to install FreePDM on an external VPN
 
 FreePDM is a PDM that works external to FreeCAD. It can interoperate with FreeCAD files. The server and client is written in Go (https://golang.org), because of simplicity and speed.
 
+## How to install FreePDM on an external VPN
 This is about installing FreePDM in an external VPN. It works perfect with for instance NordVPN.
 The consequences of using an external VPN is that you can't use Samba (SMB), because SMB only works in a LAN, so you have to use SSH with SSHFS. The benefit is that the install becomes a lot easier and it works more secure and over the internet instead of your LAN.
 
@@ -13,7 +11,7 @@ The consequences of using an external VPN is that you can't use Samba (SMB), bec
 #### Setting up some environment variables
 - Inside the file `.bashrc` (if you have bash), place two lines at the end:
 - `export GOPATH=/home/$user` where $user is the user name.
-- `export FREEPDM_DIR=/home/$user/FreePDM` (nto necessary when you write in the /data/FreePDM.toml the line vaultsData = "[data dir]/vaults")
+- `export FREEPDM_DIR=/home/$user/FreePDM`
 - To reload the `.bashrc` file you can run `source ~/.bashrc`.
 
 #### Install Go
