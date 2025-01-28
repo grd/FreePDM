@@ -9,7 +9,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/grd/FreePDM/internal/config"
+	"github.com/grd/FreePDM/internal/server/config"
 	"github.com/grd/FreePDM/internal/util"
 )
 

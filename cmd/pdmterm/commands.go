@@ -75,6 +75,13 @@ func handleCommand(input string, directory string) {
 			return
 		}
 		handleCd(args[0])
+	case "allocate": // returns the ID
+		handleAllocate()
+	// Not yet...
+	// case "assign":
+	// 	handleAssign()
+	// case "rm":
+	// 	handleFileRemove()
 	case "exit", "quit":
 		fmt.Println(Cyan + "Exiting the shell." + Reset)
 		os.Exit(0)
@@ -98,10 +105,12 @@ Commands available:
 - mkdir <dir>                : Create a directory
 - rmdir <dir>                : Remove an empty directory
 - import <file>              : Import a file in the current directory of the vault
-- rm <file>                  : Removes a file (not yet implemented)
+- allocate                   : Allocates a container to store a file from FreeCAD
+- assign <cont nr> <file>    : Assignes the file to the container number
+- rm <file>                  : Removes a file (container) from the current directory
 - mv <src> <dst>             : Move a file. Move file between vaults is not yet available
-- rename <src> <dst>         : Rename a file
-- copy <src> <dst>           : Copy a file
+- rename <src> <dst>         : Rename a file. Rename file between vaults is not yet available
+- copy <src> <dst>           : Copy a file. Copy file between vaults is not yet available
 - versions <file>            : Returns the number of versions
 - newversion <file>          : Creates a new version of a file and check out
 - checkout <file> <version>  : Checks out a file. No-one but you can modify it
@@ -214,6 +223,32 @@ func handleCd(target string) {
 // handlePwd prints the current working directory.
 func handlePwd() {
 	fmt.Println("Current directory:", currentDir)
+}
+
+// allocates a new container inside the current vault and path.
+// Returns the container number.
+func handleAllocate() {
+	if currentVault == "" {
+		fmt.Println(Red + "First set the vault with the command vault" + Reset)
+		return
+	}
+
+	resp, err := sendCommand("allocate", map[string]string{
+		"vault": currentVault,
+		"path":  currentDir,
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+	if resp.Error == "Failed to allocate a container" {
+		fmt.Println(Red + resp.Error + Reset)
+	}
+
+	if len(resp.Data) > 0 {
+		fmt.Printf(Cyan+"Container number = %s\n"+Reset, resp.Data[0])
+	} else {
+		fmt.Println(Red + "A serious error..." + Reset)
+	}
 }
 
 func newPrompt() {

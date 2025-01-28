@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/grd/FreePDM/internal/util"
 	fsm "github.com/grd/FreePDM/internal/vaults"
 )
 
@@ -40,6 +41,12 @@ func CommandHandler(w http.ResponseWriter, r *http.Request) {
 			writeJsonError(w, "Missing parameters", http.StatusBadRequest)
 		}
 		handleLs(w, req.User, req.Vault, path)
+	case "allocate":
+		path, ok := req.Params["path"]
+		if !ok {
+			writeJsonError(w, "Missing parameters", http.StatusBadRequest)
+		}
+		handleAllocate(w, req.User, req.Vault, path)
 
 	// case "rename":
 	// 	// Get 'vault', 'src' en 'dst' out of params map
@@ -127,6 +134,27 @@ func handleLs(w http.ResponseWriter, user, vault, path string) {
 		}
 		resp = CommandResponse{
 			Data: files,
+		}
+	}
+	json.NewEncoder(w).Encode(resp)
+}
+
+func handleAllocate(w http.ResponseWriter, user, vault, path string) {
+	var resp CommandResponse
+
+	fs, err := fsm.NewFileSystem(vault, user)
+	if err != nil {
+		log.Fatalf("unable to access the filesystem : %s", err)
+	}
+
+	bla, err := fs.Allocate(path)
+	if err != nil {
+		resp = CommandResponse{
+			Error: "Failed to allocate a container",
+		}
+	} else {
+		resp = CommandResponse{
+			Data: util.StringToSlice(bla.ContainerNumber),
 		}
 	}
 	json.NewEncoder(w).Encode(resp)
