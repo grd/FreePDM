@@ -1,4 +1,8 @@
-package main
+// Copyright 2023 The FreePDM team. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
+package client
 
 import (
 	"fmt"
@@ -7,7 +11,7 @@ import (
 )
 
 // tree recursively prints the directory structure starting from root
-func tree(path string, indent string) error {
+func Tree(path string, indent string) error {
 	entries, err := os.ReadDir(path) // ReadDir returns a slice of fs.DirEntry
 	if err != nil {
 		return err
@@ -26,7 +30,7 @@ func tree(path string, indent string) error {
 		fmt.Println(indent + prefix + entry.Name())
 
 		if entry.IsDir() {
-			err := tree(filepath.Join(path, entry.Name()), nextIndent)
+			err := Tree(filepath.Join(path, entry.Name()), nextIndent)
 			if err != nil {
 				return err
 			}

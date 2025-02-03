@@ -76,14 +76,15 @@ func init() {
 func NewFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
 	fs = new(FileSystem)
 
+	// Check whether vaults directory contains slaches
 	parts := strings.Split(vaultDir, "/")
-	if len(parts) == 1 {
-		fs.vaultDir = path.Join(vaults, vaultDir)
-		fs.dataDir = path.Join(vaultsData, vaultDir)
-	} else {
+	if len(parts) != 1 {
 		log.Fatalf("multi-level vaultDir parameter: %s", vaultDir)
 	}
 
+	// Some settings
+	fs.vaultDir = path.Join(vaults, vaultDir)
+	fs.dataDir = path.Join(vaultsData, vaultDir)
 	fs.user = userName
 
 	// check whether the critical directories exist.
@@ -1195,6 +1196,7 @@ func ListVaults() ([]string, error) {
 	return strList, nil
 }
 
+// Returns true or false
 func (fs FileSystem) DirExists(dir string) bool {
 	str := path.Join(fs.vaultDir, dir)
 	return util.DirExists(str)

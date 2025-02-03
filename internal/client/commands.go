@@ -2,11 +2,12 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package main
+package client
 
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 )
@@ -77,9 +78,10 @@ func handleCommand(input string, directory string) {
 		handleCd(args[0])
 	case "allocate": // returns the ID
 		handleAllocate()
-	// Not yet...
-	// case "assign":
-	// 	handleAssign()
+	case "assign":
+		id := args[0]
+		file := args[1]
+		handleAssign(id, file)
 	// case "rm":
 	// 	handleFileRemove()
 	case "exit", "quit":
@@ -125,7 +127,7 @@ Commands available:
 func handleList() {
 	resp, err := sendCommand("list", nil)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	if resp.Error == "Failed to show the list of vaults" {
 		fmt.Println(Red + resp.Error + Reset)
@@ -198,7 +200,7 @@ func handleCd(target string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	if resp.Error != "" {
+	if resp.Error != "Directory "+target+" exists" {
 		fmt.Printf(Red+"directory %s does not exist\n"+Reset, target)
 		return
 	}
@@ -210,14 +212,9 @@ func handleCd(target string) {
 				target = "/"
 			}
 		}
-	} else { // Subdirectory
-		if target == "/" {
-			target += target
-		} else {
-			target += "/" + target
-		}
 	}
 	fmt.Printf(Cyan+"Changed directory to: %s\n", target)
+	currentDir = target
 }
 
 // handlePwd prints the current working directory.
@@ -251,7 +248,12 @@ func handleAllocate() {
 	}
 }
 
-func newPrompt() {
+// assigns a file to a container id
+func handleAssign(id, file string) {
+
+}
+
+func NewPrompt() {
 	user = os.Getenv("USER")
 
 	fmt.Println("Welcome to the FreePDM CLI!")

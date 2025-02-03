@@ -1,5 +1,5 @@
 # FreePDM Documentation
-Docker-Compose is a very interesting platform because of scaleability and security. Docker is light-weight compared to Virtual Machines and requires a lot less maintenance. You can install Docker on the majority of platforms. Docker is some sort of recipe with components that have the right version, like a script and it compiles pretty fast to an immutable container. The trade-off is that when you are interested in Docker you need to know a lot of Docker. That is why we put docker files inside the FreePDM root directory.
+Docker-Compose is a very interesting platform because of scaleability and security. Docker is light-weight compared to Virtual Machines and requires a lot less maintenance. You can install Docker on the majority of platforms. Docker is some sort of recipe with components that have the right version, like a script and it compiles pretty fast to an immutable container. Another benefit is that you can put the option to automatically reload a crashed container. The trade-off is that when you are interested in Docker you need to know a lot of Docker. That is why we put docker files inside the FreePDM root directory.
 
 ## Install
 

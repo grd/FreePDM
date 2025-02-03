@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package shared
+package server
 
 import (
 	"encoding/json"
@@ -10,12 +10,13 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/grd/FreePDM/internal/shared"
 	"github.com/grd/FreePDM/internal/util"
 	fsm "github.com/grd/FreePDM/internal/vaults"
 )
 
 func CommandHandler(w http.ResponseWriter, r *http.Request) {
-	var req CommandRequest
+	var req shared.CommandRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJsonError(w, "Invalid JSON", http.StatusBadRequest)
 		return
@@ -65,10 +66,10 @@ func writeJsonError(w http.ResponseWriter, message string, statusCode int) {
 }
 
 func handleRoot(w http.ResponseWriter) {
-	var resp CommandResponse
+	var resp shared.CommandResponse
 
 	root := fsm.Root()
-	resp = CommandResponse{
+	resp = shared.CommandResponse{
 		Data: []string{root},
 	}
 	json.NewEncoder(w).Encode(resp)
@@ -76,44 +77,43 @@ func handleRoot(w http.ResponseWriter) {
 
 // Shows the existing vaults
 func handleList(w http.ResponseWriter) {
-	var resp CommandResponse
+	var resp shared.CommandResponse
 
 	list, err := fsm.ListVaults()
 	if err != nil {
-		resp = CommandResponse{
+		resp = shared.CommandResponse{
 			Error: "Failed to show the list of vaults",
 		}
 	} else {
-		resp = CommandResponse{
+		resp = shared.CommandResponse{
 			Data: list,
 		}
 	}
 	json.NewEncoder(w).Encode(resp)
 }
 
-func handleDirexists(w http.ResponseWriter, user, vault, path string) {
-	var resp CommandResponse
+func handleDirexists(w http.ResponseWriter, user, vault, dir string) {
+	var resp shared.CommandResponse
 
 	fs, err := fsm.NewFileSystem(vault, user)
 	if err != nil {
 		log.Fatalf("unable to access the filesystem : %s", err)
 	}
 
-	ok := fs.DirExists(path)
-	if !ok {
-		resp = CommandResponse{
-			Error: "Directory " + path + " does not exists",
+	if ok := fs.DirExists(dir); !ok {
+		resp = shared.CommandResponse{
+			Error: "Directory " + dir + " does not exists",
 		}
 	} else {
-		resp = CommandResponse{
-			Error: "Directory " + path + " exists",
+		resp = shared.CommandResponse{
+			Error: "Directory " + dir + " exists",
 		}
 	}
 	json.NewEncoder(w).Encode(resp)
 }
 
 func handleLs(w http.ResponseWriter, user, vault, path string) {
-	var resp CommandResponse
+	var resp shared.CommandResponse
 
 	fs, err := fsm.NewFileSystem(vault, user)
 	if err != nil {
@@ -124,7 +124,7 @@ func handleLs(w http.ResponseWriter, user, vault, path string) {
 
 	list, err := fs.ListDir(path)
 	if err != nil {
-		resp = CommandResponse{
+		resp = shared.CommandResponse{
 			Error: "Failed to show directory",
 		}
 	} else {
@@ -132,7 +132,7 @@ func handleLs(w http.ResponseWriter, user, vault, path string) {
 		for i, item := range list {
 			files[i] = item.Name()
 		}
-		resp = CommandResponse{
+		resp = shared.CommandResponse{
 			Data: files,
 		}
 	}
@@ -140,7 +140,7 @@ func handleLs(w http.ResponseWriter, user, vault, path string) {
 }
 
 func handleAllocate(w http.ResponseWriter, user, vault, path string) {
-	var resp CommandResponse
+	var resp shared.CommandResponse
 
 	fs, err := fsm.NewFileSystem(vault, user)
 	if err != nil {
@@ -149,11 +149,11 @@ func handleAllocate(w http.ResponseWriter, user, vault, path string) {
 
 	bla, err := fs.Allocate(path)
 	if err != nil {
-		resp = CommandResponse{
+		resp = shared.CommandResponse{
 			Error: "Failed to allocate a container",
 		}
 	} else {
-		resp = CommandResponse{
+		resp = shared.CommandResponse{
 			Data: util.StringToSlice(bla.ContainerNumber),
 		}
 	}
@@ -164,7 +164,7 @@ func handleAllocate(w http.ResponseWriter, user, vault, path string) {
 
 // 	// Rename the file
 // 	if err := os.Rename(src, dst); err != nil {
-// 		resp := CommandResponse{
+// 		resp := shared.CommandResponse{
 // 			Status:  "error",
 // 			Message: "Failed to rename file",
 // 			Data:    map[string]interface{}{"error": err.Error()},
@@ -174,7 +174,7 @@ func handleAllocate(w http.ResponseWriter, user, vault, path string) {
 // 	}
 
 // 	// Send success response
-// 	resp := CommandResponse{
+// 	resp := shared.CommandResponse{
 // 		Status:  "success",
 // 		Message: "File renamed successfully",
 // 	}
