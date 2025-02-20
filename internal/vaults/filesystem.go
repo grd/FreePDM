@@ -433,24 +433,28 @@ func (fs *FileSystem) Assign(containerNumber, fileName string) error {
 }
 
 // Generates a new version of a file. Returns the FileVersion and an error.
-func (fs *FileSystem) NewVersion(fl FileList) (FileVersion, error) {
+func (fs *FileSystem) NewVersion(fl FileList) (*FileVersion, error) {
 
 	// Check whether src is locked or not
 
 	if name := fs.IsLockedItem(fl.ContainerNumber); name != "" {
-		return FileVersion{}, fmt.Errorf("NewVersion error: File %s is checked out by %s", fl, name)
+		return &FileVersion{}, fmt.Errorf("NewVersion error: File %s is checked out by %s", fl, name)
 	}
 
 	fd := NewFileDirectory(fs, fl)
 
-	newVersion := fd.NewVersion()
+	newVersion, err := fd.NewVersion()
+	if err != nil {
+		return nil, err
+	}
 
 	// Checking out the new file so no one else can see it.
 
 	log.Printf("Created version %d of file %s\n", newVersion.Number, fl.Name)
 
-	err := fs.CheckOut(fl, newVersion)
-	util.CheckErr(err)
+	if err = fs.CheckOut(fl, *newVersion); err != nil {
+		return nil, err
+	}
 
 	return newVersion, nil
 }
@@ -1319,14 +1323,88 @@ func (fs *FileSystem) FileRemove(containerNumber string) error {
 	return nil
 }
 
-// Removes the container from disk. Returns nil or an error.
-func (fs *FileSystem) FileRemoveItem(containerNumber string, version int16) error {
+// Removes the version of a container from disk. Returns nil or an error.
+func (fs *FileSystem) FileRemoveVersion(containerNumber string, version int16) error {
 	// check, check, check
 	// do, do, do
 	// verify
 
 	// Log the successful move operation
 	log.Printf("Successfully removed item %d from container %s", version, containerNumber)
+
+	return nil
+}
+
+// Removes all files and directories from the vault.
+// Be careful. Files can't be recovered.
+func RemoveAll(vault string) error {
+	// Check wheter the vault has '/'
+	if strings.ContainsRune(vault, '/') {
+		return errors.New("invalid vault")
+	}
+	vd := path.Join(Root(), vault)      // vault directory
+	vdd := path.Join(RootData(), vault) // vault data directory
+
+	// Check wether there is a vault
+	if !util.DirExists(vd) {
+		return fmt.Errorf("vault %s does not exist", vault)
+	}
+
+	// Setting the Root directoriy to 0777
+	if err := os.Chmod(Root(), 0777); err != nil {
+		return err
+	}
+
+	// Setting the vault directoriy to 0777
+	if err := os.Chmod(vd, 0777); err != nil {
+		return err
+	}
+
+	// Setting all directories of the root data dir to 0777
+	if err := os.Chmod(RootData(), 0777); err != nil {
+		return err
+	}
+
+	// Setting all directories of the vault data dir to 0777
+	if err := os.Chmod(vdd, 0777); err != nil {
+		return err
+	}
+
+	// Setting all directories of the vault to 0777
+	err := filepath.WalkDir(vd, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return fmt.Errorf("error accessing path %s: %v", path, err)
+		}
+		if d.IsDir() {
+			if err := os.Chmod(path, 0777); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	// Remove the vault
+	if err := os.RemoveAll(vd); err != nil {
+		return err
+	}
+
+	// Remove the vault data dir
+	if err := os.RemoveAll(vdd); err != nil {
+		return err
+	}
+
+	// Setting all directories of the root data dir to 0555
+	if err := os.Chmod(RootData(), 0555); err != nil {
+		return err
+	}
+
+	// Setting all directories of the root dir to 0555
+	if err := os.Chmod(Root(), 0555); err != nil {
+		return err
+	}
 
 	return nil
 }

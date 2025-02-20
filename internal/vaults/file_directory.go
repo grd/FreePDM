@@ -14,6 +14,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"sync"
 
 	"github.com/grd/FreePDM/internal/util"
 )
@@ -49,12 +50,12 @@ type FileVersion struct {
 }
 
 // Initializes the FileDirectory struct. Parameters:
-// fsm is necessary because of this struct
+// fs is necessary because of this struct
 // containerNumber means the directory in where to put the file structure
 // fileNumber means the file number, which is an int64
-func NewFileDirectory(fsm *FileSystem, fl FileList) FileDirectory {
-	return FileDirectory{fs: fsm, fl: fl,
-		dir: path.Join(fsm.vaultDir, fl.Path, fl.ContainerNumber)}
+func NewFileDirectory(fs *FileSystem, fl FileList) FileDirectory {
+	return FileDirectory{fs: fs, fl: fl,
+		dir: path.Join(fs.vaultDir, fl.Path, fl.ContainerNumber)}
 }
 
 // Returns the FileList because this field is unexported
@@ -83,17 +84,13 @@ func (fd *FileDirectory) CreateDirectory() error {
 func (fd FileDirectory) ImportNewFile(fname string) error {
 
 	// create a new version string
-
 	new_version := fd.LatestVersion().Number + 1
-
 	version := fmt.Sprint(new_version)
-
 	versionDir := path.Join(fd.dir, version)
 
 	fd.increaseVersionNumber(version)
 
 	// create a new version dir
-
 	if err := os.Mkdir(versionDir, 0777); err != nil {
 		return err
 	}
@@ -102,17 +99,13 @@ func (fd FileDirectory) ImportNewFile(fname string) error {
 	}
 
 	// create a new file reference text inside FileName.txt
-
 	_, copiedFile := path.Split(fname)
-
 	copiedFile = path.Join(versionDir, copiedFile)
 
 	// copy the file inside the new version
-
 	if err := util.CopyFile(fname, copiedFile); err != nil {
 		return err
 	}
-
 	if err := os.Chown(copiedFile, fd.fs.userUid, fd.fs.vaultUid); err != nil {
 		return err
 	}
@@ -121,10 +114,9 @@ func (fd FileDirectory) ImportNewFile(fname string) error {
 }
 
 // Creates a new version from copying the previous version.
-func (fd FileDirectory) NewVersion() FileVersion {
+func (fd FileDirectory) NewVersion() (*FileVersion, error) {
 
 	// create a new version string
-
 	oldVersion := fd.LatestVersion()
 	newVersion := FileVersion{Number: oldVersion.Number + 1, Date: util.Now()}
 	newVersion.Pretty = util.I16toa(newVersion.Number)
@@ -136,33 +128,32 @@ func (fd FileDirectory) NewVersion() FileVersion {
 	fname := path.Join(fd.dir, oldVersion.Pretty, fd.fl.Name)
 
 	// create a new version dir
-
-	err := os.Mkdir(versionDir, 0755)
-	util.CheckErr(err)
-	err = os.Chown(versionDir, fd.fs.userUid, fd.fs.vaultUid)
-	util.CheckErr(err)
+	if err := os.Mkdir(versionDir, 0755); err != nil {
+		return nil, err
+	}
+	if err := os.Chown(versionDir, fd.fs.userUid, fd.fs.vaultUid); err != nil {
+		return nil, err
+	}
 
 	// create a new file reference text inside FileName.txt
-
 	_, copiedFile := path.Split(fname)
-
 	copiedFile = path.Join(versionDir, copiedFile)
 
 	// copy the file inside the new version
+	if err := util.CopyFile(fname, copiedFile); err != nil {
+		return nil, err
+	}
+	if err := os.Chown(copiedFile, fd.fs.userUid, fd.fs.vaultUid); err != nil {
+		return nil, err
+	}
 
-	util.CopyFile(fname, copiedFile)
-
-	err = os.Chown(copiedFile, fd.fs.userUid, fd.fs.vaultUid)
-	util.CheckErr(err)
-
-	return newVersion
+	return &newVersion, nil
 }
 
 // Stores the description and long description text.
 func (fd FileDirectory) StoreData(version FileVersion, descr, longDescr string) {
 
 	// create a version directory
-
 	versionDir := path.Join(fd.dir, version.Pretty)
 
 	if !util.DirExists(versionDir) {
@@ -170,7 +161,6 @@ func (fd FileDirectory) StoreData(version FileVersion, descr, longDescr string) 
 	}
 
 	// create a new description text
-
 	if len(descr) > 0 {
 		descriptionFile := path.Join(versionDir, Description)
 		dsc := []byte(descr)
@@ -183,7 +173,6 @@ func (fd FileDirectory) StoreData(version FileVersion, descr, longDescr string) 
 	}
 
 	// create a new long description text
-
 	if len(longDescr) > 0 {
 		longDescriptionFile := path.Join(versionDir, LongDescription)
 		buf2 := []byte(longDescr)
@@ -426,8 +415,6 @@ func (fd *FileDirectory) increaseVersionNumber(version string) {
 
 	err = os.Chown(ver, fd.fs.userUid, fd.fs.vaultUid)
 	util.CheckErr(err)
-	err = os.Chmod(ver, 0444)
-	util.CheckErr(err)
 }
 
 // Renames the filename. Returns an error when unsuccessful.
@@ -446,3 +433,62 @@ func (fd *FileDirectory) fileRename(src, dst string) error {
 
 	return nil
 }
+
+// Function that changes permissions, performs an operation, and restores permissions
+func (fd FileDirectory) withTempPermissions(version string, operation func(subDir string) error) error {
+	// Mutex to ensure only one operation modifies permissions at a time
+	var permMutex sync.Mutex
+
+	// Acquire exclusive access
+	permMutex.Lock()
+	defer permMutex.Unlock()
+
+	// joining fd.dir with the version number
+	versionDir := path.Join(fd.dir, version)
+
+	// Step 1: Set permissions to 0777 (allow full access)
+	if err := os.Chmod(fd.dir, 0777); err != nil {
+		return fmt.Errorf("error setting mode 0777 on %s: %v", fd.dir, err)
+	}
+	if err := os.Chmod(versionDir, 0777); err != nil {
+		return fmt.Errorf("error setting mode 0777 on %s: %v", versionDir, err)
+	}
+
+	// Step 2: Perform the requested operation
+	if err := operation(versionDir); err != nil {
+		return fmt.Errorf("error executing operation: %v", err)
+	}
+
+	// Step 3: Restore permissions to 0555 (read-only access)
+	if err := os.Chmod(versionDir, 0555); err != nil {
+		return fmt.Errorf("error setting mode 0555 on %s: %v", versionDir, err)
+	}
+	if err := os.Chmod(fd.dir, 0555); err != nil {
+		return fmt.Errorf("error setting mode 0555 on %s: %v", fd.dir, err)
+	}
+
+	return nil
+}
+
+// func main() {
+// 	rootDir := "/path/to/directory"
+// 	subDir := rootDir + "/subdir"
+
+// 	// Call the function with an operation (e.g., creating a file)
+// 	err := withTempPermissions(rootDir, subDir, func(subDir string) error {
+// 		filePath := subDir + "/new_file.txt"
+// 		file, err := os.Create(filePath)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		defer file.Close()
+// 		fmt.Println("File created:", filePath)
+// 		return nil
+// 	})
+
+// 	if err != nil {
+// 		fmt.Println("Error:", err)
+// 	} else {
+// 		fmt.Println("Operation completed successfully!")
+// 	}
+// }

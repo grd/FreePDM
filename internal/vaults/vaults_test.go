@@ -57,7 +57,7 @@ func TestImportFile(t *testing.T) {
 
 	fmt.Printf("Vault dir: %s\n", testvaults)
 	fmt.Printf("Vault data dir: %s\n", testvaultsdata)
-	fmt.Printf("User name: %s\n", userName.Name)
+	fmt.Printf("User name: %s\n", userName.Username)
 
 	freePdmDir, ok := os.LookupEnv("FREEPDM_DIR")
 	if !ok {
@@ -97,19 +97,19 @@ func TestImportFile(t *testing.T) {
 	ver, _ := fs.NewVersion(*f1)
 	checkOutStatus(1, 1)
 
-	fs.CheckIn(*f1, ver, "Testf1-1", "Test1-1")
+	fs.CheckIn(*f1, *ver, "Testf1-1", "Test1-1")
 	checkInStatus(1, 1)
 
 	ver, _ = fs.NewVersion(*f1)
 	checkOutStatus(1, 2)
 
-	fs.CheckIn(*f1, ver, "Testf1-2", "Test1-2")
+	fs.CheckIn(*f1, *ver, "Testf1-2", "Test1-2")
 	checkInStatus(1, 2)
 
 	ver, _ = fs.NewVersion(*f1)
 	checkOutStatus(1, 3)
 
-	fs.CheckIn(*f1, ver, "Testf1-3", "Test1-3")
+	fs.CheckIn(*f1, *ver, "Testf1-3", "Test1-3")
 	checkInStatus(1, 3)
 
 	f2, err := fs.ImportFile("Projects", file2)
@@ -135,7 +135,7 @@ func TestImportFile(t *testing.T) {
 	ver, _ = fs.NewVersion(*f3)
 	checkOutStatus(3, 1)
 
-	fs.CheckIn(*f3, ver, "Testf3-1", "Test3-1")
+	fs.CheckIn(*f3, *ver, "Testf3-1", "Test3-1")
 	checkInStatus(3, 1)
 
 	if err = fs.Mkdir("temp"); err != nil {
@@ -290,7 +290,7 @@ func TestFileRename(t *testing.T) {
 
 		t.Fatalf("Expected lock error, got: %v", err)
 	}
-	fs.CheckIn(f7.FileList(), ver, "Test", "Test")
+	fs.CheckIn(f7.FileList(), *ver, "Test", "Test")
 	checkInStatus(1, 4)
 
 	if err := os.Chdir(".."); err != nil {
@@ -348,7 +348,7 @@ func TestFileCopy(t *testing.T) {
 	if err == nil || err.Error() != fmt.Sprintf("file 0002.FCStd is checked out by %s", user.Username) {
 		t.Fatalf("Expected lock error, got: %v", err)
 	}
-	fs.CheckIn(f2.FileList(), ver, "Test", "Test")
+	fs.CheckIn(f2.FileList(), *ver, "Test", "Test")
 	checkInStatus(2, 1)
 
 	// Test for file already existing at destination
@@ -548,6 +548,9 @@ func TestListTree(t *testing.T) {
 
 func TestMain(m *testing.M) {
 
+	testvaults = path.Join(fsm.Root(), testpdm)
+	testvaultsdata = path.Join(fsm.RootData(), testpdm)
+
 	setup()
 
 	m.Run()
@@ -563,17 +566,21 @@ func initVault() {
 	if err != nil {
 		log.Fatalf("initialization failed, %v", err)
 	}
-
-	testvaults = path.Join(fsm.Root(), testpdm)
-	testvaultsdata = path.Join(fsm.RootData(), testpdm)
 }
 
 // A simple "quick and dirty" remove all files from testvault
 // but it also initializes the startup files again.
 
 func setup() {
+	// runtime.Breakpoint()
 
-	initVault()
+	// Remove the vault
+	if err := fsm.RemoveAll(testpdm); err != nil {
+		log.Fatalf("RemoveAll failed: %v", err)
+	}
+
+	err := os.Chmod(fsm.Root(), 0775)
+	util.CheckErr(err)
 
 	if !util.DirExists(testvaults) {
 		if err := os.Mkdir(testvaults, 0775); err != nil {
@@ -583,10 +590,7 @@ func setup() {
 
 	// cleanup the testvaults
 
-	err := os.Chmod(testvaults, 0775)
-	util.CheckErr(err)
-
-	err = os.Chmod(fsm.Root(), 0775)
+	err = os.Chmod(testvaults, 0775)
 	util.CheckErr(err)
 
 	err = os.RemoveAll(testvaults)
@@ -604,6 +608,12 @@ func setup() {
 
 	err = os.Chmod(fsm.RootData(), 0775)
 	util.CheckErr(err)
+
+	if !util.DirExists(testvaultsdata) {
+		if err := os.Mkdir(testvaultsdata, 0775); err != nil {
+			log.Fatal(err)
+		}
+	}
 
 	err = os.Chmod(testvaultsdata, 0775)
 	util.CheckErr(err)
@@ -632,6 +642,9 @@ func setup() {
 	writeLockedFiles()
 
 	writeIndexNumber()
+
+	initVault()
+
 }
 
 func writeIndexFileList() {
