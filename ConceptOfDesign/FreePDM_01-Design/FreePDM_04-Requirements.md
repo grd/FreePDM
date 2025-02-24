@@ -6,7 +6,7 @@
 The file below contains 4 tabs.
 In the following paragraphs there are explanations of each tab.
 
-[Spreadsheet with requirements](FreePDM_04-Requirements.fods)
+[Spreadsheet with requirements](../FreePDM_CoD-Figures/FreePDM_04-Requirements.fods)
 
 ### Explanation on the Fourth Tab
 
@@ -62,4 +62,4 @@ To track changes in a single overview the changes are done according the followi
 
 ## [Requirements Writing](FreePDM_04-1-RequirementsWriting.md)
 
-[<< Previous Chapter](FreePDM_03-2-SVNProjectStructure.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_04-1-RequirementsWriting.md)
+[<< Previous Chapter](FreePDM_03-2-SVNProjectStructure.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_05-Architecture.md)

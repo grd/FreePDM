@@ -39,4 +39,4 @@
 - [Development Builds](FreePDM_02-Workflows/08-DevelopmentBuilds.md)
 
 
-[<< Previous Chapter](FreePDM_01-RequestedInformation.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_02-Workflows/01-FileStoringDuringEditing.md)
+[<< Previous Chapter](FreePDM_01-RequestedInformation.md) | [Content Table](README.md) | [Next Chapter >>](FreePDM_03-1-Attributes.md)

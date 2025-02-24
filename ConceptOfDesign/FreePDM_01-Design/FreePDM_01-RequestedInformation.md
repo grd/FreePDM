@@ -26,7 +26,7 @@ The (expected )company size probably small to medium sized companies. There are 
 
 micro Company size <#Of Users 
 Small Company size <#Of Users 
-Medium)Company size <#Of Users
+Medium Company size <#Of Users
 
 _old:(Small? to medium)Company size <#OfUsers --> Does that matter? It depends probably on the hw and sw._
 <!-- Yes that matters the size of the company say also something about the quality / complexity of it's hardware and software -->

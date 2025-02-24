@@ -3,18 +3,18 @@
 
 ## Design decisions
 
-- Version management see:
+- Version management
 - User interface
 - Database
 - Used programming language
 - Attributes
 
 ### General setup
-![Block diagram FreePDM general](FreePDM_CoD-Figures/BDD_FreePMD-design.png)
+![Block diagram FreePDM general](../FreePDM_CoD-Figures/BDD_FreePMD-design.png)
 
 ### Version management
 
-Version management is a difficult topic. A main issue is that it should be able to create releases of every individual part, assembly (and optional drawing.) 
+Version management is a difficult topic. A main issue is that it should be able to create releases of every individual part, assembly (and optional drawing.)
 
 There are several different (open source) version control systems available.
 The main difficulty is that these software are usually targeting software engineering/development.
@@ -27,6 +27,12 @@ _Note Grd: Why does it need to be tackled? You can also allow them all. But in t
 
 _Note: We have to decide if the model(part / assembly) gets an update, the drawing get also an update. The same issue applied in revers order._
 Note grd: This is never gonna work. When a part is changed you aso need to update the drawing of that part, the assy (or assies) in where it belongs and the drawings of those too.
+
+#### How we think we should do version management
+After serious considerations we came up with the following idea.
+![The Vault](../FreePDM_CoD-Figures/FreePDM_Vault.svg)
+
+It is just an ordinary file system that you can share. The downside of a file share is that when the network goes doen you need to save your files locally. But for the rest, this file share has version control that is working as it should.
 
 ### Database
 
@@ -41,6 +47,7 @@ The other is [noSQL](https://en.wikipedia.org/wiki/NoSQL). An example of this da
 _Note: Add What the difference is and how such a database is build up_
 
 _Note Grd: Why do we need such a database? That is the question. We need it because we can't extract the relevant information out of VCS and that is because a FC file attributes are stored somewhere into that file. And you want to be able to search that metadata information. To be honest, I don't care about which kind of software you use (SQL / noSQL), but [SQLAlchemy](https://en.wikipedia.org/wiki/SQLAlchemy) helps a lot when you use SQL data. That is why I think that we better use SQL. Starting with sqlite._
+
 
 
 ### User interface
@@ -61,7 +68,7 @@ More easy to add other SW  | More data transport
                            | 
 (Maintainability?)         | (Maintainability?)
 
-Seegrd user1234's comment in the related [topic](https://forum.freecad.org/viewtopic.php?f=8&t=68350&p=594331#p594252)
+See grd user1234's comment in the related [topic](https://forum.freecad.org/viewtopic.php?f=8&t=68350&p=594331#p594252)
 
 Looking at the local storage there are two tastes available(for now).
 

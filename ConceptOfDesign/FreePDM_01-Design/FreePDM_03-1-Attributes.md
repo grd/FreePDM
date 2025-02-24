@@ -61,10 +61,10 @@ A Part is a container and it can contain multiple bodies and as so it can become
 
 Links in alphabetic order:
 
-- [NewUserAttributes pdf](NewUserAttributes.pdf) original see [Windchill New User Attributes](https://support.ptc.com/help/windchill/wnc/r11.1_m020/whc_en/index.html#page/Windchill_Help_Center/ParticipantAdminUserCreateAttributesTab.html)
-- [PartAttributes pdf](PartAttributes.pdf) original see [Windchill Part Attributes](https://support.ptc.com/help/windchill/wc110_hc/whc_en/index.html#page/Windchill_Help_Center%2FPMPartAttributesRef.html)
-- [ProjectAttributes pdf](ProjectAttributes.pdf) original see [Windchill Project Attributes](https://support.ptc.com/help/wnc/r12.0.2.0/en/index.html#page/Windchill_Help_Center/ProjMgmtProjectAttributes.html)
-- [DefaultSystemAttributes pdf](DefaultSystemAttributes.pdf) original see [Windchill Default System Attributes](https://support.ptc.com/help/windchill/wc110_hc/whc_en/index.html#page/Windchill_Help_Center/WGMCATIAV5AdmConfigWCDefaultSysAtt.html)
+- [NewUserAttributes pdf](../FreePDM_CoD-Figures/NewUserAttributes.pdf) original see [Windchill New User Attributes](https://support.ptc.com/help/windchill/wnc/r11.1_m020/whc_en/index.html#page/Windchill_Help_Center/ParticipantAdminUserCreateAttributesTab.html)
+- [PartAttributes pdf](../FreePDM_CoD-Figures/PartAttributes.pdf) original see [Windchill Part Attributes](https://support.ptc.com/help/windchill/wc110_hc/whc_en/index.html#page/Windchill_Help_Center%2FPMPartAttributesRef.html)
+- [ProjectAttributes pdf](../FreePDM_CoD-Figures/ProjectAttributes.pdf) original see [Windchill Project Attributes](https://support.ptc.com/help/wnc/r12.0.2.0/en/index.html#page/Windchill_Help_Center/ProjMgmtProjectAttributes.html)
+- [DefaultSystemAttributes pdf](../FreePDM_CoD-Figures/DefaultSystemAttributes.pdf) original see [Windchill Default System Attributes](https://support.ptc.com/help/windchill/wc110_hc/whc_en/index.html#page/Windchill_Help_Center/WGMCATIAV5AdmConfigWCDefaultSysAtt.html)
 
 Check also [database setup](FreePDM_05-1-DatabaseSetup.md) for more (and better split out )attributes.
 
