@@ -1,8 +1,11 @@
-<center> 
+<div style="text-align: center;">
 
-![FreePDM-logo](assets/FreePDM-logo.png)
+![alt text](assets/FreePDM-logo.png "Our logo")
 
-</center> 
+</div>
+
+> "A good engineer is a person who makes a design that works with as few original ideas as possible. There are no prima donnas in engineering."
+> -- Freeman Dyson
 
 # State of this project
 ATM only the server is working. There is no GUI yet. I think that one year from now the GUI will be working as expected.
