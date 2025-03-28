@@ -1,10 +1,10 @@
 <div style="text-align: center;">
 
-![alt text](assets/FreePDM-logo.png "Our logo")
+<img src="assets/FreePDM-logo.png" />
 
 </div>
 
-> "A good engineer is a person who makes a design that works with as few original ideas as possible. There are no prima donnas in engineering."
+> "A good engineer is a person who makes a design that works with as few original ideas as possible."
 > -- Freeman Dyson
 
 # State of this project
