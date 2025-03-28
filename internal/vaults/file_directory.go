@@ -39,7 +39,10 @@ type FileDirectory struct {
 //	field: 'number', an increment
 //	field: 'pretty' means a version presentation, such as A.1, 2.5.0, 4.0, 3 or A.
 //
+// See https://github.com/grd/FreePDM/discussions/93 for a proposal
+//
 // TODO This functionality hasn't been implemented yet...
+//
 // For the time being it just reports the string presentation of 'number'
 //
 //	field: 'date' means the time of a new version with the format "YYYY-MM-DD H:M:S"
@@ -63,7 +66,7 @@ func (fd FileDirectory) FileList() FileList {
 	return fd.fl
 }
 
-// Creates a new directory inside the current working directory.
+// Creates a new directory inside the container directory.
 func (fd *FileDirectory) CreateDirectory() error {
 
 	err := os.Mkdir(fd.dir, 0755)

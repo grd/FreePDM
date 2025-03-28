@@ -17,6 +17,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/grd/FreePDM/internal/server/config"
@@ -167,6 +168,13 @@ func (fs *FileSystem) ReadLockedIndex() error {
 
 // Writes a file in a read-only directory structure
 func (fs *FileSystem) DataWriteFile(name string, data []byte) error {
+	// Mutex to ensure only one operation modifies permissions at a time
+	var permMutex sync.Mutex
+
+	// Acquire exclusive access
+	permMutex.Lock()
+	defer permMutex.Unlock()
+
 	if err := os.Chmod(vaultsData, 0777); err != nil {
 		return fmt.Errorf("error setting directory permissions %s", fs.vaultDir)
 	}
