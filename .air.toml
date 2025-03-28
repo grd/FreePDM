@@ -1,0 +1,10 @@
+root = "."  # Zet de root op de huidige directory
+
+[build]
+  bin = "tmp/main"
+  cmd = "go build -o tmp/main ./cmd/pdmserver"
+  include_ext = ["go", "tpl", "tmpl", "html"]
+  exclude_dir = ["vendor", "node_modules"]
+
+[log]
+  level = "debug"

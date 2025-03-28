@@ -3,7 +3,10 @@ BIN_DIR=${HOME}/bin
 CONTAINER_NAME := freepdm
 
 
-all: add_users createvault removevault testvault pdmserver pdmterm pdmclient vcs vfs 
+all: run add_users createvault removevault testvault pdmserver pdmterm pdmclient vcs vfs 
+
+run: 
+	air
 
 add_users: 
 	go build -o $(BIN_DIR)/add_users ./cmd/add_users

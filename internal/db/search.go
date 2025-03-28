@@ -16,8 +16,9 @@ import (
 type Search struct {
 }
 
-func (s Search) init() {
+func NewSearch() *Search {
 	fmt.Println("Search in Databases")
+	return &Search{}
 }
 
 // Search on number
@@ -50,17 +51,18 @@ func (s Search) SearchHelp() string {
 type SearchItem struct {
 }
 
-func (s SearchItem) init() {
+func NewSearchItem() *SearchItem {
 	fmt.Println("Search in items")
+	return &SearchItem{}
 }
 
 // Search on project number
-func (s SearchItem) item_number(user_number string) {
+func (s SearchItem) ItemNumber(user_number string) {
 	// raise NotImplementedError("Function project_number is not implemented yet")
 }
 
 // Search on project description
-func (s SearchItem) item_description(description string) {
+func (s SearchItem) ItemDescription(description string) {
 	// raise NotImplementedError("Function project_description is not implemented yet")
 }
 
@@ -68,17 +70,18 @@ func (s SearchItem) item_description(description string) {
 type SearchProject struct {
 }
 
-func (s SearchProject) init() {
+func NewSearchProject() *SearchProject {
 	fmt.Println("Search in projects")
+	return &SearchProject{}
 }
 
 // Search on project number
-func (s SearchProject) project_number(user_number string) {
+func (s SearchProject) ProjectNumber(user_number string) {
 	// raise NotImplementedError("Function project_number is not implemented yet")
 }
 
 // Search on project description
-func (s SearchProject) project_description(description string) {
+func (s SearchProject) ProjectDescription(description string) {
 	// raise NotImplementedError("Function project_description is not implemented yet")
 }
 
@@ -86,31 +89,32 @@ func (s SearchProject) project_description(description string) {
 type SearchUser struct {
 }
 
-func (s SearchUser) init() {
+func NewSearchUser() *SearchUser {
 	fmt.Println("Search in Users")
+	return &SearchUser{}
 }
 
 // Search on user number
-func (s SearchUser) user_number(user_number string) {
+func (s SearchUser) UserNumber(user_number string) {
 	// raise NotImplementedError("Function user_number is not implemented yet")
 }
 
 // Search on user name
-func (s SearchUser) user_name(user_name string) {
+func (s SearchUser) UserName(user_name string) {
 	// raise NotImplementedError("Function user_name is not implemented yet")
 }
 
 // Search on user first name
-func (s SearchUser) user_first_name(user_first_name string) {
+func (s SearchUser) UserFirstFame(user_first_name string) {
 	// raise NotImplementedError("Function user_first_name is not implemented yet")
 }
 
 // Search on user last name
-func (s SearchUser) user_last_name(user_last_name string) {
+func (s SearchUser) UserLastName(user_last_name string) {
 	// raise NotImplementedError("Function user_last_name is not implemented yet")
 }
 
 // Search on user role
-func (s SearchUser) user_role(user_role string) {
+func (s SearchUser) UserRole(user_role string) {
 	// raise NotImplementedError("Function user_role is not implemented yet")
 }
