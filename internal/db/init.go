@@ -15,7 +15,7 @@ import (
 // CreateDefaultTables creates the default set of tables in the database.
 func CreateDefaultTables(db *gorm.DB) error {
 	// Create the default set of tables
-	if err := db.AutoMigrate(&PdmUser{}, &PdmRole{}, &PdmProject{}, &PdmItem{},
+	if err := db.AutoMigrate(&PdmUser{}, &PdmProject{}, &PdmItem{},
 		&PdmModel{}, &PdmDocument{}, &PdmMaterial{}, &PdmHistory{}, &PdmPurchase{},
 		&PdmManufacturer{}, &PdmVendor{}); err != nil {
 		return fmt.Errorf("failed to migrate tables: %w", err)
