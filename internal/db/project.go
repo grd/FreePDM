@@ -33,7 +33,7 @@ func (p Project) GetId(number string) int {
 	return -1 // BUG: Watch out !!!
 }
 
-var number int
+// var number int
 
 // Create new Project number
 // number is only added when it has a value.
@@ -72,11 +72,11 @@ func NewProject(number string, name string, status *string, path string) (*Proje
 
 	if number == "" {
 		// TODO: get latest number and ndigits from conf / db
-		var err error
-		// proj.number, err = CreateNumber(last_number, ndigits)
-		if err != nil {
-			return nil, err
-		}
+		// var err error
+		// // proj.number, err = CreateNumber(last_number, ndigits)
+		// if err != nil {
+		// 	return nil, err
+		// }
 	} else {
 		proj.number = number
 	}

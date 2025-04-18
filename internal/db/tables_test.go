@@ -13,7 +13,7 @@ func setupTestDB() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	db.AutoMigrate(&PdmUser{}, &PdmRole{}, &PdmProject{})
+	db.AutoMigrate(&PdmUser{}, &PdmProject{})
 	return db, nil
 }
 
@@ -24,10 +24,10 @@ func TestPdmUserCreation(t *testing.T) {
 	}
 
 	user := PdmUser{
-		UserName:         "test_user",
-		UserFirstName:    "Test",
-		UserLastName:     "User",
-		UserEmailAddress: "test@example.com",
+		Name:         "test_user",
+		FirstName:    "Test",
+		LastName:     "User",
+		EmailAddress: "test@example.com",
 	}
 
 	result := db.Create(&user)

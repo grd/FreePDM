@@ -6,10 +6,9 @@ package main
 
 import (
 	"log"
-	"net/http"
 
+	"github.com/grd/FreePDM/internal/db"
 	"github.com/grd/FreePDM/internal/logs"
-	"github.com/grd/FreePDM/internal/server"
 	"github.com/grd/FreePDM/internal/shared"
 )
 
@@ -17,13 +16,16 @@ func main() {
 	// start logging
 	logs.StartLogging()
 
-	http.HandleFunc("/command", server.CommandHandler)
-
-	log.Println("Server running on :8080")
-	err := http.ListenAndServe(":8080", nil)
+	// database
+	db, err := db.InitializeDB("")
 	if err != nil {
-		log.Fatalf("Error starting server: %v", err)
+		log.Fatal(err)
 	}
+
+	userRepo := db.UserRepo{DB: db}
+
+	// Running the server
+	RunServer()
 
 	// Periodically search for new files
 	shared.ImportSharedFiles()

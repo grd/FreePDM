@@ -5,11 +5,15 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/google/uuid"
+	"github.com/grd/FreePDM/internal/db"
 	"github.com/grd/FreePDM/internal/shared"
 	"github.com/grd/FreePDM/internal/util"
 	fsm "github.com/grd/FreePDM/internal/vaults"
@@ -180,3 +184,70 @@ func handleAllocate(w http.ResponseWriter, user, vault, path string) {
 // 	}
 // 	json.NewEncoder(w).Encode(resp)
 // }
+
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+
+	if isValidUser(username, password) {
+		sessionID := uuid.NewString()
+		expiration := time.Now().Add(30 * time.Minute)
+
+		db.Sessions[sessionID] = db.Session{
+			Username:   username,
+			Expiration: expiration,
+		}
+
+		http.SetCookie(w, &http.Cookie{
+			Name:    "session_token",
+			Value:   sessionID,
+			Expires: expiration,
+		})
+
+		http.Redirect(w, r, "/welcome", http.StatusSeeOther)
+	} else {
+		http.Error(w, "Ongeldige gebruikersnaam of wachtwoord", http.StatusUnauthorized)
+	}
+}
+
+func isValidUser(username, password string) bool {
+	users := map[string]string{
+		"user1": "password1",
+		"user2": "password2",
+	}
+
+	if pass, ok := users[username]; ok {
+		return pass == password
+	}
+	return false
+}
+
+func SessionMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		cookie, err := r.Cookie("session_token")
+		if err != nil {
+			if err == http.ErrNoCookie {
+				http.Error(w, "Niet geautoriseerd", http.StatusUnauthorized)
+				return
+			}
+			http.Error(w, "Bad Request", http.StatusBadRequest)
+			return
+		}
+
+		sessionID := cookie.Value
+		session, exists := db.Sessions[sessionID]
+
+		if !exists || session.Expiration.Before(time.Now()) {
+			http.Error(w, "Niet geautoriseerd", http.StatusUnauthorized)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "username", session.Username)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+func WelcomeHandler(w http.ResponseWriter, r *http.Request) {
+	username := r.Context().Value("username").(string)
+	fmt.Fprintf(w, "Welkom, %s!", username)
+}

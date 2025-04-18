@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreePDM - A PDM for all files</title>
+    <script src="https://unpkg.com/htmx.org@1.9.5"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/YOUR_KIT_CODE.js" crossorigin="anonymous"></script>
+</head>
+<body class="h-screen flex">
+    <!-- Sidebar Menu -->
+    <aside class="w-1/6 bg-gray-900 text-white p-4 flex flex-col">
+        <h1 class="text-lg font-bold mb-4">FreePDM</h1>
+        <nav>
+            <ul>
+                <li class="mb-2 flex items-center gap-2">
+                    <i class="fas fa-folder"></i>
+                    <a href="#" class="hover:text-gray-300">Files</a>
+                </li>
+                <li class="mb-2 flex items-center gap-2">
+                    <i class="fas fa-cogs"></i>
+                    <a href="#" class="hover:text-gray-300">Settings</a>
+                </li>
+                <li class="mb-2 flex items-center gap-2">
+                    <i class="fas fa-info-circle"></i>
+                    <a href="#" class="hover:text-gray-300">About</a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 flex">
+        <!-- Left Panel (Tree View) -->
+        <section class="w-1/4 bg-gray-100 p-4">
+            <h2 class="font-bold mb-2">Folders</h2>
+            <ul>
+                <li class="mb-1"><i class="fas fa-folder"></i> Project A</li>
+                <li class="mb-1"><i class="fas fa-folder"></i> Project B</li>
+            </ul>
+        </section>
+        
+        <!-- Middle Panel (File List) -->
+        <section class="w-1/2 bg-white p-4">
+            <h2 class="font-bold mb-2">Files</h2>
+            <ul>
+                <li class="mb-1"><i class="fas fa-file"></i> design.dxf</li>
+                <li class="mb-1"><i class="fas fa-file"></i> model.step</li>
+            </ul>
+        </section>
+        
+        <!-- Right Panel (File Details) -->
+        <section class="w-1/4 bg-gray-100 p-4">
+            <h2 class="font-bold mb-2">Details</h2>
+            <p>Select a file to view details.</p>
+        </section>
+    </main>
+</body>
+</html>`

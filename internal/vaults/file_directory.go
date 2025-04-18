@@ -360,10 +360,10 @@ func (fd *FileDirectory) CloseItemVersion(version FileVersion) {
 
 	dirVersion := path.Join(fd.dir, version.Pretty)
 
-	// Filemode 0755 means that the directory is open for anyone.
+	// Filemode 0555 means that the directory is read only for anyone.
 	err := os.Chown(dirVersion, fd.fs.userUid, fd.fs.vaultUid)
 	util.CheckErr(err)
-	err = os.Chmod(dirVersion, 0755)
+	err = os.Chmod(dirVersion, 0555)
 	util.CheckErr(err)
 
 	// And the file can't be edited anymore with filemode 0444.
