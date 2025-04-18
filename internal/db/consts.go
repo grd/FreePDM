@@ -5,6 +5,7 @@
 package db
 
 type (
+	Role             string
 	ProjectState     string
 	RevisionState    string
 	TracebilityState string
@@ -12,6 +13,18 @@ type (
 	VolumeUnit       string
 	WeightUnit       string
 	AreaUnit         string
+)
+
+const (
+	Admin       Role = "admin"
+	Designer    Role = "designer"
+	Senior      Role = "senior"
+	Viewer      Role = "viewer"
+	Editor      Role = "editor"
+	Approver    Role = "approver"
+	ProjectLead Role = "projectlead"
+	Qa          Role = "qa"
+	Guest       Role = "guest"
 )
 
 const (
