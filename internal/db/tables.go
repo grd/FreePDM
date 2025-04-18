@@ -6,9 +6,6 @@ package db
 
 import (
 	"time"
-
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 // Base struct to embed in other models
@@ -19,27 +16,20 @@ type Base struct {
 // PdmUser represents the users table
 type PdmUser struct {
 	Base
-	UserName         string `gorm:"type:varchar(30)"`
-	UserFirstName    string `gorm:"type:varchar(30)"`
-	UserLastName     string `gorm:"type:varchar(30)"`
-	UserFullName     string
-	UserEmailAddress string `gorm:"not null"`
-	UserPhoneNumber  int    // Consider changing to string if phone numbers include characters
-	UserDepartment   string // Enum type can be defined later
+	Name         string `gorm:"type:varchar(30)"`
+	PasswordHash string `gorm:"type:varchar(30)"`
+	FirstName    string `gorm:"type:varchar(30)"`
+	LastName     string `gorm:"type:varchar(30)"`
+	FullName     string
+	EmailAddress string `gorm:"not null"`
+	PhoneNumber  string `gorm:"type varchar(20)"`
+	Department   string `gorm:"type:varchar(30)"`
 
-	Roles     []*PdmRole    `gorm:"many2many:user_role_link"`
+	Roles     []Role        `gorm:"type:text[]"`
 	Projects  []*PdmProject `gorm:"many2many:user_project_link"`
 	Items     []PdmItem     `gorm:"foreignKey:UserID"`
 	Models    []PdmModel    `gorm:"foreignKey:UserID"`
 	Documents []PdmDocument `gorm:"foreignKey:UserID"`
-}
-
-// PdmRole represents the roles table
-type PdmRole struct {
-	Base
-	RoleName string `gorm:"type:varchar(32)"`
-
-	Users []*PdmUser `gorm:"many2many:user_role_link"`
 }
 
 // PdmUserRoleLink is the association table for users and roles
@@ -188,20 +178,4 @@ type PdmVendor struct {
 	VendorName    string      `gorm:"type:varchar(32)"`
 	VPurchasingID uint        `gorm:"foreignKey:VPurchasingID"`
 	VPurchasing   PdmPurchase `gorm:"foreignKey:VPurchasingID"`
-}
-
-// To initialize the database
-func InitDB() {
-
-	var err error
-
-	dsn := "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Europe/Amsterdam"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect to the database")
-	}
-
-	// Auto migrate the schema
-	db.AutoMigrate(&PdmUser{}, &PdmRole{}, &PdmUserRoleLink{}, &PdmProject{}, &PdmUserProjectLink{}, &PdmItem{},
-		&PdmProjectItemLink{}, &PdmModel{}, &PdmDocument{}, &PdmMaterial{}, &PdmHistory{}, &PdmPurchase{}, &PdmManufacturer{}, &PdmVendor{})
 }
