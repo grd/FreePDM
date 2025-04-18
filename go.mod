@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.23.4
 
 require (
-	github.com/BurntSushi/toml v1.3.2
+	github.com/BurntSushi/toml v1.4.0
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 	gorm.io/driver/postgres v1.5.9
