@@ -247,7 +247,7 @@ func SessionMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func WelcomeHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) welcomeHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.Context().Value("username").(string)
 	fmt.Fprintf(w, "Welkom, %s!", username)
 }

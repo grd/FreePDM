@@ -18,10 +18,15 @@ type Login struct {
 // temporary Key is username
 var Users = map[string]Login{}
 
-func IsValidUser(username, password string) bool {
-	user, err := db.LoadUser(username)
+func IsValidUser(username, password string, repo *db.UserRepo) bool {
+	user, err := repo.LoadUser(username)
 	if err != nil {
 		return false
 	}
 	return bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)) == nil
+}
+
+func IsValidSession(sessionValue string, repo *db.UserRepo) bool {
+	user, err := repo.LoadUser(sessionValue)
+	return err == nil && user != nil
 }

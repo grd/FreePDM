@@ -16,8 +16,14 @@ import (
 
 var ErrUserNotFound = errors.New("user not found")
 
+// Ease of handling
 type UserRepo struct {
 	DB *gorm.DB
+}
+
+// Constructor
+func NewUserRepo(db *gorm.DB) UserRepo {
+	return UserRepo{DB: db}
 }
 
 // LoadUser search a user based on user name.

@@ -6,9 +6,11 @@ package main
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/grd/FreePDM/internal/db"
 	"github.com/grd/FreePDM/internal/logs"
+	"github.com/grd/FreePDM/internal/server"
 	"github.com/grd/FreePDM/internal/shared"
 )
 
@@ -16,16 +18,22 @@ func main() {
 	// start logging
 	logs.StartLogging()
 
+	dbURL := "postgres://pdmuser:pdmpassword@localhost:5432/pdmdb?sslmode=disable"
+
 	// database
-	db, err := db.InitializeDB("")
+	gormDB, err := db.InitializeDB(dbURL)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	userRepo := db.UserRepo{DB: db}
+	mux := http.NewServeMux()
 
-	// Running the server
-	RunServer()
+	userRepo := db.NewUserRepo(gormDB)
+	srv := server.New(&userRepo)
+	srv.Routes(mux)
+
+	log.Println("Server running on http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", mux))
 
 	// Periodically search for new files
 	shared.ImportSharedFiles()
