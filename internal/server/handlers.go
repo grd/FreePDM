@@ -222,6 +222,10 @@ func isValidUser(username, password string) bool {
 	return false
 }
 
+type contextKey string
+
+const usernameKey contextKey = "username"
+
 func SessionMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("session_token")
@@ -242,7 +246,7 @@ func SessionMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "username", session.Username)
+		ctx := context.WithValue(r.Context(), usernameKey, session.Username)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
