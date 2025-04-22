@@ -10,44 +10,14 @@ import (
 	"strings"
 )
 
-// // https://www.osohq.com/post/sqlalchemy-role-rbac-basics
-
-// // struct for generating Roles
-// type TempRole struct {
+//
+// How to check whether a guy has access:
+//
+// if !user.HasPermission(CheckIn) {
+// 	http.Error(w, "Forbidden", http.StatusForbidden)
+// 	return
 // }
-
-// // Create new Role
-// func (t TempRole) AddRole() {
-// 	fmt.Println("new role created")
-// }
-
-// // Delete existing role
-// func (t TempRole) RemoveRole() {
-// 	fmt.Println("existing role deleted")
-// }
-
-// // Struct for generating users
-// // Users are Aliases for roles in SQL see: https://www.postgresql.org/docs/14/sql-createuser.html
-// type TempUser struct {
-// }
-
-// func (t TempUser) AddUserToSql(username string) {
-// 	fmt.Println("This is basically the interface")
-// }
-
-// // Delete existing user
-// func (t TempUser) RemoveUserFromSql(user_id int, username string) {
-// 	fmt.Println("existing user deleted")
-// }
-
-// func (t TempUser) AddUserToLdap(username string) {
-// 	fmt.Println("This is basically the interface")
-// }
-
-// // Delete existing user
-// func (t TempUser) RemoveUserFromLdap(user_id int, username string) {
-// 	fmt.Println("existing user deleted")
-// }
+//
 
 type RoleList []Role
 
@@ -80,65 +50,87 @@ func (r *RoleList) Scan(value interface{}) error {
 }
 
 // role -> permissions mapping
-// See: https://www.osohq.com/academy/role-based-access-control-rbac
-func RolePermissions(role []Role) (ret []string) {
+func RolePermissions(role []Role) (ret []RBAC) {
 	for _, r := range role {
 		switch r {
-		case Editor:
-			ret = append(ret, []string{"Check-In", "Check-Out", "Create Document", "Create Item", "Create Model"}...)
-		case Approver:
-			ret = append(ret, []string{"Check-In", "Check-Out", "Create Document", "Create Item", "Create Model"}...)
-		case Qa:
-			ret = append(ret, []string{"Check-In", "Check-Out", "Create Document", "Create Item", "Create Model"}...)
-		case Guest:
-			ret = append(ret, []string{"Read Documents", "Read Items", "Read Models"}...)
-		case Viewer:
-			ret = append(ret, []string{"Read Documents", "Read Items", "Read Models"}...)
-		case Designer:
-			ret = append(ret, []string{"Check-In", "Check-Out", "Create Document", "Create Item", "Create Model"}...)
-		case Senior: // User activities plus
-			ret = append(ret, []string{"Delete Document", "Delete Item", "Delete Model"}...)
+		case Editor, Approver, Qa, Designer:
+			ret = append(ret,
+				CheckIn,
+				CheckOut,
+				CreateDocument,
+				CreateItem,
+				CreateModel,
+			)
+		case Guest, Viewer:
+			ret = append(ret,
+				ReadDocuments,
+				ReadItems,
+				ReadModels,
+			)
+		case Senior:
+			ret = append(ret,
+				DeleteDocument,
+				DeleteItem,
+				DeleteModel,
+			)
 		case ProjectLead:
-			ret = append(ret, []string{"Create Project", "Add User to Project", "Remove User from Project"}...)
+			ret = append(ret,
+				CreateProject,
+				AddUserToProject,
+				RemoveUserFromProject,
+			)
 		case Admin:
-			ret = append(ret, []string{"Create User", "Delete User", "Create Database"}...)
+			ret = append(ret,
+				CreateUser,
+				DeleteUser,
+				CreateDatabase,
+			)
 		}
 	}
-	return ret
+	return
+}
+
+func DefaultRoles() []Role {
+	return []Role{Viewer} // of Guest, afhankelijk van jouw beleid
 }
 
 // Check whether user has a role
 func (u *PdmUser) HasRole(role string) bool {
-	switch Role(role) {
-	case Editor:
-		return true
-	case Approver:
-		return true
-	case Qa:
-		return true
-	case Guest:
-		return true
-	case Viewer:
-		return true
-	case Designer:
-		return true
-	case Senior:
-		return true
-	case ProjectLead:
-		return true
-	case Admin:
-		return true
-	default:
-		return false
+	for _, r := range u.Roles {
+		if string(r) == role {
+			return true
+		}
 	}
+	return false
 }
 
 // Check whether user has all the roles
 func (u *PdmUser) HasAnyRole(roles []string) bool {
-	for _, r := range roles {
-		if !u.HasRole(r) {
+	for _, role := range roles {
+		if u.HasRole(role) {
+			return true
+		}
+	}
+	return false
+}
+
+func (u *PdmUser) HasAllRoles(roles []string) bool {
+	for _, role := range roles {
+		if !u.HasRole(role) {
 			return false
 		}
 	}
 	return true
+}
+
+func (u *PdmUser) HasPermission(permission string) bool {
+	for _, r := range u.Roles {
+		perms := RolePermissions([]Role{Role(r)})
+		for _, p := range perms {
+			if string(p) == permission {
+				return true
+			}
+		}
+	}
+	return false
 }

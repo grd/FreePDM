@@ -6,6 +6,7 @@ package db
 
 type (
 	Role             string
+	RBAC             string
 	ProjectState     string
 	RevisionState    string
 	TracebilityState string
@@ -25,6 +26,26 @@ const (
 	ProjectLead Role = "projectlead"
 	Qa          Role = "qa"
 	Guest       Role = "guest"
+)
+
+const (
+	CheckIn               RBAC = "Check-In"
+	CheckOut              RBAC = "Check-Out"
+	CreateDocument        RBAC = "Create Document"
+	CreateItem            RBAC = "Create Item"
+	CreateModel           RBAC = "Create Model"
+	DeleteDocument        RBAC = "Delete Document"
+	DeleteItem            RBAC = "Delete Item"
+	DeleteModel           RBAC = "Delete Model"
+	CreateProject         RBAC = "Create Project"
+	AddUserToProject      RBAC = "Add User to Project"
+	RemoveUserFromProject RBAC = "Remove User from Project"
+	CreateUser            RBAC = "Create User"
+	DeleteUser            RBAC = "Delete User"
+	CreateDatabase        RBAC = "Create Database"
+	ReadDocuments         RBAC = "Read Documents"
+	ReadItems             RBAC = "Read Items"
+	ReadModels            RBAC = "Read Models"
 )
 
 const (
