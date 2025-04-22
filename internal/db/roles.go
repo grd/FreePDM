@@ -91,7 +91,7 @@ func RolePermissions(role []Role) (ret []RBAC) {
 }
 
 func DefaultRoles() []Role {
-	return []Role{Viewer} // of Guest, afhankelijk van jouw beleid
+	return []Role{Viewer} // or Guest, depends on the baseline
 }
 
 // Check whether user has a role
@@ -123,11 +123,23 @@ func (u *PdmUser) HasAllRoles(roles []string) bool {
 	return true
 }
 
-func (u *PdmUser) HasPermission(permission string) bool {
-	for _, r := range u.Roles {
-		perms := RolePermissions([]Role{Role(r)})
-		for _, p := range perms {
-			if string(p) == permission {
+// HasPermission checks if the user has the given RBAC permission.
+func (u *PdmUser) HasPermission(permission RBAC) bool {
+	permissions := RolePermissions(u.Roles)
+	for _, p := range permissions {
+		if p == permission {
+			return true
+		}
+	}
+	return false
+}
+
+// HasAnyPermission checks if the user has at least one of the given permissions.
+func (u *PdmUser) HasAnyPermission(perms []RBAC) bool {
+	userPerms := RolePermissions(u.Roles)
+	for _, perm := range perms {
+		for _, userPerm := range userPerms {
+			if perm == userPerm {
 				return true
 			}
 		}

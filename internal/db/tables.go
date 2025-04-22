@@ -30,7 +30,7 @@ type PdmUser struct {
 	PhoneNumber  string `gorm:"type:varchar(20)"`
 	Department   string `gorm:"type:varchar(30)"`
 
-	Roles     RoleList      `gorm:"type:text"`
+	Roles     []Role        `gorm:"type:text[]"`
 	Projects  []*PdmProject `gorm:"many2many:user_project_link"`
 	Items     []PdmItem     `gorm:"foreignKey:UserID"`
 	Models    []PdmModel    `gorm:"foreignKey:UserID"`
