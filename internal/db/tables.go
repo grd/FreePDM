@@ -6,26 +6,31 @@ package db
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // Base struct to embed in other models
 type Base struct {
-	ID uint `gorm:"primaryKey"`
+	ID        uint `gorm:"primaryKey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
-// PdmUser represents the users table
 type PdmUser struct {
 	Base
-	Name         string `gorm:"type:varchar(30)"`
-	PasswordHash string `gorm:"type:varchar(30)"`
+
+	UserName     string `gorm:"column:username;type:varchar(30);not null;uniqueIndex"`
+	PasswordHash string `gorm:"type:varchar(60);not null"`
 	FirstName    string `gorm:"type:varchar(30)"`
 	LastName     string `gorm:"type:varchar(30)"`
-	FullName     string
-	EmailAddress string `gorm:"not null"`
-	PhoneNumber  string `gorm:"type varchar(20)"`
+	FullName     string `gorm:"type:varchar(61)"`
+	EmailAddress string `gorm:"type:varchar(255);not null;uniqueIndex"`
+	PhoneNumber  string `gorm:"type:varchar(20)"`
 	Department   string `gorm:"type:varchar(30)"`
 
-	Roles     []Role        `gorm:"type:text[]"`
+	Roles     RoleList      `gorm:"type:text"`
 	Projects  []*PdmProject `gorm:"many2many:user_project_link"`
 	Items     []PdmItem     `gorm:"foreignKey:UserID"`
 	Models    []PdmModel    `gorm:"foreignKey:UserID"`
@@ -68,8 +73,9 @@ type PdmItem struct {
 	ItemPath              string `gorm:"not null"`
 	ItemPreview           []byte // For LargeBinary
 
-	UserID    uint          `gorm:"foreignKey:UserID"`
-	User      PdmUser       `gorm:"foreignKey:UserID"`
+	UserID uint
+	User   PdmUser
+
 	ProjectID uint          `gorm:"foreignKey:ProjectID"`
 	Models    []PdmModel    `gorm:"foreignKey:ItemID"`
 	Documents []PdmDocument `gorm:"foreignKey:ItemID"`
@@ -86,19 +92,22 @@ type PdmProjectItemLink struct {
 // PdmModel represents the models table
 type PdmModel struct {
 	Base
-	ModelNumber          int    // Or string?
+	ModelNumber          int
 	ModelName            string `gorm:"type:varchar(32)"`
 	ModelDescription     string `gorm:"type:varchar(32)"`
 	ModelFullDescription string
 	ModelFilename        string `gorm:"type:varchar(253);not null"`
 	ModelExt             string `gorm:"type:varchar(253);not null"`
-	ModelPreview         []byte // For LargeBinary
+	ModelPreview         []byte
 
-	UserID   uint        `gorm:"foreignKey:UserID"`
-	User     PdmUser     `gorm:"foreignKey:UserID"`
-	ItemID   uint        `gorm:"foreignKey:ItemID"`
-	Item     PdmItem     `gorm:"foreignKey:ItemID"`
-	Material PdmMaterial `gorm:"foreignKey:ModelID"`
+	UserID uint
+	User   PdmUser
+
+	ItemID uint
+	Item   PdmItem
+
+	MaterialID uint
+	Material   PdmMaterial `gorm:"foreignKey:MaterialID;references:ID"`
 }
 
 // PdmDocument represents the documents table
@@ -130,11 +139,6 @@ type PdmMaterial struct {
 	MaterialWeightUnit      string // Enum can be defined later
 	MaterialSurfaceArea     float64
 	MaterialSurfaceAreaUnit string // Enum can be defined later
-
-	// ModelID uint     `gorm:"foreignKey:ModelID"`
-	// Model   PdmModel `gorm:"foreignKey:ModelID"`
-	ItemID uint    `gorm:"foreignKey:ItemID"`
-	Item   PdmItem `gorm:"foreignKey:ItemID"`
 }
 
 // PdmHistory represents the history table

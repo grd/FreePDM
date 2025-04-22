@@ -29,7 +29,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	userRepo := db.NewUserRepo(gormDB)
-	srv := server.New(&userRepo)
+	srv := server.NewServer(userRepo)
 	srv.Routes(mux)
 
 	log.Println("Server running on http://localhost:8080")

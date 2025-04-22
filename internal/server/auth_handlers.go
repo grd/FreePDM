@@ -54,7 +54,7 @@ func (s *Server) requireLogin(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 

@@ -16,7 +16,7 @@ type Server struct {
 }
 
 // Constructor
-func New(userRepo *db.UserRepo) *Server {
+func NewServer(userRepo *db.UserRepo) *Server {
 	return &Server{
 		UserRepo: userRepo,
 	}
@@ -25,7 +25,7 @@ func New(userRepo *db.UserRepo) *Server {
 func (s *Server) Routes(mux *http.ServeMux) {
 	mux.HandleFunc("/", homePage)
 	mux.HandleFunc("/register", s.handleRegister)
-	mux.HandleFunc("/login", s.handleLogin)
+	mux.HandleFunc("/login", s.HandleLogin)
 	mux.HandleFunc("/logout", s.handleLogout)
 	mux.HandleFunc("/pdm", s.handlePdm)
 	mux.HandleFunc("/handler", s.handler)

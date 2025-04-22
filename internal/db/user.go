@@ -22,14 +22,14 @@ type UserRepo struct {
 }
 
 // Constructor
-func NewUserRepo(db *gorm.DB) UserRepo {
-	return UserRepo{DB: db}
+func NewUserRepo(db *gorm.DB) *UserRepo {
+	return &UserRepo{DB: db}
 }
 
 // LoadUser search a user based on user name.
 func (r *UserRepo) LoadUser(username string) (*PdmUser, error) {
 	var user PdmUser
-	result := r.DB.Where("username = ?", username).First(&user)
+	result := r.DB.Where("UserName = ?", username).First(&user)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, ErrUserNotFound

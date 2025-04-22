@@ -5,46 +5,78 @@
 package db
 
 import (
+	"database/sql/driver"
 	"fmt"
+	"strings"
 )
 
-// https://www.osohq.com/post/sqlalchemy-role-rbac-basics
+// // https://www.osohq.com/post/sqlalchemy-role-rbac-basics
 
-// struct for generating Roles
-type TempRole struct {
+// // struct for generating Roles
+// type TempRole struct {
+// }
+
+// // Create new Role
+// func (t TempRole) AddRole() {
+// 	fmt.Println("new role created")
+// }
+
+// // Delete existing role
+// func (t TempRole) RemoveRole() {
+// 	fmt.Println("existing role deleted")
+// }
+
+// // Struct for generating users
+// // Users are Aliases for roles in SQL see: https://www.postgresql.org/docs/14/sql-createuser.html
+// type TempUser struct {
+// }
+
+// func (t TempUser) AddUserToSql(username string) {
+// 	fmt.Println("This is basically the interface")
+// }
+
+// // Delete existing user
+// func (t TempUser) RemoveUserFromSql(user_id int, username string) {
+// 	fmt.Println("existing user deleted")
+// }
+
+// func (t TempUser) AddUserToLdap(username string) {
+// 	fmt.Println("This is basically the interface")
+// }
+
+// // Delete existing user
+// func (t TempUser) RemoveUserFromLdap(user_id int, username string) {
+// 	fmt.Println("existing user deleted")
+// }
+
+type RoleList []Role
+
+func (r RoleList) Value() (driver.Value, error) {
+	strs := make([]string, len(r))
+	for i, role := range r {
+		strs[i] = string(role)
+	}
+	return strings.Join(strs, ","), nil
 }
 
-// Create new Role
-func (t TempRole) AddRole() {
-	fmt.Println("new role created")
-}
+func (r *RoleList) Scan(value interface{}) error {
+	if value == nil {
+		*r = []Role{}
+		return nil
+	}
 
-// Delete existing role
-func (t TempRole) RemoveRole() {
-	fmt.Println("existing role deleted")
-}
+	str, ok := value.(string)
+	if !ok {
+		return fmt.Errorf("failed to scan Roles: value is not a string")
+	}
 
-// Struct for generating users
-// Users are Aliases for roles in SQL see: https://www.postgresql.org/docs/14/sql-createuser.html
-type TempUser struct {
-}
-
-func (t TempUser) AddUserToSql(username string) {
-	fmt.Println("This is basically the interface")
-}
-
-// Delete existing user
-func (t TempUser) RemoveUserFromSql(user_id int, username string) {
-	fmt.Println("existing user deleted")
-}
-
-func (t TempUser) AddUserToLdap(username string) {
-	fmt.Println("This is basically the interface")
-}
-
-// Delete existing user
-func (t TempUser) RemoveUserFromLdap(user_id int, username string) {
-	fmt.Println("existing user deleted")
+	parts := strings.Split(str, ",")
+	roles := make([]Role, len(parts))
+	for i, s := range parts {
+		roles[i] = Role(s)
+	}
+	*r = roles
+	return nil
 }
 
 // role -> permissions mapping
