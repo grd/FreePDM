@@ -15,20 +15,16 @@ import (
 )
 
 func main() {
-	// start logging
 	logs.StartLogging()
 
-	dbURL := "postgres://pdmuser:pdmpassword@localhost:5432/pdmdb?sslmode=disable"
-
-	// database
-	gormDB, err := db.InitializeDB(dbURL)
+	dbConn, err := db.InitDB()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	mux := http.NewServeMux()
 
-	userRepo := db.NewUserRepo(gormDB)
+	userRepo := db.NewUserRepo(dbConn)
 	srv := server.NewServer(userRepo)
 	srv.Routes(mux)
 

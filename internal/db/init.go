@@ -6,14 +6,82 @@ package db
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"time"
 
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
-// CreateDefaultTables creates the default set of tables in the database.
-func CreateDefaultTables(db *gorm.DB) error {
+// InitDB loads configuration and initializes the database
+func InitDB() (*gorm.DB, error) {
+	err := godotenv.Load("app.env")
+	if err != nil {
+		log.Println("no app.env found, use standard settings")
+	}
+
+	env := os.Getenv("ENV")
+	if env == "" {
+		env = "dev" // default
+	}
+
+	var db *gorm.DB
+
+	switch env {
+	case "prod", "dev":
+		// PostgreSQL settings from environment variables
+		dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+			getEnv("DB_HOST", "localhost"),
+			getEnv("DB_USER", "pdmuser"),
+			getEnv("DB_PASSWORD", "pdmsecret"),
+			getEnv("DB_NAME", "pdmdb"),
+			getEnv("DB_PORT", "5432"),
+		)
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	case "test":
+		fallthrough
+	default:
+		// Use SQLite for testing or fallback
+		db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize database: %w", err)
+	}
+
+	// Auto-create tables if they don't exist
+	err = createDefaultTables(db)
+	if err != nil {
+		return nil, err
+	}
+
+	sqlDB, _ := db.DB()
+	sqlDB.SetMaxOpenConns(10)
+	sqlDB.SetMaxIdleConns(5)
+	sqlDB.SetConnMaxLifetime(time.Hour)
+
+	return db, nil
+}
+
+// getEnv returns a fallback value if key is not set
+func getEnv(key, fallback string) string {
+	if val, ok := os.LookupEnv(key); ok {
+		return val
+	}
+	return fallback
+}
+
+// createDefaultTables creates the default set of tables in the database.
+func createDefaultTables(db *gorm.DB) error {
+	// Check if a key table already exists
+	if db.Migrator().HasTable(&PdmUser{}) {
+		// fmt.Println("Tables already exist — skipping creation.")
+		return nil
+	}
+
 	// Create the default set of tables
 	if err := db.AutoMigrate(&PdmUser{}, &PdmProject{}, &PdmItem{},
 		&PdmModel{}, &PdmDocument{}, &PdmMaterial{}, &PdmHistory{}, &PdmPurchase{},
@@ -24,15 +92,4 @@ func CreateDefaultTables(db *gorm.DB) error {
 	// Log successful creation
 	fmt.Println("Tables created successfully")
 	return nil
-}
-
-// InitializeDB initializes the database connection.
-func InitializeDB(databaseURL string) (*gorm.DB, error) {
-	db, err := gorm.Open(postgres.Open(databaseURL), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to the database: %w", err)
-	}
-	return db, nil
 }

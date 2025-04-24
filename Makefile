@@ -1,15 +1,15 @@
+include app.env
+export
+
 FREEPDM=https://github.com/grd/FreePDM
 BIN_DIR=${HOME}/bin
 CONTAINER_NAME := freepdm
 
 
-all: run add_users createvault removevault testvault pdmserver pdmterm pdmclient vcs vfs 
+all: run createvault removevault test pdmserver 
 
 run: 
 	air
-
-add_users: 
-	go build -o $(BIN_DIR)/add_users ./cmd/add_users
 
 createvault: 
 	go build -o $(BIN_DIR)/createvault ./cmd/createvault
@@ -20,7 +20,7 @@ removevault:
 	removevault
 
 test:
-	go test -v ./...
+	go test -failfast -v ./...
 
 vaultstest:
 	go test -failfast internal/vaults/vaults_test.go
@@ -29,34 +29,14 @@ pdmserver:
 	go build -o $(BIN_DIR)/pdmserver ./cmd/pdmserver
 	pdmserver
 
-pdmterm: 
-	go build -o $(BIN_DIR)/pdmterm ./cmd/pdmterm
-	pdmterm
+# SQLite database clean-up
+reset-db-sqlite:
+	rm -f $(SQLITE_PATH)
 
-pdmclient:
-	go build -o $(BIN_DIR)/pdmclient ./cmd/pdmclient
-	pdmclient
-
-vcs: 
-	go build -o $(BIN_DIR)/vcs ./cmd/vcs
-
-vfs: 
-	go build -o $(BIN_DIR)/vfs ./cmd/vfs
-
-smb2:
-	go build -o $(BIN_DIR)/smb2 ./temp/smb2.go
-	
-error-test:
-	go build -o $(BIN_DIR)/error-test ./temp/error-test/error-test.go
-
-file-manipulation:
-	go build -o $(BIN_DIR)/file-manipulation ./temp/file-manipulation/file-manipulation.go
-
-glob-walkdir:
-	go build -o $(BIN_DIR)/glob-walkdir ./temp/glob-walkdir/glob-walkdir.go
-
-list-share-names:
-	go build -o $(BIN_DIR)/list-share-names ./temp/list-share-names/list-share-names.go
+# PostgreSQL database clean-up
+reset-db-postgres:
+	PGPASSWORD=$(PG_PASSWORD) dropdb -h $(PG_HOST) -U $(PG_USER) $(PG_DB)
+	PGPASSWORD=$(PG_PASSWORD) createdb -h $(PG_HOST) -U $(PG_USER) $(PG_DB)
 
 docker:
 	@$(MAKE) docker_stop
