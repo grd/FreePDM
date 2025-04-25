@@ -38,6 +38,17 @@ reset-db-postgres:
 	PGPASSWORD=$(PG_PASSWORD) dropdb -h $(PG_HOST) -U $(PG_USER) $(PG_DB)
 	PGPASSWORD=$(PG_PASSWORD) createdb -h $(PG_HOST) -U $(PG_USER) $(PG_DB)
 
+# Stop interfering activities. Run `make docker` after this.
+docker-up:
+	sudo systemctl stop postgresql
+	sudo systemctl stop smbd
+
+# And restart the local interfering activities again.
+local-up:
+	docker-compose down
+	sudo systemctl start postgresql
+	sudo systemctl start smbd
+
 docker:
 	@$(MAKE) docker_stop
 	@$(MAKE) docker_start
@@ -60,3 +71,4 @@ docker_shell:
 
 docker_logs:
 	docker logs ${CONTAINER_NAME}
+

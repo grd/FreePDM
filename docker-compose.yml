@@ -7,6 +7,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile # Dockerfile to build your Golang app
+    env_file:
+      - app.env
     ports:
       - "8080:8080"  # json service port
     restart: always
@@ -19,6 +21,7 @@ services:
       - DB_USER=yourusername
       - DB_PASSWORD=yourpassword
       - DB_NAME=FreePDM
+      - ENV=${ENV}
     depends_on:
       - db
     volumes:
@@ -31,18 +34,21 @@ services:
 
   # PostgreSQL Database
   db:
-    image: postgres:14
+    image: postgres:15
+    env_file:
+      - app.env
     container_name: db
     restart: always
     environment:
-      POSTGRES_USER: yourusername
-      POSTGRES_PASSWORD: yourpassword
-      POSTGRES_DB: FreePDM
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DB}
     volumes:
       - db_data:/var/lib/postgresql/data  # Persist database data
     networks:
       - app-network
 
+# Samba Service
   samba:
     image: ghcr.io/servercontainers/samba:latest
     container_name: samba
