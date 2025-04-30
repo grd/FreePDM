@@ -84,6 +84,30 @@ user2 = 1002
 
 The fields that start with Log are ignored ATM.
 
+#### Install certifications (for development)
+For development it is handy to have the certificates ready for install.
+
+```
+sudo apt install libnss3-tools
+```
+
+Go to the FreePDM directory (type `cd ~/FreePDM`)
+
+```
+mkcert -install
+mkcert localhost
+```
+
+Create the directory `certs` and move the two files:
+```
+mkdir certs
+mv localhost-key.pem certs/
+mv localhost.pem certs/
+```
+
+
+
+
 #### build and test
 Go to directory FreePDM and type:
   - `make createvault` Create a vault inside the vaults directory. You should try with the vault `testpdm`

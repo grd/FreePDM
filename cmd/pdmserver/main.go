@@ -7,6 +7,8 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
+	"path"
 
 	"github.com/grd/FreePDM/internal/db"
 	"github.com/grd/FreePDM/internal/logs"
@@ -28,8 +30,19 @@ func main() {
 	srv := server.NewServer(userRepo)
 	srv.Routes(mux)
 
-	log.Println("Server running on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", mux))
+	// Start HTTPS
+	certPath := path.Join("certs", "localhost.pem")
+	keyPath := path.Join("certs", "localhost-key.pem")
+
+	if os.Getenv("USE_HTTPS") == "true" {
+		log.Println("Server running with HTTPS on https://localhost:8443")
+		log.Fatal(http.ListenAndServeTLS(":8443", certPath, keyPath, mux))
+	} else {
+		log.Println("Server running with HTTP on http://localhost:8080")
+		log.Fatal(http.ListenAndServe(":8080", mux))
+	}
+
+	log.Fatal(http.ListenAndServeTLS(":8443", certPath, keyPath, mux))
 
 	// Periodically search for new files
 	shared.ImportSharedFiles()

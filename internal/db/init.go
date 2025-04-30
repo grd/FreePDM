@@ -20,7 +20,7 @@ import (
 func InitDB() (*gorm.DB, error) {
 	err := godotenv.Load("app.env")
 	if err != nil {
-		log.Println("no app.env found, use standard settings")
+		log.Fatalln("no app.env found, use standard settings")
 	}
 
 	env := os.Getenv("ENV")
@@ -34,11 +34,11 @@ func InitDB() (*gorm.DB, error) {
 	case "prod", "dev":
 		// PostgreSQL settings from environment variables
 		dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-			getEnv("DB_HOST", "localhost"),
-			getEnv("DB_USER", "pdmuser"),
-			getEnv("DB_PASSWORD", "pdmsecret"),
-			getEnv("DB_NAME", "pdmdb"),
-			getEnv("DB_PORT", "5432"),
+			getEnv("PG_HOST", "localhost"),
+			getEnv("PG_USER", "pdmuser"),
+			getEnv("PG_PASSWORD", "pdmsecret"),
+			getEnv("PG_NAME", "pdmdb"),
+			getEnv("PG_PORT", "5432"),
 		)
 		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	case "test":

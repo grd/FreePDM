@@ -5,7 +5,6 @@
 package server
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 	"os"
@@ -63,8 +62,8 @@ func (s *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		if err == db.ErrUserNotFound {
 			http.Error(w, "Invalid login", http.StatusUnauthorized)
 			return
-
 		}
+		return
 	}
 	if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)) != nil {
 		http.Error(w, "Invalid login", http.StatusUnauthorized)
@@ -77,29 +76,23 @@ func (s *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		Value:    username,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   false, // True with HTTPS
+		Secure:   true, // True with HTTPS
 	}
 	http.SetCookie(w, &cookie)
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
 
 func (s *Server) handleLogout(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Invalid request", http.StatusBadRequest)
-		return
-	}
-
-	username := r.FormValue("username")
-	password := r.FormValue("password")
-
-	if username == "admin" && password == "password" {
-		renderTemplate(w, "dashboard")
-	} else {
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
-	}
+	// Remove session cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:   "PDM_Session",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
+	})
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World")
-	fmt.Println("Endpoint Hit: homePage")
+func (s *Server) HomePage(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("✅ HTTPS werkt!"))
 }
