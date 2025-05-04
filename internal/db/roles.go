@@ -125,7 +125,7 @@ func (u *PdmUser) HasAllRoles(roles []string) bool {
 
 // HasPermission checks if the user has the given RBAC permission.
 func (u *PdmUser) HasPermission(permission RBAC) bool {
-	permissions := RolePermissions(u.Roles)
+	permissions := RolePermissions(stringsToRoles(u.Roles))
 	for _, p := range permissions {
 		if p == permission {
 			return true
@@ -136,7 +136,7 @@ func (u *PdmUser) HasPermission(permission RBAC) bool {
 
 // HasAnyPermission checks if the user has at least one of the given permissions.
 func (u *PdmUser) HasAnyPermission(perms []RBAC) bool {
-	userPerms := RolePermissions(u.Roles)
+	userPerms := RolePermissions(stringsToRoles(u.Roles))
 	for _, perm := range perms {
 		for _, userPerm := range userPerms {
 			if perm == userPerm {
@@ -145,4 +145,12 @@ func (u *PdmUser) HasAnyPermission(perms []RBAC) bool {
 		}
 	}
 	return false
+}
+
+func stringsToRoles(in []string) []Role {
+	roles := make([]Role, 0, len(in))
+	for _, r := range in {
+		roles = append(roles, Role(r))
+	}
+	return roles
 }

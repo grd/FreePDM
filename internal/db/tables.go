@@ -21,16 +21,17 @@ type Base struct {
 type PdmUser struct {
 	Base
 
-	UserName     string `gorm:"column:username;type:varchar(30);not null;uniqueIndex"`
-	PasswordHash string `gorm:"type:varchar(60);not null"`
-	FirstName    string `gorm:"type:varchar(30)"`
-	LastName     string `gorm:"type:varchar(30)"`
-	FullName     string `gorm:"type:varchar(61)"`
-	EmailAddress string `gorm:"type:varchar(255);not null;uniqueIndex"`
-	PhoneNumber  string `gorm:"type:varchar(20)"`
-	Department   string `gorm:"type:varchar(30)"`
+	UserName           string `gorm:"column:username;type:varchar(30);not null;uniqueIndex"`
+	PasswordHash       string `gorm:"type:varchar(60);not null"`
+	MustChangePassword bool   `gorm:"default:true"`
+	FirstName          string `gorm:"type:varchar(30)"`
+	LastName           string `gorm:"type:varchar(30)"`
+	FullName           string `gorm:"type:varchar(61)"`
+	EmailAddress       string `gorm:"type:varchar(255);not null;uniqueIndex"`
+	PhoneNumber        string `gorm:"type:varchar(20)"`
+	Department         string `gorm:"type:varchar(30)"`
 
-	Roles     []Role        `gorm:"type:text[]"`
+	Roles     []string      `gorm:"type:text[]"`
 	Projects  []*PdmProject `gorm:"many2many:user_project_link"`
 	Items     []PdmItem     `gorm:"foreignKey:UserID"`
 	Models    []PdmModel    `gorm:"foreignKey:UserID"`

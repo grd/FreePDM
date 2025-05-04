@@ -105,16 +105,18 @@ mv localhost-key.pem certs/
 mv localhost.pem certs/
 ```
 
-
-
-
 #### build and test
 Go to directory FreePDM and type:
   - `make createvault` Create a vault inside the vaults directory. You should try with the vault `testpdm`
-  -  `make vaultstest`. This should test and also put some sample data into the vault `testpdm`.
+  - `make vaultstest`. This should test and also put some sample data into the vault `testpdm`.
 
 #### Start running the server
 - `make pdmserver` runs the server.
+
+#### Start logging in
+If you have the certs in the right place and you have the pdmserver running, you can open the website.
+- `localhost:8443`
+You press the button "log in". The username is "admin" and the password is "secret". After you type this in you will be required to change the password.
 
 #### Show the directory from the client side
 The directory shows the files after you mount the directory, so you can open a file. It is versioned, which means that each file has a version. The benefits of this is that it works roughly the same as ordinary commercial PDM's. The downside is that the paths of the files inside an assembly for instance need to be replaced but that is a normal operation inside a PDM.

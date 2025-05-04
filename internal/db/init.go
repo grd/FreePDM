@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -63,6 +64,12 @@ func InitDB() (*gorm.DB, error) {
 	sqlDB.SetMaxIdleConns(5)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
+	// Create admin account (only once)
+	err = createAdminAccount(db)
+	if err != nil {
+		return nil, err
+	}
+
 	return db, nil
 }
 
@@ -77,19 +84,40 @@ func getEnv(key, fallback string) string {
 // createDefaultTables creates the default set of tables in the database.
 func createDefaultTables(db *gorm.DB) error {
 	// Check if a key table already exists
+
 	if db.Migrator().HasTable(&PdmUser{}) {
 		// fmt.Println("Tables already exist — skipping creation.")
 		return nil
 	}
 
 	// Create the default set of tables
-	if err := db.AutoMigrate(&PdmUser{}, &PdmProject{}, &PdmItem{},
-		&PdmModel{}, &PdmDocument{}, &PdmMaterial{}, &PdmHistory{}, &PdmPurchase{},
-		&PdmManufacturer{}, &PdmVendor{}); err != nil {
+	if err := db.AutoMigrate(&PdmUser{}); err != nil {
 		return fmt.Errorf("failed to migrate tables: %w", err)
 	}
+	// if err := db.AutoMigrate(&PdmUser{}, &PdmProject{}, &PdmItem{},
+	// 	&PdmModel{}, &PdmDocument{}, &PdmMaterial{}, &PdmHistory{}, &PdmPurchase{},
+	// 	&PdmManufacturer{}, &PdmVendor{}); err != nil {
+	// 	return fmt.Errorf("failed to migrate tables: %w", err)
+	// }
 
 	// Log successful creation
 	fmt.Println("Tables created successfully")
+	return nil
+}
+
+func createAdminAccount(db *gorm.DB) error {
+	var count int64
+	db.Model(&PdmUser{}).Where("username = ?", "admin").Count(&count)
+	if count == 0 {
+		hashed, _ := bcrypt.GenerateFromPassword([]byte("secret"), bcrypt.DefaultCost)
+		admin := PdmUser{
+			UserName:           "admin",
+			PasswordHash:       string(hashed),
+			MustChangePassword: true,
+			Roles:              []string{string(Admin)},
+		}
+		return db.Create(&admin).Error
+	}
+
 	return nil
 }
