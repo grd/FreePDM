@@ -25,7 +25,7 @@ func NewServer(userRepo *db.UserRepo) *Server {
 
 func (s *Server) Routes(mux *http.ServeMux) {
 	// Without auth
-	mux.HandleFunc("/", s.HomePage)
+	mux.HandleFunc("/", s.HandleHomePage)
 	mux.HandleFunc("/register", s.handleRegister)
 	mux.HandleFunc("/login", s.Login)
 

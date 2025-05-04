@@ -134,8 +134,9 @@ func (s *Server) handleLogout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (s *Server) HomePage(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("✅ HTTPS werkt!"))
+func (s *Server) HandleHomePage(w http.ResponseWriter, r *http.Request) {
+	tmpl, _ := template.ParseFiles("templates/index.html")
+	tmpl.Execute(w, nil)
 }
 
 func (s *Server) HandleDashboard(w http.ResponseWriter, r *http.Request) {
