@@ -7,6 +7,7 @@ package db
 import (
 	"time"
 
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -31,7 +32,8 @@ type PdmUser struct {
 	PhoneNumber        string `gorm:"type:varchar(20)"`
 	Department         string `gorm:"type:varchar(30)"`
 
-	Roles     []string      `gorm:"type:text[]"`
+	Roles pq.StringArray `gorm:"type:text[]"`
+
 	Projects  []*PdmProject `gorm:"many2many:user_project_link"`
 	Items     []PdmItem     `gorm:"foreignKey:UserID"`
 	Models    []PdmModel    `gorm:"foreignKey:UserID"`

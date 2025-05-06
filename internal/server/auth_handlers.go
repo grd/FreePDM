@@ -76,7 +76,7 @@ func (s *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// login success → set cookie
+	// Login success → set cookie
 	cookie := http.Cookie{
 		Name:     "PDM_Session",
 		Value:    username,
@@ -88,28 +88,47 @@ func (s *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	// Must change password?
 	if user.MustChangePassword {
-		http.Redirect(w, r, "/change-password", http.StatusSeeOther)
+		log.Println("User must change password")
+
+		if r.Header.Get("HX-Request") == "true" {
+			w.Header().Set("HX-Redirect", "/change-password")
+		} else {
+			http.Redirect(w, r, "/change-password", http.StatusSeeOther)
+		}
 		return
 	}
 
 	// Success → dashboard
-	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+	if r.Header.Get("HX-Request") == "true" {
+		w.Header().Set("HX-Redirect", "/dashboard")
+	} else {
+		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+	}
 }
 
 func (s *Server) HandleChangePassword(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		tmpl, _ := template.ParseFiles("templates/change-password.html")
-		tmpl.Execute(w, nil)
-		return
-	}
-
-	// POST
+	// Check cookie always, even on GET
 	cookie, err := r.Cookie("PDM_Session")
 	if err != nil || cookie.Value == "" {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 
+	if r.Method == http.MethodGet {
+		log.Println("Rendering change-password page for user:", cookie.Value)
+		tmpl, err := template.ParseFiles("templates/change-password.html")
+		if err != nil {
+			log.Println("Template error:", err)
+			http.Error(w, "Internal Server Error", 500)
+			return
+		}
+		tmpl.Execute(w, map[string]string{
+			"Username": cookie.Value,
+		})
+		return
+	}
+
+	// POST
 	username := cookie.Value
 	newPassword := r.FormValue("new_password")
 

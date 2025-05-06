@@ -28,9 +28,10 @@ func (s *Server) Routes(mux *http.ServeMux) {
 	mux.HandleFunc("/", s.HandleHomePage)
 	mux.HandleFunc("/register", s.handleRegister)
 	mux.HandleFunc("/login", s.Login)
+	mux.HandleFunc("/change-password", s.HandleChangePassword)
 
 	// With auth
-	http.HandleFunc("/dashboard", middleware.RequireLogin(*s.UserRepo, s.HandleDashboard))
+	mux.HandleFunc("/dashboard", middleware.RequireLogin(*s.UserRepo, s.HandleDashboard))
 	mux.HandleFunc("/logout", middleware.RequireLogin(*s.UserRepo, s.handleLogout))
 	mux.HandleFunc("/pdm", s.handlePdm)
 	mux.HandleFunc("/handler", s.handler)
