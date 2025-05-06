@@ -8,33 +8,10 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/grd/FreePDM/internal/db"
 	"golang.org/x/crypto/bcrypt"
 )
-
-func renderTemplate(w http.ResponseWriter, tmpl string) {
-	content, err := os.ReadFile("templates/" + tmpl + ".html")
-	if err != nil {
-		http.Error(w, "Template not found", http.StatusInternalServerError)
-		return
-	}
-	t, err := template.New(tmpl).Parse(string(content))
-	if err != nil {
-		http.Error(w, "Template parsing error", http.StatusInternalServerError)
-		return
-	}
-	t.Execute(w, nil)
-}
-
-func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "index")
-}
-
-func (s *Server) handleRegister(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "register")
-}
 
 func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {

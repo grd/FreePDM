@@ -11,7 +11,6 @@ import (
 )
 
 func (s *Server) handlePdm(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "pdm")
 }
 
 // Sample CreateDocumentHandler. It is not defined yet, but only to show the RBAC features
