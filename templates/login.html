@@ -10,6 +10,12 @@
   <div class="w-full max-w-sm p-6 bg-white rounded-xl shadow-md">
     <h1 class="text-2xl font-bold mb-4 text-center">Login</h1>
 
+    {{ if .Error }}
+    <div class="bg-red-100 text-red-800 p-2 rounded mb-4">
+      {{ .Error }}
+    </div>
+    {{ end }}
+
     <form method="POST" action="/login" hx-target="#result" hx-swap="innerHTML" class="space-y-4">
       <div>
         <label for="username" class="block text-sm font-medium text-gray-700">Username</label>

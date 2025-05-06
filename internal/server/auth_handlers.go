@@ -9,7 +9,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/grd/FreePDM/internal/db"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -41,46 +40,36 @@ func (s *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 
 	user, err := s.UserRepo.LoadUser(username)
-	if err != nil {
-		if err == db.ErrUserNotFound {
-			http.Error(w, "Invalid login", http.StatusUnauthorized)
+	if err != nil || bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)) != nil {
+		// Template opnieuw renderen met foutmelding
+		tmpl, err := template.ParseFiles("templates/login.html")
+		if err != nil {
+			log.Println("Template error:", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
-		return
-	}
-	if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)) != nil {
-		http.Error(w, "Invalid login", http.StatusUnauthorized)
+		data := map[string]string{
+			"Error": "Invalid login credentials",
+		}
+		tmpl.Execute(w, data)
 		return
 	}
 
-	// Login success → set cookie
+	// Login success → cookie en redirect
 	cookie := http.Cookie{
 		Name:     "PDM_Session",
 		Value:    username,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   true, // True with HTTPS
+		Secure:   true,
 	}
 	http.SetCookie(w, &cookie)
 
-	// Must change password?
 	if user.MustChangePassword {
-		log.Println("User must change password")
-
-		if r.Header.Get("HX-Request") == "true" {
-			w.Header().Set("HX-Redirect", "/change-password")
-		} else {
-			http.Redirect(w, r, "/change-password", http.StatusSeeOther)
-		}
+		http.Redirect(w, r, "/change-password", http.StatusSeeOther)
 		return
 	}
-
-	// Success → dashboard
-	if r.Header.Get("HX-Request") == "true" {
-		w.Header().Set("HX-Redirect", "/dashboard")
-	} else {
-		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
-	}
+	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
 
 func (s *Server) HandleChangePassword(w http.ResponseWriter, r *http.Request) {
