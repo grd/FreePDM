@@ -143,3 +143,5 @@ bin/app
 bin/addusers
 bin/setup
 
+# For HTTPS
+assets/
