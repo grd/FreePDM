@@ -7,21 +7,8 @@ package server
 import (
 	"net/http"
 
-	"github.com/grd/FreePDM/internal/db"
 	"github.com/grd/FreePDM/internal/middleware"
 )
-
-type Server struct {
-	UserRepo *db.UserRepo
-	// TODO: Add things such as Logger, Config etc.
-}
-
-// Constructor
-func NewServer(userRepo *db.UserRepo) *Server {
-	return &Server{
-		UserRepo: userRepo,
-	}
-}
 
 func (s *Server) Routes(mux *http.ServeMux) {
 	// Without auth

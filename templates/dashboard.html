@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <title>Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <a href="/change-password" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+    Change Password
+  </a>
 </head>
 <body class="bg-gray-100 min-h-screen">
 
@@ -11,6 +14,7 @@
   <header class="bg-indigo-600 text-white shadow">
     <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
       <h1 class="text-xl font-semibold">FreePDM Dashboard</h1>
+      <h1 class="text-2xl font-bold">Hallo {{ .FullName }}</h1>
       <form method="POST" action="/logout">
         <button class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-100" type="submit">Logout</button>
       </form>

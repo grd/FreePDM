@@ -5,10 +5,10 @@
 package server
 
 import (
-	"html/template"
-	"log"
 	"net/http"
+	"unicode"
 
+	"github.com/grd/FreePDM/internal/shared"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -27,12 +27,8 @@ func (s *Server) ServeLoginPage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	tmpl := template.Must(template.ParseFiles("templates/login.html"))
-	err := tmpl.Execute(w, nil)
-	if err != nil {
-		log.Println("template error:", err)
-		http.Error(w, "Internal Server Error", 500)
-	}
+
+	s.ExecuteTemplate(w, "login.html", nil)
 }
 
 func (s *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
@@ -41,29 +37,13 @@ func (s *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	user, err := s.UserRepo.LoadUser(username)
 	if err != nil || bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)) != nil {
-		// Template opnieuw renderen met foutmelding
-		tmpl, err := template.ParseFiles("templates/login.html")
-		if err != nil {
-			log.Println("Template error:", err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
-		}
 		data := map[string]string{
 			"Error": "Invalid login credentials",
 		}
-		tmpl.Execute(w, data)
-		return
+		s.ExecuteTemplate(w, "login.html", data)
 	}
 
-	// Login success → cookie en redirect
-	cookie := http.Cookie{
-		Name:     "PDM_Session",
-		Value:    username,
-		Path:     "/",
-		HttpOnly: true,
-		Secure:   true,
-	}
-	http.SetCookie(w, &cookie)
+	shared.SetSessionCookie(w, username)
 
 	if user.MustChangePassword {
 		http.Redirect(w, r, "/change-password", http.StatusSeeOther)
@@ -73,71 +53,88 @@ func (s *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) HandleChangePassword(w http.ResponseWriter, r *http.Request) {
-	// Check cookie always, even on GET
-	cookie, err := r.Cookie("PDM_Session")
-	if err != nil || cookie.Value == "" {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		return
+	if r.Method != http.MethodPost {
+		s.ExecuteTemplate(w, "change-password.html", nil)
 	}
 
-	if r.Method == http.MethodGet {
-		log.Println("Rendering change-password page for user:", cookie.Value)
-		tmpl, err := template.ParseFiles("templates/change-password.html")
-		if err != nil {
-			log.Println("Template error:", err)
-			http.Error(w, "Internal Server Error", 500)
-			return
-		}
-		tmpl.Execute(w, map[string]string{
-			"Username": cookie.Value,
-		})
-		return
-	}
-
-	// POST
-	username := cookie.Value
-	newPassword := r.FormValue("new_password")
-
-	hashed, _ := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
-	err = s.UserRepo.UpdatePassword(username, string(hashed))
+	username, err := shared.GetSessionUsername(r)
 	if err != nil {
-		http.Error(w, "Error updating password", http.StatusInternalServerError)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+	newPassword := r.FormValue("new_password")
+	repeatPassword := r.FormValue("repeat_password")
+
+	// Basic checks
+	if newPassword != repeatPassword {
+		http.Error(w, "Passwords do not match", http.StatusBadRequest)
+		return
+	}
+	if len(newPassword) < 10 {
+		http.Error(w, "Password must be at least 10 characters long", http.StatusBadRequest)
+		return
+	}
+	if !containsUppercase(newPassword) {
+		http.Error(w, "Password must contain at least one uppercase letter", http.StatusBadRequest)
+		return
+	}
+
+	// Hash new password
+	hash, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		http.Error(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
+
+	// Update DB
+	err = s.UserRepo.UpdatePassword(username, string(hash))
+	if err != nil {
+		http.Error(w, "Failed to update password", http.StatusInternalServerError)
+		return
+	}
+
+	// Set MustChangePassword = false
+	err = s.UserRepo.ClearMustChangePassword(username)
+	if err != nil {
+		http.Error(w, "Failed to finalize update", http.StatusInternalServerError)
+		return
+	}
+
+	// Return redirect via HX
+	w.Header().Set("HX-Redirect", "/dashboard")
+}
+
+func containsUppercase(s string) bool {
+	for _, r := range s {
+		if unicode.IsUpper(r) {
+			return true
+		}
+	}
+	return false
 }
 
 func (s *Server) handleLogout(w http.ResponseWriter, r *http.Request) {
-	// Remove session cookie
-	http.SetCookie(w, &http.Cookie{
-		Name:   "PDM_Session",
-		Value:  "",
-		Path:   "/",
-		MaxAge: -1,
-	})
+	shared.ClearSessionCookie(w)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (s *Server) HandleHomePage(w http.ResponseWriter, r *http.Request) {
-	tmpl, _ := template.ParseFiles("templates/index.html")
-	tmpl.Execute(w, nil)
+	s.ExecuteTemplate(w, "index.html", nil)
 }
 
 func (s *Server) HandleDashboard(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("PDM_Session")
-	if err != nil || cookie.Value == "" {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		return
-	}
-
-	// Loading HTML template
-	tmpl, err := template.ParseFiles("templates/dashboard.html")
+	username, err := shared.GetSessionUsername(r)
 	if err != nil {
-		http.Error(w, "Error loading dashboard", http.StatusInternalServerError)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	// Returns template (or data)
-	tmpl.Execute(w, nil)
+	data := struct {
+		Username string
+	}{
+		Username: username,
+	}
+
+	s.ExecuteTemplate(w, "dashboard.html", data)
 }
