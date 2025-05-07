@@ -21,18 +21,6 @@ type UserRepo struct {
 	DB *gorm.DB
 }
 
-func (r *UserRepo) UpdatePassword(username, hash string) error {
-	var user PdmUser
-	if err := r.DB.Where("username = ?", username).First(&user).Error; err != nil {
-		return err
-	}
-
-	user.PasswordHash = hash
-	user.MustChangePassword = false
-
-	return r.DB.Save(&user).Error
-}
-
 // Constructor
 func NewUserRepo(db *gorm.DB) *UserRepo {
 	return &UserRepo{DB: db}
@@ -49,6 +37,27 @@ func (r *UserRepo) LoadUser(username string) (*PdmUser, error) {
 		return nil, result.Error
 	}
 	return &user, nil
+}
+
+// Renames password and also sets the MustChangePassword flag to false
+func (r *UserRepo) UpdatePassword(username, hash string) error {
+	var user PdmUser
+	if err := r.DB.Where("username = ?", username).First(&user).Error; err != nil {
+		return err
+	}
+
+	user.PasswordHash = hash
+	user.MustChangePassword = false
+
+	return r.DB.Save(&user).Error
+}
+
+// Resets the MustChangePassword flag to false
+func (r *UserRepo) ClearMustChangePassword(username string) error {
+	return r.DB.Model(&PdmUser{}).
+		Where("username = ?", username).
+		Update("must_change_password", false).
+		Error
 }
 
 func (r *UserRepo) AddUserToSql(username string) {
