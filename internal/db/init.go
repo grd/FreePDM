@@ -112,6 +112,7 @@ func createAdminAccount(db *gorm.DB) error {
 		hashed, _ := bcrypt.GenerateFromPassword([]byte("secret"), bcrypt.DefaultCost)
 		admin := PdmUser{
 			UserName:           "admin",
+			FullName:           "Administrator",
 			PasswordHash:       string(hashed),
 			MustChangePassword: true,
 			Roles:              []string{string(Admin)},

@@ -1,0 +1,37 @@
+{{ define "base" }}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ block "title" . }}FreePDM{{ end }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Init dark mode based on localStorage preference
+      if (localStorage.getItem("theme") === "dark") {
+        document.documentElement.classList.add("dark");
+      }
+    </script>
+  </head>
+  <body class="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white">
+    <nav class="bg-gray-100 dark:bg-gray-800 shadow-md p-4 flex justify-between items-center">
+      <!-- Toggle Theme button styled like Change Password -->
+      <button onclick="toggleTheme()" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 text-sm">
+        Toggle Theme
+      </button>
+      {{ block "nav-actions" . }}{{ end }}
+    </nav>
+
+    <main class="p-6">
+      {{ block "content" . }}{{ end }}
+    </main>
+
+    <script>
+      function toggleTheme() {
+        const root = document.documentElement;
+        const isDark = root.classList.toggle("dark");
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+      }
+    </script>
+  </body>
+</html>
+{{ end }}

@@ -5,12 +5,17 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"unicode"
 
 	"github.com/grd/FreePDM/internal/shared"
 	"golang.org/x/crypto/bcrypt"
 )
+
+func (s *Server) HandleHomePage(w http.ResponseWriter, r *http.Request) {
+	s.ExecuteTemplate(w, "index.html", nil)
+}
 
 func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
@@ -63,8 +68,22 @@ func (s *Server) HandleChangePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Form data
+	oldPassword := r.FormValue("old_password")
 	newPassword := r.FormValue("new_password")
 	repeatPassword := r.FormValue("repeat_password")
+
+	user, err := s.UserRepo.LoadUser(username)
+	if err != nil {
+		http.Error(w, "User not found", http.StatusUnauthorized)
+		return
+	}
+
+	if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(oldPassword)) != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "Current password is incorrect")
+		return
+	}
 
 	// Basic checks
 	if newPassword != repeatPassword {
@@ -72,7 +91,8 @@ func (s *Server) HandleChangePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if len(newPassword) < 10 {
-		http.Error(w, "Password must be at least 10 characters long", http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "Password must be at least 10 characters long")
 		return
 	}
 	if !containsUppercase(newPassword) {
@@ -119,10 +139,6 @@ func (s *Server) handleLogout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (s *Server) HandleHomePage(w http.ResponseWriter, r *http.Request) {
-	s.ExecuteTemplate(w, "index.html", nil)
-}
-
 func (s *Server) HandleDashboard(w http.ResponseWriter, r *http.Request) {
 	username, err := shared.GetSessionUsername(r)
 	if err != nil {
@@ -131,9 +147,9 @@ func (s *Server) HandleDashboard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := struct {
-		Username string
+		UserName string
 	}{
-		Username: username,
+		UserName: username,
 	}
 
 	s.ExecuteTemplate(w, "dashboard.html", data)

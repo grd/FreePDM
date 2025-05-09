@@ -144,4 +144,4 @@ bin/addusers
 bin/setup
 
 # For HTTPS
-assets/
+certs/
