@@ -29,15 +29,15 @@ func setupTestDB(t *testing.T) *gorm.DB {
 	return gormdb
 }
 
-func createTestUser(gormdb *gorm.DB) error {
-	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("test123"), bcrypt.DefaultCost)
-	user := db.PdmUser{
-		UserName:     "testuser",
-		PasswordHash: string(hashedPassword),
-		EmailAddress: "test@example.com",
-	}
-	return gormdb.Create(&user).Error
-}
+// func createTestUser(gormdb *gorm.DB) error {
+// 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("test123"), bcrypt.DefaultCost)
+// 	user := db.PdmUser{
+// 		UserName:     "testuser",
+// 		PasswordHash: string(hashedPassword),
+// 		EmailAddress: "test@example.com",
+// 	}
+// 	return gormdb.Create(&user).Error
+// }
 
 func TestValidLogin(t *testing.T) {
 	// Arrange

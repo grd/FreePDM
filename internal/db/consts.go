@@ -17,15 +17,15 @@ type (
 )
 
 const (
-	Admin       Role = "admin"
-	Designer    Role = "designer"
-	Senior      Role = "senior"
-	Viewer      Role = "viewer"
-	Editor      Role = "editor"
-	Approver    Role = "approver"
-	ProjectLead Role = "projectlead"
-	Qa          Role = "qa"
-	Guest       Role = "guest"
+	Admin          Role = "admin"
+	Designer       Role = "designer"
+	SeniorDesigner Role = "senior"
+	Viewer         Role = "viewer"
+	Editor         Role = "editor"
+	Approver       Role = "approver"
+	ProjectLead    Role = "projectlead"
+	Qa             Role = "qa"
+	Guest          Role = "guest"
 )
 
 const (

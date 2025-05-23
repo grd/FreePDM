@@ -67,7 +67,7 @@ func RolePermissions(role []Role) (ret []RBAC) {
 				ReadItems,
 				ReadModels,
 			)
-		case Senior:
+		case SeniorDesigner:
 			ret = append(ret,
 				DeleteDocument,
 				DeleteItem,
