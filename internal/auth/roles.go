@@ -21,3 +21,13 @@ func IsProjectLead(user *db.PdmUser) bool {
 func IsSeniorDesigner(user *db.PdmUser) bool {
 	return slices.Contains(user.Roles, "SeniorDesigner")
 }
+
+// HasAnyRole checks if the user has at least one of the given roles
+func HasAnyRole(user *db.PdmUser, roles ...string) bool {
+	for _, role := range roles {
+		if slices.Contains(user.Roles, role) {
+			return true
+		}
+	}
+	return false
+}
