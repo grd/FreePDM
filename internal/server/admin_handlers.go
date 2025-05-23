@@ -3,3 +3,31 @@
 // license that can be found in the LICENSE file.
 
 package server
+
+import (
+	"net/http"
+
+	"github.com/grd/FreePDM/internal/auth"
+	"github.com/grd/FreePDM/internal/shared"
+)
+
+func (s *Server) HandleAdminDashboard(w http.ResponseWriter, r *http.Request) {
+	username, err := shared.GetSessionUsername(r)
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	user, err := s.UserRepo.LoadUser(username)
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	if !auth.IsAdmin(user) {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+
+	s.ExecuteTemplate(w, "admin-dashboard.html", user)
+}
