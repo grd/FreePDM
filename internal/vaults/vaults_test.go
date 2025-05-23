@@ -64,14 +64,14 @@ func TestImportFile(t *testing.T) {
 		log.Fatal("Environment variable 'FREEPDM_DIR' not set. Please look at the install page.")
 	}
 
-	filesDir := path.Join(freePdmDir, "ConceptOfDesign/TestFiles")
+	filesDir := path.Join(freePdmDir, "doc/TestFiles")
 
-	// file1 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0001.FCStd"
-	// file2 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0002.FCStd"
-	// file3 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0003.FCStd"
-	// file4 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0004.FCStd"
-	// file5 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0005.FCStd"
-	// file6 = "https://raw.githubusercontent.com/grd/FreePDM/main/ConceptOfDesign/TestFiles/0006.FCStd"
+	// file1 = "https://raw.githubusercontent.com/grd/FreePDM/main/doc/TestFiles/0001.FCStd"
+	// file2 = "https://raw.githubusercontent.com/grd/FreePDM/main/doc/TestFiles/0002.FCStd"
+	// file3 = "https://raw.githubusercontent.com/grd/FreePDM/main/doc/TestFiles/0003.FCStd"
+	// file4 = "https://raw.githubusercontent.com/grd/FreePDM/main/doc/TestFiles/0004.FCStd"
+	// file5 = "https://raw.githubusercontent.com/grd/FreePDM/main/doc/TestFiles/0005.FCStd"
+	// file6 = "https://raw.githubusercontent.com/grd/FreePDM/main/doc/TestFiles/0006.FCStd"
 
 	file1 = path.Join(filesDir, "0001.FCStd")
 	file2 = path.Join(filesDir, "0002.FCStd")

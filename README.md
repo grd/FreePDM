@@ -17,7 +17,7 @@ A PDM for FreeCAD. A PDM is a Product Data Management system. Per [wikipedia](ht
 
 >In software engineering, this is known as version control. The goals of product data management include ensuring all stakeholders share a common understanding, that confusion during the execution of the processes is minimized, and that the highest standards of quality controls are maintained. 
 
-[FreeCAD](https://www.freecad.org) is a free libre opensource cross-platform Computer Aided Design (CAD) software. FreePDM is written in [Golang](ConceptOfDesign/Why_Golang.md) and has a MIT license.
+[FreeCAD](https://www.freecad.org) is a free libre opensource cross-platform Computer Aided Design (CAD) software. FreePDM is written in [Golang](doc/Why_Golang.md) and has a MIT license.
 
 ## Background
 The initial idea is to make a Skeleton (model), GUI and an Admin module. The GUI is based on Fyne, and will be a multi platform app.
@@ -34,15 +34,15 @@ Relevant:
 * The [fcinfo](https://wiki.freecad.org/Macro_FCInfo) macro for measuring the weight of a model.
 
 ## Install
-Proposed [Install](ConceptOfDesign/FreePDM_Install/README.md).
+Proposed [Install](doc/FreePDM_Install/README.md).
 
 ## Concept
 
-Proposed [concept](ConceptOfDesign/FreePDM_01-Design/README.md) of design.
+Proposed [concept](doc/FreePDM_01-Design/README.md) of design.
 
 ## Workflow
 
-Proposed [workflow](ConceptOfDesign/FreePDM_02-Workflows/README.md).
+Proposed [workflow](doc/FreePDM_02-Workflows/README.md).
 
 ## Licence
 MIT [LICENSE](LICENSE)

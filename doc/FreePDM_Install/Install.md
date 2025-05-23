@@ -1,5 +1,5 @@
 # FreePDM Documentation
-The specs for a file server are minimal (a RPI4/5 should work but is not tested yet). At this moment, I am using a desktop and it works for me. If there are multiple users, then consider using a [proper server](https://github.com/grd/FreePDM/blob/main/ConceptOfDesign/FreePDM_Install/Docker-Compose.md).
+The specs for a file server are minimal (a RPI4/5 should work but is not tested yet). At this moment, I am using a desktop and it works for me. If there are multiple users, then consider using a [proper server](https://github.com/grd/FreePDM/blob/main/doc/FreePDM_Install/Docker-Compose.md).
 
 ## How to install FreePDM
 

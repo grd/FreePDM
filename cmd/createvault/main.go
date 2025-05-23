@@ -39,7 +39,7 @@ func setup() {
 	fmt.Println("")
 	fmt.Println("Some information will be necessary prior to creating a new vault.")
 	fmt.Println("For more info please refer to:")
-	fmt.Println("https://github.com/grd/FreePDM/blob/main/ConceptOfDesign/FreePDM_Install/Install.md")
+	fmt.Println("https://github.com/grd/FreePDM/blob/main/doc/FreePDM_Install/Install.md")
 	fmt.Println("")
 	fmt.Println("The necessary information:")
 	fmt.Println("- the new vault directory (for store your information),")
