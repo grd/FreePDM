@@ -1,34 +1,22 @@
 {{ define "admin-dashboard.html" }}
-  {{ template "base" . }}
+{{ template "base" . }}
 {{ end }}
 
 {{ define "title" }}Admin Dashboard{{ end }}
 
 {{ define "content" }}
-  <h1 class="text-2xl font-bold mb-6">Admin Dashboard</h1>
+<h1 class="text-2xl font-bold mb-6">Welcome, Admin</h1>
 
-  <!-- Internationalization button placeholder -->
-  <a href="#" class="inline-block mb-4 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">
-    🌐 Change Language (future)
-  </a>
+<div class="grid gap-4 grid-cols-1 sm:grid-cols-2">
+  <a href="/admin/users" class="block p-4 bg-indigo-500 text-white rounded hover:bg-indigo-600">Manage Users</a>
+  <a href="/admin/vaults" class="block p-4 bg-indigo-500 text-white rounded hover:bg-indigo-600">Manage Vaults</a>
+  <a href="/admin/logs" class="block p-4 bg-indigo-500 text-white rounded hover:bg-indigo-600">Show Logs</a>
+  <a href="/admin/session-settings" class="block p-4 bg-indigo-500 text-white rounded hover:bg-indigo-600">Session Settings</a>
+</div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div class="p-6 rounded-xl shadow bg-white dark:bg-gray-800">
-      <h3 class="text-lg font-semibold mb-2">User Management</h3>
-      <p class="text-sm text-gray-600 dark:text-gray-400">Add, modify, or deactivate users.</p>
-      <a href="/admin/users" class="inline-block mt-2 px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600">Manage Users</a>
-    </div>
-
-    <div class="p-6 rounded-xl shadow bg-white dark:bg-gray-800">
-      <h3 class="text-lg font-semibold mb-2">Vault Management</h3>
-      <p class="text-sm text-gray-600 dark:text-gray-400">View and configure all vaults.</p>
-      <a href="/admin/vaults" class="inline-block mt-2 px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600">Manage Vaults</a>
-    </div>
-
-    <div class="p-6 rounded-xl shadow bg-white dark:bg-gray-800">
-      <h3 class="text-lg font-semibold mb-2">System Logs</h3>
-      <p class="text-sm text-gray-600 dark:text-gray-400">View system and error logs for debugging and auditing.</p>
-      <a href="/admin/logs" class="inline-block mt-2 px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600">Show Logs</a>
-    </div>
-  </div>
+<div class="mt-8">
+  <button onclick="toggleTheme()" class="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded text-black dark:text-white hover:opacity-80">
+    Toggle Theme
+  </button>
+</div>
 {{ end }}

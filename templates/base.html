@@ -6,7 +6,6 @@
     <title>{{ block "title" . }}FreePDM{{ end }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      // Init dark mode based on localStorage preference
       if (localStorage.getItem("theme") === "dark") {
         document.documentElement.classList.add("dark");
       }
@@ -14,22 +13,51 @@
   </head>
   <body class="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white">
     <nav class="bg-gray-100 dark:bg-gray-800 shadow-md p-4 flex justify-between items-center">
-      <!-- Toggle Theme button styled like Change Password -->
-      <button onclick="toggleTheme()" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 text-sm">
-        Toggle Theme
-      </button>
-      {{ block "nav-actions" . }}{{ end }}
+      <div class="flex space-x-2">
+        {{ block "nav-actions" . }}{{ end }}
+      </div>
+      <div>
+        <form id="logoutForm" method="POST" action="/logout">
+          <button type="button" onclick="showLogoutModal()" class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm">
+            Logout
+          </button>
+        </form>
+      </div>
     </nav>
 
     <main class="p-6">
       {{ block "content" . }}{{ end }}
     </main>
 
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-800 p-6 rounded shadow-md w-80 text-center">
+        <h2 class="text-lg font-bold mb-4">Confirm Logout</h2>
+        <p class="mb-4">Are you sure you want to log out?</p>
+        <div class="flex justify-center space-x-4">
+          <button onclick="submitLogout()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Yes</button>
+          <button onclick="hideLogoutModal()" class="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600">Cancel</button>
+        </div>
+      </div>
+    </div>
+
     <script>
       function toggleTheme() {
         const root = document.documentElement;
         const isDark = root.classList.toggle("dark");
         localStorage.setItem("theme", isDark ? "dark" : "light");
+      }
+
+      function showLogoutModal() {
+        document.getElementById("logoutModal").classList.remove("hidden");
+      }
+
+      function hideLogoutModal() {
+        document.getElementById("logoutModal").classList.add("hidden");
+      }
+
+      function submitLogout() {
+        document.getElementById("logoutForm").submit();
       }
     </script>
   </body>
