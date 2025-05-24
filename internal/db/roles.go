@@ -97,7 +97,7 @@ func DefaultRoles() []Role {
 // Check whether user has a role
 func (u *PdmUser) HasRole(role string) bool {
 	for _, r := range u.Roles {
-		if string(r) == role {
+		if strings.EqualFold(r, role) {
 			return true
 		}
 	}

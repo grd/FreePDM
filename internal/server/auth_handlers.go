@@ -6,9 +6,12 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"strings"
 	"unicode"
 
+	"github.com/grd/FreePDM/internal/auth"
 	"github.com/grd/FreePDM/internal/shared"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -36,24 +39,45 @@ func (s *Server) ServeLoginPage(w http.ResponseWriter, r *http.Request) {
 	s.ExecuteTemplate(w, "login.html", nil)
 }
 
+// login handler
 func (s *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
 	user, err := s.UserRepo.LoadUser(username)
 	if err != nil || bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)) != nil {
-		data := map[string]string{
-			"Error": "Invalid login credentials",
-		}
-		s.ExecuteTemplate(w, "login.html", data)
+		s.ExecuteTemplate(w, "login.html", map[string]string{"Error": "Invalid login credentials"})
+		return
 	}
 
 	shared.SetSessionCookie(w, username)
 
-	if user.MustChangePassword {
-		http.Redirect(w, r, "/change-password", http.StatusSeeOther)
+	// Explicit debug to stdout
+	fmt.Printf("[DEBUG] User %s roles: %v\n", username, user.Roles)
+	log.Printf("[DEBUG] User %s roles: %v", username, user.Roles)
+
+	// EXTRA CHECK: show exact roles to be sure
+	for i, role := range user.Roles {
+		fmt.Printf("[DEBUG] Role %d: %s\n", i, role)
+	}
+
+	// Robust admin detection (case-insensitive match)
+	for _, role := range user.Roles {
+		if strings.EqualFold(role, "Admin") {
+			http.Redirect(w, r, "/admin", http.StatusSeeOther)
+			return
+		}
+	}
+
+	// Continue with other priority roles
+	if auth.IsProjectLead(user) {
+		http.Redirect(w, r, "/project-lead-dashboard", http.StatusSeeOther)
+		return
+	} else if auth.IsSeniorDesigner(user) {
+		http.Redirect(w, r, "/senior-designer-dashboard", http.StatusSeeOther)
 		return
 	}
+
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
 

@@ -5,28 +5,30 @@
 package auth
 
 import (
-	"slices"
+	"strings"
 
 	"github.com/grd/FreePDM/internal/db"
 )
 
 func IsAdmin(user *db.PdmUser) bool {
-	return slices.Contains(user.Roles, "Admin")
+	return user.HasRole("admin")
 }
 
 func IsProjectLead(user *db.PdmUser) bool {
-	return slices.Contains(user.Roles, "ProjectLead")
+	return user.HasRole("projectlead")
 }
 
 func IsSeniorDesigner(user *db.PdmUser) bool {
-	return slices.Contains(user.Roles, "SeniorDesigner")
+	return user.HasRole("seniordesigner")
 }
 
-// HasAnyRole checks if the user has at least one of the given roles
+// HasAnyRole checks if the user has at least one of the given roles (case-insensitive)
 func HasAnyRole(user *db.PdmUser, roles ...string) bool {
-	for _, role := range roles {
-		if slices.Contains(user.Roles, role) {
-			return true
+	for _, checkRole := range roles {
+		for _, userRole := range user.Roles {
+			if strings.EqualFold(userRole, checkRole) {
+				return true
+			}
 		}
 	}
 	return false
