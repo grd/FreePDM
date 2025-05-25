@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"path/filepath"
 
+	"github.com/grd/FreePDM/internal/config"
 	"github.com/grd/FreePDM/internal/middleware"
-	"github.com/grd/FreePDM/internal/server/config"
 )
 
 func (s *Server) Routes(mux *http.ServeMux) {

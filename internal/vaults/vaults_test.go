@@ -17,7 +17,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/grd/FreePDM/internal/server/config"
+	"github.com/grd/FreePDM/internal/config"
 	"github.com/grd/FreePDM/internal/util"
 	fsm "github.com/grd/FreePDM/internal/vaults"
 	"github.com/stretchr/testify/assert"
