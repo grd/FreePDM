@@ -6,11 +6,16 @@ package server
 
 import (
 	"net/http"
+	"path/filepath"
 
 	"github.com/grd/FreePDM/internal/middleware"
+	"github.com/grd/FreePDM/internal/server/config"
 )
 
 func (s *Server) Routes(mux *http.ServeMux) {
+	staticPath := filepath.Join(config.AppDir, "static")
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(staticPath))))
+
 	// Without auth
 	mux.HandleFunc("/", s.HandleHomePage)
 	mux.HandleFunc("/login", s.Login)

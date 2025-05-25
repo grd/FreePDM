@@ -16,6 +16,7 @@ import (
 )
 
 var (
+	AppDir                string
 	configName, configDir string
 	Conf                  = Config{}
 )
@@ -82,11 +83,11 @@ func (cfg *Config) String() string {
 }
 
 func init() {
-	appName, ok := os.LookupEnv("FREEPDM_DIR")
+	AppDir, ok := os.LookupEnv("FREEPDM_DIR")
 	if !ok {
 		log.Fatal("The environment FREEPDM_DIR is not set. Please read the installation page.")
 	}
-	configDir = path.Join(appName, "data")
+	configDir = path.Join(AppDir, "data")
 	configName = path.Join(configDir, "FreePDM.toml")
 
 	// Ensure the config directory exists
