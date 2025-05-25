@@ -97,7 +97,7 @@ void MyCommand::activated(int)
 
 bool MyCommand::isActive(void)
 {
-    // availability of the command (eg.: check for existence of a document...)
+    // availability of the command (e.g. check for existence of a document...)
     // if this function returns False the menu/buttons are disabled (greyed out)
     return (hasActiveDocument() && !Gui::Control().activeDialog());
 }

@@ -20,7 +20,7 @@ To define a user group there are some parameters how to define it:
 **expected company size** 
 The (expected )company size probably small to medium sized companies. There are a few parameters how to divine it.
 
-- Head count of staff([see Europe](https://en.wikipedia.org/wiki/Small_and_medium-sized_enterprises))
+- Head count of staff [see Europe](https://en.wikipedia.org/wiki/Small_and_medium-sized_enterprises)
 - The number of users
 - The number of simultaneous users
 

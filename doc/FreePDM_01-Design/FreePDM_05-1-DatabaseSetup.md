@@ -137,7 +137,7 @@ Source state:
 
 Difference
 
-- [SO difference between different types of sql](https://stackoverflow.com/questions/1326318/difference-between-different-types-of-sql)
+- [Difference between different types of sql](https://stackoverflow.com/questions/1326318/difference-between-different-types-of-sql)
 - [compare multiple sql flavours](https://www.altexsoft.com/blog/business/comparing-database-management-systems-mysql-postgresql-mssql-server-mongodb-elasticsearch-and-others/)
 - [Hevodata MariaDB vs PostgreSQL](https://hevodata.com/learn/mariadb-vs-postgresql/)
 - [IBM SQL vs NO-SQL](https://www.ibm.com/cloud/blog/sql-vs-nosql)

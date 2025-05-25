@@ -33,7 +33,7 @@ func sendCommand(command string, params map[string]string) (*shared.CommandRespo
 	}
 	defer resp.Body.Close()
 
-	// Controleer de statuscode
+	// Check StatusCode
 	if resp.StatusCode != http.StatusOK {
 		var errResp map[string]string
 		if err := json.NewDecoder(resp.Body).Decode(&errResp); err != nil {
@@ -42,7 +42,7 @@ func sendCommand(command string, params map[string]string) (*shared.CommandRespo
 		return nil, fmt.Errorf("server error: %s", errResp["error"])
 	}
 
-	// Decodeer het JSON-antwoord
+	// Decode JSON reply
 	var cmdResp shared.CommandResponse
 	if err := json.NewDecoder(resp.Body).Decode(&cmdResp); err != nil {
 		return nil, fmt.Errorf("failed to decode response: %w", err)

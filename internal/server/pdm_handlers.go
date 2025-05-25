@@ -50,7 +50,7 @@ func CommandHandler(w http.ResponseWriter, r *http.Request) {
 		handleAllocate(w, req.User, req.Vault, path)
 
 	// case "rename":
-	// 	// Get 'vault', 'src' en 'dst' out of params map
+	// 	// Get 'vault', 'src' and 'dst' out of params map
 	// 	src := req.Params["src"]
 	// 	dst := req.Params["dst"]
 	// 	handleRename(w, src, dst)

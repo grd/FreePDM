@@ -53,7 +53,8 @@ func FullPath(directory, file string) string {
 //   var directory_list []string
 //   var file_list []string
 
-//   // TODO: Dit wordt een "normale" Go variant van ls
+//   // TODO: This will be a "normal" variant of ls
+
 //    dirs, err := os.ReadDir(directory)
 //    ex.CheckErr(err)
 

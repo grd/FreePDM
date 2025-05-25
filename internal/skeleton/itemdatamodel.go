@@ -409,7 +409,7 @@ func (idm *ItemDataModel) readXml(fileName string) {
 //         type_name = att.attrib["type"]
 //         if type_name == "PartDesign::Body": print("Object Type = " + type_name + " Name = " + att.attrib["name"])
 //         elif type_name == "App::Part": print("Object Type = " + type_name + " Name = " + att.attrib["name"])
-//         elif type_name == "Part::FeaturePython": print("Object Type = " + type_name + " Name = " + att.attrib["name"]) // A2P en A3 assy
+//         elif type_name == "Part::FeaturePython": print("Object Type = " + type_name + " Name = " + att.attrib["name"]) // A2P and A3 assy
 //         elif type_name == "App::DocumentObjectGroup": // A4 assy
 //             print("Object Type = " + type_name + " Name = " + att.attrib["name"])
 //             a4_assy = ItemAssemblyA4(self.xml_document)
