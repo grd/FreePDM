@@ -145,3 +145,6 @@ bin/setup
 
 # For HTTPS
 certs/
+
+# For air
+tmp/

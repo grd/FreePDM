@@ -1,4 +1,4 @@
-<div style="text-align: center;"><img src="assets/FreePDM-logo.png" /></div>
+<div style="text-align: center;"><img src="static/FreePDM-logo.png" /></div>
 
 
 > "A good engineer is a person who makes a design that works with as few original ideas as possible."
