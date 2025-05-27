@@ -22,12 +22,12 @@ type Base struct {
 type PdmUser struct {
 	Base
 
-	UserName           string    `gorm:"column:username;type:varchar(30);not null;uniqueIndex"`
+	LoginName          string    `gorm:"column:loginname;type:varchar(30);not null;uniqueIndex"`
+	FullName           string    `gorm:"type:varchar(61)"`
 	PasswordHash       string    `gorm:"type:varchar(60);not null"`
 	MustChangePassword bool      `gorm:"default:true"`
 	FirstName          string    `gorm:"type:varchar(30)"`
 	LastName           string    `gorm:"type:varchar(30)"`
-	FullName           string    `gorm:"type:varchar(61)"`
 	DateOfBirth        time.Time `gorm:"type:date"`
 	Sex                string    `gorm:"type:varchar(10)"` // "male", "female", or "x"
 	EmailAddress       string    `gorm:"type:varchar(255);not null;uniqueIndex"`

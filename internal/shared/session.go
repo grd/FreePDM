@@ -14,8 +14,8 @@ var (
 	SessionCookieName  = "PDM_Session"
 )
 
-// GetSessionUsername retrieves the username stored in the session cookie.
-func GetSessionUsername(r *http.Request) (string, error) {
+// GetSessionLoginname retrieves the loginname stored in the session cookie.
+func GetSessionLoginname(r *http.Request) (string, error) {
 	cookie, err := r.Cookie(SessionCookieName)
 	if err != nil || cookie.Value == "" {
 		return "", ErrNoSessionCookie
@@ -24,10 +24,10 @@ func GetSessionUsername(r *http.Request) (string, error) {
 }
 
 // SetSessionCookie sets the session cookie for the user.
-func SetSessionCookie(w http.ResponseWriter, username string) {
+func SetSessionCookie(w http.ResponseWriter, loginname string) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     SessionCookieName,
-		Value:    username,
+		Value:    loginname,
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   true, // Set to false if not using HTTPS in dev

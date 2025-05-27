@@ -15,11 +15,11 @@ type Login struct {
 	CSRFToke       string
 }
 
-// temporary Key is username
+// temporary Key is loginname
 var Users = map[string]Login{}
 
-func IsValidUser(username, password string, repo *db.UserRepo) bool {
-	user, err := repo.LoadUser(username)
+func IsValidUser(loginname, password string, repo *db.UserRepo) bool {
+	user, err := repo.LoadUser(loginname)
 	if err != nil {
 		return false
 	}

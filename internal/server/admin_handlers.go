@@ -20,13 +20,13 @@ import (
 )
 
 func (s *Server) HandleAdminDashboard(w http.ResponseWriter, r *http.Request) {
-	username, err := shared.GetSessionUsername(r)
+	loginname, err := shared.GetSessionLoginname(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 
-	user, err := s.UserRepo.LoadUser(username)
+	user, err := s.UserRepo.LoadUser(loginname)
 	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -52,13 +52,13 @@ func (s *Server) HandleAdminDashboard(w http.ResponseWriter, r *http.Request) {
 
 // Handler update for colored log HTML + raw log output
 func (s *Server) HandleShowLogs(w http.ResponseWriter, r *http.Request) {
-	username, err := shared.GetSessionUsername(r)
+	loginname, err := shared.GetSessionLoginname(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 
-	user, err := s.UserRepo.LoadUser(username)
+	user, err := s.UserRepo.LoadUser(loginname)
 	if err != nil || !auth.IsAdmin(user) {
 		http.Error(w, "Forbidden", http.StatusForbidden)
 		return

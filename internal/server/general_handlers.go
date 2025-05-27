@@ -30,8 +30,8 @@ func getUserFromRequest(r *http.Request, repo *db.UserRepo) *db.PdmUser {
 		return nil
 	}
 
-	username := cookie.Value
-	user, err := repo.LoadUser(username)
+	loginname := cookie.Value
+	user, err := repo.LoadUser(loginname)
 	if err != nil {
 		return nil
 	}

@@ -107,18 +107,22 @@ func createDefaultTables(db *gorm.DB) error {
 
 func createAdminAccount(db *gorm.DB) error {
 	var count int64
-	db.Model(&PdmUser{}).Where("username = ?", "admin").Count(&count)
+	db.Model(&PdmUser{}).Where("loginname = ?", "admin").Count(&count)
 	if count == 0 {
 		hashed, _ := bcrypt.GenerateFromPassword([]byte("secret"), bcrypt.DefaultCost)
 		admin := PdmUser{
-			UserName:           "admin",
+			LoginName:          "admin",
 			FullName:           "Administrator",
 			PasswordHash:       string(hashed),
 			MustChangePassword: true,
 			Roles:              []string{string(Admin)},
 		}
-		return db.Create(&admin).Error
+		err := db.Create(&admin).Error
+		if err != nil {
+			log.Printf("❌ Failed to create default admin user: %v\n", err)
+			return err
+		}
+		log.Println("✅ Default admin user created successfully.")
 	}
-
 	return nil
 }

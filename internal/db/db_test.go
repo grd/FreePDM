@@ -49,12 +49,12 @@ func TestValidLogin(t *testing.T) {
 	// create test user
 	hashed, _ := bcrypt.GenerateFromPassword([]byte("secret"), bcrypt.DefaultCost)
 	_ = gormdb.Create(&db.PdmUser{
-		UserName:     "jdoe",
+		LoginName:    "jdoe",
 		PasswordHash: string(hashed),
 	})
 
 	form := url.Values{}
-	form.Add("username", "jdoe")
+	form.Add("loginname", "jdoe")
 	form.Add("password", "secret")
 
 	req := httptest.NewRequest(http.MethodPost, "/login", strings.NewReader(form.Encode()))

@@ -27,9 +27,9 @@ func NewUserRepo(db *gorm.DB) *UserRepo {
 }
 
 // LoadUser search a user based on user name.
-func (r *UserRepo) LoadUser(username string) (*PdmUser, error) {
+func (r *UserRepo) LoadUser(loginname string) (*PdmUser, error) {
 	var user PdmUser
-	result := r.DB.Where("UserName = ?", username).First(&user)
+	result := r.DB.Where("loginname = ?", loginname).First(&user)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, ErrUserNotFound
@@ -40,9 +40,9 @@ func (r *UserRepo) LoadUser(username string) (*PdmUser, error) {
 }
 
 // Renames password and also sets the MustChangePassword flag to false
-func (r *UserRepo) UpdatePassword(username, hash string) error {
+func (r *UserRepo) UpdatePassword(loginname, hash string) error {
 	var user PdmUser
-	if err := r.DB.Where("username = ?", username).First(&user).Error; err != nil {
+	if err := r.DB.Where("loginname = ?", loginname).First(&user).Error; err != nil {
 		return err
 	}
 
@@ -53,9 +53,9 @@ func (r *UserRepo) UpdatePassword(username, hash string) error {
 }
 
 // Resets the MustChangePassword flag to false
-func (r *UserRepo) ClearMustChangePassword(username string) error {
+func (r *UserRepo) ClearMustChangePassword(loginname string) error {
 	return r.DB.Model(&PdmUser{}).
-		Where("username = ?", username).
+		Where("loginname = ?", loginname).
 		Update("must_change_password", false).
 		Error
 }
@@ -66,20 +66,24 @@ func (r *UserRepo) GetAllUsers() ([]PdmUser, error) {
 	return users, err
 }
 
-func (r *UserRepo) AddUserToSql(username string) {
+func (r *UserRepo) CreateUser(user *PdmUser) error {
+	return r.DB.Create(user).Error
+}
+
+func (r *UserRepo) AddUserToSql(loginname string) {
 	fmt.Println("This is basically the interface")
 }
 
 // Delete existing user
-func (r *UserRepo) RemoveUserFromSql(user_id int, username string) {
+func (r *UserRepo) RemoveUserFromSql(user_id int, loginname string) {
 	fmt.Println("existing user deleted")
 }
 
-func (r *UserRepo) AddUserToLdap(username string) {
+func (r *UserRepo) AddUserToLdap(loginname string) {
 	fmt.Println("This is basically the interface")
 }
 
 // Delete existing user
-func (r *UserRepo) RemoveUserFromLdap(user_id int, username string) {
+func (r *UserRepo) RemoveUserFromLdap(user_id int, loginname string) {
 	fmt.Println("existing user deleted")
 }

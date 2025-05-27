@@ -10,9 +10,9 @@ import (
 )
 
 // NormalizeUserRolesVerbose updates and reports if any roles were changed
-func (r *UserRepo) NormalizeUserRolesVerbose(username string) (bool, error) {
+func (r *UserRepo) NormalizeUserRolesVerbose(loginname string) (bool, error) {
 	var user PdmUser
-	if err := r.DB.Where("username = ?", username).First(&user).Error; err != nil {
+	if err := r.DB.Where("loginname = ?", loginname).First(&user).Error; err != nil {
 		return false, err
 	}
 
@@ -26,14 +26,14 @@ func (r *UserRepo) NormalizeUserRolesVerbose(username string) (bool, error) {
 		case string(Admin), string(ProjectLead), string(SeniorDesigner), string(Designer), string(Approver), string(Qa), string(Editor), string(Viewer), string(Guest):
 			normalized = append(normalized, lowerRole)
 		default:
-			fmt.Printf("[WARNING] Unknown role '%s' on user '%s' — preserving as-is\n", role, username)
+			fmt.Printf("[WARNING] Unknown role '%s' on user '%s' — preserving as-is\n", role, loginname)
 			normalized = append(normalized, lowerRole)
 		}
 	}
 
 	changed := !equalStringSlices(originalRoles, normalized)
 	if changed {
-		fmt.Printf("[INFO] Updating roles for user '%s': %v → %v\n", username, originalRoles, normalized)
+		fmt.Printf("[INFO] Updating roles for user '%s': %v → %v\n", loginname, originalRoles, normalized)
 		user.Roles = normalized
 		if err := r.DB.Save(&user).Error; err != nil {
 			return false, err
@@ -52,9 +52,9 @@ func (r *UserRepo) NormalizeAllUsersVerbose() (changedCount, totalCount int, err
 
 	totalCount = len(users)
 	for _, user := range users {
-		changed, err := r.NormalizeUserRolesVerbose(user.UserName)
+		changed, err := r.NormalizeUserRolesVerbose(user.LoginName)
 		if err != nil {
-			fmt.Printf("[ERROR] Failed to normalize roles for user '%s': %v\n", user.UserName, err)
+			fmt.Printf("[ERROR] Failed to normalize roles for user '%s': %v\n", user.LoginName, err)
 			continue
 		}
 		if changed {
@@ -79,9 +79,9 @@ func equalStringSlices(a, b []string) bool {
 }
 
 // NormalizeUserRoles updates the roles on a user to match the canonical lowercase Role constants
-func (r *UserRepo) NormalizeUserRoles(username string) error {
+func (r *UserRepo) NormalizeUserRoles(loginname string) error {
 	var user PdmUser
-	if err := r.DB.Where("username = ?", username).First(&user).Error; err != nil {
+	if err := r.DB.Where("loginname = ?", loginname).First(&user).Error; err != nil {
 		return err
 	}
 
@@ -93,7 +93,7 @@ func (r *UserRepo) NormalizeUserRoles(username string) error {
 		case string(Admin), string(ProjectLead), string(SeniorDesigner), string(Designer), string(Approver), string(Qa), string(Editor), string(Viewer), string(Guest):
 			normalized = append(normalized, lowerRole)
 		default:
-			fmt.Printf("[WARNING] Unknown role '%s' on user '%s' — preserving as-is\n", role, username)
+			fmt.Printf("[WARNING] Unknown role '%s' on user '%s' — preserving as-is\n", role, loginname)
 			normalized = append(normalized, lowerRole)
 		}
 	}
@@ -110,8 +110,8 @@ func (r *UserRepo) NormalizeAllUsers() error {
 	}
 
 	for _, user := range users {
-		if err := r.NormalizeUserRoles(user.UserName); err != nil {
-			fmt.Printf("[ERROR] Failed to normalize roles for user '%s': %v\n", user.UserName, err)
+		if err := r.NormalizeUserRoles(user.LoginName); err != nil {
+			fmt.Printf("[ERROR] Failed to normalize roles for user '%s': %v\n", user.LoginName, err)
 		}
 	}
 	return nil

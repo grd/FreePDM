@@ -41,20 +41,20 @@ func (s *Server) ServeLoginPage(w http.ResponseWriter, r *http.Request) {
 
 // login handler
 func (s *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
-	username := r.FormValue("username")
+	loginname := r.FormValue("loginname")
 	password := r.FormValue("password")
 
-	user, err := s.UserRepo.LoadUser(username)
+	user, err := s.UserRepo.LoadUser(loginname)
 	if err != nil || bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)) != nil {
 		s.ExecuteTemplate(w, "login.html", map[string]string{"Error": "Invalid login credentials"})
 		return
 	}
 
-	shared.SetSessionCookie(w, username)
+	shared.SetSessionCookie(w, loginname)
 
 	// Explicit debug to stdout
-	fmt.Printf("[DEBUG] User %s roles: %v\n", username, user.Roles)
-	log.Printf("[DEBUG] User %s roles: %v", username, user.Roles)
+	fmt.Printf("[DEBUG] User %s roles: %v\n", loginname, user.Roles)
+	log.Printf("[DEBUG] User %s roles: %v", loginname, user.Roles)
 
 	// EXTRA CHECK: show exact roles to be sure
 	for i, role := range user.Roles {
@@ -86,7 +86,7 @@ func (s *Server) HandleChangePassword(w http.ResponseWriter, r *http.Request) {
 		s.ExecuteTemplate(w, "change-password.html", nil)
 	}
 
-	username, err := shared.GetSessionUsername(r)
+	loginname, err := shared.GetSessionLoginname(r)
 	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -97,7 +97,7 @@ func (s *Server) HandleChangePassword(w http.ResponseWriter, r *http.Request) {
 	newPassword := r.FormValue("new_password")
 	repeatPassword := r.FormValue("repeat_password")
 
-	user, err := s.UserRepo.LoadUser(username)
+	user, err := s.UserRepo.LoadUser(loginname)
 	if err != nil {
 		http.Error(w, "User not found", http.StatusUnauthorized)
 		return
@@ -132,14 +132,14 @@ func (s *Server) HandleChangePassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update DB
-	err = s.UserRepo.UpdatePassword(username, string(hash))
+	err = s.UserRepo.UpdatePassword(loginname, string(hash))
 	if err != nil {
 		http.Error(w, "Failed to update password", http.StatusInternalServerError)
 		return
 	}
 
 	// Set MustChangePassword = false
-	err = s.UserRepo.ClearMustChangePassword(username)
+	err = s.UserRepo.ClearMustChangePassword(loginname)
 	if err != nil {
 		http.Error(w, "Failed to finalize update", http.StatusInternalServerError)
 		return
@@ -164,16 +164,16 @@ func (s *Server) handleLogout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) HandleDashboard(w http.ResponseWriter, r *http.Request) {
-	username, err := shared.GetSessionUsername(r)
+	loginname, err := shared.GetSessionLoginname(r)
 	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	data := struct {
-		UserName string
+		LoginName string
 	}{
-		UserName: username,
+		LoginName: loginname,
 	}
 
 	s.ExecuteTemplate(w, "dashboard.html", data)
