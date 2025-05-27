@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/grd/FreePDM/internal/auth"
+	"github.com/grd/FreePDM/internal/db"
 	"github.com/grd/FreePDM/internal/shared"
 )
 
@@ -36,7 +37,17 @@ func (s *Server) HandleAdminDashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.ExecuteTemplate(w, "admin-dashboard.html", user)
+	data := struct {
+		User           *db.PdmUser
+		ShowBackButton bool
+		BackButtonLink string
+	}{
+		User:           user,
+		ShowBackButton: false,
+		BackButtonLink: "",
+	}
+
+	s.ExecuteTemplate(w, "admin-dashboard.html", data)
 }
 
 // Handler update for colored log HTML + raw log output
@@ -102,14 +113,21 @@ func (s *Server) HandleShowLogs(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Combine everything into template data
 	data := struct {
+		User           *db.PdmUser
+		ShowBackButton bool
+		BackButtonLink string
+		AvailableDates []string
 		LogHTML        template.HTML
 		LogOutput      string
-		AvailableDates []string
 	}{
+		User:           user,
+		ShowBackButton: true,
+		BackButtonLink: "/admin",
+		AvailableDates: availableDates,
 		LogHTML:        template.HTML(logHTML.String()),
 		LogOutput:      rawLog,
-		AvailableDates: availableDates,
 	}
 
 	s.ExecuteTemplate(w, "admin-logs.html", data)
