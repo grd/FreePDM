@@ -21,14 +21,6 @@ type Server struct {
 
 // Constructor
 func NewServer(userRepo *db.UserRepo) *Server {
-	// templates := template.Must(template.ParseFiles(
-	// 	"templates/base.html",
-	// 	"templates/dashboard.html",
-	// 	"templates/login.html",
-	// 	"templates/index.html",
-	// 	"templates/change-password.html",
-	// ))
-
 	templates := template.Must(template.ParseGlob("templates/*.html"))
 
 	return &Server{
@@ -36,14 +28,6 @@ func NewServer(userRepo *db.UserRepo) *Server {
 		Templates: templates,
 	}
 }
-
-// func (s *Server) ExecuteTemplate(w http.ResponseWriter, name string, data any) {
-// 	err := s.Templates.ExecuteTemplate(w, name, data)
-// 	if err != nil {
-// 		log.Println("Template execution error:", err)
-// 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-// 	}
-// }
 
 func (s *Server) ExecuteTemplate(w http.ResponseWriter, name string, data any) {
 	tmpl, err := template.ParseFiles("templates/base.html", "templates/"+name)
