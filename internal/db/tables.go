@@ -31,6 +31,7 @@ type PdmUser struct {
 	EmailAddress       string `gorm:"type:varchar(255);not null;uniqueIndex"`
 	PhoneNumber        string `gorm:"type:varchar(20)"`
 	Department         string `gorm:"type:varchar(30)"`
+	PhotoPath          string `gorm:"type:varchar(255)"`
 
 	Roles pq.StringArray `gorm:"type:text[]"`
 
