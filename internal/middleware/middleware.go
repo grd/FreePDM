@@ -71,3 +71,21 @@ func RequireRoleWithLogin(repo db.UserRepo, next http.HandlerFunc, roles ...stri
 		next.ServeHTTP(w, r)
 	}
 }
+
+func RequireAdmin(userRepo db.UserRepo, next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		username, err := shared.GetSessionUsername(r)
+		if err != nil || username == "" {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+
+		user, err := userRepo.LoadUser(username)
+		if err != nil || !user.HasRole(string(db.Admin)) {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	}
+}
