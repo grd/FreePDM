@@ -60,6 +60,12 @@ func (r *UserRepo) ClearMustChangePassword(username string) error {
 		Error
 }
 
+func (r *UserRepo) GetAllUsers() ([]PdmUser, error) {
+	var users []PdmUser
+	err := r.DB.Find(&users).Error
+	return users, err
+}
+
 func (r *UserRepo) AddUserToSql(username string) {
 	fmt.Println("This is basically the interface")
 }
