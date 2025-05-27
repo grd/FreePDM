@@ -25,6 +25,7 @@ func (s *Server) Routes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin", middleware.RequireRoleWithLogin(*s.UserRepo, s.HandleAdminDashboard, "Admin"))
 	mux.HandleFunc("/admin/logs", middleware.RequireRoleWithLogin(*s.UserRepo, s.HandleShowLogs, "Admin"))
 	mux.HandleFunc("/admin/users", middleware.RequireRoleWithLogin(*s.UserRepo, s.HandleAdminUsers, "Admin"))
+	mux.HandleFunc("/admin/users/new", middleware.RequireAdmin(*s.UserRepo, s.HandleAdminNewUser))
 
 	mux.HandleFunc("/dashboard", middleware.RequireLogin(*s.UserRepo, s.HandleDashboard))
 	mux.HandleFunc("/projects/manage", middleware.RequireRoleWithLogin(*s.UserRepo, s.HandleProjectManagement, "Admin", "ProjectLead"))

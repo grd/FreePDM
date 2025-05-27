@@ -1,0 +1,104 @@
+{{ define "admin-new-user.html" }}
+  {{ template "base" . }}
+{{ end }}
+
+{{ define "title" }}Add New User{{ end }}
+
+{{ define "content" }}
+<h1 class="text-2xl font-bold mb-6">Add New User</h1>
+
+<form method="POST" action="/admin/users/new" enctype="multipart/form-data" class="space-y-4 max-w-lg">
+
+  <!-- Login Name -->
+  <div>
+    <label class="block mb-1 font-semibold">Login Name</label>
+    <input type="text" name="loginname" class="w-full p-2 rounded bg-gray-800 text-white" required pattern="^[a-zA-Z0-9_]+$" title="Letters, numbers, underscores only">
+  </div>
+
+  <!-- Password -->
+  <div>
+    <label class="block mb-1 font-semibold">Password</label>
+    <input type="password" name="password" class="w-full p-2 rounded bg-gray-800 text-white" required minlength="10">
+  </div>
+
+  <!-- Confirm Password -->
+  <div>
+    <label class="block mb-1 font-semibold">Confirm Password</label>
+    <input type="password" name="confirm_password" class="w-full p-2 rounded bg-gray-800 text-white" required minlength="10">
+  </div>
+
+  <!-- First Name -->
+  <div>
+    <label class="block mb-1 font-semibold">First Name</label>
+    <input type="text" name="first_name" class="w-full p-2 rounded bg-gray-800 text-white">
+  </div>
+
+  <!-- Last Name -->
+  <div>
+    <label class="block mb-1 font-semibold">Last Name</label>
+    <input type="text" name="last_name" class="w-full p-2 rounded bg-gray-800 text-white">
+  </div>
+
+  <!-- Date of Birth -->
+  <div>
+    <label class="block mb-1 font-semibold">Date of Birth</label>
+    <input type="date" name="date_of_birth" class="w-full p-2 rounded bg-gray-800 text-white" required>
+  </div>
+
+  <!-- Sex -->
+  <div>
+    <label class="block mb-1 font-semibold">Sex</label>
+    <select name="sex" class="w-full p-2 rounded bg-gray-800 text-white" required>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+      <option value="x">X / Other</option>
+    </select>
+  </div>
+
+  <!-- Email Address -->
+  <div>
+    <label class="block mb-1 font-semibold">Email Address</label>
+    <input type="email" name="email_address" class="w-full p-2 rounded bg-gray-800 text-white" required>
+  </div>
+
+  <!-- Phone Number -->
+  <div>
+    <label class="block mb-1 font-semibold">Phone Number</label>
+    <input type="tel" name="phone_number" class="w-full p-2 rounded bg-gray-800 text-white">
+  </div>
+
+  <!-- Department -->
+  <div>
+    <label class="block mb-1 font-semibold">Department</label>
+    <input type="text" name="department" class="w-full p-2 rounded bg-gray-800 text-white">
+  </div>
+
+  <!-- Photo Upload -->
+  <div>
+    <label class="block mb-1 font-semibold">Profile Photo (optional)</label>
+    <input type="file" name="photo" accept="image/*" class="w-full p-2 rounded bg-gray-800 text-white">
+  </div>
+
+  <!-- Roles -->
+  <div>
+    <label class="block mb-1 font-semibold">Roles</label>
+    <div class="flex flex-wrap gap-2">
+      <label><input type="checkbox" name="roles" value="admin" class="mr-1"> Admin</label>
+      <label><input type="checkbox" name="roles" value="designer" class="mr-1"> Designer</label>
+      <label><input type="checkbox" name="roles" value="senior" class="mr-1"> Senior Designer</label>
+      <label><input type="checkbox" name="roles" value="viewer" class="mr-1"> Viewer</label>
+      <label><input type="checkbox" name="roles" value="editor" class="mr-1"> Editor</label>
+      <label><input type="checkbox" name="roles" value="approver" class="mr-1"> Approver</label>
+      <label><input type="checkbox" name="roles" value="projectlead" class="mr-1"> Project Lead</label>
+      <label><input type="checkbox" name="roles" value="qa" class="mr-1"> QA</label>
+      <label><input type="checkbox" name="roles" value="guest" class="mr-1"> Guest</label>
+    </div>
+  </div>
+
+  <!-- Submit Button -->
+  <div class="text-right">
+    <button type="submit" class="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600">Create User</button>
+  </div>
+
+</form>
+{{ end }}
