@@ -13,21 +13,26 @@
   </head>
   <body class="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white">
     <nav class="bg-gray-100 dark:bg-gray-800 shadow-md px-6 py-6 relative flex items-center justify-between">
-      <!-- Logo Left -->
+      <!-- Logo Left + optional back button -->
       <div class="flex items-center space-x-2">
         <img src="/static/FreePDM-logo.svg" alt="FreePDM Logo" class="h-12 w-auto max-h-16">
+        {{ if .ShowBackButton }}
+        <a href="{{ .BackButtonLink }}" class="ml-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+          ← Back
+        </a>
+        {{ end }}
       </div>
 
-      <!-- Gecentralised text -->
+      <!-- Centralised text -->
       <div class="absolute left-1/2 transform -translate-x-1/2">
-        <span class="text-4xl font-bold text-white">FreePDM - The PDM for all files</span>
+        <span class="text-4xl font-bold text-white">{{ template "title" . }}</span>
       </div>
 
       <!-- Button Right -->
       <div class="flex space-x-2 items-center">
         {{ block "nav-actions" . }}{{ end }}
         <form id="logoutForm" method="POST" action="/logout">
-          <button type="button" onclick="showLogoutModal()" class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm">
+          <button type="button" onclick="showLogoutModal()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
             Logout
           </button>
         </form>
