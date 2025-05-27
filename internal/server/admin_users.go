@@ -5,6 +5,7 @@
 package server
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/grd/FreePDM/internal/auth"
@@ -41,6 +42,10 @@ func (s *Server) HandleAdminUsers(w http.ResponseWriter, r *http.Request) {
 		ShowBackButton: true,
 		BackButtonLink: "/admin",
 		Users:          users,
+	}
+
+	for _, u := range users {
+		log.Printf("[DEBUG] User: ID=%d, UserName=%s, FullName=%s, PhotoPath=%s", u.ID, u.UserName, u.FullName, u.PhotoPath)
 	}
 
 	s.ExecuteTemplate(w, "admin-users.html", data)
