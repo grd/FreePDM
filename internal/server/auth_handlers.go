@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 	"unicode"
 
 	"github.com/grd/FreePDM/internal/auth"
+	"github.com/grd/FreePDM/internal/db"
 	"github.com/grd/FreePDM/internal/shared"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -44,41 +44,52 @@ func (s *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	loginname := r.FormValue("loginname")
 	password := r.FormValue("password")
 
+	log.Printf("[DEBUG] Login attempt for user: %s", loginname)
+
 	user, err := s.UserRepo.LoadUser(loginname)
-	if err != nil || bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)) != nil {
-		s.ExecuteTemplate(w, "login.html", map[string]string{"Error": "Invalid login credentials"})
+	if err != nil {
+		log.Printf("[DEBUG] User %s not found or error: %v", loginname, err)
+		s.ExecuteTemplate(w, "login.html", map[string]string{
+			"Error": "Invalid login credentials",
+		})
 		return
 	}
 
+	// Check password
+	if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)) != nil {
+		log.Printf("[DEBUG] Invalid password for user: %s", loginname)
+		s.ExecuteTemplate(w, "login.html", map[string]string{
+			"Error": "Invalid login credentials",
+		})
+		return
+	}
+
+	// Login success → set session cookie
 	shared.SetSessionCookie(w, loginname)
+	log.Printf("[DEBUG] User %s logged in successfully", loginname)
 
-	// Explicit debug to stdout
-	fmt.Printf("[DEBUG] User %s roles: %v\n", loginname, user.Roles)
-	log.Printf("[DEBUG] User %s roles: %v", loginname, user.Roles)
-
-	// EXTRA CHECK: show exact roles to be sure
-	for i, role := range user.Roles {
-		fmt.Printf("[DEBUG] Role %d: %s\n", i, role)
+	// Check if user must change password
+	if user.MustChangePassword {
+		log.Printf("[DEBUG] User %s must change password — redirecting to /change-password", loginname)
+		http.Redirect(w, r, "/change-password", http.StatusSeeOther)
+		return
 	}
 
-	// Robust admin detection (case-insensitive match)
-	for _, role := range user.Roles {
-		if strings.EqualFold(role, "Admin") {
-			http.Redirect(w, r, "/admin", http.StatusSeeOther)
-			return
-		}
-	}
-
-	// Continue with other priority roles
-	if auth.IsProjectLead(user) {
+	// Role-based redirection with priority
+	switch {
+	case user.HasRole(string(db.Admin)):
+		log.Printf("[DEBUG] User %s has role Admin — redirecting to /admin", loginname)
+		http.Redirect(w, r, "/admin", http.StatusSeeOther)
+	case auth.IsProjectLead(user):
+		log.Printf("[DEBUG] User %s has role ProjectLead — redirecting to /project-lead-dashboard", loginname)
 		http.Redirect(w, r, "/project-lead-dashboard", http.StatusSeeOther)
-		return
-	} else if auth.IsSeniorDesigner(user) {
+	case auth.IsSeniorDesigner(user):
+		log.Printf("[DEBUG] User %s has role SeniorDesigner — redirecting to /senior-designer-dashboard", loginname)
 		http.Redirect(w, r, "/senior-designer-dashboard", http.StatusSeeOther)
-		return
+	default:
+		log.Printf("[DEBUG] User %s has no special roles — redirecting to /dashboard", loginname)
+		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 	}
-
-	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
 
 func (s *Server) HandleChangePassword(w http.ResponseWriter, r *http.Request) {
