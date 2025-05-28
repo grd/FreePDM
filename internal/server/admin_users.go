@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"time"
 
@@ -57,112 +58,146 @@ func (s *Server) HandleAdminUsers(w http.ResponseWriter, r *http.Request) {
 	s.ExecuteTemplate(w, "admin-users.html", data)
 }
 
+// Helper: check if system user exists
+func isSystemUserExists(username string) bool {
+	cmd := exec.Command("id", username)
+	err := cmd.Run()
+	return err == nil
+}
+
 func (s *Server) HandleAdminNewUser(w http.ResponseWriter, r *http.Request) {
-	loginname, err := shared.GetSessionLoginname(r)
-	if err != nil {
+	username, err := shared.GetSessionLoginname(r)
+	if err != nil || username == "" {
+		log.Printf("[DEBUG] No valid session — redirecting to /login")
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 
-	user, err := s.UserRepo.LoadUser(loginname)
-	if err != nil || !auth.IsAdmin(user) {
-		http.Error(w, "Forbidden", http.StatusForbidden)
-		return
-	}
-
 	if r.Method == http.MethodGet {
-		// Render form
-		s.ExecuteTemplate(w, "admin-new-user.html", nil)
+		log.Printf("[DEBUG] Serving New User page")
+		s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
+			"AvailableRoles": db.GetAvailableRoles(),
+		})
 		return
 	}
 
-	if r.Method == http.MethodPost {
-		// Parse form data
-		err := r.ParseMultipartForm(10 << 20) // max 10MB upload
-		if err != nil {
-			http.Error(w, "Failed to parse form", http.StatusBadRequest)
-			return
-		}
+	// POST processing
+	loginname := r.FormValue("loginname")
+	fullname := r.FormValue("fullname")
+	firstname := r.FormValue("firstname")
+	lastname := r.FormValue("lastname")
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+	confirmPassword := r.FormValue("confirm_password")
+	dateOfBirth := r.FormValue("date_of_birth")
+	sex := r.FormValue("sex")
+	phone := r.FormValue("phone_number")
+	department := r.FormValue("department")
+	roles := r.Form["roles"]
 
-		loginname := r.FormValue("loginname")
-		password := r.FormValue("password")
-		confirmPassword := r.FormValue("confirm_password")
-		firstName := r.FormValue("first_name")
-		lastName := r.FormValue("last_name")
-		dateOfBirth := r.FormValue("date_of_birth")
-		sex := r.FormValue("sex")
-		email := r.FormValue("email_address")
-		phone := r.FormValue("phone_number")
-		department := r.FormValue("department")
-		roles := r.Form["roles"]
+	log.Printf("[DEBUG] Processing New User form for loginname: %s", loginname)
 
-		// Basic validation
-		if password != confirmPassword {
-			http.Error(w, "Passwords do not match", http.StatusBadRequest)
-			return
-		}
-		if len(password) < 10 {
-			http.Error(w, "Password must be at least 10 characters", http.StatusBadRequest)
-			return
-		}
-
-		// Parse date
-		dob, err := time.Parse("2006-01-02", dateOfBirth)
-		if err != nil {
-			http.Error(w, "Invalid date format", http.StatusBadRequest)
-			return
-		}
-
-		// Hash password
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-		if err != nil {
-			http.Error(w, "Failed to hash password", http.StatusInternalServerError)
-			return
-		}
-
-		// Handle photo upload
-		file, handler, err := r.FormFile("photo")
-		var photoPath string
-		if err == nil {
-			defer file.Close()
-
-			// Save photo (e.g., static/uploads/userID_photo.ext)
-			photoFilename := fmt.Sprintf("%s_%s", loginname, handler.Filename)
-			photoPath = filepath.Join("static/uploads", photoFilename)
-			dst, err := os.Create(photoPath)
-			if err != nil {
-				http.Error(w, "Failed to save photo", http.StatusInternalServerError)
-				return
-			}
-			defer dst.Close()
-			io.Copy(dst, file)
-		}
-
-		// Create user object
-		newUser := db.PdmUser{
-			LoginName:          loginname,
-			PasswordHash:       string(hashedPassword),
-			MustChangePassword: true,
-			FirstName:          firstName,
-			LastName:           lastName,
-			FullName:           fmt.Sprintf("%s %s", firstName, lastName),
-			DateOfBirth:        dob,
-			Sex:                sex,
-			EmailAddress:       email,
-			PhoneNumber:        phone,
-			Department:         department,
-			PhotoPath:          photoPath,
-			Roles:              roles,
-		}
-
-		// Insert into database
-		err = s.UserRepo.CreateUser(&newUser)
-		if err != nil {
-			http.Error(w, "Failed to create user", http.StatusInternalServerError)
-			return
-		}
-
-		// Redirect back to user list
-		http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
+	// Basic validations
+	if loginname == "" || fullname == "" || email == "" || password == "" || len(roles) == 0 {
+		s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
+			"Error":          "Please fill in all required fields.",
+			"AvailableRoles": db.GetAvailableRoles(),
+		})
+		return
 	}
+	if password != confirmPassword {
+		s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
+			"Error":          "Passwords do not match.",
+			"AvailableRoles": db.GetAvailableRoles(),
+		})
+		return
+	}
+
+	// Check if user exists in FreePDM
+	_, err = s.UserRepo.LoadUser(loginname)
+	if err == nil {
+		s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
+			"Error":          "A user with this login name already exists in FreePDM.",
+			"AvailableRoles": db.GetAvailableRoles(),
+		})
+		return
+	}
+
+	// Check if system user exists (Linux)
+	if !isSystemUserExists(loginname) {
+		s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
+			"Error":          "This login name does not exist on the system.",
+			"AvailableRoles": db.GetAvailableRoles(),
+		})
+		return
+	}
+
+	// Parse date
+	dob, err := time.Parse("2006-01-02", dateOfBirth)
+	if err != nil {
+		s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
+			"Error":          "Invalid date format.",
+			"AvailableRoles": db.GetAvailableRoles(),
+		})
+		return
+	}
+
+	// Hash password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
+			"Error":          "Failed to hash password.",
+			"AvailableRoles": db.GetAvailableRoles(),
+		})
+		return
+	}
+
+	// Handle photo upload
+	file, handler, err := r.FormFile("photo")
+	var photoPath string
+	if err == nil {
+		defer file.Close()
+
+		photoFilename := fmt.Sprintf("%s_%s", loginname, handler.Filename)
+		photoPath = filepath.Join("static/uploads", photoFilename)
+		dst, err := os.Create(photoPath)
+		if err != nil {
+			s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
+				"Error":          "Failed to save photo.",
+				"AvailableRoles": db.GetAvailableRoles(),
+			})
+			return
+		}
+		defer dst.Close()
+		io.Copy(dst, file)
+	}
+
+	// Create new user in DB
+	newUser := db.PdmUser{
+		LoginName:          loginname,
+		FullName:           fullname,
+		FirstName:          firstname,
+		LastName:           lastname,
+		EmailAddress:       email,
+		PasswordHash:       string(hashedPassword),
+		MustChangePassword: true,
+		DateOfBirth:        dob,
+		Sex:                sex,
+		PhoneNumber:        phone,
+		Department:         department,
+		PhotoPath:          photoPath,
+		Roles:              roles,
+	}
+
+	if err := s.UserRepo.CreateUser(&newUser); err != nil {
+		log.Printf("[ERROR] Failed to create user: %v", err)
+		s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
+			"Error":          "Failed to create user. Please try again.",
+			"AvailableRoles": db.GetAvailableRoles(),
+		})
+		return
+	}
+
+	log.Printf("[DEBUG] User %s successfully created by admin %s", loginname, username)
+	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
 }

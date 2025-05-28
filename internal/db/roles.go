@@ -154,3 +154,18 @@ func stringsToRoles(in []string) []Role {
 	}
 	return roles
 }
+
+// GetAvailableRoles returns a list of roles
+func GetAvailableRoles() []string {
+	return []string{
+		string(Admin),
+		string(Designer),
+		string(SeniorDesigner),
+		string(Viewer),
+		string(Editor),
+		string(Approver),
+		string(ProjectLead),
+		string(Qa),
+		string(Guest),
+	}
+}
