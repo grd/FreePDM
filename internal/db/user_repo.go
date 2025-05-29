@@ -26,6 +26,21 @@ func NewUserRepo(db *gorm.DB) *UserRepo {
 	return &UserRepo{DB: db}
 }
 
+// UpdateUser saves the updated user record into the database.
+// It overwrites the existing user entry based on its primary key.
+func (r *UserRepo) UpdateUser(user *PdmUser) error {
+	return r.DB.Save(user).Error
+}
+
+// LoadUser search by ID on user name.
+func (r *UserRepo) LoadUserByID(id uint) (*PdmUser, error) {
+	var user PdmUser
+	if err := r.DB.First(&user, id).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
 // LoadUser search a user based on user name.
 func (r *UserRepo) LoadUser(loginname string) (*PdmUser, error) {
 	var user PdmUser
@@ -68,15 +83,6 @@ func (r *UserRepo) GetAllUsers() ([]PdmUser, error) {
 
 func (r *UserRepo) CreateUser(user *PdmUser) error {
 	return r.DB.Create(user).Error
-}
-
-func (r *UserRepo) AddUserToSql(loginname string) {
-	fmt.Println("This is basically the interface")
-}
-
-// Delete existing user
-func (r *UserRepo) RemoveUserFromSql(user_id int, loginname string) {
-	fmt.Println("existing user deleted")
 }
 
 func (r *UserRepo) AddUserToLdap(loginname string) {

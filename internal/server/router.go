@@ -22,14 +22,15 @@ func (s *Server) Routes(mux *http.ServeMux) {
 	mux.HandleFunc("/change-password", s.HandleChangePassword)
 
 	// With auth
-	mux.HandleFunc("/admin", middleware.RequireRoleWithLogin(*s.UserRepo, s.HandleAdminDashboard, "Admin"))
-	mux.HandleFunc("/admin/logs", middleware.RequireRoleWithLogin(*s.UserRepo, s.HandleShowLogs, "Admin"))
-	mux.HandleFunc("/admin/users", middleware.RequireRoleWithLogin(*s.UserRepo, s.HandleAdminUsers, "Admin"))
-	mux.HandleFunc("/admin/users/new", middleware.RequireAdmin(*s.UserRepo, s.HandleAdminNewUser))
+	mux.HandleFunc("/admin/logs", middleware.RequireRoleWithLogin(s.HandleShowLogs, "Admin"))
+	mux.HandleFunc("/admin/users", middleware.RequireRoleWithLogin(s.HandleAdminUsers, "Admin"))
+	mux.HandleFunc("/admin/users/new", middleware.RequireAdmin(s.HandleAdminNewUser))
+	mux.HandleFunc("/admin/users/edit/", middleware.RequireAdmin(s.HandleAdminEditUser))
+	mux.HandleFunc("/admin/users/reset-password/", middleware.RequireAdmin(s.HandleAdminResetPassword))
 
-	mux.HandleFunc("/dashboard", middleware.RequireLogin(*s.UserRepo, s.HandleDashboard))
-	mux.HandleFunc("/projects/manage", middleware.RequireRoleWithLogin(*s.UserRepo, s.HandleProjectManagement, "Admin", "ProjectLead"))
-	// mux.HandleFunc("/vaults/manage", middleware.RequireRoleWithLogin(*s.UserRepo, s.HandleVaultManagement, "Admin", "SeniorDesigner"))
-	mux.HandleFunc("/logout", middleware.RequireLogin(*s.UserRepo, s.handleLogout))
+	mux.HandleFunc("/dashboard", middleware.RequireLogin(s.HandleDashboard))
+	mux.HandleFunc("/projects/manage", middleware.RequireRoleWithLogin(s.HandleProjectManagement, "Admin", "ProjectLead"))
+	mux.HandleFunc("/admin", middleware.RequireRoleWithLogin(s.HandleAdminDashboard, "Admin"))
+	mux.HandleFunc("/logout", middleware.RequireLogin(s.handleLogout))
 	mux.HandleFunc("/pdm", s.handlePdm)
 }

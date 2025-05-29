@@ -12,6 +12,7 @@ import (
 
 	"github.com/grd/FreePDM/internal/db"
 	"github.com/grd/FreePDM/internal/logs"
+	"github.com/grd/FreePDM/internal/middleware"
 	"github.com/grd/FreePDM/internal/server"
 	"github.com/grd/FreePDM/internal/shared"
 )
@@ -27,6 +28,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	userRepo := db.NewUserRepo(dbConn)
+	middleware.Init(*userRepo)
 	srv := server.NewServer(userRepo)
 	srv.Routes(mux)
 
