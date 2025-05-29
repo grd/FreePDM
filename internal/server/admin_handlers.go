@@ -5,18 +5,22 @@
 package server
 
 import (
+	"fmt"
 	"html"
 	"html/template"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/grd/FreePDM/internal/auth"
 	"github.com/grd/FreePDM/internal/db"
 	"github.com/grd/FreePDM/internal/shared"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (s *Server) HandleAdminDashboard(w http.ResponseWriter, r *http.Request) {
@@ -131,4 +135,47 @@ func (s *Server) HandleShowLogs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s.ExecuteTemplate(w, "admin-logs.html", data)
+}
+
+// Handler for resetting password
+func (s *Server) HandleAdminResetPassword(w http.ResponseWriter, r *http.Request) {
+	username, err := shared.GetSessionLoginname(r)
+	if err != nil || username == "" {
+		log.Printf("[DEBUG] No valid session — redirecting to /login")
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	idStr := strings.TrimPrefix(r.URL.Path, "/admin/users/reset-password/")
+	userID, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	user, err := s.UserRepo.LoadUserByID(uint(userID))
+	if err != nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	// Generate a temporary password (or use a fixed default)
+	tempPassword := "changeme123"
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(tempPassword), bcrypt.DefaultCost)
+	if err != nil {
+		http.Error(w, "Failed to hash password", http.StatusInternalServerError)
+		return
+	}
+
+	user.PasswordHash = string(hashedPassword)
+	user.MustChangePassword = true
+
+	if err := s.UserRepo.UpdateUser(user); err != nil {
+		log.Printf("[ERROR] Failed to reset password for user %s: %v", user.LoginName, err)
+		http.Error(w, "Failed to reset password", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("[DEBUG] Admin %s reset password for user %s", username, user.LoginName)
+	http.Redirect(w, r, fmt.Sprintf("/admin/users/edit/%d", userID), http.StatusSeeOther)
 }
