@@ -12,6 +12,9 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/grd/FreePDM/internal/auth"
@@ -39,16 +42,23 @@ func (s *Server) HandleAdminUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	formattedDOB := ""
+	if !user.DateOfBirth.IsZero() {
+		formattedDOB = user.DateOfBirth.Format("2006-01-02")
+	}
+
 	data := struct {
 		User           *db.PdmUser
 		ShowBackButton bool
 		BackButtonLink string
 		Users          []db.PdmUser
+		FormattedDOB   string
 	}{
 		User:           user,
 		ShowBackButton: true,
 		BackButtonLink: "/admin",
 		Users:          users,
+		FormattedDOB:   formattedDOB,
 	}
 
 	for _, u := range users {
@@ -64,7 +74,6 @@ func isSystemUserExists(username string) bool {
 	err := cmd.Run()
 	return err == nil
 }
-
 func (s *Server) HandleAdminNewUser(w http.ResponseWriter, r *http.Request) {
 	username, err := shared.GetSessionLoginname(r)
 	if err != nil || username == "" {
@@ -77,6 +86,8 @@ func (s *Server) HandleAdminNewUser(w http.ResponseWriter, r *http.Request) {
 		log.Printf("[DEBUG] Serving New User page")
 		s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
 			"AvailableRoles": db.GetAvailableRoles(),
+			"ShowBackButton": true,
+			"BackButtonLink": "/admin/users",
 		})
 		return
 	}
@@ -199,5 +210,89 @@ func (s *Server) HandleAdminNewUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("[DEBUG] User %s successfully created by admin %s", loginname, username)
+	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
+}
+
+func (s *Server) HandleAdminEditUser(w http.ResponseWriter, r *http.Request) {
+	userIDStr := strings.TrimPrefix(r.URL.Path, "/admin/users/edit/")
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	user, err := s.UserRepo.LoadUserByID(uint(userID))
+	if err != nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	availableRoles := db.GetAvailableRoles()
+	roleChecks := make(map[string]bool)
+	for _, role := range availableRoles {
+		roleChecks[role] = slices.Contains(user.Roles, role)
+	}
+
+	if r.Method == http.MethodGet {
+		s.ExecuteTemplate(w, "admin-edit-user.html", map[string]interface{}{
+			"User":           user,
+			"AvailableRoles": availableRoles,
+			"RoleChecks":     roleChecks,
+			"ShowBackButton": true,
+			"BackButtonLink": "/admin/users",
+		})
+		return
+	}
+
+	// POST: Update user details
+	fullName := r.FormValue("fullname")
+	firstName := r.FormValue("firstname")
+	lastName := r.FormValue("lastname")
+	email := r.FormValue("email")
+	dateOfBirthStr := r.FormValue("date_of_birth")
+	sex := r.FormValue("sex")
+	phone := r.FormValue("phone_number")
+	department := r.FormValue("department")
+	roles := r.Form["roles"]
+
+	dob, err := time.Parse("2006-01-02", dateOfBirthStr)
+	if err != nil {
+		s.ExecuteTemplate(w, "admin-edit-user.html", map[string]interface{}{
+			"User":           user,
+			"AvailableRoles": availableRoles,
+			"RoleChecks":     roleChecks,
+			"ShowBackButton": true,
+			"BackButtonLink": "/admin/users",
+			"Error":          "Invalid date format",
+		})
+		return
+	}
+
+	// Update fields
+	user.FullName = fullName
+	user.FirstName = firstName
+	user.LastName = lastName
+	user.EmailAddress = email
+	user.DateOfBirth = dob
+	user.Sex = sex
+	user.PhoneNumber = phone
+	user.Department = department
+	user.Roles = roles
+
+	// Save changes
+	if err := s.UserRepo.UpdateUser(user); err != nil {
+		log.Printf("[ERROR] Failed to update user: %v", err)
+		s.ExecuteTemplate(w, "admin-edit-user.html", map[string]interface{}{
+			"User":           user,
+			"AvailableRoles": availableRoles,
+			"RoleChecks":     roleChecks,
+			"ShowBackButton": true,
+			"BackButtonLink": "/admin/users",
+			"Error":          "Failed to update user. Please try again.",
+		})
+		return
+	}
+
+	log.Printf("[INFO] Updated user %s (ID %d)", user.LoginName, user.ID)
 	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
 }

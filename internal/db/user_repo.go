@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -29,7 +30,19 @@ func NewUserRepo(db *gorm.DB) *UserRepo {
 // UpdateUser saves the updated user record into the database.
 // It overwrites the existing user entry based on its primary key.
 func (r *UserRepo) UpdateUser(user *PdmUser) error {
-	return r.DB.Save(user).Error
+	return r.DB.Model(&PdmUser{}).Where("id = ?", user.ID).Updates(map[string]interface{}{
+		"full_name":     user.FullName,
+		"first_name":    user.FirstName,
+		"last_name":     user.LastName,
+		"email_address": user.EmailAddress,
+		"date_of_birth": user.DateOfBirth,
+		"sex":           user.Sex,
+		"phone_number":  user.PhoneNumber,
+		"department":    user.Department,
+		"photo_path":    user.PhotoPath,
+		"roles":         pq.StringArray(user.Roles),
+		"password_hash": user.PasswordHash,
+	}).Error
 }
 
 // LoadUser search by ID on user name.

@@ -1,0 +1,121 @@
+{{ define "admin-edit-user.html" }}
+{{ template "base" . }}
+{{ end }}
+
+{{ define "title" }}Edit User{{ end }}
+
+{{ define "nav-actions" }}
+{{ if .ShowBackButton }}
+<a href="{{ .BackButtonLink }}" class="inline-block px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600">
+  ← Back
+</a>
+{{ end }}
+{{ end }}
+
+{{ define "content" }}
+<h1 class="text-2xl font-bold mb-6 text-center"></h1>
+
+<form method="POST" action="/admin/users/edit/{{ .User.ID }}" enctype="multipart/form-data" class="space-y-4 max-w-lg mx-auto">
+
+  <!-- Login Name (read-only) -->
+  <div>
+    <label class="block text-sm font-medium">Login Name</label>
+    <input type="text" name="loginname" value="{{ .User.LoginName }}" readonly class="w-full p-2 rounded bg-gray-300 cursor-not-allowed text-black">
+  </div>
+
+  <!-- Full Name -->
+  <div>
+    <label class="block text-sm font-medium">Full Name</label>
+    <input type="text" name="fullname" value="{{ .User.FullName }}" class="w-full p-2 rounded bg-yellow-100 text-black">
+  </div>
+
+  <!-- First Name -->
+  <div>
+    <label class="block text-sm font-medium">First Name</label>
+    <input type="text" name="firstname" value="{{ .User.FirstName }}" class="w-full p-2 rounded bg-yellow-100 text-black">
+  </div>
+
+  <!-- Last Name -->
+  <div>
+    <label class="block text-sm font-medium">Last Name</label>
+    <input type="text" name="lastname" value="{{ .User.LastName }}" class="w-full p-2 rounded bg-yellow-100 text-black">
+  </div>
+
+  <!-- Date of Birth -->
+  <div>
+    <label class="block text-sm font-medium">Date of Birth</label>
+    <input type="date" name="date_of_birth" value="{{ if .User.DateOfBirth.IsZero }}{{ else }}{{ .User.DateOfBirth.Format "2006-01-02" }}{{ end }}" class="w-full p-2 rounded bg-yellow-100 text-black">
+  </div>
+
+  <!-- Sex -->
+  <div>
+    <label class="block text-sm font-medium">Sex</label>
+    <select name="sex" class="w-full p-2 rounded bg-yellow-100 text-black">
+      <option value="Male" {{ if eq .User.Sex "Male" }}selected{{ end }}>Male</option>
+      <option value="Female" {{ if eq .User.Sex "Female" }}selected{{ end }}>Female</option>
+      <option value="Other" {{ if eq .User.Sex "Other" }}selected{{ end }}>Other</option>
+    </select>
+  </div>
+
+  <!-- Email Address -->
+  <div>
+    <label class="block text-sm font-medium">Email Address</label>
+    <input type="email" name="email" value="{{ .User.EmailAddress }}" class="w-full p-2 rounded bg-yellow-100 text-black">
+  </div>
+
+  <!-- Phone Number -->
+  <div>
+    <label class="block text-sm font-medium">Phone Number</label>
+    <input type="text" name="phone_number" value="{{ .User.PhoneNumber }}" class="w-full p-2 rounded bg-yellow-100 text-black">
+  </div>
+
+  <!-- Department -->
+  <div>
+    <label class="block text-sm font-medium">Department</label>
+    <input type="text" name="department" value="{{ .User.Department }}" class="w-full p-2 rounded bg-yellow-100 text-black">
+  </div>
+
+  <!-- Current Photo -->
+  <div>
+    <label class="block text-sm font-medium">Current Photo</label>
+    <div class="flex items-center space-x-4">
+      <img src="/{{ .User.PhotoPath }}" alt="User Photo" class="w-24 h-24 rounded-full">
+      <input type="file" name="photo" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600">
+    </div>
+  </div>
+
+  <!-- Roles -->
+  <div class="mb-4">
+    <label class="block mb-1">Roles</label>
+    <div class="flex flex-wrap gap-2">
+      {{ range .AvailableRoles }}
+        <label class="flex items-center space-x-1">
+          <input type="checkbox" name="roles" value="{{ . }}" {{ if index $.RoleChecks . }}checked{{ end }} class="mr-1">
+          <span>{{ . }}</span>
+        </label>
+      {{ end }}
+    </div>
+  </div>
+
+  <!-- Password (masked) and Reset Button -->
+  <div class="flex items-center space-x-4">
+    <div class="flex-grow">
+      <label class="block text-sm font-medium">Password</label>
+      <input type="password" value="********" readonly class="w-full p-2 rounded bg-gray-300 cursor-not-allowed text-black">
+    </div>
+    <button type="button" onclick="confirmResetPassword()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Reset Password</button>
+  </div>
+
+  <div>
+    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Save Changes</button>
+  </div>
+</form>
+
+<script>
+function confirmResetPassword() {
+  if (confirm("Are you sure you want to reset this user's password?")) {
+    window.location.href = "/admin/users/reset-password/{{ .User.ID }}";
+  }
+}
+</script>
+{{ end }}

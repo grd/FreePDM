@@ -14,7 +14,7 @@
     <div class="flex items-center p-4 rounded bg-gray-800 hover:bg-gray-700 text-white">
         <span class="w-12 text-sm font-mono text-gray-400 mr-4">#{{ .ID }}</span>
         <img src="/static/{{ if .PhotoPath }}{{ .PhotoPath }}{{ else }}default-avatar.png{{ end }}" alt="User Photo" class="w-16 h-16 rounded-full object-cover mr-4">
-        <a href="/admin/users/{{ .ID }}/edit" class="text-lg font-semibold text-indigo-400 hover:underline">
+        <a href="/admin/users/edit/{{ .ID }}" class="text-lg font-semibold text-indigo-400 hover:underline">
             {{ if .FullName }}{{ .FullName }}{{ else }}Unnamed User{{ end }}
         </a>
     </div>
