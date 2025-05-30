@@ -6,6 +6,7 @@ package db
 
 type (
 	Role             string
+	AccountStatus    string
 	RBAC             string
 	ProjectState     string
 	RevisionState    string
@@ -26,6 +27,17 @@ const (
 	ProjectLead    Role = "projectlead"
 	Qa             Role = "qa"
 	Guest          Role = "guest"
+)
+
+const (
+	StatusActive    AccountStatus = "active"
+	StatusDisabled  AccountStatus = "disabled"
+	StatusLocked    AccountStatus = "locked"
+	StatusPending   AccountStatus = "pending"
+	StatusSuspended AccountStatus = "suspended"
+	StatusExpired   AccountStatus = "expired"
+	StatusDeleted   AccountStatus = "deleted"
+	StatusInvited   AccountStatus = "invited"
 )
 
 const (

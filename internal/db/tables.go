@@ -22,25 +22,25 @@ type Base struct {
 type PdmUser struct {
 	Base
 
-	LoginName          string    `gorm:"column:loginname;type:varchar(30);not null;uniqueIndex"`
-	FullName           string    `gorm:"type:varchar(61)"`
-	PasswordHash       string    `gorm:"type:varchar(60);not null"`
-	MustChangePassword bool      `gorm:"default:true"`
-	FirstName          string    `gorm:"type:varchar(30)"`
-	LastName           string    `gorm:"type:varchar(30)"`
-	DateOfBirth        time.Time `gorm:"type:date"`
-	Sex                string    `gorm:"type:varchar(10)"` // "male", "female", or "x"
-	EmailAddress       string    `gorm:"type:varchar(255);not null;uniqueIndex"`
-	PhoneNumber        string    `gorm:"type:varchar(20)"`
-	Department         string    `gorm:"type:varchar(30)"`
-	PhotoPath          string    `gorm:"type:varchar(255)"`
+	LoginName          string         `gorm:"column:loginname;type:varchar(30);not null;uniqueIndex"`
+	FullName           string         `gorm:"type:varchar(61)"`
+	PasswordHash       string         `gorm:"type:varchar(60);not null"`
+	MustChangePassword bool           `gorm:"default:true"`
+	FirstName          string         `gorm:"type:varchar(30)"`
+	LastName           string         `gorm:"type:varchar(30)"`
+	DateOfBirth        time.Time      `gorm:"type:date"`
+	Sex                string         `gorm:"type:varchar(10)"` // "male", "female", or "x"
+	EmailAddress       string         `gorm:"type:varchar(255);not null;uniqueIndex"`
+	PhoneNumber        string         `gorm:"type:varchar(20)"`
+	Department         string         `gorm:"type:varchar(30)"`
+	PhotoPath          string         `gorm:"type:varchar(255)"`
+	AccountStatus      string         `gorm:"type:varchar(20);default:'active'"`
+	Roles              pq.StringArray `gorm:"type:text[]"`
 
-	Roles pq.StringArray `gorm:"type:text[]"`
-
-	Projects  []*PdmProject `gorm:"many2many:user_project_link"`
-	Items     []PdmItem     `gorm:"foreignKey:UserID"`
-	Models    []PdmModel    `gorm:"foreignKey:UserID"`
-	Documents []PdmDocument `gorm:"foreignKey:UserID"`
+	// Projects  []*PdmProject `gorm:"many2many:user_project_link"`
+	// Items     []PdmItem     `gorm:"foreignKey:UserID"`
+	// Models    []PdmModel    `gorm:"foreignKey:UserID"`
+	// Documents []PdmDocument `gorm:"foreignKey:UserID"`
 }
 
 // PdmUserRoleLink is the association table for users and roles
