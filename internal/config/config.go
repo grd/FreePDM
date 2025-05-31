@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	AppDir                string
+	appDir                string
 	configName, configDir string
 	Conf                  = Config{}
 )
@@ -26,6 +26,11 @@ type Config struct {
 	LogFile         string
 	LogLevel        string
 	Users           map[string]int
+}
+
+// GetAppDir returns the application directory
+func GetAppDir() string {
+	return appDir
 }
 
 // GetUid returns the uid for a given user name or -1 if not found.
