@@ -2,7 +2,7 @@ root = "."  # Zet de root op de huidige directory
 
 [build]
   bin = "tmp/main"
-  cmd = "go build -o tmp/main ./cmd/pdmserver"
+  cmd = "fuser -k 8443/tcp; go build -o tmp/main ./cmd/pdmserver"
   include_ext = ["go", "tpl", "tmpl", "html"]
   exclude_dir = ["vendor", "node_modules"]
 

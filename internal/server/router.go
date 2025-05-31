@@ -13,7 +13,7 @@ import (
 )
 
 func (s *Server) Routes(mux *http.ServeMux) {
-	staticPath := filepath.Join(config.AppDir, "static")
+	staticPath := filepath.Join(config.AppDir(), "static")
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(staticPath))))
 
 	// Without auth
@@ -27,6 +27,8 @@ func (s *Server) Routes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/users/new", middleware.RequireAdmin(s.HandleAdminNewUser))
 	mux.HandleFunc("/admin/users/edit/", middleware.RequireAdmin(s.HandleAdminEditUser))
 	mux.HandleFunc("/admin/users/reset-password/", middleware.RequireAdmin(s.HandleAdminResetPassword))
+
+	mux.HandleFunc("/admin/users/upload-photo", middleware.RequireAdmin(s.HandleUploadPhoto))
 
 	mux.HandleFunc("/dashboard", middleware.RequireLogin(s.HandleDashboard))
 	mux.HandleFunc("/projects/manage", middleware.RequireRoleWithLogin(s.HandleProjectManagement, "Admin", "ProjectLead"))

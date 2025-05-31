@@ -113,6 +113,14 @@ func Atoi16(str string) (int16, error) {
 	return num, nil
 }
 
+func AtoiUint(str string) (uint, error) {
+	var num uint
+	if _, err := fmt.Sscanf(str, "%d", &num); err != nil {
+		return 0, err
+	}
+	return num, nil
+}
+
 // Converts an int16 into a string
 func I16toa(i int16) string {
 	return fmt.Sprintf("%d", i)

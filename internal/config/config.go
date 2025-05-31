@@ -28,8 +28,8 @@ type Config struct {
 	Users           map[string]int
 }
 
-// GetAppDir returns the application directory
-func GetAppDir() string {
+// AppDir returns the application directory
+func AppDir() string {
 	return appDir
 }
 
@@ -88,11 +88,17 @@ func (cfg *Config) String() string {
 }
 
 func init() {
-	AppDir, ok := os.LookupEnv("FREEPDM_DIR")
+	appDir, ok := os.LookupEnv("FREEPDM_DIR")
 	if !ok {
 		log.Fatal("The environment FREEPDM_DIR is not set. Please read the installation page.")
 	}
-	configDir = path.Join(AppDir, "data")
+
+	// Ensure the app directory exists
+	if !util.DirExists(appDir) {
+		log.Fatalf("application %s directory does not exist", appDir)
+	}
+
+	configDir = path.Join(appDir, "data")
 	configName = path.Join(configDir, "FreePDM.toml")
 
 	// Ensure the config directory exists

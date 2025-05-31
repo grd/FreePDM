@@ -7,6 +7,7 @@ package db
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/lib/pq"
 	"gorm.io/gorm"
@@ -96,6 +97,19 @@ func (r *UserRepo) GetAllUsers() ([]PdmUser, error) {
 
 func (r *UserRepo) CreateUser(user *PdmUser) error {
 	return r.DB.Create(user).Error
+}
+
+// UpdatePhotoPath updates the PhotoPath of a user by their ID.
+func (r *UserRepo) UpdatePhotoPath(userID uint, photoPath string) error {
+	result := r.DB.Model(&PdmUser{}).
+		Where("id = ?", userID).
+		Update("photo_path", photoPath)
+	if result.Error != nil {
+		log.Printf("[ERROR] Failed to update photo path for user %d: %v", userID, result.Error)
+		return result.Error
+	}
+	log.Printf("[INFO] Updated photo path for user %d to %s", userID, photoPath)
+	return nil
 }
 
 func (r *UserRepo) AddUserToLdap(loginname string) {
