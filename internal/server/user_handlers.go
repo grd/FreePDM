@@ -17,6 +17,7 @@ import (
 	"github.com/grd/FreePDM/internal/config"
 )
 
+// HandleUploadPhoto handles the file upload, saves it, and updates the user record.
 func (s *Server) HandleUploadPhoto(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseMultipartForm(5 << 20); err != nil { // max 5MB
 		log.Printf("[ERROR] Failed to parse multipart form: %v", err)
