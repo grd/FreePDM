@@ -12,75 +12,97 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
-	"github.com/grd/FreePDM/internal/config"
+	"github.com/grd/FreePDM/internal/db"
 )
 
-// HandleUploadPhoto handles the file upload, saves it, and updates the user record.
-func (s *Server) HandleUploadPhoto(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseMultipartForm(5 << 20); err != nil { // max 5MB
-		log.Printf("[ERROR] Failed to parse multipart form: %v", err)
-		http.Error(w, "Invalid upload", http.StatusBadRequest)
+func (s *Server) HandleShowPhoto(w http.ResponseWriter, r *http.Request) {
+	log.Println("[DEBUG] URL.Path:", r.URL.Path)
+	userIDStr := strings.TrimPrefix(r.URL.Path, "/admin/users/upload-photo/")
+	log.Println(userIDStr)
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
 		return
 	}
 
-	userID := r.FormValue("user_id")
-	if userID == "" {
-		log.Println("[ERROR] No user_id provided in form")
+	user, err := s.UserRepo.LoadUserByID(uint(userID))
+	if err != nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	data := struct {
+		User           *db.PdmUser
+		ShowBackButton bool
+		BackButtonLink string
+	}{
+		User:           user,
+		ShowBackButton: false,
+		BackButtonLink: "/admin/users",
+	}
+
+	s.ExecuteTemplate(w, "admin-upload-photo.html", data)
+}
+
+func (s *Server) HandleUploadPhoto(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	parts := strings.Split(strings.TrimPrefix(r.URL.Path, "/admin/users/show-photo/"), "/")
+	if len(parts) < 1 || parts[0] == "" {
 		http.Error(w, "Missing user ID", http.StatusBadRequest)
 		return
 	}
 
-	idUint64, err := strconv.ParseUint(userID, 10, 32)
+	userID, err := strconv.Atoi(parts[0])
 	if err != nil {
-		log.Printf("[ERROR] Invalid user_id format: %v", err)
 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
 		return
 	}
-	id := uint(idUint64)
-	log.Printf("id = %d", id)
 
-	file, handler, err := r.FormFile("photo")
+	file, header, err := r.FormFile("photo")
 	if err != nil {
-		log.Printf("[ERROR] Failed to retrieve file: %v", err)
-		http.Error(w, "Failed to retrieve file", http.StatusBadRequest)
+		http.Error(w, "Failed to read uploaded file", http.StatusBadRequest)
 		return
 	}
 	defer file.Close()
 
-	ext := filepath.Ext(handler.Filename)
-	if ext != ".png" && ext != ".jpg" && ext != ".jpeg" {
-		log.Printf("[ERROR] Unsupported file type: %s", ext)
-		http.Error(w, "Only PNG and JPEG files are allowed", http.StatusBadRequest)
+	if header.Size > 5*1024*1024 {
+		http.Error(w, "File too large (max 5MB)", http.StatusBadRequest)
 		return
 	}
 
-	filename := fmt.Sprintf("%s-%s%s", userID, time.Now().Format("2006-01-02"), ext)
-	fullPath := filepath.Join(config.AppDir(), "static", "uploads", filename)
-	log.Printf("[DEBUG] Saving photo to: %s", fullPath)
+	ext := strings.ToLower(filepath.Ext(header.Filename))
+	if ext != ".jpg" && ext != ".jpeg" && ext != ".png" {
+		http.Error(w, "Only JPG and PNG allowed", http.StatusBadRequest)
+		return
+	}
 
-	dst, err := os.Create(fullPath)
+	filename := fmt.Sprintf("%d-%s%s", userID, time.Now().Format("2006-01-02"), ext)
+	photoPath := filepath.Join("static", "uploads", filename)
+
+	out, err := os.Create(photoPath)
 	if err != nil {
-		log.Printf("[ERROR] Failed to create file: %v", err)
 		http.Error(w, "Failed to save file", http.StatusInternalServerError)
 		return
 	}
-	defer dst.Close()
+	defer out.Close()
 
-	if _, err := io.Copy(dst, file); err != nil {
-		log.Printf("[ERROR] Failed to write file contents: %v", err)
-		http.Error(w, "Failed to write file", http.StatusInternalServerError)
+	_, err = io.Copy(out, file)
+	if err != nil {
+		http.Error(w, "Failed to store file", http.StatusInternalServerError)
 		return
 	}
 
-	// Update PhotoPath in DB
-	if err := s.UserRepo.UpdatePhotoPath(id, filepath.Join("static", "uploads", filename)); err != nil {
-		log.Printf("[ERROR] Failed to update photo path in DB: %v", err)
-		http.Error(w, "Failed to update user profile", http.StatusInternalServerError)
+	if err := s.UserRepo.UpdatePhotoPath(uint(userID), photoPath); err != nil {
+		http.Error(w, "Failed to update user", http.StatusInternalServerError)
 		return
 	}
 
-	log.Printf("[INFO] Successfully uploaded photo for user %s", userID)
-	http.Redirect(w, r, "/admin/users/edit/"+userID, http.StatusSeeOther)
+	http.Redirect(w, r, "/admin/users/show-photo/"+strconv.Itoa(userID), http.StatusSeeOther)
 }

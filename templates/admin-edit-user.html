@@ -55,27 +55,16 @@
       <input type="text" name="department" value="{{ .User.Department }}" class="w-full p-2 rounded bg-yellow-100 text-black" />
     </div>
 
-      <!-- Current Photo Section -->
+    <!-- Current Photo Section -->
     <div class="mb-4">
       <label class="block mb-1 font-semibold">Current Photo</label>
-      <div class="flex items-center space-x-6">
-        <!-- Display current photo or fallback -->
-        <img src="/{{ if .User.PhotoPath }}{{ .User.PhotoPath }}{{ else }}static/uploads/Profile-blue.256.png{{ end }}" 
-            alt="User Photo" 
-            class="w-24 h-24 rounded-full border border-gray-300 shadow-sm">
-
-        <!-- Upload new photo form -->
-        <form method="POST" action="/admin/users/upload-photo" enctype="multipart/form-data" class="flex flex-col space-y-2 whitespace-nowrap min-w-[150px] text-sm ">
-          <input type="hidden" name="user_id" value="{{ .User.ID }}">
-          <input type="file" name="photo" accept=".png,.jpg,.jpeg" 
-                class="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 
-                        file:rounded file:border-0 file:text-sm file:font-semibold 
-                        file:bg-indigo-500 file:text-white hover:file:bg-indigo-600">
-          <button type="submit" 
-                  class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 text-sm">
-            Upload New Photo
-          </button>
-        </form>
+      <div class="flex items-center space-x-4">
+        <a href="/admin/users/upload-photo/{{ .User.ID }}">
+          <img src="/{{ if .User.PhotoPath }}{{ .User.PhotoPath }}{{ else }}static/uploads/Profile-blue.256.png{{ end }}"
+                alt="User Photo"
+                class="w-24 h-24 rounded-full border border-gray-300 shadow-sm hover:opacity-80 hover:ring-2 hover:ring-indigo-400 cursor-pointer">
+        </a>
+        <span class="text-sm text-gray-500">Click photo to upload new</span>
       </div>
     </div>
 

@@ -28,7 +28,19 @@ func (s *Server) Routes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/users/edit/", middleware.RequireAdmin(s.HandleAdminEditUser))
 	mux.HandleFunc("/admin/users/reset-password/", middleware.RequireAdmin(s.HandleAdminResetPassword))
 
-	mux.HandleFunc("/admin/users/upload-photo", middleware.RequireAdmin(s.HandleUploadPhoto))
+	// mux.HandleFunc("/admin/users/show-photo/", middleware.RequireAdmin(s.HandleShowPhoto))
+	// mux.HandleFunc("/admin/users/upload-photo/", middleware.RequireAdmin(s.HandleUploadPhoto))
+
+	mux.Handle("/admin/users/upload-photo/", middleware.RequireAdmin(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			s.HandleShowPhoto(w, r)
+		case http.MethodPost:
+			s.HandleUploadPhoto(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
 
 	mux.HandleFunc("/dashboard", middleware.RequireLogin(s.HandleDashboard))
 	mux.HandleFunc("/projects/manage", middleware.RequireRoleWithLogin(s.HandleProjectManagement, "Admin", "ProjectLead"))

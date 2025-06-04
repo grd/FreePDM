@@ -17,9 +17,16 @@
 
     <span class="w-12 text-sm font-mono text-gray-400 mr-4">#{{ .ID }}</span>
 
+    <div class="flex items-center space-x-4">
+      <img src="/{{ if .PhotoPath }}{{ .PhotoPath }}{{ else }}static/uploads/Profile-blue.256.png{{ end }}" class="w-12 h-12 rounded-full cursor-pointer" onclick="window.location.href='/admin/users/upload-photo/{{ .ID }}'">
+    <!--  <span class="font-semibold ml-4">{{ .FullName }}</span> -->
+    </div>
+
+    <!--
     <img src="{{ if .PhotoPath }}/static/uploads/{{ .PhotoPath }}{{ else }}/static/uploads/Profile-blue.256.png{{ end }}"
       alt="{{ .FullName }}'s photo"
       class="w-12 h-12 rounded-lg object-cover border ml-1 mr-4">
+    -->
 
     <a href="/admin/users/edit/{{ .ID }}" class="text-lg font-semibold text-indigo-400 hover:underline">
             {{ if .FullName }}{{ .FullName }}{{ else }}Unnamed User{{ end }}

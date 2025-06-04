@@ -1,0 +1,47 @@
+{{ define "admin-upload-photo.html" }}
+{{ template "base" . }}
+{{ end }}
+
+{{ define "title" }}Upload Photo{{ end }}
+
+{{ define "content" }}
+<div class="max-w-xl mx-auto mt-8 bg-white shadow-md rounded p-6">
+  <h1 class="text-xl font-semibold mb-4">Update Profile Photo</h1>
+
+  <!-- Current Photo Display -->
+  <div class="mb-6 flex items-center space-x-4">
+    <img src="/{{ if .User.PhotoPath }}{{ .User.PhotoPath }}{{ else }}static/uploads/Profile-blue.256.png{{ end }}"
+         alt="Current Photo"
+         class="w-24 h-24 rounded-full border shadow-sm">
+    <div>
+      <p class="text-sm text-gray-600">Current photo for <strong>{{ .User.FullName }}</strong></p>
+      <p class="text-xs text-gray-400 italic">Click browse to select a new photo (max 5MB, .jpg/.png)</p>
+    </div>
+  </div>
+
+  <!-- Upload Form -->
+  <form method="POST"
+        action="/admin/users/update-photo/{{ .User.ID }}"
+        enctype="multipart/form-data"
+        class="space-y-4">
+
+    <input type="file"
+           name="photo"
+           accept=".jpg,.jpeg,.png"
+           required
+           class="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4
+                  file:rounded file:border-0 file:text-sm file:font-semibold
+                  file:bg-indigo-500 file:text-white hover:file:bg-indigo-600">
+
+    <button type="submit"
+            class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+      Upload New Photo
+    </button>
+  </form>
+
+  <!-- Optional back link -->
+  <div class="mt-6">
+    <a href="/admin/users" class="text-sm text-indigo-500 hover:underline">&larr; Back to User List</a>
+  </div>
+</div>
+{{ end }}
