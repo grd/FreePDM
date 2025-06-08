@@ -8,10 +8,12 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func (s *Server) Routes(mux *http.ServeMux) {
 	r := chi.NewRouter()
+	r.Use(middleware.RedirectSlashes)
 
 	// ✅ Public routes (géén login nodig!)
 	r.Group(func(r chi.Router) {
