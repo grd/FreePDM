@@ -38,7 +38,7 @@ func (s *Server) HandleShowPhoto(w http.ResponseWriter, r *http.Request) {
 		"BackButtonLink": "/admin/users",
 	}
 
-	if err := s.ExecuteTemplate(w, "upload-photo.html", data); err != nil {
+	if err := s.ExecuteTemplate(w, "show-photo.html", data); err != nil {
 		http.Error(w, "Template error", http.StatusInternalServerError)
 		log.Printf("[ERROR] Template execution failed: %v", err)
 	}
@@ -86,7 +86,7 @@ func (s *Server) HandleUploadPhoto(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	photoPath := filepath.Join("static", "uploads", filename)
+	photoPath := filepath.Join("uploads", filename)
 	if err := s.UserRepo.UpdatePhotoPath(uint(userID), photoPath); err != nil {
 		http.Error(w, "Failed to update user", http.StatusInternalServerError)
 		return
