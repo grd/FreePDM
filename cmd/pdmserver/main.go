@@ -15,6 +15,7 @@ import (
 	"github.com/grd/FreePDM/internal/middleware"
 	"github.com/grd/FreePDM/internal/server"
 	"github.com/grd/FreePDM/internal/shared"
+	"github.com/grd/FreePDM/internal/util"
 )
 
 func main() {
@@ -35,6 +36,9 @@ func main() {
 	// Start HTTPS
 	certPath := path.Join("certs", "localhost.pem")
 	keyPath := path.Join("certs", "localhost-key.pem")
+	if !util.FileExists(certPath) || !util.FileExists(keyPath) {
+		log.Fatal("HTTPS certification files not found")
+	}
 
 	if os.Getenv("USE_HTTPS") == "true" {
 		log.Println("Server running with HTTPS on https://localhost:8443")
@@ -43,8 +47,6 @@ func main() {
 		log.Println("Server running with HTTP on http://localhost:8080")
 		log.Fatal(http.ListenAndServe(":8080", mux))
 	}
-
-	log.Fatal(http.ListenAndServeTLS(":8443", certPath, keyPath, mux))
 
 	// Periodically search for new files
 	shared.ImportSharedFiles()

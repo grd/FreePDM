@@ -15,13 +15,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/grd/FreePDM/internal/db"
+	"github.com/go-chi/chi/v5"
 )
 
 func (s *Server) HandleShowPhoto(w http.ResponseWriter, r *http.Request) {
-	log.Println("[DEBUG] URL.Path:", r.URL.Path)
-	userIDStr := strings.TrimPrefix(r.URL.Path, "/admin/users/upload-photo/")
-	log.Println(userIDStr)
+	userIDStr := chi.URLParam(r, "userID")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
@@ -34,32 +32,21 @@ func (s *Server) HandleShowPhoto(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := struct {
-		User           *db.PdmUser
-		ShowBackButton bool
-		BackButtonLink string
-	}{
-		User:           user,
-		ShowBackButton: false,
-		BackButtonLink: "/admin/users",
+	data := map[string]interface{}{
+		"User":           user,
+		"ShowBackButton": true,
+		"BackButtonLink": "/admin/users",
 	}
 
-	s.ExecuteTemplate(w, "admin-upload-photo.html", data)
+	if err := s.ExecuteTemplate(w, "upload-photo.html", data); err != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+		log.Printf("[ERROR] Template execution failed: %v", err)
+	}
 }
 
 func (s *Server) HandleUploadPhoto(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	parts := strings.Split(strings.TrimPrefix(r.URL.Path, "/admin/users/show-photo/"), "/")
-	if len(parts) < 1 || parts[0] == "" {
-		http.Error(w, "Missing user ID", http.StatusBadRequest)
-		return
-	}
-
-	userID, err := strconv.Atoi(parts[0])
+	userIDStr := chi.URLParam(r, "userID")
+	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
 		return
@@ -83,26 +70,28 @@ func (s *Server) HandleUploadPhoto(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filename := fmt.Sprintf("%d-%s%s", userID, time.Now().Format("2006-01-02"), ext)
-	photoPath := filepath.Join("static", "uploads", filename)
+	timestamp := time.Now().Format("2006-01-02")
+	filename := fmt.Sprintf("%d-%s%s", userID, timestamp, ext)
+	savePath := filepath.Join("static", "uploads", filename)
 
-	out, err := os.Create(photoPath)
+	out, err := os.Create(savePath)
 	if err != nil {
 		http.Error(w, "Failed to save file", http.StatusInternalServerError)
 		return
 	}
 	defer out.Close()
 
-	_, err = io.Copy(out, file)
-	if err != nil {
+	if _, err := io.Copy(out, file); err != nil {
 		http.Error(w, "Failed to store file", http.StatusInternalServerError)
 		return
 	}
 
+	photoPath := filepath.Join("static", "uploads", filename)
 	if err := s.UserRepo.UpdatePhotoPath(uint(userID), photoPath); err != nil {
 		http.Error(w, "Failed to update user", http.StatusInternalServerError)
 		return
 	}
 
-	http.Redirect(w, r, "/admin/users/show-photo/"+strconv.Itoa(userID), http.StatusSeeOther)
+	log.Printf("[INFO] Updated photo for user ID %d => %s", userID, photoPath)
+	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
 }

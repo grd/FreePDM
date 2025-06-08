@@ -14,8 +14,9 @@ import (
 func (s *Server) Routes(mux *http.ServeMux) {
 	r := chi.NewRouter()
 	r.Use(middleware.RedirectSlashes)
+	r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	// ✅ Public routes (géén login nodig!)
+	// ✅ Public routes
 	r.Group(func(r chi.Router) {
 		r.Get("/", s.HandleHomePage)
 		r.Get("/login", s.HandleLoginPage)
@@ -23,7 +24,7 @@ func (s *Server) Routes(mux *http.ServeMux) {
 		r.Get("/logout", s.HandleLogout)
 	})
 
-	// ✅ Alle routes hieronder vereisen login
+	// ✅ Require login
 	r.Group(func(r chi.Router) {
 		r.Use(s.RequireLoginChi)
 
@@ -56,6 +57,6 @@ func (s *Server) Routes(mux *http.ServeMux) {
 		// 	})
 	})
 
-	// ✅ Mount op de standaard mux
+	// ✅ Mount on the standard mux
 	mux.Handle("/", r)
 }
