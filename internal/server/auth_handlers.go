@@ -6,18 +6,23 @@ package server
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"unicode"
 
 	"github.com/grd/FreePDM/internal/auth"
-	"github.com/grd/FreePDM/internal/db"
 	"github.com/grd/FreePDM/internal/shared"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func (s *Server) HandleHomePage(w http.ResponseWriter, r *http.Request) {
-	s.ExecuteTemplate(w, "index.html", nil)
+	data := struct {
+		ShowBackButton bool
+	}{
+		ShowBackButton: false,
+	}
+	if err := s.ExecuteTemplate(w, "home.html", data); err != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+	}
 }
 
 func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
@@ -41,53 +46,32 @@ func (s *Server) ServeLoginPage(w http.ResponseWriter, r *http.Request) {
 
 // login handler
 func (s *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
-	loginname := r.FormValue("loginname")
+	if r.Method == http.MethodGet {
+		s.ExecuteTemplate(w, "login.html", nil)
+		return
+	}
+
+	loginName := r.FormValue("login_name")
 	password := r.FormValue("password")
 
-	log.Printf("[DEBUG] Login attempt for user: %s", loginname)
-
-	user, err := s.UserRepo.LoadUser(loginname)
-	if err != nil {
-		log.Printf("[DEBUG] User %s not found or error: %v", loginname, err)
-		s.ExecuteTemplate(w, "login.html", map[string]string{
-			"Error": "Invalid login credentials",
-		})
+	user, err := s.UserRepo.LoadUserByLoginName(loginName)
+	if err != nil || user == nil {
+		http.Error(w, "Invalid login name", http.StatusUnauthorized)
 		return
 	}
 
-	// Check password
-	if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)) != nil {
-		log.Printf("[DEBUG] Invalid password for user: %s", loginname)
-		s.ExecuteTemplate(w, "login.html", map[string]string{
-			"Error": "Invalid login credentials",
-		})
+	if !auth.CheckPasswordHash(password, user.PasswordHash) {
+		http.Error(w, "Invalid password", http.StatusUnauthorized)
 		return
 	}
 
-	// Login success → set session cookie
-	shared.SetSessionCookie(w, loginname)
-	log.Printf("[DEBUG] User %s logged in successfully", loginname)
+	sess, _ := s.SessionStore.Get(r, "pdm-session")
+	sess.Values["user"] = loginName
+	sess.Save(r, w)
 
-	// Check if user must change password
-	if user.MustChangePassword {
-		log.Printf("[DEBUG] User %s must change password — redirecting to /change-password", loginname)
-		http.Redirect(w, r, "/change-password", http.StatusSeeOther)
-		return
-	}
-
-	// Role-based redirection with priority
-	switch {
-	case user.HasRole(string(db.Admin)):
-		log.Printf("[DEBUG] User %s has role Admin — redirecting to /admin", loginname)
+	if user.HasRole("Admin") {
 		http.Redirect(w, r, "/admin", http.StatusSeeOther)
-	case auth.IsProjectLead(user):
-		log.Printf("[DEBUG] User %s has role ProjectLead — redirecting to /project-lead-dashboard", loginname)
-		http.Redirect(w, r, "/project-lead-dashboard", http.StatusSeeOther)
-	case auth.IsSeniorDesigner(user):
-		log.Printf("[DEBUG] User %s has role SeniorDesigner — redirecting to /senior-designer-dashboard", loginname)
-		http.Redirect(w, r, "/senior-designer-dashboard", http.StatusSeeOther)
-	default:
-		log.Printf("[DEBUG] User %s has no special roles — redirecting to /dashboard", loginname)
+	} else {
 		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 	}
 }
