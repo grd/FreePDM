@@ -107,7 +107,7 @@ func createDefaultTables(db *gorm.DB) error {
 
 func createAdminAccount(db *gorm.DB) error {
 	var count int64
-	db.Model(&PdmUser{}).Where("loginname = ?", "admin").Count(&count)
+	db.Model(&PdmUser{}).Where("login_name = ?", "admin").Count(&count)
 	if count == 0 {
 		hashed, _ := bcrypt.GenerateFromPassword([]byte("secret"), bcrypt.DefaultCost)
 		admin := PdmUser{

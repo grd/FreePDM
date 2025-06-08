@@ -17,6 +17,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/grd/FreePDM/internal/auth"
 	"github.com/grd/FreePDM/internal/db"
 	"github.com/grd/FreePDM/internal/shared"
@@ -178,4 +179,23 @@ func (s *Server) HandleAdminResetPassword(w http.ResponseWriter, r *http.Request
 
 	log.Printf("[DEBUG] Admin %s reset password for user %s", username, user.LoginName)
 	http.Redirect(w, r, fmt.Sprintf("/admin/users/edit/%d", userID), http.StatusSeeOther)
+}
+
+func (s *Server) HandleLoginPage(w http.ResponseWriter, r *http.Request) {
+	if err := s.ExecuteTemplate(w, "login.html", nil); err != nil {
+		http.Error(w, "Failed to load login page", http.StatusInternalServerError)
+	}
+}
+
+func (s *Server) HandleLogout(w http.ResponseWriter, r *http.Request) {
+	sess, _ := s.SessionStore.Get(r, "pdm-session")
+	sess.Values["user"] = ""
+	sess.Save(r, w)
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
+}
+
+func (s *Server) HandleShowLogFile(w http.ResponseWriter, r *http.Request) {
+	day := chi.URLParam(r, "day")
+	logPath := fmt.Sprintf("logs/%s.log", day)
+	http.ServeFile(w, r, logPath)
 }

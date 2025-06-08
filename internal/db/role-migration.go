@@ -12,7 +12,7 @@ import (
 // NormalizeUserRolesVerbose updates and reports if any roles were changed
 func (r *UserRepo) NormalizeUserRolesVerbose(loginname string) (bool, error) {
 	var user PdmUser
-	if err := r.DB.Where("loginname = ?", loginname).First(&user).Error; err != nil {
+	if err := r.DB.Where("login_name = ?", loginname).First(&user).Error; err != nil {
 		return false, err
 	}
 
@@ -81,7 +81,7 @@ func equalStringSlices(a, b []string) bool {
 // NormalizeUserRoles updates the roles on a user to match the canonical lowercase Role constants
 func (r *UserRepo) NormalizeUserRoles(loginname string) error {
 	var user PdmUser
-	if err := r.DB.Where("loginname = ?", loginname).First(&user).Error; err != nil {
+	if err := r.DB.Where("login_name = ?", loginname).First(&user).Error; err != nil {
 		return err
 	}
 

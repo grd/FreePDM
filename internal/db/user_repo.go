@@ -46,6 +46,14 @@ func (r *UserRepo) UpdateUser(user *PdmUser) error {
 	}).Error
 }
 
+func (r *UserRepo) LoadUserByLoginName(loginName string) (*PdmUser, error) {
+	var user PdmUser
+	if err := r.DB.Where("login_name = ?", loginName).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
 // LoadUser search by ID on user name.
 func (r *UserRepo) LoadUserByID(id uint) (*PdmUser, error) {
 	var user PdmUser
@@ -58,7 +66,7 @@ func (r *UserRepo) LoadUserByID(id uint) (*PdmUser, error) {
 // LoadUser search a user based on user name.
 func (r *UserRepo) LoadUser(loginname string) (*PdmUser, error) {
 	var user PdmUser
-	result := r.DB.Where("loginname = ?", loginname).First(&user)
+	result := r.DB.Where("login_name = ?", loginname).First(&user)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, ErrUserNotFound
@@ -71,7 +79,7 @@ func (r *UserRepo) LoadUser(loginname string) (*PdmUser, error) {
 // Renames password and also sets the MustChangePassword flag to false
 func (r *UserRepo) UpdatePassword(loginname, hash string) error {
 	var user PdmUser
-	if err := r.DB.Where("loginname = ?", loginname).First(&user).Error; err != nil {
+	if err := r.DB.Where("login_name = ?", loginname).First(&user).Error; err != nil {
 		return err
 	}
 
@@ -84,7 +92,7 @@ func (r *UserRepo) UpdatePassword(loginname, hash string) error {
 // Resets the MustChangePassword flag to false
 func (r *UserRepo) ClearMustChangePassword(loginname string) error {
 	return r.DB.Model(&PdmUser{}).
-		Where("loginname = ?", loginname).
+		Where("login_name = ?", loginname).
 		Update("must_change_password", false).
 		Error
 }

@@ -18,8 +18,10 @@
     <span class="w-12 text-sm font-mono text-gray-400 mr-4">#{{ .ID }}</span>
 
     <div class="flex items-center space-x-4">
-      <img src="/{{ if .PhotoPath }}{{ .PhotoPath }}{{ else }}static/uploads/Profile-blue.256.png{{ end }}" class="w-12 h-12 rounded-full cursor-pointer" onclick="window.location.href='/admin/users/upload-photo/{{ .ID }}'">
-    <!--  <span class="font-semibold ml-4">{{ .FullName }}</span> -->
+      <img src="/{{ if .PhotoPath }}{{ .PhotoPath }}{{ else }}static/uploads/Profile-blue.256.png{{ end }}"
+      class="w-12 h-12 rounded-full cursor-pointer"
+      onclick="window.location.href='/admin/users/show-photo/{{ .ID }}'">
+      <!--  <span class="font-semibold ml-4">{{ .FullName }}</span> -->
     </div>
 
     <!--

@@ -5,41 +5,48 @@
 package server
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 
+	"github.com/gorilla/sessions"
 	"github.com/grd/FreePDM/internal/db"
 )
 
 type Server struct {
-	UserRepo  *db.UserRepo
-	Templates *template.Template
+	UserRepo     *db.UserRepo
+	Templates    *template.Template
+	SessionStore *sessions.CookieStore
 
 	// TODO: Add things such as Logger, Config etc.
 }
+
+var sessionKey = []byte("your-secret-session-key")
 
 // Constructor
 func NewServer(userRepo *db.UserRepo) *Server {
 	templates := template.Must(template.ParseGlob("templates/*.html"))
 
 	return &Server{
-		UserRepo:  userRepo,
-		Templates: templates,
+		UserRepo:     userRepo,
+		Templates:    templates,
+		SessionStore: sessions.NewCookieStore(sessionKey),
 	}
 }
 
-func (s *Server) ExecuteTemplate(w http.ResponseWriter, name string, data any) {
+func (s *Server) ExecuteTemplate(w http.ResponseWriter, name string, data any) error {
 	tmpl, err := template.ParseFiles("templates/base.html", "templates/"+name)
 	if err != nil {
-		log.Println("Template parse error:", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
+		http.Error(w, "Template not found", http.StatusInternalServerError)
+		return fmt.Errorf("template %s not found", name)
 	}
 
-	err = tmpl.ExecuteTemplate(w, name, data)
-	if err != nil {
-		log.Println("Template execution error:", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	if err := tmpl.ExecuteTemplate(w, "base", data); err != nil {
+		log.Printf("[ERROR] Executing template %s: %v", name, err)
+		http.Error(w, "Template execution failed", http.StatusInternalServerError)
+		return err
 	}
+
+	return nil
 }

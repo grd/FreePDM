@@ -6,45 +6,54 @@ package server
 
 import (
 	"net/http"
-	"path/filepath"
 
-	"github.com/grd/FreePDM/internal/config"
-	"github.com/grd/FreePDM/internal/middleware"
+	"github.com/go-chi/chi/v5"
 )
 
 func (s *Server) Routes(mux *http.ServeMux) {
-	staticPath := filepath.Join(config.AppDir(), "static")
-	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(staticPath))))
+	r := chi.NewRouter()
 
-	// Without auth
-	mux.HandleFunc("/", s.HandleHomePage)
-	mux.HandleFunc("/login", s.Login)
-	mux.HandleFunc("/change-password", s.HandleChangePassword)
+	// ✅ Public routes (géén login nodig!)
+	r.Group(func(r chi.Router) {
+		r.Get("/", s.HandleHomePage)
+		r.Get("/login", s.HandleLoginPage)
+		r.Post("/login", s.HandleLogin)
+		r.Get("/logout", s.HandleLogout)
+	})
 
-	// With auth
-	mux.HandleFunc("/admin/logs", middleware.RequireRoleWithLogin(s.HandleShowLogs, "Admin"))
-	mux.HandleFunc("/admin/users", middleware.RequireRoleWithLogin(s.HandleAdminUsers, "Admin"))
-	mux.HandleFunc("/admin/users/new", middleware.RequireAdmin(s.HandleAdminNewUser))
-	mux.HandleFunc("/admin/users/edit/", middleware.RequireAdmin(s.HandleAdminEditUser))
-	mux.HandleFunc("/admin/users/reset-password/", middleware.RequireAdmin(s.HandleAdminResetPassword))
+	// ✅ Alle routes hieronder vereisen login
+	r.Group(func(r chi.Router) {
+		r.Use(s.RequireLoginChi)
 
-	// mux.HandleFunc("/admin/users/show-photo/", middleware.RequireAdmin(s.HandleShowPhoto))
-	// mux.HandleFunc("/admin/users/upload-photo/", middleware.RequireAdmin(s.HandleUploadPhoto))
+		// ✅ Dashboard
+		r.With(s.RequireRoleChi("Admin")).Get("/admin", s.HandleAdminDashboard)
+		r.Get("/dashboard", s.HandleDashboard)
 
-	mux.Handle("/admin/users/upload-photo/", middleware.RequireAdmin(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			s.HandleShowPhoto(w, r)
-		case http.MethodPost:
-			s.HandleUploadPhoto(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})))
+		// ✅ Logs
+		r.With(s.RequireRoleChi("Admin")).Get("/admin/logs", s.HandleShowLogs)
+		r.With(s.RequireRoleChi("Admin")).Get("/admin/logs/{day}", s.HandleShowLogFile)
 
-	mux.HandleFunc("/dashboard", middleware.RequireLogin(s.HandleDashboard))
-	mux.HandleFunc("/projects/manage", middleware.RequireRoleWithLogin(s.HandleProjectManagement, "Admin", "ProjectLead"))
-	mux.HandleFunc("/admin", middleware.RequireRoleWithLogin(s.HandleAdminDashboard, "Admin"))
-	mux.HandleFunc("/logout", middleware.RequireLogin(s.handleLogout))
-	mux.HandleFunc("/pdm", s.handlePdm)
+		// ✅ User management (Admin only)
+		r.With(s.RequireAdminChi).Group(func(r chi.Router) {
+			r.Get("/admin/users", s.HandleAdminUsers)
+			r.Get("/admin/users/new", s.HandleAdminNewUser)
+			r.Post("/admin/users/new", s.HandleAdminNewUser)
+			r.Get("/admin/users/edit/{userID}", s.HandleAdminEditUser)
+			r.Post("/admin/users/edit/{userID}", s.HandleAdminEditUser)
+			r.Post("/admin/users/reset-password/{userID}", s.HandleAdminResetPassword)
+			r.Get("/admin/users/show-photo/{userID}", s.HandleShowPhoto)
+			r.Post("/admin/users/upload-photo/{userID}", s.HandleUploadPhoto)
+		})
+
+		// 	// ✅ Vault routes (Admin only)
+		// 	r.With(s.RequireAdminChi).Group(func(r chi.Router) {
+		// 		r.Get("/admin/vault", s.HandleVaultIndex)
+		// 		r.Get("/admin/vault/{vaultID}", s.HandleVaultView)
+		// 		r.Post("/admin/vault/{vaultID}/upload", s.HandleVaultUpload)
+		// 		r.Post("/admin/vault/{vaultID}/delete", s.HandleVaultDelete)
+		// 	})
+	})
+
+	// ✅ Mount op de standaard mux
+	mux.Handle("/", r)
 }
