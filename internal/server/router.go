@@ -6,15 +6,19 @@ package server
 
 import (
 	"net/http"
+	"path"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/grd/FreePDM/internal/config"
 )
 
 func (s *Server) Routes(mux *http.ServeMux) {
 	r := chi.NewRouter()
 	r.Use(middleware.RedirectSlashes)
-	r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
+	staticPath := path.Join(config.AppDir(), "static")
+	r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir(staticPath))))
 
 	// ✅ Public routes
 	r.Group(func(r chi.Router) {

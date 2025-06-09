@@ -9,8 +9,10 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"path/filepath"
 
 	"github.com/gorilla/sessions"
+	"github.com/grd/FreePDM/internal/config"
 	"github.com/grd/FreePDM/internal/db"
 )
 
@@ -26,7 +28,8 @@ var sessionKey = []byte("your-secret-session-key")
 
 // Constructor
 func NewServer(userRepo *db.UserRepo) *Server {
-	templates := template.Must(template.ParseGlob("templates/*.html"))
+	templatePath := filepath.Join(config.AppDir(), "templates", "*.html")
+	templates := template.Must(template.ParseGlob(templatePath))
 
 	return &Server{
 		UserRepo:     userRepo,
