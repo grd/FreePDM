@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/grd/FreePDM/internal/config"
 )
 
 func (s *Server) HandleShowPhoto(w http.ResponseWriter, r *http.Request) {
@@ -72,7 +73,7 @@ func (s *Server) HandleUploadPhoto(w http.ResponseWriter, r *http.Request) {
 
 	timestamp := time.Now().Format("2006-01-02")
 	filename := fmt.Sprintf("%d-%s%s", userID, timestamp, ext)
-	savePath := filepath.Join("static", "uploads", filename)
+	savePath := filepath.Join(config.AppDir(), "static", "uploads", filename)
 
 	out, err := os.Create(savePath)
 	if err != nil {
@@ -86,7 +87,7 @@ func (s *Server) HandleUploadPhoto(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	photoPath := filepath.Join("uploads", filename)
+	photoPath := filename
 	if err := s.UserRepo.UpdatePhotoPath(uint(userID), photoPath); err != nil {
 		http.Error(w, "Failed to update user", http.StatusInternalServerError)
 		return

@@ -8,16 +8,16 @@
 <div class="max-w-xl mx-auto mt-8 bg-gray-800 shadow-md rounded p-6">
   <h1 class="text-xl font-semibold mb-4">Update Profile Photo</h1>
 
-  <!-- Current Photo Display -->
-  <div class="mb-6 flex items-center space-x-4">
-    <img src="/{{ if .User.PhotoPath }}{{ .User.PhotoPath }}{{ else }}static/uploads/Profile-blue.256.png{{ end }}"
-         alt="Current Photo"
-         class="w-24 h-24 rounded-full border shadow-sm">
-    <div>
-      <p class="text-sm text-gray-600">Current photo for <strong>{{ .User.FullName }}</strong></p>
-      <p class="text-xs text-gray-400 italic">Click browse to select a new photo (max 5MB, .jpg/.png)</p>
-    </div>
+<!-- Current Photo Display -->
+<div class="mb-6 flex items-center space-x-4">
+  <img src="/static/uploads/{{ if .User.PhotoPath }}{{ .User.PhotoPath }}{{ else }}Profile-blue.256.png{{ end }}"
+    alt="Current Photo"
+    class="w-24 h-24 rounded-full border shadow-sm">
+  <div>
+    <p class="text-sm text-gray-600">Current photo for <strong>{{ .User.FullName }}</strong></p>
+    <p class="text-xs text-gray-400 italic">Click browse to select a new photo (max 5MB, .jpg/.png)</p>
   </div>
+</div>
 
   <!-- Upload Photo Section -->
 <!-- Upload Photo Section -->
