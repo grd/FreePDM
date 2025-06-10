@@ -59,9 +59,9 @@
     <div class="mb-4">
       <label class="block mb-1 font-semibold">Current Photo</label>
       <div class="flex items-center space-x-4">
-          <img src="/static/uploads/{{ if .User.PhotoPath }}{{ .User.PhotoPath }}{{ else }}Profile-blue.256.png{{ end }}"
-          alt="User Photo"
-          class="w-24 h-24 rounded-full border border-gray-300 shadow-sm hover:opacity-80 hover:ring-2 hover:ring-indigo-400 cursor-pointer">
+      <img src="{{ if .User.PhotoPath }}/static/uploads/{{ .User.PhotoPath }}{{ else }}/static/Profile-blue.256.png{{ end }}"
+          alt="Current Photo"
+          class="w-24 h-24 rounded-full border shadow-sm">
       </div>
     </div>
 

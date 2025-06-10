@@ -148,3 +148,7 @@ certs/
 
 # For air
 tmp/
+
+# For storage inside FreePDM
+static/uploads
+!static/uploads/.gitkeep

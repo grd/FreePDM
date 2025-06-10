@@ -10,9 +10,9 @@
 
 <!-- Current Photo Display -->
 <div class="mb-6 flex items-center space-x-4">
-  <img src="/static/uploads/{{ if .User.PhotoPath }}{{ .User.PhotoPath }}{{ else }}Profile-blue.256.png{{ end }}"
-    alt="Current Photo"
-    class="w-24 h-24 rounded-full border shadow-sm">
+  <img src="{{ if .User.PhotoPath }}/static/uploads/{{ .User.PhotoPath }}{{ else }}/static/Profile-blue.256.png{{ end }}"
+      alt="Current Photo"
+      class="w-24 h-24 rounded-full border shadow-sm">
   <div>
     <p class="text-sm text-gray-600">Current photo for <strong>{{ .User.FullName }}</strong></p>
     <p class="text-xs text-gray-400 italic">Click browse to select a new photo (max 5MB, .jpg/.png)</p>
