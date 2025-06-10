@@ -7,7 +7,7 @@ package server
 import (
 	"log"
 	"net/http"
-	"os/exec"
+	usr "os/user"
 	"slices"
 	"strconv"
 	"time"
@@ -107,6 +107,20 @@ func (s *Server) HandleCreateNewUser(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			user.DateOfBirth = dob
 		}
+	}
+
+	// Check previously created login name
+	existingUser, _ := s.UserRepo.LoadUserByLoginName(user.LoginName)
+	if existingUser != nil {
+		http.Error(w, "Login name already exists", http.StatusBadRequest)
+		return
+	}
+
+	// Check user exists in Linux
+	_, err := usr.Lookup(user.LoginName)
+	if err != nil {
+		http.Error(w, "Login name does not exist as a Linux user", http.StatusBadRequest)
+		return
 	}
 
 	// Simpel wachtwoord bij aanmaak (voor later te resetten)
@@ -211,11 +225,4 @@ func (s *Server) HandleSaveEditedUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
-}
-
-// Helper: check if system user exists
-func isSystemUserExists(username string) bool {
-	cmd := exec.Command("id", username)
-	err := cmd.Run()
-	return err == nil
 }
