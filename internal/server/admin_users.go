@@ -5,22 +5,17 @@
 package server
 
 import (
-	"fmt"
-	"io"
 	"log"
 	"net/http"
-	"os"
 	"os/exec"
-	"path/filepath"
 	"slices"
 	"strconv"
-	"strings"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/grd/FreePDM/internal/auth"
 	"github.com/grd/FreePDM/internal/db"
 	"github.com/grd/FreePDM/internal/shared"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func (s *Server) HandleAdminUsers(w http.ResponseWriter, r *http.Request) {
@@ -68,153 +63,73 @@ func (s *Server) HandleAdminUsers(w http.ResponseWriter, r *http.Request) {
 	s.ExecuteTemplate(w, "admin-users.html", data)
 }
 
-// Helper: check if system user exists
-func isSystemUserExists(username string) bool {
-	cmd := exec.Command("id", username)
-	err := cmd.Run()
-	return err == nil
+func (s *Server) HandleNewUserForm(w http.ResponseWriter, r *http.Request) {
+	user := &db.PdmUser{}
+
+	availableRoles := db.GetAvailableRoles()
+
+	roleChecks := make(map[string]bool)
+	for _, role := range user.Roles {
+		roleChecks[role] = true
+	}
+
+	data := map[string]interface{}{
+		"User":           user,
+		"RoleChecks":     roleChecks,
+		"AvailableRoles": availableRoles,
+		"ShowBackButton": true,
+		"BackButtonLink": "/admin/users",
+	}
+
+	s.ExecuteTemplate(w, "admin-new-user.html", data)
 }
-func (s *Server) HandleAdminNewUser(w http.ResponseWriter, r *http.Request) {
-	username, err := shared.GetSessionLoginname(r)
-	if err != nil || username == "" {
-		log.Printf("[DEBUG] No valid session — redirecting to /login")
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+
+func (s *Server) HandleCreateNewUser(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Form parsing error", http.StatusBadRequest)
 		return
 	}
 
-	if r.Method == http.MethodGet {
-		log.Printf("[DEBUG] Serving New User page")
-		s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
-			"AvailableRoles": db.GetAvailableRoles(),
-			"ShowBackButton": true,
-			"BackButtonLink": "/admin/users",
-		})
-		return
+	user := &db.PdmUser{
+		FullName:     r.FormValue("full_name"),
+		FirstName:    r.FormValue("first_name"),
+		LastName:     r.FormValue("last_name"),
+		EmailAddress: r.FormValue("email_address"),
+		Sex:          r.FormValue("sex"),
+		PhoneNumber:  r.FormValue("phone_number"),
+		Department:   r.FormValue("department"),
+		Roles:        r.Form["roles"],
 	}
 
-	// POST processing
-	loginname := r.FormValue("loginname")
-	fullname := r.FormValue("fullname")
-	firstname := r.FormValue("firstname")
-	lastname := r.FormValue("lastname")
-	email := r.FormValue("email")
-	password := r.FormValue("password")
-	confirmPassword := r.FormValue("confirm_password")
-	dateOfBirth := r.FormValue("date_of_birth")
-	sex := r.FormValue("sex")
-	phone := r.FormValue("phone_number")
-	department := r.FormValue("department")
-	roles := r.Form["roles"]
-
-	log.Printf("[DEBUG] Processing New User form for loginname: %s", loginname)
-
-	// Basic validations
-	if loginname == "" || fullname == "" || email == "" || password == "" || len(roles) == 0 {
-		s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
-			"Error":          "Please fill in all required fields.",
-			"AvailableRoles": db.GetAvailableRoles(),
-		})
-		return
-	}
-	if password != confirmPassword {
-		s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
-			"Error":          "Passwords do not match.",
-			"AvailableRoles": db.GetAvailableRoles(),
-		})
-		return
-	}
-
-	// Check if user exists in FreePDM
-	_, err = s.UserRepo.LoadUser(loginname)
-	if err == nil {
-		s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
-			"Error":          "A user with this login name already exists in FreePDM.",
-			"AvailableRoles": db.GetAvailableRoles(),
-		})
-		return
-	}
-
-	// Check if system user exists (Linux)
-	if !isSystemUserExists(loginname) {
-		s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
-			"Error":          "This login name does not exist on the system.",
-			"AvailableRoles": db.GetAvailableRoles(),
-		})
-		return
-	}
-
-	// Parse date
-	dob, err := time.Parse("2006-01-02", dateOfBirth)
-	if err != nil {
-		s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
-			"Error":          "Invalid date format.",
-			"AvailableRoles": db.GetAvailableRoles(),
-		})
-		return
-	}
-
-	// Hash password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
-			"Error":          "Failed to hash password.",
-			"AvailableRoles": db.GetAvailableRoles(),
-		})
-		return
-	}
-
-	// Handle photo upload
-	file, handler, err := r.FormFile("photo")
-	var photoPath string
-	if err == nil {
-		defer file.Close()
-
-		photoFilename := fmt.Sprintf("%s_%s", loginname, handler.Filename)
-		photoPath = filepath.Join("static/uploads", photoFilename)
-		dst, err := os.Create(photoPath)
-		if err != nil {
-			s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
-				"Error":          "Failed to save photo.",
-				"AvailableRoles": db.GetAvailableRoles(),
-			})
-			return
+	dobStr := r.FormValue("date_of_birth")
+	if dobStr != "" {
+		dob, err := time.Parse("2006-01-02", dobStr)
+		if err == nil {
+			user.DateOfBirth = dob
 		}
-		defer dst.Close()
-		io.Copy(dst, file)
 	}
 
-	// Create new user in DB
-	newUser := db.PdmUser{
-		LoginName:          loginname,
-		FullName:           fullname,
-		FirstName:          firstname,
-		LastName:           lastname,
-		EmailAddress:       email,
-		PasswordHash:       string(hashedPassword),
-		MustChangePassword: true,
-		DateOfBirth:        dob,
-		Sex:                sex,
-		PhoneNumber:        phone,
-		Department:         department,
-		PhotoPath:          photoPath,
-		Roles:              roles,
+	// Simpel wachtwoord bij aanmaak (voor later te resetten)
+	// In praktijk moet je hier een gegenereerd wachtwoord + e-mail reset link gebruiken
+	defaultPassword := "changeme123"
+	hash, err := auth.HashPassword(defaultPassword)
+	if err != nil {
+		http.Error(w, "Failed to hash password", http.StatusInternalServerError)
+		return
 	}
+	user.PasswordHash = hash
 
-	if err := s.UserRepo.CreateUser(&newUser); err != nil {
-		log.Printf("[ERROR] Failed to create user: %v", err)
-		s.ExecuteTemplate(w, "admin-new-user.html", map[string]interface{}{
-			"Error":          "Failed to create user. Please try again.",
-			"AvailableRoles": db.GetAvailableRoles(),
-		})
+	if err := s.UserRepo.CreateUser(user); err != nil {
+		http.Error(w, "Failed to create user", http.StatusInternalServerError)
 		return
 	}
 
-	log.Printf("[DEBUG] User %s successfully created by admin %s", loginname, username)
+	log.Printf("[INFO] Created new user %s with roles %v", user.LoginName, user.Roles)
 	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
 }
 
-func (s *Server) HandleAdminEditUser(w http.ResponseWriter, r *http.Request) {
-	userIDStr := strings.TrimPrefix(r.URL.Path, "/admin/users/edit/")
+func (s *Server) HandleEditUserForm(w http.ResponseWriter, r *http.Request) {
+	userIDStr := chi.URLParam(r, "userID")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
@@ -227,72 +142,80 @@ func (s *Server) HandleAdminEditUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	availableRoles := db.GetAvailableRoles()
 	roleChecks := make(map[string]bool)
-	for _, role := range availableRoles {
-		roleChecks[role] = slices.Contains(user.Roles, role)
+	for _, role := range user.Roles {
+		roleChecks[role] = true
 	}
 
-	if r.Method == http.MethodGet {
-		s.ExecuteTemplate(w, "admin-edit-user.html", map[string]interface{}{
-			"User":           user,
-			"AvailableRoles": availableRoles,
-			"RoleChecks":     roleChecks,
-			"ShowBackButton": true,
-			"BackButtonLink": "/admin/users",
-		})
-		return
+	availableRoles := db.GetAvailableRoles()
+
+	data := map[string]interface{}{
+		"User":           user,
+		"RoleChecks":     roleChecks,
+		"AvailableRoles": availableRoles,
+		"ShowBackButton": true,
+		"BackButtonLink": "/admin/users",
 	}
 
-	// POST: Update user details
-	fullName := r.FormValue("fullname")
-	firstName := r.FormValue("firstname")
-	lastName := r.FormValue("lastname")
-	email := r.FormValue("email")
-	dateOfBirthStr := r.FormValue("date_of_birth")
-	sex := r.FormValue("sex")
-	phone := r.FormValue("phone_number")
-	department := r.FormValue("department")
-	roles := r.Form["roles"]
+	s.ExecuteTemplate(w, "admin-edit-user.html", data)
+}
 
-	dob, err := time.Parse("2006-01-02", dateOfBirthStr)
+func (s *Server) HandleSaveEditedUser(w http.ResponseWriter, r *http.Request) {
+	userIDStr := chi.URLParam(r, "userID")
+	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
-		s.ExecuteTemplate(w, "admin-edit-user.html", map[string]interface{}{
-			"User":           user,
-			"AvailableRoles": availableRoles,
-			"RoleChecks":     roleChecks,
-			"ShowBackButton": true,
-			"BackButtonLink": "/admin/users",
-			"Error":          "Invalid date format",
-		})
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
 		return
 	}
 
-	// Update fields
-	user.FullName = fullName
-	user.FirstName = firstName
-	user.LastName = lastName
-	user.EmailAddress = email
-	user.DateOfBirth = dob
-	user.Sex = sex
-	user.PhoneNumber = phone
-	user.Department = department
+	user, err := s.UserRepo.LoadUserByID(uint(userID))
+	if err != nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Form parsing error", http.StatusBadRequest)
+		return
+	}
+
+	user.FullName = r.FormValue("full_name")
+	user.FirstName = r.FormValue("first_name")
+	user.LastName = r.FormValue("last_name")
+	user.EmailAddress = r.FormValue("email_address")
+	user.Sex = r.FormValue("sex")
+	user.PhoneNumber = r.FormValue("phone_number")
+	user.Department = r.FormValue("department")
+
+	dobStr := r.FormValue("date_of_birth")
+	if dobStr != "" {
+		dob, err := time.Parse("2006-01-02", dobStr)
+		if err == nil {
+			user.DateOfBirth = dob
+		}
+	}
+
+	roles := r.Form["roles"]
+	if roles == nil {
+		roles = []string{}
+	}
+	// Beveiliging: Admin ID mag niet zijn Admin-rechten verliezen
+	if user.ID == 1 && !slices.Contains(roles, "Admin") {
+		roles = append(roles, "Admin")
+	}
 	user.Roles = roles
 
-	// Save changes
 	if err := s.UserRepo.UpdateUser(user); err != nil {
-		log.Printf("[ERROR] Failed to update user: %v", err)
-		s.ExecuteTemplate(w, "admin-edit-user.html", map[string]interface{}{
-			"User":           user,
-			"AvailableRoles": availableRoles,
-			"RoleChecks":     roleChecks,
-			"ShowBackButton": true,
-			"BackButtonLink": "/admin/users",
-			"Error":          "Failed to update user. Please try again.",
-		})
+		http.Error(w, "Failed to update user", http.StatusInternalServerError)
 		return
 	}
 
-	log.Printf("[INFO] Updated user %s (ID %d)", user.LoginName, user.ID)
 	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
+}
+
+// Helper: check if system user exists
+func isSystemUserExists(username string) bool {
+	cmd := exec.Command("id", username)
+	err := cmd.Run()
+	return err == nil
 }
