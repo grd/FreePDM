@@ -50,6 +50,10 @@ func (s *Server) Routes(mux *http.ServeMux) {
 			r.Post("/admin/users/reset-password/{userID}", s.HandleAdminResetPassword)
 			r.Get("/admin/users/show-photo/{userID}", s.HandleShowPhoto)
 			r.Post("/admin/users/upload-photo/{userID}", s.HandleUploadPhoto)
+			r.Get("/admin/users/reset-password/{userID}", s.HandleResetPasswordForm)
+			r.Post("/admin/users/reset-password/{userID}", s.HandleResetPasswordSave)
+			r.Get("/admin/users/change-status/{userID}", s.HandleChangeStatusForm)
+			r.Post("/admin/users/change-status/{userID}", s.HandleChangeStatusSave)
 		})
 
 		// 	// ✅ Vault routes (Admin only)

@@ -169,3 +169,20 @@ func GetAvailableRoles() []string {
 		string(Guest),
 	}
 }
+
+func (u *PdmUser) IsActive() bool {
+	return u.AccountStatus == string(StatusActive)
+}
+
+func GetAvailableStatuses() []string {
+	return []string{
+		string(StatusActive),
+		string(StatusDisabled),
+		string(StatusLocked),
+		string(StatusPending),
+		string(StatusSuspended),
+		string(StatusExpired),
+		string(StatusDeleted),
+		string(StatusInvited),
+	}
+}

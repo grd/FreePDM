@@ -10,23 +10,62 @@
 
 {{ define "content" }}
 <div class="flex items-center gap-4">
-
   {{ range .Users }}
 
-    <div class="flex items-center p-4 rounded bg-gray-800 hover:bg-gray-700 text-white">
+  <div class="flex items-center p-4 rounded bg-gray-800 hover:bg-gray-700 text-white">
 
-    <span class="w-12 text-sm font-mono text-gray-400 mr-4">#{{ .ID }}</span>
+    <span class="w-5 text-sm text-gray-400 mr-4">#{{ .ID }}</span>
 
-    <img src="{{ if .PhotoPath }}/static/uploads/{{ .PhotoPath }}{{ else }}/static/Profile-blue.256.png{{ end }}"
-      class="w-12 h-12 rounded-full cursor-pointer"
-      onclick="window.location.href='/admin/users/show-photo/{{ .ID }}'">
+    <a href="/admin/users/show-photo/{{ .ID }}">
+      <img src="/{{ if .PhotoPath }}static/uploads/{{ .PhotoPath }}{{ else }}static/Profile-blue.256.png{{ end }}"
+           alt="User Photo"
+           class="w-16 h-16 rounded-full mb-2 hover:opacity-80 transition mr-4">
+    </a>
 
-    <a href="/admin/users/edit/{{ .ID }}" class="text-lg font-semibold text-indigo-400 hover:underline">
-            {{ if .FullName }}{{ .FullName }}{{ else }}Unnamed User{{ end }}
-        </a>
+    {{ $color := "text-white" }}
+    {{ $tooltip := "" }}
+    {{ if eq .AccountStatus "Disabled" }}{{ $color = "text-gray-400" }}{{ $tooltip = "Account is disabled" }}
+    {{ else if eq .AccountStatus "Locked" }}{{ $color = "text-red-400" }}{{ $tooltip = "Account is locked" }}
+    {{ else if eq .AccountStatus "Pending" }}{{ $color = "text-yellow-400" }}{{ $tooltip = "Account is pending" }}
+    {{ else if eq .AccountStatus "Suspended" }}{{ $color = "text-pink-400" }}{{ $tooltip = "Account is suspended" }}
+    {{ else if eq .AccountStatus "Expired" }}{{ $color = "text-orange-400" }}{{ $tooltip = "Account is expired" }}
+    {{ else if eq .AccountStatus "Deleted" }}{{ $color = "text-gray-500 italic" }}{{ $tooltip = "Account is deleted" }}
+    {{ else if eq .AccountStatus "Invited" }}{{ $color = "text-blue-400" }}{{ $tooltip = "User is invited but not registered" }}
+    {{ end }}
+
+    <a href="/admin/users/edit/{{ .ID }}"
+       class="text-lg font-semibold hover:underline {{ $color }}"
+       title="{{ $tooltip }}">
+      {{ if .FullName }}{{ .FullName }}{{ else }}Unnamed User{{ end }}
+    </a>
+
+    <div class="mt-2">
+      <div class="relative inline-block text-left">
+        <button onclick="toggleMenu('menu-{{ .ID }}')" class="ml-5 p-2 hover:bg-gray-600 rounded">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <div id="menu-{{ .ID }}" class="hidden absolute z-10 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+          <div class="py-1 text-gray-800">
+            <a href="/admin/users/reset-password/{{ .ID }}" class="block px-4 py-2 text-sm hover:bg-gray-100">Reset Password</a>
+            <a href="/admin/users/change-status/{{ .ID }}" class="block px-4 py-2 text-sm hover:bg-gray-100">Account Status</a>
+          </div>
+        </div>
+      </div>
     </div>
-
+  </div>
   {{ end }}
-
 </div>
+
+<script>
+function toggleMenu(id) {
+  const el = document.getElementById(id);
+  if (el.classList.contains('hidden')) {
+    el.classList.remove('hidden');
+  } else {
+    el.classList.add('hidden');
+  }
+}
+</script>
 {{ end }}

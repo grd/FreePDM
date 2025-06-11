@@ -30,14 +30,14 @@ const (
 )
 
 const (
-	StatusActive    AccountStatus = "active"
-	StatusDisabled  AccountStatus = "disabled"
-	StatusLocked    AccountStatus = "locked"
-	StatusPending   AccountStatus = "pending"
-	StatusSuspended AccountStatus = "suspended"
-	StatusExpired   AccountStatus = "expired"
-	StatusDeleted   AccountStatus = "deleted"
-	StatusInvited   AccountStatus = "invited"
+	StatusActive    AccountStatus = "Active"
+	StatusDisabled  AccountStatus = "Disabled"
+	StatusLocked    AccountStatus = "Locked"
+	StatusPending   AccountStatus = "Pending"
+	StatusSuspended AccountStatus = "Suspended"
+	StatusExpired   AccountStatus = "Expired"
+	StatusDeleted   AccountStatus = "Deleted"
+	StatusInvited   AccountStatus = "Invited"
 )
 
 const (

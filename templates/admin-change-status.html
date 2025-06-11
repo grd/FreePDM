@@ -1,0 +1,35 @@
+{{ define "admin-change-status.html" }}
+  {{ template "base" . }}
+{{ end }}
+
+{{ define "title" }}Change Account Status{{ end }}
+
+{{ define "content" }}
+<div class="max-w-md mx-auto mt-8 bg-gray-800 text-white shadow-md rounded p-6">
+  <h1 class="text-xl font-semibold mb-4">Change Account Status</h1>
+  <form method="POST" action="/admin/users/change-status/{{ .User.ID }}">
+    <label for="account_status" class="block text-sm font-medium text-white mb-1">Select Status</label>
+    <select id="account_status" name="account_status"
+            class="w-full mb-4 px-3 py-2 rounded bg-gray-700 text-white border border-gray-600">
+      {{ range .AvailableStatuses }}
+        {{ $tooltip := "" }}
+        {{ if eq . "Active" }}{{ $tooltip = "The user account is active and fully functional." }}
+        {{ else if eq . "Disabled" }}{{ $tooltip = "The account is disabled and cannot be used until re-enabled." }}
+        {{ else if eq . "Locked" }}{{ $tooltip = "The account is locked due to security reasons." }}
+        {{ else if eq . "Pending" }}{{ $tooltip = "The account is pending approval or verification." }}
+        {{ else if eq . "Suspended" }}{{ $tooltip = "The account is temporarily suspended." }}
+        {{ else if eq . "Expired" }}{{ $tooltip = "The account access has expired." }}
+        {{ else if eq . "Deleted" }}{{ $tooltip = "The account is marked as deleted." }}
+        {{ else if eq . "Invited" }}{{ $tooltip = "The user has been invited but has not yet accepted." }}
+        {{ end }}
+        <option value="{{ . }}" title="{{ $tooltip }}" {{ if eq . $.User.AccountStatus }}selected{{ end }}>{{ . }}</option>
+      {{ end }}
+    </select>
+
+    <div class="flex justify-between">
+      <a href="/admin/users" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">Cancel</a>
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save</button>
+    </div>
+  </form>
+</div>
+{{ end }}

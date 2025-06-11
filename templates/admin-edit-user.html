@@ -5,92 +5,87 @@
 {{ define "title" }}Edit User{{ end }}
 
 {{ define "content" }}
-<div class="max-w-2xl mx-auto bg-gray-100 dark:bg-gray-800 p-6 rounded shadow">
-  <h1 class="text-2xl font-bold mb-6 text-center"></h1>
+<div class="max-w-4xl mx-auto mt-8 bg-gray-800 shadow-md rounded p-6">
+  <h1 class="text-xl font-semibold mb-6 text-white">Edit User</h1>
 
-  <form method="POST" action="/admin/users/edit/{{ .User.ID }}" enctype="multipart/form-data" class="space-y-4">
-
-    <div>
-      <label class="block mb-1 font-semibold">Login Name</label>
-      <input type="text" name="loginname" value="{{ .User.LoginName }}" readonly class="w-full p-2 rounded bg-gray-300 text-gray-600 cursor-not-allowed" />
-    </div>
-
-    <div>
-      <label class="block mb-1 font-semibold">Full Name</label>
-      <input type="text" name="fullname" value="{{ .User.FullName }}" class="w-full p-2 rounded bg-yellow-100 text-black" />
-    </div>
-
-    <div>
-      <label class="block mb-1 font-semibold">First Name</label>
-      <input type="text" name="firstname" value="{{ .User.FirstName }}" class="w-full p-2 rounded bg-yellow-100 text-black" />
-    </div>
-
-    <div>
-      <label class="block mb-1 font-semibold">Last Name</label>
-      <input type="text" name="lastname" value="{{ .User.LastName }}" class="w-full p-2 rounded bg-yellow-100 text-black" />
-    </div>
-
-    <div>
-      <label class="block mb-1 font-semibold">Date of Birth</label>
-      <input type="date" name="date_of_birth" value="{{ .User.DateOfBirth.Format "2006-01-02" }}" class="w-full p-2 rounded bg-yellow-100 text-black" />
-    </div>
-
-    <div>
-      <label class="block mb-1 font-semibold">Sex</label>
-      <input type="text" name="sex" value="{{ .User.Sex }}" class="w-full p-2 rounded bg-yellow-100 text-black" />
-    </div>
-
-    <div>
-      <label class="block mb-1 font-semibold">Email Address</label>
-      <input type="email" name="email" value="{{ .User.EmailAddress }}" class="w-full p-2 rounded bg-yellow-100 text-black" />
-    </div>
-
-    <div>
-      <label class="block mb-1 font-semibold">Phone Number</label>
-      <input type="text" name="phone_number" value="{{ .User.PhoneNumber }}" class="w-full p-2 rounded bg-yellow-100 text-black" />
-    </div>
-
-    <div>
-      <label class="block mb-1 font-semibold">Department</label>
-      <input type="text" name="department" value="{{ .User.Department }}" class="w-full p-2 rounded bg-yellow-100 text-black" />
-    </div>
-
-    <!-- Current Photo Section -->
-    <div class="mb-4">
-      <label class="block mb-1 font-semibold">Current Photo</label>
-      <div class="flex items-center space-x-4">
-      <img src="{{ if .User.PhotoPath }}/static/uploads/{{ .User.PhotoPath }}{{ else }}/static/Profile-blue.256.png{{ end }}"
-          alt="Current Photo"
-          class="w-24 h-24 rounded-full border shadow-sm">
+  <!-- Main Edit Form -->
+  <form id="edit-user-form" method="POST" action="/admin/users/edit/{{ .User.ID }}" enctype="multipart/form-data">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label class="block mb-1 font-semibold text-white">Login Name</label>
+        <input type="text" name="login_name" value="{{ .User.LoginName }}" class="w-full border p-2 rounded bg-gray-700 text-white border-gray-600" readonly>
       </div>
+
+      <div>
+        <label class="block mb-1 font-semibold text-white">Full Name</label>
+        <input type="text" name="full_name" value="{{ .User.FullName }}" class="w-full border p-2 rounded bg-gray-700 text-white border-gray-600">
+      </div>
+
+      <div>
+        <label class="block mb-1 font-semibold text-white">First Name</label>
+        <input type="text" name="first_name" value="{{ .User.FirstName }}" class="w-full border p-2 rounded bg-gray-700 text-white border-gray-600">
+      </div>
+
+      <div>
+        <label class="block mb-1 font-semibold text-white">Last Name</label>
+        <input type="text" name="last_name" value="{{ .User.LastName }}" class="w-full border p-2 rounded bg-gray-700 text-white border-gray-600">
+      </div>
+
+      <div>
+        <label class="block mb-1 font-semibold text-white">Email Address</label>
+        <input type="email" name="email_address" value="{{ .User.EmailAddress }}" class="w-full border p-2 rounded bg-gray-700 text-white border-gray-600" required>
+      </div>
+
+      <div>
+        <label class="block mb-1 font-semibold text-white">Date of Birth</label>
+        <input type="date" name="date_of_birth" value="{{ .User.DateOfBirth.Format "2006-01-02" }}" class="w-full border p-2 rounded bg-gray-700 text-white border-gray-600">
+      </div>
+
+      <div>
+        <label class="block mb-1 font-semibold text-white">Sex</label>
+        <select name="sex" class="w-full border p-2 rounded bg-gray-700 text-white border-gray-600">
+          <option value="" {{ if eq .User.Sex "" }}selected{{ end }}>Unspecified</option>
+          <option value="M" {{ if eq .User.Sex "M" }}selected{{ end }}>Male</option>
+          <option value="F" {{ if eq .User.Sex "F" }}selected{{ end }}>Female</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block mb-1 font-semibold text-white">Phone Number</label>
+        <input type="text" name="phone_number" value="{{ .User.PhoneNumber }}" class="w-full border p-2 rounded bg-gray-700 text-white border-gray-600">
+      </div>
+
+      <div>
+        <label class="block mb-1 font-semibold text-white">Department</label>
+        <input type="text" name="department" value="{{ .User.Department }}" class="w-full border p-2 rounded bg-gray-700 text-white border-gray-600">
+      </div>
+
     </div>
 
     <!-- Roles -->
-    <div>
-      <label class="block mb-1 font-semibold">Roles</label>
-      <div class="flex flex-wrap gap-2">
+    <div class="mt-6">
+      <label class="block mb-1 font-semibold text-white">Roles</label>
+      <div class="flex flex-wrap gap-4">
         {{ range .AvailableRoles }}
-          <label class="flex items-center space-x-1">
-            <input type="checkbox" name="roles" value="{{ . }}" {{ if (index $.RoleChecks .) }}checked{{ end }} class="mr-1">
-            <span class="text-black dark:text-white">{{ . }}</span>
+          <label class="inline-flex items-center text-white">
+            <input type="checkbox" name="roles" value="{{ . }}" class="mr-2"
+              {{ if (index $.RoleChecks .) }}checked{{ end }}>
+            {{ . }}
           </label>
         {{ end }}
       </div>
     </div>
 
-    <!-- Password Reset -->
-    <div class="flex items-center space-x-2">
-      <label class="block mb-1 font-semibold">Password</label>
-      <input type="password" value="************" readonly class="w-full p-2 rounded bg-gray-300 text-gray-600 cursor-not-allowed" />
-      <form method="POST" action="/admin/users/reset-password/{{ .User.ID }}">
-        <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Reset Password</button>
-      </form>
-    </div>
-
-    <!-- Save Changes -->
-    <div class="flex justify-center">
+    <!-- Bottom action buttons -->
+    <div class="flex justify-between items-center gap-4 mt-10">
+      <!-- Save Changes -->
       <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">Save Changes</button>
     </div>
   </form>
+
+  <!-- Back link -->
+  <div class="mt-6">
+    <a href="/admin/users" class="text-sm text-indigo-400 hover:underline">&larr; Back to User List</a>
+  </div>
 </div>
 {{ end }}

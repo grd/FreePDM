@@ -128,3 +128,7 @@ func (r *UserRepo) AddUserToLdap(loginname string) {
 func (r *UserRepo) RemoveUserFromLdap(user_id int, loginname string) {
 	fmt.Println("existing user deleted")
 }
+
+func (r *UserRepo) UpdateAccountStatus(userID uint, status string) error {
+	return r.DB.Model(&PdmUser{}).Where("id = ?", userID).Update("account_status", status).Error
+}
