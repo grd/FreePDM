@@ -59,13 +59,36 @@
 </div>
 
 <script>
+let openMenuId = null;
+
 function toggleMenu(id) {
-  const el = document.getElementById(id);
-  if (el.classList.contains('hidden')) {
-    el.classList.remove('hidden');
+  const menu = document.getElementById(id);
+
+  // Close menu when opening another
+  if (openMenuId && openMenuId !== id) {
+    document.getElementById(openMenuId)?.classList.add('hidden');
+  }
+
+  if (menu.classList.contains('hidden')) {
+    menu.classList.remove('hidden');
+    openMenuId = id;
   } else {
-    el.classList.add('hidden');
+    menu.classList.add('hidden');
+    openMenuId = null;
   }
 }
+
+// Close menu when clicking outside
+document.addEventListener('click', function(event) {
+  if (openMenuId) {
+    const openMenu = document.getElementById(openMenuId);
+    const button = document.querySelector(`button[onclick="toggleMenu('${openMenuId}')"]`);
+
+    if (!openMenu.contains(event.target) && !button.contains(event.target)) {
+      openMenu.classList.add('hidden');
+      openMenuId = null;
+    }
+  }
+});
 </script>
 {{ end }}
