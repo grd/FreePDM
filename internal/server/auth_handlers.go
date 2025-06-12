@@ -16,9 +16,11 @@ import (
 
 func (s *Server) HandleHomePage(w http.ResponseWriter, r *http.Request) {
 	data := struct {
-		ShowBackButton bool
+		BackButtonShow bool
+		MenuButtonShow bool
 	}{
-		ShowBackButton: false,
+		BackButtonShow: false,
+		MenuButtonShow: false,
 	}
 	if err := s.ExecuteTemplate(w, "home.html", data); err != nil {
 		http.Error(w, "Template error", http.StatusInternalServerError)

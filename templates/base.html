@@ -16,7 +16,7 @@
       <!-- Logo Left + optional back button -->
       <div class="flex items-center space-x-2">
         <img src="/static/FreePDM-logo.svg" alt="FreePDM Logo" class="h-12 w-auto max-h-16">
-        {{ if .ShowBackButton }}
+        {{ if .BackButtonShow }}
         <a href="{{ .BackButtonLink }}" class="ml-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
           ← Back
         </a>
@@ -30,6 +30,13 @@
 
       <!-- Button Right -->
       <div class="flex space-x-2 items-center">
+        {{ if .MenuButtonShow }}
+          <a href="{{ .MenuButtonLink }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3 5h14a1 1 0 100-2H3a1 1 0 100 2zm14 4H3a1 1 0 000 2h14a1 1 0 100-2zm0 6H3a1 1 0 100 2h14a1 1 0 100-2z" clip-rule="evenodd" />
+            </svg>
+          </a>
+        {{ end }}
         {{ block "nav-actions" . }}{{ end }}
         <form id="logoutForm" method="POST" action="/logout">
           <button type="button" onclick="showLogoutModal()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">

@@ -1,0 +1,51 @@
+{{ define "admin-edit.html" }}
+  {{ template "base" . }}
+{{ end }}
+
+{{ define "title" }}Edit Admin Settings{{ end }}
+
+{{ define "content" }}
+<div class="max-w-3xl mx-auto mt-10 bg-gray-800 text-white p-6 rounded shadow">
+  <h1 class="text-2xl font-semibold mb-6">Edit Admin Settings</h1>
+
+  <!-- Dark Mode Toggle -->
+  <div class="mb-6">
+    <label class="block mb-2 text-sm font-medium">Dark Mode</label>
+    <button id="darkModeToggle" class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 rounded">Toggle Theme</button>
+  </div>
+
+  <!-- i18n Settings (Non-functional for now) -->
+  <div class="mb-6">
+    <label class="block mb-2 text-sm font-medium">Language</label>
+    <select class="w-full p-2 rounded bg-gray-700 text-white" disabled>
+      <option selected>English</option>
+      <option>Deutsch</option>
+      <option>Nederlands</option>
+    </select>
+  </div>
+
+  <div class="mb-6">
+    <label class="block mb-2 text-sm font-medium">Location</label>
+    <select class="w-full p-2 rounded bg-gray-700 text-white" disabled>
+      <option selected>Europe/Amsterdam</option>
+      <option>Europe/Berlin</option>
+      <option>UTC</option>
+    </select>
+  </div>
+
+  <div class="mb-6">
+    <label class="block mb-2 text-sm font-medium">Currency</label>
+    <select class="w-full p-2 rounded bg-gray-700 text-white" disabled>
+      <option selected>EUR</option>
+      <option>USD</option>
+      <option>GBP</option>
+    </select>
+  </div>
+</div>
+
+<script>
+  document.getElementById("darkModeToggle").addEventListener("click", function () {
+    document.documentElement.classList.toggle("dark");
+  });
+</script>
+{{ end }}

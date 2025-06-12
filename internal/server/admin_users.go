@@ -50,14 +50,16 @@ func (s *Server) HandleAdminUsers(w http.ResponseWriter, r *http.Request) {
 
 	data := struct {
 		User           *db.PdmUser
-		ShowBackButton bool
+		BackButtonShow bool
 		BackButtonLink string
+		MenuButtonShow bool
 		Users          []db.PdmUser
 		FormattedDOB   string
 	}{
 		User:           user,
-		ShowBackButton: true,
+		BackButtonShow: true,
 		BackButtonLink: "/admin",
+		MenuButtonShow: false,
 		Users:          users,
 		FormattedDOB:   formattedDOB,
 	}
@@ -83,8 +85,9 @@ func (s *Server) HandleNewUserForm(w http.ResponseWriter, r *http.Request) {
 		"User":           user,
 		"RoleChecks":     roleChecks,
 		"AvailableRoles": availableRoles,
-		"ShowBackButton": true,
+		"BackButtonShow": true,
 		"BackButtonLink": "/admin/users",
+		"MenuButtonShow": false,
 	}
 
 	s.ExecuteTemplate(w, "admin-new-user.html", data)
@@ -175,8 +178,9 @@ func (s *Server) HandleEditUserForm(w http.ResponseWriter, r *http.Request) {
 		"RoleChecks":        roleChecks,
 		"AvailableRoles":    availableRoles,
 		"AvailableStatuses": availableStatuses,
-		"ShowBackButton":    true,
+		"BackButtonShow":    true,
 		"BackButtonLink":    "/admin/users",
+		"MenuButtonShow":    false,
 	}
 
 	s.ExecuteTemplate(w, "admin-edit-user.html", data)
@@ -264,8 +268,9 @@ func (s *Server) HandleShowPhoto(w http.ResponseWriter, r *http.Request) {
 
 	data := map[string]interface{}{
 		"User":           user,
-		"ShowBackButton": true,
+		"BackButtonShow": true,
 		"BackButtonLink": "/admin/users",
+		"MenuButtonShow": false,
 	}
 
 	if err := s.ExecuteTemplate(w, "show-photo.html", data); err != nil {

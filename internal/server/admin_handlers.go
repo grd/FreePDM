@@ -44,12 +44,16 @@ func (s *Server) HandleAdminDashboard(w http.ResponseWriter, r *http.Request) {
 
 	data := struct {
 		User           *db.PdmUser
-		ShowBackButton bool
+		BackButtonShow bool
 		BackButtonLink string
+		MenuButtonShow bool
+		MenuButtonLink string
 	}{
 		User:           user,
-		ShowBackButton: false,
+		BackButtonShow: false,
 		BackButtonLink: "",
+		MenuButtonShow: true,
+		MenuButtonLink: "/admin/edit",
 	}
 
 	s.ExecuteTemplate(w, "admin-dashboard.html", data)
@@ -121,15 +125,17 @@ func (s *Server) HandleShowLogs(w http.ResponseWriter, r *http.Request) {
 	// Combine everything into template data
 	data := struct {
 		User           *db.PdmUser
-		ShowBackButton bool
+		BackButtonShow bool
 		BackButtonLink string
+		MenuButtonShow bool
 		AvailableDates []string
 		LogHTML        template.HTML
 		LogOutput      string
 	}{
 		User:           user,
-		ShowBackButton: true,
+		BackButtonShow: true,
 		BackButtonLink: "/admin",
+		MenuButtonShow: false,
 		AvailableDates: availableDates,
 		LogHTML:        template.HTML(logHTML.String()),
 		LogOutput:      rawLog,
@@ -198,4 +204,12 @@ func (s *Server) HandleShowLogFile(w http.ResponseWriter, r *http.Request) {
 	day := chi.URLParam(r, "day")
 	logPath := fmt.Sprintf("logs/%s.log", day)
 	http.ServeFile(w, r, logPath)
+}
+
+func (s *Server) HandleAdminEdit(w http.ResponseWriter, r *http.Request) {
+	err := s.ExecuteTemplate(w, "admin-edit.html", nil)
+	if err != nil {
+		http.Error(w, "Failed to load admin edit page", http.StatusInternalServerError)
+		log.Printf("[ERROR] Rendering admin edit page: %v", err)
+	}
 }

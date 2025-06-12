@@ -35,6 +35,7 @@ func (s *Server) Routes(mux *http.ServeMux) {
 		// ✅ Dashboard
 		r.With(s.RequireRoleChi("Admin")).Get("/admin", s.HandleAdminDashboard)
 		r.Get("/dashboard", s.HandleDashboard)
+		r.Get("/admin/edit", s.HandleAdminEdit)
 
 		// ✅ Logs
 		r.With(s.RequireRoleChi("Admin")).Get("/admin/logs", s.HandleShowLogs)
