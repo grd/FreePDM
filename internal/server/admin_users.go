@@ -244,7 +244,8 @@ func (s *Server) HandleSaveEditedUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
+	url := fmt.Sprint("/admin/users/edit/", userIDStr)
+	http.Redirect(w, r, url, http.StatusSeeOther)
 }
 
 func (s *Server) HandleShowPhoto(w http.ResponseWriter, r *http.Request) {
