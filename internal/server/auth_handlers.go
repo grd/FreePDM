@@ -14,14 +14,13 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *Server) HandleHomePage(w http.ResponseWriter, r *http.Request) {
-	data := struct {
-		BackButtonShow bool
-		MenuButtonShow bool
-	}{
-		BackButtonShow: false,
-		MenuButtonShow: false,
+func (s *Server) HomeGet(w http.ResponseWriter, r *http.Request) {
+	data := map[string]any{
+		"ThemePreference": "dark",
+		"BackButtonShow":  false,
+		"MenuButtonShow":  false,
 	}
+
 	if err := s.ExecuteTemplate(w, "home.html", data); err != nil {
 		http.Error(w, "Template error", http.StatusInternalServerError)
 	}
@@ -29,7 +28,7 @@ func (s *Server) HandleHomePage(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
-		s.HandleLogin(w, r)
+		s.LoginPost(w, r)
 	} else if r.Method == http.MethodGet {
 		s.ServeLoginPage(w, r)
 	} else {
@@ -46,13 +45,8 @@ func (s *Server) ServeLoginPage(w http.ResponseWriter, r *http.Request) {
 	s.ExecuteTemplate(w, "login.html", nil)
 }
 
-// login handler
-func (s *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		s.ExecuteTemplate(w, "login.html", nil)
-		return
-	}
-
+// LoginPost
+func (s *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 	loginName := r.FormValue("login_name")
 	password := r.FormValue("password")
 
@@ -67,9 +61,12 @@ func (s *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sess, _ := s.SessionStore.Get(r, "pdm-session")
-	sess.Values["user"] = loginName
-	sess.Save(r, w)
+	sess, _ := s.SessionStore.Get(r, shared.SessionName)
+	sess.Values["user_id"] = user.ID
+	if err := sess.Save(r, w); err != nil {
+		http.Error(w, "Session save failed", http.StatusInternalServerError)
+		return
+	}
 
 	if user.HasRole("Admin") {
 		http.Redirect(w, r, "/admin", http.StatusSeeOther)
@@ -155,23 +152,45 @@ func containsUppercase(s string) bool {
 	return false
 }
 
-func (s *Server) handleLogout(w http.ResponseWriter, r *http.Request) {
-	shared.ClearSessionCookie(w)
-	http.Redirect(w, r, "/", http.StatusSeeOther)
-}
-
-func (s *Server) HandleDashboard(w http.ResponseWriter, r *http.Request) {
+func (s *Server) DashboardGet(w http.ResponseWriter, r *http.Request) {
 	loginname, err := shared.GetSessionLoginname(r)
 	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
+	user, err := s.UserRepo.LoadUser(loginname)
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
-	data := struct {
-		LoginName string
-	}{
-		LoginName: loginname,
+	data := map[string]any{
+		"LoginName":       loginname,
+		"ThemePreference": user.ThemePreference,
+		"BackButtonShow":  false,
+		"MenuButtonShow":  false,
 	}
 
 	s.ExecuteTemplate(w, "dashboard.html", data)
+}
+
+func (s *Server) BaseTemplateData(r *http.Request, extra map[string]any) map[string]any {
+	user, _ := s.getSessionUser(r)
+
+	data := map[string]any{
+		"ThemePreference": "system",
+	}
+
+	if user != nil {
+		data["User"] = user
+		data["ThemePreference"] = user.ThemePreference
+		// eventually:
+		// data["MenuButtonPath"] = fmt.Sprintf("/%s/edit", user.Role)
+	}
+
+	for k, v := range extra {
+		data[k] = v
+	}
+
+	return data
 }

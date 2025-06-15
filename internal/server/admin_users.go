@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	usr "os/user"
+	"path"
 	"path/filepath"
 	"slices"
 	"strconv"
@@ -24,7 +25,7 @@ import (
 	"github.com/grd/FreePDM/internal/shared"
 )
 
-func (s *Server) HandleAdminUsers(w http.ResponseWriter, r *http.Request) {
+func (s *Server) AdminUsersGet(w http.ResponseWriter, r *http.Request) {
 	loginname, err := shared.GetSessionLoginname(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -48,20 +49,13 @@ func (s *Server) HandleAdminUsers(w http.ResponseWriter, r *http.Request) {
 		formattedDOB = user.DateOfBirth.Format("2006-01-02")
 	}
 
-	data := struct {
-		User           *db.PdmUser
-		BackButtonShow bool
-		BackButtonLink string
-		MenuButtonShow bool
-		Users          []db.PdmUser
-		FormattedDOB   string
-	}{
-		User:           user,
-		BackButtonShow: true,
-		BackButtonLink: "/admin",
-		MenuButtonShow: false,
-		Users:          users,
-		FormattedDOB:   formattedDOB,
+	data := map[string]any{
+		"User":           user,
+		"BackButtonShow": true,
+		"BackButtonLink": "/admin",
+		"MenuButtonShow": false,
+		"Users":          users,
+		"FormattedDOB":   formattedDOB,
 	}
 
 	for _, u := range users {
@@ -71,7 +65,7 @@ func (s *Server) HandleAdminUsers(w http.ResponseWriter, r *http.Request) {
 	s.ExecuteTemplate(w, "admin-users.html", data)
 }
 
-func (s *Server) HandleNewUserForm(w http.ResponseWriter, r *http.Request) {
+func (s *Server) NewUserGet(w http.ResponseWriter, r *http.Request) {
 	user := &db.PdmUser{}
 
 	availableRoles := db.GetAvailableRoles()
@@ -93,7 +87,7 @@ func (s *Server) HandleNewUserForm(w http.ResponseWriter, r *http.Request) {
 	s.ExecuteTemplate(w, "admin-new-user.html", data)
 }
 
-func (s *Server) HandleCreateNewUser(w http.ResponseWriter, r *http.Request) {
+func (s *Server) NewUserPost(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		http.Error(w, "Form parsing error", http.StatusBadRequest)
 		return
@@ -151,7 +145,7 @@ func (s *Server) HandleCreateNewUser(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
 }
 
-func (s *Server) HandleEditUserForm(w http.ResponseWriter, r *http.Request) {
+func (s *Server) EditUserGet(w http.ResponseWriter, r *http.Request) {
 	userIDStr := chi.URLParam(r, "userID")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
@@ -186,7 +180,7 @@ func (s *Server) HandleEditUserForm(w http.ResponseWriter, r *http.Request) {
 	s.ExecuteTemplate(w, "admin-edit-user.html", data)
 }
 
-func (s *Server) HandleSaveEditedUser(w http.ResponseWriter, r *http.Request) {
+func (s *Server) EditUserPost(w http.ResponseWriter, r *http.Request) {
 	userIDStr := chi.URLParam(r, "userID")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
@@ -252,7 +246,7 @@ func (s *Server) HandleSaveEditedUser(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, url, http.StatusSeeOther)
 }
 
-func (s *Server) HandleShowPhoto(w http.ResponseWriter, r *http.Request) {
+func (s *Server) UserPhotoGet(w http.ResponseWriter, r *http.Request) {
 	userIDStr := chi.URLParam(r, "userID")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
@@ -279,7 +273,7 @@ func (s *Server) HandleShowPhoto(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) HandleUploadPhoto(w http.ResponseWriter, r *http.Request) {
+func (s *Server) UserPhotoPost(w http.ResponseWriter, r *http.Request) {
 	userIDStr := chi.URLParam(r, "userID")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
@@ -331,8 +325,8 @@ func (s *Server) HandleUploadPhoto(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
 }
 
-// HandleResetPasswordForm shows the reset password form
-func (s *Server) HandleResetPasswordForm(w http.ResponseWriter, r *http.Request) {
+// UserResetPasswordGet shows the reset password form
+func (s *Server) UserResetPasswordGet(w http.ResponseWriter, r *http.Request) {
 	userIDStr := chi.URLParam(r, "userID")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
@@ -352,8 +346,8 @@ func (s *Server) HandleResetPasswordForm(w http.ResponseWriter, r *http.Request)
 	s.ExecuteTemplate(w, "admin-reset-password.html", data)
 }
 
-// HandleResetPasswordSave updates the password
-func (s *Server) HandleResetPasswordSave(w http.ResponseWriter, r *http.Request) {
+// UserResetPasswordPost updates the password
+func (s *Server) UserResetPasswordPost(w http.ResponseWriter, r *http.Request) {
 	userIDStr := chi.URLParam(r, "userID")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
@@ -379,10 +373,11 @@ func (s *Server) HandleResetPasswordSave(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
+	redirectStr := path.Join("/admin/users", userIDStr)
+	http.Redirect(w, r, redirectStr, http.StatusSeeOther)
 }
 
-func (s *Server) HandleChangeStatusForm(w http.ResponseWriter, r *http.Request) {
+func (s *Server) UserChangeStatusGet(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "userID")
 	userID, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -406,7 +401,7 @@ func (s *Server) HandleChangeStatusForm(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-func (s *Server) HandleChangeStatusSave(w http.ResponseWriter, r *http.Request) {
+func (s *Server) UserChangeStatusPost(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "userID")
 	userID, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -421,7 +416,8 @@ func (s *Server) HandleChangeStatusSave(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
+	redirectStr := path.Join("/admin/users", idStr)
+	http.Redirect(w, r, redirectStr, http.StatusSeeOther)
 }
 
 func StatusTooltip(status string) string {

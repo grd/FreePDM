@@ -132,3 +132,7 @@ func (r *UserRepo) RemoveUserFromLdap(user_id int, loginname string) {
 func (r *UserRepo) UpdateAccountStatus(userID uint, status string) error {
 	return r.DB.Model(&PdmUser{}).Where("id = ?", userID).Update("account_status", status).Error
 }
+
+func (r *UserRepo) UpdateThemePreference(userID uint, theme string) error {
+	return r.DB.Model(&PdmUser{}).Where("id = ?", userID).Update("theme_preference", theme).Error
+}

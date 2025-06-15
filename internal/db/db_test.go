@@ -62,7 +62,7 @@ func TestValidLogin(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	// Act
-	server.HandleLogin(w, req)
+	server.LoginPost(w, req)
 
 	// Assert
 	res := w.Result()

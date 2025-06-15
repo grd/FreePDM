@@ -36,6 +36,7 @@ type PdmUser struct {
 	PhotoPath          string         `gorm:"type:varchar(255)"`
 	AccountStatus      string         `gorm:"type:varchar(20);default:'active'"`
 	Roles              pq.StringArray `gorm:"type:text[]"`
+	ThemePreference    string         `gorm:"type:varchar(20);default:'system'"`
 
 	// Projects  []*PdmProject `gorm:"many2many:user_project_link"`
 	// Items     []PdmItem     `gorm:"foreignKey:UserID"`

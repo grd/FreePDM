@@ -6,14 +6,18 @@
     <title>{{ block "title" . }}FreePDM{{ end }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      if (localStorage.getItem("theme") === "dark") {
+      const userPref = "{{ .ThemePreference }}";
+      const savedPref = localStorage.getItem("theme");
+      const theme = userPref !== "system" ? userPref : savedPref || "light";
+      if (theme === "dark") {
         document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
       }
     </script>
   </head>
   <body class="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white">
     <nav class="bg-gray-100 dark:bg-gray-800 shadow-md px-6 py-6 relative flex items-center justify-between">
-      <!-- Logo Left + optional back button -->
       <div class="flex items-center space-x-2">
         <img src="/static/FreePDM-logo.svg" alt="FreePDM Logo" class="h-12 w-auto max-h-16">
         {{ if .BackButtonShow }}
@@ -23,19 +27,17 @@
         {{ end }}
       </div>
 
-      <!-- Centralised text -->
       <div class="absolute left-1/2 transform -translate-x-1/2">
         <span class="text-4xl font-bold text-white">{{ template "title" . }}</span>
       </div>
 
-      <!-- Button Right -->
       <div class="flex space-x-2 items-center">
         {{ if .MenuButtonShow }}
-          <a href="{{ .MenuButtonLink }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M3 5h14a1 1 0 100-2H3a1 1 0 100 2zm14 4H3a1 1 0 000 2h14a1 1 0 100-2zm0 6H3a1 1 0 100 2h14a1 1 0 100-2z" clip-rule="evenodd" />
-            </svg>
-          </a>
+        <a href="{{ .MenuButtonLink }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3 5h14a1 1 0 100-2H3a1 1 0 100 2zm14 4H3a1 1 0 000 2h14a1 1 0 100-2zm0 6H3a1 1 0 100 2h14a1 1 0 100-2z" clip-rule="evenodd" />
+          </svg>
+        </a>
         {{ end }}
         {{ block "nav-actions" . }}{{ end }}
         <form id="logoutForm" method="POST" action="/logout">
@@ -50,7 +52,6 @@
       {{ block "content" . }}{{ end }}
     </main>
 
-    <!-- Logout Confirmation Modal -->
     <div id="logoutModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
       <div class="bg-white dark:bg-gray-800 p-6 rounded shadow-md w-80 text-center">
         <h2 class="text-lg font-bold mb-4">Confirm Logout</h2>
@@ -67,6 +68,8 @@
         const root = document.documentElement;
         const isDark = root.classList.toggle("dark");
         localStorage.setItem("theme", isDark ? "dark" : "light");
+        document.getElementById("themeFormInput").value = isDark ? "dark" : "light";
+        document.getElementById("themeForm").submit();
       }
 
       function showLogoutModal() {

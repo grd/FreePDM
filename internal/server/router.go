@@ -13,6 +13,7 @@ import (
 	"github.com/grd/FreePDM/internal/config"
 )
 
+// Routes handling
 func (s *Server) Routes(mux *http.ServeMux) {
 	r := chi.NewRouter()
 	r.Use(middleware.RedirectSlashes)
@@ -22,10 +23,10 @@ func (s *Server) Routes(mux *http.ServeMux) {
 
 	// ✅ Public routes
 	r.Group(func(r chi.Router) {
-		r.Get("/", s.HandleHomePage)
-		r.Get("/login", s.HandleLoginPage)
-		r.Post("/login", s.HandleLogin)
-		r.Get("/logout", s.HandleLogout)
+		r.Get("/", s.HomeGet)
+		r.Get("/login", s.LoginGet)
+		r.Post("/login", s.LoginPost)
+		r.Post("/logout", s.LogoutPost)
 	})
 
 	// ✅ Require login
@@ -33,36 +34,36 @@ func (s *Server) Routes(mux *http.ServeMux) {
 		r.Use(s.RequireLoginChi)
 
 		// ✅ Dashboard
-		r.With(s.RequireRoleChi("Admin")).Get("/admin", s.HandleAdminDashboard)
-		r.Get("/dashboard", s.HandleDashboard)
-		r.Get("/admin/edit", s.HandleAdminEdit)
+		r.With(s.RequireRoleChi("Admin")).Get("/admin", s.AdminDashboardGet)
+		r.Get("/dashboard", s.DashboardGet)
+		r.Get("/admin/preferences", s.AdminPreferencesGet)
+		r.Patch("/preferences/theme", s.ThemePreferencePatch)
 
 		// ✅ Logs
-		r.With(s.RequireRoleChi("Admin")).Get("/admin/logs", s.HandleShowLogs)
-		r.With(s.RequireRoleChi("Admin")).Get("/admin/logs/{day}", s.HandleShowLogFile)
+		r.With(s.RequireRoleChi("Admin")).Get("/admin/logs", s.ShowLogsGet)
+		r.With(s.RequireRoleChi("Admin")).Get("/admin/logs/{day}", s.ShowLogFileGet)
 
 		// ✅ User management (Admin only)
 		r.With(s.RequireAdminChi).Group(func(r chi.Router) {
-			r.Get("/admin/users", s.HandleAdminUsers)
-			r.Get("/admin/users/new", s.HandleNewUserForm)
-			r.Post("/admin/users/new", s.HandleCreateNewUser)
-			r.Get("/admin/users/edit/{userID}", s.HandleEditUserForm)
-			r.Post("/admin/users/edit/{userID}", s.HandleSaveEditedUser)
-			r.Post("/admin/users/reset-password/{userID}", s.HandleAdminResetPassword)
-			r.Get("/admin/users/show-photo/{userID}", s.HandleShowPhoto)
-			r.Post("/admin/users/upload-photo/{userID}", s.HandleUploadPhoto)
-			r.Get("/admin/users/reset-password/{userID}", s.HandleResetPasswordForm)
-			r.Post("/admin/users/reset-password/{userID}", s.HandleResetPasswordSave)
-			r.Get("/admin/users/change-status/{userID}", s.HandleChangeStatusForm)
-			r.Post("/admin/users/change-status/{userID}", s.HandleChangeStatusSave)
+			r.Get("/admin/users", s.AdminUsersGet)
+			r.Get("/admin/users/new", s.NewUserGet)
+			r.Post("/admin/users/new", s.NewUserPost)
+			r.Get("/admin/users/edit/{userID}", s.EditUserGet)
+			r.Post("/admin/users/edit/{userID}", s.EditUserPost)
+			r.Get("/admin/users/reset-password/{userID}", s.UserResetPasswordGet)
+			r.Post("/admin/users/reset-password/{userID}", s.UserResetPasswordPost)
+			r.Get("/admin/users/show-photo/{userID}", s.UserPhotoGet)
+			r.Post("/admin/users/upload-photo/{userID}", s.UserPhotoPost)
+			r.Get("/admin/users/change-status/{userID}", s.UserChangeStatusGet)
+			r.Post("/admin/users/change-status/{userID}", s.UserChangeStatusPost)
 		})
 
 		// 	// ✅ Vault routes (Admin only)
 		// 	r.With(s.RequireAdminChi).Group(func(r chi.Router) {
-		// 		r.Get("/admin/vault", s.HandleVaultIndex)
-		// 		r.Get("/admin/vault/{vaultID}", s.HandleVaultView)
-		// 		r.Post("/admin/vault/{vaultID}/upload", s.HandleVaultUpload)
-		// 		r.Post("/admin/vault/{vaultID}/delete", s.HandleVaultDelete)
+		// 		r.Get("/admin/vault", s.VaultIndexGet)
+		// 		r.Get("/admin/vault/{vaultID}", s.VaultViewGet)
+		// 		r.Post("/admin/vault/{vaultID}/upload", s.VaultUploadPost)
+		// 		r.Post("/admin/vault/{vaultID}/delete", s.VaultDelete)
 		// 	})
 	})
 

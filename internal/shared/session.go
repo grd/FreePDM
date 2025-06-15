@@ -9,6 +9,8 @@ import (
 	"net/http"
 )
 
+const SessionName = "pdm_session"
+
 var (
 	ErrNoSessionCookie = errors.New("no session cookie found")
 	SessionCookieName  = "PDM_Session"
