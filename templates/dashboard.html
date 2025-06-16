@@ -7,16 +7,13 @@
 {{ define "nav-actions" }}
   <div class="flex space-x-2">
     <a href="/change-password" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600">Change Password</a>
-    <form method="POST" action="/logout">
-      <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" type="submit">Logout</button>
-    </form>
   </div>
 {{ end }}
 
 {{ define "content" }}
   <!-- Welcome card -->
   <div class="bg-gray-800 p-6 rounded-2xl shadow text-white mb-8">
-    <h1 class="text-3xl font-bold mb-2">Hello {{ .UserName }}</h1>
+    <h1 class="text-3xl font-bold mb-2">Hello {{ .User.FirstName }}</h1>
     <p class="text-gray-300">Welcome to your dashboard.</p>
   </div>
 
@@ -24,7 +21,7 @@
   <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
     <!-- Vault Overview -->
     <div class="p-6 rounded-xl shadow bg-white dark:bg-gray-800">
-      <h3 class="text-xl font-semibold mb-1 text-gray-900 dark:text-white">Vault Overview</h3>
+      <a href="/vaults/list"> <h3 class="text-xl font-semibold mb-1 text-gray-900 dark:text-white">Vault Overview</h3></a>
       <p class="text-sm text-gray-600 dark:text-gray-400">Quick access to your design files and documents.</p>
     </div>
 

@@ -18,6 +18,7 @@ type ctxKey string
 
 const ctxCurrentUser ctxKey = "currentUser"
 
+// RequireLoginChi ensures the user is logged in
 func (s *Server) RequireLoginChi(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		sess, err := s.SessionStore.Get(r, shared.SessionName)
@@ -44,6 +45,7 @@ func (s *Server) RequireLoginChi(next http.Handler) http.Handler {
 	})
 }
 
+// RequireAdminChi allows only admin users
 func (s *Server) RequireAdminChi(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		sess, err := s.SessionStore.Get(r, shared.SessionName)
@@ -70,6 +72,7 @@ func (s *Server) RequireAdminChi(next http.Handler) http.Handler {
 	})
 }
 
+// RequireRoleChi returns a handler that only allows users with given roles
 func (s *Server) RequireRoleChi(roles ...string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -26,25 +26,6 @@ func (s *Server) HomeGet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		s.LoginPost(w, r)
-	} else if r.Method == http.MethodGet {
-		s.ServeLoginPage(w, r)
-	} else {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-	}
-}
-
-func (s *Server) ServeLoginPage(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	s.ExecuteTemplate(w, "login.html", nil)
-}
-
 // LoginPost
 func (s *Server) LoginPost(w http.ResponseWriter, r *http.Request) {
 	loginName := r.FormValue("login_name")
@@ -128,7 +109,7 @@ func (s *Server) HandleChangePassword(w http.ResponseWriter, r *http.Request) {
 	// Update DB
 	err = s.UserRepo.UpdatePassword(loginname, string(hash))
 	if err != nil {
-		http.Error(w, "Failed to update password", http.StatusInternalServerError)
+		http.Error(w, "Failed to update password3", http.StatusInternalServerError)
 		return
 	}
 
@@ -153,22 +134,19 @@ func containsUppercase(s string) bool {
 }
 
 func (s *Server) DashboardGet(w http.ResponseWriter, r *http.Request) {
-	loginname, err := shared.GetSessionLoginname(r)
-	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-	user, err := s.UserRepo.LoadUser(loginname)
-	if err != nil {
+	user, err := s.getSessionUser(r)
+	if err != nil || user == nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	data := map[string]any{
-		"LoginName":       loginname,
+		"User":            user,
+		"LoginName":       user.LoginName,
 		"ThemePreference": user.ThemePreference,
 		"BackButtonShow":  false,
-		"MenuButtonShow":  false,
+		"MenuButtonShow":  true,
+		"MenuButtonLink":  "/bla",
 	}
 
 	s.ExecuteTemplate(w, "dashboard.html", data)

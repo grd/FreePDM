@@ -55,7 +55,7 @@ var (
 
 func init() {
 	// check for config file
-	vaults = config.Conf.VaultsDirectory
+	vaults = config.VaultsDir()
 
 	// or check of enivronment variable
 	if vaults == "" {

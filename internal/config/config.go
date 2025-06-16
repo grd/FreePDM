@@ -33,6 +33,17 @@ func AppDir() string {
 	return appDir
 }
 
+// VaultsDir returns the vaults directory
+func VaultsDir() string {
+
+	// Ensure the vaults directory exists
+	if !util.DirExists(Conf.VaultsDirectory) {
+		log.Fatalf("vaults %s directory does not exist", Conf.VaultsDirectory)
+	}
+
+	return Conf.VaultsDirectory
+}
+
 // GetUid returns the uid for a given user name or -1 if not found.
 func GetUid(name string) int {
 	if uid, ok := Conf.Users[name]; ok {

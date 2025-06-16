@@ -9,7 +9,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 
+	"github.com/grd/FreePDM/internal/config"
 	"github.com/grd/FreePDM/internal/shared"
 	"github.com/grd/FreePDM/internal/util"
 	fsm "github.com/grd/FreePDM/internal/vaults"
@@ -158,4 +161,36 @@ func handleAllocate(w http.ResponseWriter, user, vault, path string) {
 		}
 	}
 	json.NewEncoder(w).Encode(resp)
+}
+
+// VaultsListGet shows all vaults inside the filesystem
+func (s *Server) VaultsListGet(w http.ResponseWriter, r *http.Request) {
+	vaultRoot := config.VaultsDir()
+	dirs, err := os.ReadDir(vaultRoot)
+	if err != nil {
+		http.Error(w, "Unable to read vaults directory", http.StatusInternalServerError)
+		log.Printf("[ERROR] Unable to read the root vault: %v", err)
+		return
+	}
+
+	var vaults []string
+	for _, d := range dirs {
+		if d.IsDir() && !strings.HasPrefix(d.Name(), ".") {
+			vaults = append(vaults, d.Name())
+		}
+	}
+
+	data := map[string]any{
+		"Vaults":          vaults,
+		"Title":           "Vaults",
+		"BackButtonShow":  true,
+		"BackButtonLink":  "/dashboard",
+		"MenuButtonShow":  false,
+		"ThemePreference": "system",
+	}
+
+	err = s.ExecuteTemplate(w, "vaults-list.html", data)
+	if err != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+	}
 }

@@ -136,3 +136,9 @@ func (r *UserRepo) UpdateAccountStatus(userID uint, status string) error {
 func (r *UserRepo) UpdateThemePreference(userID uint, theme string) error {
 	return r.DB.Model(&PdmUser{}).Where("id = ?", userID).Update("theme_preference", theme).Error
 }
+
+func (r *UserRepo) UpdatePasswordByID(id uint, hash string) error {
+	return r.DB.Model(&PdmUser{}).
+		Where("id = ?", id).
+		Update("password_hash", hash).Error
+}

@@ -1,0 +1,30 @@
+{{ define "title" }}Vaults{{ end }}
+
+{{ define "content" }}
+<div class="space-y-6">
+  <h2 class="text-2xl font-semibold">Available Vaults</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+{{ range .Vaults }}
+  <a href="/vaults/{{ . }}" class="block p-4 border rounded shadow hover:bg-gray-100 dark:hover:bg-gray-800">
+    <div class="text-xl font-bold">{{ . }}</div>
+    <div class="text-sm text-gray-500">No description available</div>
+  </a>
+{{ else }}
+  <p>No vaults found.</p>
+{{ end }}
+
+  </div>
+</div>
+{{ end }}
+
+<!--
+    {{ range .Vaults }}
+      <a href="/vaults/{{ .Name }}" class="block p-4 border rounded shadow hover:bg-gray-100 dark:hover:bg-gray-800">
+        <div class="text-xl font-bold">{{ .Name }}</div>
+        <div class="text-sm text-gray-500">{{ .Description }}</div>
+      </a>
+    {{ else }}
+      <p>No vaults found.</p>
+    {{ end }}
+-->

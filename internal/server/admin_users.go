@@ -325,8 +325,8 @@ func (s *Server) UserPhotoPost(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
 }
 
-// UserResetPasswordGet shows the reset password form
-func (s *Server) UserResetPasswordGet(w http.ResponseWriter, r *http.Request) {
+// AdminUserResetPasswordGet shows the reset password form
+func (s *Server) AdminUserResetPasswordGet(w http.ResponseWriter, r *http.Request) {
 	userIDStr := chi.URLParam(r, "userID")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
@@ -346,12 +346,18 @@ func (s *Server) UserResetPasswordGet(w http.ResponseWriter, r *http.Request) {
 	s.ExecuteTemplate(w, "admin-reset-password.html", data)
 }
 
-// UserResetPasswordPost updates the password
-func (s *Server) UserResetPasswordPost(w http.ResponseWriter, r *http.Request) {
+// AdminUserResetPasswordPost updates the password
+func (s *Server) AdminUserResetPasswordPost(w http.ResponseWriter, r *http.Request) {
 	userIDStr := chi.URLParam(r, "userID")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	user, err := s.UserRepo.LoadUserByID(uint(userID))
+	if err != nil || user == nil {
+		http.Error(w, "User not found", http.StatusNotFound)
 		return
 	}
 
@@ -367,14 +373,12 @@ func (s *Server) UserResetPasswordPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.UserRepo.UpdatePassword(userIDStr, hash); err != nil {
+	if err := s.UserRepo.UpdatePasswordByID(uint(userID), hash); err != nil {
 		http.Error(w, "Failed to update password", http.StatusInternalServerError)
 		log.Printf("[ERROR] Failed to update password for user %d: %v", userID, err)
 		return
 	}
-
-	redirectStr := path.Join("/admin/users", userIDStr)
-	http.Redirect(w, r, redirectStr, http.StatusSeeOther)
+	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
 }
 
 func (s *Server) UserChangeStatusGet(w http.ResponseWriter, r *http.Request) {
