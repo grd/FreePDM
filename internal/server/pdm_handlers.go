@@ -10,8 +10,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/grd/FreePDM/internal/config"
 	"github.com/grd/FreePDM/internal/shared"
 	"github.com/grd/FreePDM/internal/util"
@@ -191,6 +193,35 @@ func (s *Server) VaultsListGet(w http.ResponseWriter, r *http.Request) {
 
 	err = s.ExecuteTemplate(w, "vaults-list.html", data)
 	if err != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+	}
+}
+
+func (s *Server) VaultBrowseGet(w http.ResponseWriter, r *http.Request) {
+	vaultName := chi.URLParam(r, "vaultName")
+	vaultPath := filepath.Join(config.VaultsDir(), vaultName)
+
+	entries, err := os.ReadDir(vaultPath)
+	if err != nil {
+		log.Printf("[ERROR] Cannot read vault directory %s: %v", vaultPath, err)
+		http.Error(w, "Vault not found", http.StatusNotFound)
+		return
+	}
+
+	var files []string
+	for _, entry := range entries {
+		files = append(files, entry.Name())
+	}
+
+	data := map[string]any{
+		"VaultName":      vaultName,
+		"Entries":        files,
+		"BackButtonShow": true,
+		"BackButtonLink": "/vaults/list",
+		"MenuButtonShow": false,
+	}
+
+	if err := s.ExecuteTemplate(w, "vaults-browse.html", data); err != nil {
 		http.Error(w, "Template error", http.StatusInternalServerError)
 	}
 }

@@ -46,25 +46,27 @@ func (s *Server) Routes(mux *http.ServeMux) {
 		// ✅ User management (Admin only)
 		r.With(s.RequireAdminChi).Group(func(r chi.Router) {
 			r.Get("/admin/users", s.AdminUsersGet)
+			r.Get("/admin/users/reset-password/{userID}", s.AdminUserResetPasswordGet)
+			r.Post("/admin/users/reset-password/{userID}", s.AdminUserResetPasswordPost)
 			r.Get("/admin/users/new", s.NewUserGet)
 			r.Post("/admin/users/new", s.NewUserPost)
 			r.Get("/admin/users/edit/{userID}", s.EditUserGet)
 			r.Post("/admin/users/edit/{userID}", s.EditUserPost)
-			r.Get("/admin/users/reset-password/{userID}", s.UserResetPasswordGet)
-			r.Post("/admin/users/reset-password/{userID}", s.UserResetPasswordPost)
 			r.Get("/admin/users/show-photo/{userID}", s.UserPhotoGet)
 			r.Post("/admin/users/upload-photo/{userID}", s.UserPhotoPost)
 			r.Get("/admin/users/change-status/{userID}", s.UserChangeStatusGet)
 			r.Post("/admin/users/change-status/{userID}", s.UserChangeStatusPost)
 		})
 
-		// 	// ✅ Vault routes (Admin only)
-		// 	r.With(s.RequireAdminChi).Group(func(r chi.Router) {
-		// 		r.Get("/admin/vault", s.VaultIndexGet)
-		// 		r.Get("/admin/vault/{vaultID}", s.VaultViewGet)
-		// 		r.Post("/admin/vault/{vaultID}/upload", s.VaultUploadPost)
-		// 		r.Post("/admin/vault/{vaultID}/delete", s.VaultDelete)
-		// 	})
+		// ✅ Vault routes (Admin only)
+		r.With(s.RequireAdminChi).Group(func(r chi.Router) {
+			r.Get("/vaults/list", s.VaultsListGet)
+			r.Get("/vaults/{vaultName}", s.VaultBrowseGet)
+
+			// r.Get("/admin/vault/{vaultID}", s.VaultViewGet)
+			// r.Post("/admin/vault/{vaultID}/upload", s.VaultUploadPost)
+			// r.Post("/admin/vault/{vaultID}/delete", s.VaultDelete)
+		})
 	})
 
 	// ✅ Mount on the standard mux
