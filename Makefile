@@ -6,7 +6,13 @@ BIN_DIR=${HOME}/bin
 CONTAINER_NAME := freepdm
 
 
-all: run createvault removevault test pdmserver 
+all: run createvault removevault test pdmserver gui
+
+fpg:
+	go build -o $(BIN_DIR)/fpg ./apps/fpg/main.go
+
+fpg-run:
+	go run ./apps/fpg/main.go
 
 run: 
 	air

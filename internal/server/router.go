@@ -62,6 +62,7 @@ func (s *Server) Routes(mux *http.ServeMux) {
 		r.With(s.RequireAdminChi).Group(func(r chi.Router) {
 			r.Get("/vaults/list", s.VaultsListGet)
 			r.Get("/vaults/{vaultName}", s.VaultBrowseGet)
+			r.Get("/vaults/{vaultName}/*", s.VaultPathBrowseGet)
 
 			// r.Get("/admin/vault/{vaultID}", s.VaultViewGet)
 			// r.Post("/admin/vault/{vaultID}/upload", s.VaultUploadPost)

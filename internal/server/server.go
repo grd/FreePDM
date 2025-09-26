@@ -14,12 +14,14 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/grd/FreePDM/internal/config"
 	"github.com/grd/FreePDM/internal/db"
+	"github.com/grd/FreePDM/internal/vaults"
 )
 
 type Server struct {
 	UserRepo     *db.UserRepo
 	Templates    *template.Template
 	SessionStore *sessions.CookieStore
+	FS           *vaults.FileSystem
 
 	// TODO: Add things such as Logger, Config etc.
 }

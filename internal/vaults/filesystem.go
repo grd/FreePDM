@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -42,6 +43,11 @@ type FileSystem struct {
 	userUid        int
 	lockedFilesCvs string
 	lockedIndex    []LockedIndex
+}
+
+// Open implements fs.FS.
+func (fs FileSystem) Open(name string) (fs.File, error) {
+	panic("unimplemented")
 }
 
 const (
@@ -514,6 +520,10 @@ func (fs *FileSystem) Chdir(dir string) error {
 func (fs FileSystem) ListWD() ([]FileInfo, error) {
 	return fs.ListDir(fs.Getwd())
 }
+
+// func (fs.FileSystem) Open() {
+
+// }
 
 // ListDir lists the sorted directories and files within the specified directory name,
 // as long as the directory is inside the vault.

@@ -1,14 +1,31 @@
-{{ define "title" }}Vault: {{ .VaultName }}{{ end }}
+{{ define "title" }}Browse Vault: {{ .VaultName }}{{ end }}
 
 {{ define "content" }}
-<h2 class="text-2xl font-bold mb-4">Vault: {{ .VaultName }}</h2>
-<ul class="space-y-2">
-  {{ range .Entries }}
-  <li class="p-2 border rounded bg-gray-50 dark:bg-gray-800">
-    {{ . }}
-  </li>
+<div class="space-y-6">
+  <h2 class="text-2xl font-bold">Vault: {{ .VaultName }}</h2>
+
+  {{ if .SubPath }}
+  <p class="text-gray-500 text-sm">Current path: /{{ .SubPath }}</p>
   {{ else }}
-  <li>No files or folders in this vault.</li>
+  <p class="text-gray-500 text-sm">Current path: /</p>
   {{ end }}
-</ul>
+
+  <div class="grid grid-cols-1 gap-2">
+    {{ range .Entries }}
+      <a href="{{ .NextURL }}" class="block p-4 border rounded shadow hover:bg-gray-100 dark:hover:bg-gray-800">
+        <div class="text-lg font-semibold">
+          {{ if .IsDir }}📁 {{ else }}📄 {{ end }}{{ .Name }}
+        </div>
+      </a>
+    {{ else }}
+      <p class="text-gray-500 italic">No files or folders found in this directory.</p>
+    {{ end }}
+  </div>
+
+  <div class="mt-6">
+    <a href="/vaults/list" class="inline-block px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+      ← Back to Vaults
+    </a>
+  </div>
+</div>
 {{ end }}

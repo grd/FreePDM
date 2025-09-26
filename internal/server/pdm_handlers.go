@@ -7,9 +7,11 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -17,6 +19,7 @@ import (
 	"github.com/grd/FreePDM/internal/config"
 	"github.com/grd/FreePDM/internal/shared"
 	"github.com/grd/FreePDM/internal/util"
+	"github.com/grd/FreePDM/internal/vaults"
 	fsm "github.com/grd/FreePDM/internal/vaults"
 )
 
@@ -199,22 +202,87 @@ func (s *Server) VaultsListGet(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) VaultBrowseGet(w http.ResponseWriter, r *http.Request) {
 	vaultName := chi.URLParam(r, "vaultName")
-	vaultPath := filepath.Join(config.VaultsDir(), vaultName)
+	subPath := chi.URLParam(r, "*") // alles ná de vaultName
+	subPath = strings.TrimPrefix(subPath, "/")
 
-	entries, err := os.ReadDir(vaultPath)
+	user, err := s.getSessionUser(r)
 	if err != nil {
-		log.Printf("[ERROR] Cannot read vault directory %s: %v", vaultPath, err)
-		http.Error(w, "Vault not found", http.StatusNotFound)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	var files []string
+	fs, err := vaults.NewFileSystem(vaultName, user.LoginName)
+	if err != nil {
+		log.Printf("[ERROR] Failed to create FS for vault=%s user=%s: %v", vaultName, user.LoginName, err)
+		http.Error(w, "Vault init error", http.StatusInternalServerError)
+		return
+	}
+
+	fullPath := path.Join(fs.VaultDir(), subPath)
+	entries, err := os.ReadDir(fullPath)
+	if err != nil {
+		http.Error(w, "Read error", http.StatusInternalServerError)
+		return
+	}
+
+	var results []VaultEntry
 	for _, entry := range entries {
-		files = append(files, entry.Name())
+		results = append(results, VaultEntry{
+			Name:    entry.Name(),
+			IsDir:   entry.IsDir(),
+			NextURL: path.Join("/vaults", vaultName, subPath, entry.Name()),
+		})
 	}
 
 	data := map[string]any{
 		"VaultName":      vaultName,
+		"SubPath":        subPath,
+		"Entries":        results,
+		"BackButtonShow": true,
+		"BackButtonLink": "/vaults/list",
+		"MenuButtonShow": false,
+	}
+
+	if err := s.ExecuteTemplate(w, "vaults-browse.html", data); err != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+	}
+}
+
+func (s *Server) VaultPathBrowseGet(w http.ResponseWriter, r *http.Request) {
+	vaultName := chi.URLParam(r, "vaultName")
+	subPath := chi.URLParam(r, "*")
+
+	// Clean vault path
+	cleanPath := path.Join("vaults", vaultName, subPath)
+	fullPath := filepath.Join(config.Conf.VaultsDirectory, cleanPath)
+
+	entries, err := fs.ReadDir(*s.FS, fullPath)
+	if err != nil {
+		http.Error(w, "Unable to read vault path", http.StatusNotFound)
+		log.Printf("[ERROR] Cannot read vault path %q: %v", fullPath, err)
+		return
+	}
+
+	var files []VaultEntry
+	for _, entry := range entries {
+		name := entry.Name()
+		entryPath := path.Join("/vaults", vaultName, subPath, name)
+
+		// Ensure directories end with a slash for UX clarity (optional)
+		if entry.IsDir() {
+			entryPath += "/"
+		}
+
+		files = append(files, VaultEntry{
+			Name:    name,
+			IsDir:   entry.IsDir(),
+			NextURL: entryPath,
+		})
+	}
+
+	data := map[string]any{
+		"VaultName":      vaultName,
+		"SubPath":        subPath,
 		"Entries":        files,
 		"BackButtonShow": true,
 		"BackButtonLink": "/vaults/list",
@@ -224,4 +292,10 @@ func (s *Server) VaultBrowseGet(w http.ResponseWriter, r *http.Request) {
 	if err := s.ExecuteTemplate(w, "vaults-browse.html", data); err != nil {
 		http.Error(w, "Template error", http.StatusInternalServerError)
 	}
+}
+
+type VaultEntry struct {
+	Name    string
+	IsDir   bool
+	NextURL string
 }
