@@ -7,7 +7,7 @@
 
 
 # State of this project
-ATM only the server is working. There is no GUI yet (but we are working on fpg). I think that one year from now the GUI will be working as expected.
+ATM only the server is working. There is an alpha prototype GUI with the name fpg (FreePDM GUI).
 
 # FreePDM
 
