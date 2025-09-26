@@ -7,40 +7,33 @@ package main
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
 
-	"github.com/grd/FreePDM/apps/fpg/hotkeys"
-	"github.com/grd/FreePDM/apps/fpg/state"
-	"github.com/grd/FreePDM/apps/fpg/ui"
-	"github.com/grd/FreePDM/apps/fpg/views"
-	"github.com/grd/FreePDM/internal/fpg/config"
+	"github.com/grd/FreePDM/apps/fpg/tabs"
 )
 
 func main() {
-	a := app.NewWithID("org.freepdm.gui")
+	a := app.New()
 	w := a.NewWindow("FreePDM")
-	w.SetMaster()
 
-	// App state
-	st := state.New()
-	if cfg, err := config.Load(); err == nil {
-		st.SetConfig(cfg)
-	}
+	// 1) Eerst de TabManager maken
+	tm := tabs.NewTabManager(w)
 
-	// MDI with tabs
-	tm := ui.NewTabManager()
-	w.SetContent(tm.Tabs)
+	// 2) Main menu pas daarna (menu-acties gebruiken tm)
+	w.SetMainMenu(tabs.BuildMainMenu(w, tm))
 
-	hotkeys.Bind(w, hotkeys.Handlers{
-		CloseTab: tm.CloseSelected,
-		NextTab:  tm.SelectNext,
-		PrevTab:  tm.SelectPrev,
+	// 3) Content = AppTabs uit de manager
+	w.SetContent(container.NewBorder(nil, nil, nil, nil, tm.Tabs))
+
+	// 4) Optioneel: start met Home tab
+	home := tabs.NewHomeTab(func() {
+		vt := tabs.NewVaultsTab(w, func(v tabs.Vault) {
+			// TODO: echte open-logic hier
+		})
+		tm.AddTabItem(vt.Tab)
 	})
-	// Menubar (needs tm so menu actions can open tabs)
-	w.SetMainMenu(ui.NewMainMenu(w, st, tm))
+	tm.AddTabItem(home)
 
-	// Optional: start with a simple Home tab
-	tm.AddTab("Home", views.MakeHomeView())
-
-	w.Resize(fyne.NewSize(1000, 700))
+	w.Resize(fyne.NewSize(1100, 700))
 	w.ShowAndRun()
 }
