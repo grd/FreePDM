@@ -304,7 +304,7 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 		vt.refreshTree()
 	})
 
-	// standaard uit totdat iets geselecteerd is
+	// standard off until selection
 	vt.renameBtn.Disable()
 	vt.moveBtn.Disable()
 	vt.copyBtn.Disable()
@@ -429,7 +429,7 @@ func (vt *VaultTab) openPath(win fyne.Window, path string) {
 	if fi.IsDir() {
 		name := filepath.Base(path)
 		if reNumeric.MatchString(name) {
-			// "numeric dir" gedraagt zich als file-container
+			// "numeric dir" behaves like a file-container
 			if vt.OnOpenCAD != nil {
 				vt.OnOpenCAD(path)
 				return
@@ -437,7 +437,7 @@ func (vt *VaultTab) openPath(win fyne.Window, path string) {
 			dialog.ShowInformation("Open", "Open numeric file container:\n"+path, win)
 			return
 		}
-		// gewone map: toggle open/close in de boom
+		// ordinary folder: toggle open/close in the tree
 		id := widget.TreeNodeID(path)
 		if vt.tree.IsBranchOpen(id) {
 			vt.tree.CloseBranch(id)
