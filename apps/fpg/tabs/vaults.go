@@ -16,7 +16,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
-	"fyne.io/fyne/v2/storage"
+	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 
@@ -66,8 +66,8 @@ type Vault struct {
 	Path string // absolute path
 }
 
-// listVaults returns immediate subdirectories in a given root as vaults.
-// You can customize this (e.g., require a marker file like .freepdm) if desired.
+// listVaults returns immediate subdirectories in a given root as vaults,
+// skipping hidden directories that start with a dot.
 func listVaults(root string) ([]Vault, error) {
 	if strings.TrimSpace(root) == "" {
 		return nil, errors.New("vault root is empty")
@@ -87,14 +87,22 @@ func listVaults(root string) ([]Vault, error) {
 
 	out := make([]Vault, 0, len(entries))
 	for _, e := range entries {
-		if e.IsDir() {
-			p := filepath.Join(root, e.Name())
-			out = append(out, Vault{Name: e.Name(), Path: p})
+		if !e.IsDir() {
+			continue
 		}
+		name := e.Name()
+		// Skip dot-prefixed directories (hidden)
+		if strings.HasPrefix(name, ".") {
+			continue
+		}
+		p := filepath.Join(root, name)
+		out = append(out, Vault{Name: name, Path: p})
 	}
 
 	// Sort alphabetically by name for stable UX
-	sort.Slice(out, func(i, j int) bool { return strings.ToLower(out[i].Name) < strings.ToLower(out[j].Name) })
+	sort.Slice(out, func(i, j int) bool {
+		return strings.ToLower(out[i].Name) < strings.ToLower(out[j].Name)
+	})
 	return out, nil
 }
 
@@ -124,6 +132,7 @@ type VaultsTab struct {
 
 	// internal state
 	selectedIndex int
+	lastSelIdx    int
 
 	// widgets
 	rootEntry   *widget.Entry
@@ -132,7 +141,6 @@ type VaultsTab struct {
 	detailPath  *widget.Entry
 	openBtn     *widget.Button
 	refreshBtn  *widget.Button
-	browseBtn   *widget.Button
 	statusLabel *widget.Label
 }
 
@@ -140,59 +148,24 @@ type VaultsTab struct {
 // - win is used for dialogs.
 // - onOpen is an optional callback invoked when the user presses "Open Vault".
 func NewVaultsTab(win fyne.Window, onOpen func(v Vault)) *VaultsTab {
-	t := &VaultsTab{OnOpen: onOpen, selectedIndex: -1}
+	t := &VaultsTab{OnOpen: onOpen, selectedIndex: -1, lastSelIdx: -1}
 
 	// Top: Root path controls
 	t.rootEntry = widget.NewEntry()
-	t.rootEntry.SetPlaceHolder("/home/user/My CAD Vault")
+	t.rootEntry.SetPlaceHolder("Local Vault Root: /home/user/My CAD Vaults")
+
 	t.rootEntry.OnSubmitted = func(s string) {
 		t.RootPath = strings.TrimSpace(s)
 		t.reload(win)
 	}
 
-	t.browseBtn = widget.NewButtonWithIcon("Browse…", theme.FolderOpenIcon(), func() {
-		// Fyne directory open dialog
-		d := dialog.NewFolderOpen(func(uri fyne.ListableURI, err error) {
-			if err != nil {
-				dialog.ShowError(err, win)
-				return
-			}
-			if uri == nil {
-				return // user canceled
-			}
-			// Convert URI to file path
-			u := uri.Path()
-			if u == "" {
-				u = uri.String()
-			}
-			if after, ok := strings.CutPrefix(u, "file://"); ok {
-				u = after
-			}
-			t.rootEntry.SetText(u)
-			t.RootPath = u
-			t.reload(win)
-		}, win)
-
-		// Initial dir: if we already have a path, set it; else use home.
-		start := t.RootPath
-		if strings.TrimSpace(start) == "" {
-			if home, err := os.UserHomeDir(); err == nil {
-				start = home
-			}
-		}
-		// SetLocation needs a ListableURI → obtain via ListerForURI.
-		u := storage.NewFileURI(start)
-		if l, err := storage.ListerForURI(u); err == nil {
-			d.SetLocation(l)
-		}
-		d.Show()
-	})
-
 	t.refreshBtn = widget.NewButtonWithIcon("Refresh", theme.ViewRefreshIcon(), func() { t.reload(win) })
 
+	// Entry vult nu het hele midden; alleen de refresh-knop staat rechts
 	topBar := container.NewBorder(
-		nil, nil, nil, t.refreshBtn,
-		container.NewHBox(widget.NewLabel("Local Vault Root:"), t.rootEntry, t.browseBtn),
+		nil, nil, // top, bottom
+		nil, t.refreshBtn, // left, right
+		container.NewStack(t.rootEntry), // center (vult breedte)
 	)
 
 	// Left: Vault list
@@ -210,21 +183,49 @@ func NewVaultsTab(win fyne.Window, onOpen func(v Vault)) *VaultsTab {
 			lbl.SetText(t.Vaults[i].Name)
 		},
 	)
+
 	t.vaultList.OnSelected = func(id widget.ListItemID) {
 		if id < 0 || id >= len(t.Vaults) {
 			return
 		}
-		t.selectedIndex = int(id)
 		v := t.Vaults[id]
-		t.detailName.SetText(v.Name)
-		t.detailPath.SetText(v.Path)
-		t.openBtn.Enable()
-	}
-	t.vaultList.OnUnselected = func(id widget.ListItemID) {
-		t.selectedIndex = -1
+
+		openHere := widget.NewButtonWithIcon("Open in FreePDM", theme.FolderOpenIcon(), func() {
+			if t.OnOpen != nil {
+				t.OnOpen(t.Vaults[id]) // <- roept NewVaultTab via je callback
+			}
+		})
+
+		content := container.NewVBox(
+			widget.NewLabelWithStyle("Vault", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
+			widget.NewLabel(v.Name),
+			widget.NewSeparator(),
+			widget.NewLabelWithStyle("Path", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
+			widget.NewLabel(v.Path),
+			openHere,
+		)
+
+		dialog.NewCustomConfirm(
+			"Open Vault",
+			"Open", "Close",
+			content,
+			func(open bool) {
+				if open && t.OnOpen != nil {
+
+					t.OnOpen(v)
+				}
+			},
+			win,
+		).Show()
+
+		// Unselect zodat volgende klik weer werkt als nieuwe selectie
+		t.vaultList.UnselectAll()
 		t.detailName.SetText("")
 		t.detailPath.SetText("")
-		t.openBtn.Disable()
+	}
+
+	t.vaultList.OnUnselected = func(widget.ListItemID) {
+		// no-op
 	}
 
 	// Right: Details and actions
@@ -246,6 +247,7 @@ func NewVaultsTab(win fyne.Window, onOpen func(v Vault)) *VaultsTab {
 		}
 	})
 	t.openBtn.Disable()
+	t.openBtn.Hide()
 
 	t.statusLabel = widget.NewLabel("")
 
@@ -279,6 +281,42 @@ func NewVaultsTab(win fyne.Window, onOpen func(v Vault)) *VaultsTab {
 
 	// Try initial reload (will show a friendly message if root is empty/invalid)
 	t.reload(win)
+
+	// Enter (Return) opens the currently "selected" vault (tracked in selectedIndex)
+	win.Canvas().AddShortcut(&desktop.CustomShortcut{
+		KeyName:  fyne.KeyReturn,
+		Modifier: 0,
+	}, func(fyne.Shortcut) {
+		id := t.selectedIndex
+		if id < 0 || id >= len(t.Vaults) {
+			return
+		}
+		if t.OnOpen != nil {
+			t.OnOpen(t.Vaults[id])
+		}
+		t.selectedIndex = -1
+		t.vaultList.UnselectAll()
+		t.detailName.SetText("")
+		t.detailPath.SetText("")
+	})
+
+	// Some systems report Enter as KeyEnter; bind both.
+	win.Canvas().AddShortcut(&desktop.CustomShortcut{
+		KeyName:  fyne.KeyEnter,
+		Modifier: 0,
+	}, func(fyne.Shortcut) {
+		id := t.selectedIndex
+		if id < 0 || id >= len(t.Vaults) {
+			return
+		}
+		if t.OnOpen != nil {
+			t.OnOpen(t.Vaults[id])
+		}
+		t.selectedIndex = -1
+		t.vaultList.UnselectAll()
+		t.detailName.SetText("")
+		t.detailPath.SetText("")
+	})
 
 	return t
 }

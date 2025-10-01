@@ -34,6 +34,15 @@ func main() {
 	})
 	tm.AddTabItem(home)
 
+	vt := tabs.NewVaultsTab(w, func(v tabs.Vault) {
+		// Open de gekozen vault in een nieuwe tab
+		vaultTab := tabs.NewVaultTab(w, v.Path, func(p string) {
+			// Hier later je CAD-editor/tab openen
+		})
+		tm.AddTabItem(vaultTab.Tab)
+	})
+	tm.AddTabItem(vt.Tab)
+
 	w.Resize(fyne.NewSize(1100, 700))
 	w.ShowAndRun()
 }

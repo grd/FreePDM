@@ -56,27 +56,27 @@ const (
 )
 
 var (
-	vaults, vaultsData string // vaults is the root directory, vaultsdata is the administration part
+	vaultsRoot, vaultsDataRoot string // vaultsRoot is the root directory, vaultsdataRoot is the administration part
 )
 
 func init() {
 	// check for config file
-	vaults = config.VaultsDir()
+	vaultsRoot = config.VaultsDir()
 
 	// or check of enivronment variable
-	if vaults == "" {
+	if vaultsRoot == "" {
 		var ok bool
-		vaults, ok = os.LookupEnv("FREEPDM_VAULTS_DIR")
+		vaultsRoot, ok = os.LookupEnv("FREEPDM_VAULTS_DIR")
 		if !ok {
 			fmt.Println("Error: No FREEPDM_VAULTS_DIR environment set. See installation manual.")
-			vaults = "/samba/vaults"
+			vaultsRoot = "/samba/vaults"
 		}
 	}
-	vaultsData = path.Join(vaults, "/.data")
+	vaultsDataRoot = path.Join(vaultsRoot, "/.data")
 
 	// check for critical directories
-	util.CriticalDirExist(vaults)
-	util.CriticalDirExist(vaultsData)
+	util.CriticalDirExist(vaultsRoot)
+	util.CriticalDirExist(vaultsDataRoot)
 }
 
 // Constructor
@@ -90,8 +90,68 @@ func NewFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
 	}
 
 	// Some settings
-	fs.vaultDir = path.Join(vaults, vaultDir)
-	fs.dataDir = path.Join(vaultsData, vaultDir)
+	fs.vaultDir = path.Join(vaultsRoot, vaultDir)
+	fs.dataDir = path.Join(vaultsDataRoot, vaultDir)
+	fs.user = userName
+
+	// check whether the critical directories exist.
+	util.CriticalDirExist(fs.vaultDir)
+	util.CriticalDirExist(fs.dataDir)
+
+	fs.vaultUid = config.GetUid("vault")
+	fs.userUid = config.GetUid(userName)
+
+	if fs.userUid == -1 {
+		log.Fatalf("Username %s has not been stored into the FreePDM config file, please follow the setup process", userName)
+	}
+
+	if fs.vaultUid == 0 || fs.vaultUid == -1 {
+		log.Fatal("Vault UID has not been stored into the FreePDM config file. Please follow the setup process.")
+	}
+
+	index, err := NewFileIndex(fs)
+	if err != nil {
+		return fs, err
+	}
+	fs.index = index
+
+	fs.lockedFilesCvs = path.Join(fs.dataDir, LockedFileCsv)
+
+	// retrieve the values
+	if err = fs.ReadLockedIndex(); err != nil {
+		return nil, err
+	}
+
+	err = os.Chdir(fs.vaultDir)
+	util.CheckErr(err)
+
+	log.Printf("Vault dir: %s", fs.VaultDir())
+
+	return fs, nil
+}
+
+// Client Constructor
+func NewClientFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
+	fs = new(FileSystem)
+
+	//
+	// Fixed path, for now. This should change of course! It is just to get it working.
+	//
+	vaultsRoot = "/home/user/My CAD Vaults"
+	vaultsDataRoot = path.Join(vaultsRoot, "/.data")
+
+	// Check whether vaults directory contains slaches
+	parts := strings.Split(vaultDir, "/")
+	if len(parts) != 1 {
+		if strings.HasPrefix(vaultDir, vaultsRoot) {
+			vaultDir = vaultDir[len(vaultsRoot)+1:]
+			vaultDir = strings.TrimSuffix(vaultDir, "/")
+		}
+	}
+
+	// Some settings
+	fs.vaultDir = path.Join(vaultsRoot, vaultDir)
+	fs.dataDir = path.Join(vaultsDataRoot, vaultDir)
 	fs.user = userName
 
 	// check whether the critical directories exist.
@@ -181,7 +241,7 @@ func (fs *FileSystem) DataWriteFile(name string, data []byte) error {
 	permMutex.Lock()
 	defer permMutex.Unlock()
 
-	if err := os.Chmod(vaultsData, 0777); err != nil {
+	if err := os.Chmod(vaultsDataRoot, 0777); err != nil {
 		return fmt.Errorf("error setting directory permissions %s", fs.vaultDir)
 	}
 	if err := os.Chmod(fs.dataDir, 0777); err != nil {
@@ -199,7 +259,7 @@ func (fs *FileSystem) DataWriteFile(name string, data []byte) error {
 		return fmt.Errorf("error setting directory permissions %s", fs.vaultDir)
 	}
 
-	if err := os.Chmod(vaultsData, 0555); err != nil {
+	if err := os.Chmod(vaultsDataRoot, 0555); err != nil {
 		return fmt.Errorf("error setting directory permissions %s", fs.dataDir)
 	}
 
@@ -1182,12 +1242,12 @@ func SplitExt(path string) (base, ext string) {
 
 // Root returns the root of the vaults directory
 func Root() string {
-	return vaults
+	return vaultsRoot
 }
 
 // RootData returns the root of the vaultsdata directory
 func RootData() string {
-	return vaultsData
+	return vaultsDataRoot
 }
 
 // VaultName returns the name of the current vault

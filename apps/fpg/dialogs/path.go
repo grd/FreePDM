@@ -17,7 +17,7 @@ import (
 
 	"github.com/grd/FreePDM/apps/fpg/state"
 	"github.com/grd/FreePDM/internal/fpg/config"
-	"github.com/grd/FreePDM/internal/fpg/rsync"
+	"github.com/grd/FreePDM/internal/sync"
 )
 
 // BuildPathSettingsView creates a reusable Path Settings UI.
@@ -55,7 +55,7 @@ func BuildPathSettingsView(parent fyne.Window, st *state.AppState) fyne.CanvasOb
 			// TestTarget signature here is: TestTarget(ctx, source string, extra []string)
 			target := strings.TrimSpace(rsyncEntry.Text)
 
-			if err := rsync.TestTarget(ctx, target, nil); err != nil {
+			if err := sync.TestTarget(ctx, target, nil); err != nil {
 				fyne.Do(func() { testLabel.SetText("Unreachable or invalid") })
 				return
 			}
