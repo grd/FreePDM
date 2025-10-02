@@ -23,7 +23,7 @@ import (
 	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/grd/FreePDM/internal/vaults"
+	vfs "github.com/grd/FreePDM/internal/vault/localfs"
 )
 
 var reNumeric = regexp.MustCompile(`^\d+$`)
@@ -31,7 +31,7 @@ var reNumeric = regexp.MustCompile(`^\d+$`)
 type VaultTab struct {
 	Tab       *container.TabItem
 	Root      string
-	FS        *vaults.FileSystem
+	FS        *vfs.FileSystem
 	OnOpenCAD func(path string) // called when a “file” (incl. numeric-dir) is opened
 
 	// UI
@@ -54,14 +54,14 @@ type VaultTab struct {
 	selectedUID   string
 
 	// inside type VaultTab
-	infoCache map[string]vaults.FileInfo // abs-node-id -> FileInfo
+	infoCache map[string]vfs.FileInfo // abs-node-id -> FileInfo
 }
 
 func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab {
 	vt := &VaultTab{
 		Root:      root,
 		OnOpenCAD: onOpenCAD,
-		infoCache: make(map[string]vaults.FileInfo),
+		infoCache: make(map[string]vfs.FileInfo),
 	}
 
 	userName, err := user.Current()
@@ -69,7 +69,7 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 		log.Fatalf("user.Current() error: %s", err)
 	}
 
-	vt.FS, err = vaults.NewClientFileSystem(root, userName.Username)
+	vt.FS, err = vfs.NewClientFileSystem(root, userName.Username)
 	if err != nil {
 		log.Fatalf("initialization failed, %v", err)
 	}
@@ -547,9 +547,9 @@ func isCrossDevice(err error) bool {
 
 // lookupInfo returns FileInfo for a given absolute node id.
 // It first checks the cache, then falls back to listing the parent once.
-func (vt *VaultTab) lookupInfo(abs string) (vaults.FileInfo, bool) {
+func (vt *VaultTab) lookupInfo(abs string) (vfs.FileInfo, bool) {
 	if abs == "" || abs == "." || abs == vt.Root {
-		return vaults.FileInfo{}, false
+		return vfs.FileInfo{}, false
 	}
 
 	if fi, ok := vt.infoCache[abs]; ok {
@@ -561,7 +561,7 @@ func (vt *VaultTab) lookupInfo(abs string) (vaults.FileInfo, bool) {
 	entries, err := vt.FS.ListDir(relParent)
 	if err != nil {
 		log.Printf("lookupInfo: ListDir(%q) error: %v", relParent, err)
-		return vaults.FileInfo{}, false
+		return vfs.FileInfo{}, false
 	}
 	for _, fi := range entries {
 		childAbs := filepath.Join(parentAbs, fi.Name())
@@ -571,5 +571,5 @@ func (vt *VaultTab) lookupInfo(abs string) (vaults.FileInfo, bool) {
 		}
 	}
 	log.Printf("lookupInfo: %q not found in parent %q", abs, parentAbs)
-	return vaults.FileInfo{}, false
+	return vfs.FileInfo{}, false
 }

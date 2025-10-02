@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package vaults
+package localfs
 
 // The FileDirectory struct deals with file versions.
 // Each file that is stored inside the vault has its own version.

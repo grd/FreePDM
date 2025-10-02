@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"github.com/grd/FreePDM/internal/util"
-	"github.com/grd/FreePDM/internal/vaults"
+	vaults "github.com/grd/FreePDM/internal/vault/localfs"
 )
 
 func ImportSharedFiles() {

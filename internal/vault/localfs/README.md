@@ -26,3 +26,5 @@ The vaults is a major part of FreePDM. It is primarily a storage of files that a
 - [ ] Change directory and file structure to Read Only for security. That way no accidental issues can happen.
 - [x] Move the vaultsdata dir to the root of the vault dir under `.data` and the files are read only.
 - [ ] Set the owner of the vault root dir to `root:sambashare`. This means that some apps needs `sudo`.
+- [ ] Set (automatic) file (re-)naming, incl. tests
+- [ ] Set (automatic) versioning scheme, incl. tests

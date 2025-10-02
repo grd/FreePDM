@@ -19,8 +19,7 @@ import (
 	"github.com/grd/FreePDM/internal/config"
 	"github.com/grd/FreePDM/internal/shared"
 	"github.com/grd/FreePDM/internal/util"
-	"github.com/grd/FreePDM/internal/vaults"
-	fsm "github.com/grd/FreePDM/internal/vaults"
+	vfs "github.com/grd/FreePDM/internal/vault/localfs"
 )
 
 func CommandHandler(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +75,7 @@ func writeJsonError(w http.ResponseWriter, message string, statusCode int) {
 func handleRoot(w http.ResponseWriter) {
 	var resp shared.CommandResponse
 
-	root := fsm.Root()
+	root := vfs.Root()
 	resp = shared.CommandResponse{
 		Data: []string{root},
 	}
@@ -87,7 +86,7 @@ func handleRoot(w http.ResponseWriter) {
 func handleList(w http.ResponseWriter) {
 	var resp shared.CommandResponse
 
-	list, err := fsm.ListVaults()
+	list, err := vfs.ListVaults()
 	if err != nil {
 		resp = shared.CommandResponse{
 			Error: "Failed to show the list of vaults",
@@ -103,7 +102,7 @@ func handleList(w http.ResponseWriter) {
 func handleDirexists(w http.ResponseWriter, user, vault, dir string) {
 	var resp shared.CommandResponse
 
-	fs, err := fsm.NewFileSystem(vault, user)
+	fs, err := vfs.NewFileSystem(vault, user)
 	if err != nil {
 		log.Fatalf("unable to access the filesystem : %s", err)
 	}
@@ -123,7 +122,7 @@ func handleDirexists(w http.ResponseWriter, user, vault, dir string) {
 func handleLs(w http.ResponseWriter, user, vault, path string) {
 	var resp shared.CommandResponse
 
-	fs, err := fsm.NewFileSystem(vault, user)
+	fs, err := vfs.NewFileSystem(vault, user)
 	if err != nil {
 		log.Fatalf("unable to access the filesystem : %s", err)
 	}
@@ -150,7 +149,7 @@ func handleLs(w http.ResponseWriter, user, vault, path string) {
 func handleAllocate(w http.ResponseWriter, user, vault, path string) {
 	var resp shared.CommandResponse
 
-	fs, err := fsm.NewFileSystem(vault, user)
+	fs, err := vfs.NewFileSystem(vault, user)
 	if err != nil {
 		log.Fatalf("unable to access the filesystem : %s", err)
 	}
@@ -211,7 +210,7 @@ func (s *Server) VaultBrowseGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fs, err := vaults.NewFileSystem(vaultName, user.LoginName)
+	fs, err := vfs.NewFileSystem(vaultName, user.LoginName)
 	if err != nil {
 		log.Printf("[ERROR] Failed to create FS for vault=%s user=%s: %v", vaultName, user.LoginName, err)
 		http.Error(w, "Vault init error", http.StatusInternalServerError)

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package vaults_test
+package localfs_test
 
 // Tests for the filesystem.
 
@@ -18,8 +18,8 @@ import (
 	"testing"
 
 	"github.com/grd/FreePDM/internal/config"
+	fsm "github.com/grd/FreePDM/internal/ports/vaultfs/localfs"
 	"github.com/grd/FreePDM/internal/util"
-	fsm "github.com/grd/FreePDM/internal/vault/localfs"
 	"github.com/stretchr/testify/assert"
 )
 
