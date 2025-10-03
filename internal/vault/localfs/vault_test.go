@@ -18,8 +18,8 @@ import (
 	"testing"
 
 	"github.com/grd/FreePDM/internal/config"
-	fsm "github.com/grd/FreePDM/internal/ports/vaultfs/localfs"
 	"github.com/grd/FreePDM/internal/util"
+	fsm "github.com/grd/FreePDM/internal/vault/localfs"
 	"github.com/stretchr/testify/assert"
 )
 

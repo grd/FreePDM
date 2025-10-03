@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package config
+package cfg
 
 import (
 	"errors"
@@ -16,6 +16,7 @@ type Config struct {
 	// GUI-specific settings (user-side)
 	RsyncTarget   string `toml:"rsync_target"`    // e.g. user@host:/freepdm/vaults
 	LocalVaultDir string `toml:"local_vault_dir"` // e.g. /home/user/My CAD Vaults
+	VaultGroupUID int    `toml:"vault_group_uid"` // e.g. 125
 
 	// Optional: SSH/rsync tuning
 	SSHKeyPath string `toml:"ssh_key_path,omitempty"`

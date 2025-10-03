@@ -14,6 +14,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/user"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -22,6 +23,7 @@ import (
 	"time"
 
 	"github.com/grd/FreePDM/internal/config"
+	"github.com/grd/FreePDM/internal/fpg/cfg"
 	"github.com/grd/FreePDM/internal/util"
 	"golang.org/x/exp/slices"
 )
@@ -134,10 +136,12 @@ func NewFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
 func NewClientFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
 	fs = new(FileSystem)
 
-	//
-	// Fixed path, for now. This should change of course! It is just to get it working.
-	//
-	vaultsRoot = "/home/user/My CAD Vaults"
+	config, err := cfg.Load()
+	if err != nil {
+		return nil, fmt.Errorf("error loading config file, %s", err)
+	}
+
+	vaultsRoot = config.LocalVaultDir
 	vaultsDataRoot = path.Join(vaultsRoot, "/.data")
 
 	// Check whether vaults directory contains slaches
@@ -152,18 +156,20 @@ func NewClientFileSystem(vaultDir, userName string) (fs *FileSystem, err error) 
 	// Some settings
 	fs.vaultDir = path.Join(vaultsRoot, vaultDir)
 	fs.dataDir = path.Join(vaultsDataRoot, vaultDir)
-	fs.user = userName
 
 	// check whether the critical directories exist.
 	util.CriticalDirExist(fs.vaultDir)
 	util.CriticalDirExist(fs.dataDir)
 
-	fs.vaultUid = config.GetUid("vault")
-	fs.userUid = config.GetUid(userName)
-
-	if fs.userUid == -1 {
-		log.Fatalf("Username %s has not been stored into the FreePDM config file, please follow the setup process", userName)
+	usr, err := user.Current()
+	if err != nil {
+		log.Fatal("almost imposible")
 	}
+
+	// Some more settings
+	fs.user = usr.Name
+	fs.vaultUid = config.VaultGroupUID
+	fs.userUid = os.Geteuid()
 
 	if fs.vaultUid == 0 || fs.vaultUid == -1 {
 		log.Fatal("Vault UID has not been stored into the FreePDM config file. Please follow the setup process.")
