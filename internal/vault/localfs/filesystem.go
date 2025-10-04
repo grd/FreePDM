@@ -22,8 +22,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/grd/FreePDM/apps/fpg/cfg"
 	"github.com/grd/FreePDM/internal/config"
-	"github.com/grd/FreePDM/internal/fpg/cfg"
 	"github.com/grd/FreePDM/internal/util"
 	"golang.org/x/exp/slices"
 )
@@ -133,7 +133,7 @@ func NewFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
 }
 
 // Client Constructor
-func NewClientFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
+func NewClientFileSystem(vaultDir string) (fs *FileSystem, err error) {
 	fs = new(FileSystem)
 
 	config, err := cfg.Load()

@@ -15,8 +15,8 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 
+	"github.com/grd/FreePDM/apps/fpg/cfg"
 	"github.com/grd/FreePDM/apps/fpg/state"
-	"github.com/grd/FreePDM/internal/fpg/config"
 	"github.com/grd/FreePDM/internal/sync"
 )
 
@@ -65,25 +65,25 @@ func BuildPathSettingsView(parent fyne.Window, st *state.AppState) fyne.CanvasOb
 
 	// Save handler (validates and persists to ~/.config/fpg/config.toml)
 	save := func() {
-		cfg := &config.Config{
+		config := &cfg.Cfg{
 			RsyncTarget:   strings.TrimSpace(rsyncEntry.Text),
 			LocalVaultDir: strings.TrimSpace(localEntry.Text),
 		}
-		if cfg.RsyncTarget == "" {
+		if config.RsyncTarget == "" {
 			dialog.ShowError(errors.New("rsync target cannot be empty"), parent)
 			return
 		}
 		// Minimal validation: accept local paths or rsync-style remote (user@host:/path)
 		// If you want to require user@host:/path only, add: !strings.Contains(cfg.RsyncTarget, ":")
-		if cfg.LocalVaultDir == "" {
+		if config.LocalVaultDir == "" {
 			dialog.ShowError(errors.New("local vault folder cannot be empty"), parent)
 			return
 		}
-		if err := config.Save(cfg); err != nil {
+		if err := cfg.Save(config); err != nil {
 			dialog.ShowError(err, parent)
 			return
 		}
-		st.SetConfig(cfg)
+		st.SetConfig(config)
 		dialog.ShowInformation("Settings", "Saved", parent)
 	}
 

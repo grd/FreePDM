@@ -20,40 +20,20 @@ import (
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 
-	"github.com/BurntSushi/toml"
+	"github.com/grd/FreePDM/apps/fpg/cfg"
 )
-
-// ----------------------------------------------------------------------------
-// Config loading
-// ----------------------------------------------------------------------------
-
-// appConfig represents the minimal config we need from ~/.config/fpg/config.toml.
-type appConfig struct {
-	RsyncTarget   string `toml:"RsyncTarget"`   // not used here yet
-	LocalVaultDir string `toml:"LocalVaultDir"` // absolute path to local vaults root
-}
 
 // loadConfig reads ~/.config/fpg/config.toml and returns the parsed config.
 // It expects LocalVaultDir to be an absolute path (per your decision).
-func loadConfig() (*appConfig, string, error) {
-	home, err := os.UserHomeDir()
+func loadConfig() (*cfg.Cfg, error) {
+	config, err := cfg.Load()
 	if err != nil {
-		return nil, "", fmt.Errorf("cannot determine home directory: %w", err)
+		return nil, fmt.Errorf("invalid config TOML: %w", err)
 	}
-	cfgPath := filepath.Join(home, ".config", "fpg", "config.toml")
 
-	cfg := &appConfig{}
-	if _, err := os.Stat(cfgPath); err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			// Config missing: return empty with path so caller can handle UX.
-			return cfg, cfgPath, nil
-		}
-		return nil, "", fmt.Errorf("cannot access config: %w", err)
-	}
-	if _, err := toml.DecodeFile(cfgPath, cfg); err != nil {
-		return nil, "", fmt.Errorf("invalid config TOML: %w", err)
-	}
-	return cfg, cfgPath, nil
+	fmt.Println(config)
+
+	return config, nil
 }
 
 // ----------------------------------------------------------------------------
@@ -271,7 +251,7 @@ func NewVaultsTab(win fyne.Window, onOpen func(v Vault)) *VaultsTab {
 	t.Tab = container.NewTabItemWithIcon("Vaults", theme.FolderIcon(), content)
 
 	// Initial load: from config.toml if present
-	cfg, _, err := loadConfig()
+	cfg, err := loadConfig()
 	if err != nil {
 		dialog.ShowError(fmt.Errorf("failed to read config: %w", err), win)
 	} else if strings.TrimSpace(cfg.LocalVaultDir) != "" {

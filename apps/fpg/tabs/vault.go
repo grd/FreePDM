@@ -11,7 +11,6 @@ import (
 	"io/fs"
 	"log"
 	"os"
-	"os/user"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -64,15 +63,11 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 		infoCache: make(map[string]vfs.FileInfo),
 	}
 
-	userName, err := user.Current()
-	if err != nil {
-		log.Fatalf("user.Current() error: %s", err)
-	}
-
-	vt.FS, err = vfs.NewClientFileSystem(root, userName.Username)
+	fs, err := vfs.NewClientFileSystem(root)
 	if err != nil {
 		log.Fatalf("initialization failed, %v", err)
 	}
+	vt.FS = fs
 
 	vt.tree = widget.NewTree(
 		// children

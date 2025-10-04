@@ -7,25 +7,25 @@ package state
 import (
 	"sync"
 
+	"github.com/grd/FreePDM/apps/fpg/cfg"
 	"github.com/grd/FreePDM/internal/client"
-	"github.com/grd/FreePDM/internal/fpg/config"
 )
 
 type AppState struct {
 	mu   sync.RWMutex
 	API  *client.API
 	User string
-	Cfg  *config.Config
+	Cfg  *cfg.Cfg
 
 	// Example domain state
 	vaults []client.Vault
 }
 
-func New() *AppState { return &AppState{Cfg: config.Default()} }
+func New() *AppState { return &AppState{Cfg: cfg.Default()} }
 
 func (s *AppState) SetAPI(api *client.API) { s.mu.Lock(); s.API = api; s.mu.Unlock() }
 
-func (s *AppState) SetConfig(c *config.Config) { s.mu.Lock(); s.Cfg = c; s.mu.Unlock() }
+func (s *AppState) SetConfig(c *cfg.Cfg) { s.mu.Lock(); s.Cfg = c; s.mu.Unlock() }
 
 func (s *AppState) SetVaults(v []client.Vault) {
 	s.mu.Lock()

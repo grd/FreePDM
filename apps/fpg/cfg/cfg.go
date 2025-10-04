@@ -12,7 +12,7 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-type Config struct {
+type Cfg struct {
 	// GUI-specific settings (user-side)
 	RsyncTarget   string `toml:"rsync_target"`    // e.g. user@host:/freepdm/vaults
 	LocalVaultDir string `toml:"local_vault_dir"` // e.g. /home/user/My CAD Vaults
@@ -23,7 +23,7 @@ type Config struct {
 	ExtraArgs  string `toml:"extra_args,omitempty"` // free rsync flags
 }
 
-func Default() *Config { return &Config{} }
+func Default() *Cfg { return &Cfg{} }
 
 // ~/.config/fpg/config.toml (Linux); OS-specific pad
 func path() (string, error) {
@@ -38,7 +38,7 @@ func path() (string, error) {
 	return filepath.Join(cfgDir, "config.toml"), nil
 }
 
-func Load() (*Config, error) {
+func Load() (*Cfg, error) {
 	p, err := path()
 	if err != nil {
 		return nil, err
@@ -50,14 +50,14 @@ func Load() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	var c Config
+	var c Cfg
 	if err := toml.Unmarshal(b, &c); err != nil {
 		return nil, err
 	}
 	return &c, nil
 }
 
-func Save(c *Config) error {
+func Save(c *Cfg) error {
 	p, err := path()
 	if err != nil {
 		return err
