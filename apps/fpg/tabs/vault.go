@@ -72,8 +72,6 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 	vt.tree = widget.NewTree(
 		// children
 		func(uid widget.TreeNodeID) []widget.TreeNodeID {
-			// Log every children request so you can see activity
-			log.Printf("children(uid=%q)", string(uid))
 			if uid == "" {
 				// Expose exactly one root node
 				return []widget.TreeNodeID{widget.TreeNodeID(vt.Root)}
@@ -208,7 +206,7 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 			if newName == "" || newName == filepath.Base(uid) {
 				return
 			}
-			if err := renamePath(uid, filepath.Join(filepath.Dir(uid), newName)); err != nil {
+			if err := renamePath(vt, uid, filepath.Join(filepath.Dir(uid), newName)); err != nil {
 				dialog.ShowError(err, win)
 				return
 			}
@@ -345,7 +343,6 @@ func (vt *VaultTab) listChildren(abs string) []string {
 		log.Printf("ListDir(%q) error: %v", rel, err)
 		return nil
 	}
-	log.Printf("ListDir(%q) -> %d entries", rel, len(entries))
 
 	out := make([]string, 0, len(entries))
 	for _, e := range entries {
@@ -452,14 +449,15 @@ func (vt *VaultTab) openPath(win fyne.Window, path string) {
 
 // ---------- FS ops (safe-ish) ----------
 
-func renamePath(src, dst string) error {
+func renamePath(vt *VaultTab, src, dst string) error {
 	if src == "" || dst == "" {
 		return errors.New("empty path")
 	}
 	if sameFile(src, dst) {
 		return nil
 	}
-	return os.Rename(src, dst)
+	// return os.Rename(src, dst)
+	return vt.FS.FileRename(src, dst)
 }
 
 func movePath(src, dst string) error {
@@ -555,7 +553,6 @@ func (vt *VaultTab) lookupInfo(abs string) (vfs.FileInfo, bool) {
 	relParent := vt.rel(parentAbs)
 	entries, err := vt.FS.ListDir(relParent)
 	if err != nil {
-		log.Printf("lookupInfo: ListDir(%q) error: %v", relParent, err)
 		return vfs.FileInfo{}, false
 	}
 	for _, fi := range entries {
@@ -565,6 +562,5 @@ func (vt *VaultTab) lookupInfo(abs string) (vfs.FileInfo, bool) {
 			return fi, true
 		}
 	}
-	log.Printf("lookupInfo: %q not found in parent %q", abs, parentAbs)
 	return vfs.FileInfo{}, false
 }

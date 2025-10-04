@@ -23,16 +23,11 @@ import (
 	"github.com/grd/FreePDM/apps/fpg/cfg"
 )
 
-// loadConfig reads ~/.config/fpg/config.toml and returns the parsed config.
-// It expects LocalVaultDir to be an absolute path (per your decision).
 func loadConfig() (*cfg.Cfg, error) {
 	config, err := cfg.Load()
 	if err != nil {
 		return nil, fmt.Errorf("invalid config TOML: %w", err)
 	}
-
-	fmt.Println(config)
-
 	return config, nil
 }
 
