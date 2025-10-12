@@ -13,6 +13,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"sync"
 
@@ -58,7 +59,7 @@ type FileVersion struct {
 // fileNumber means the file number, which is an int64
 func NewFileDirectory(fs *FileSystem, fl FileList) FileDirectory {
 	return FileDirectory{fs: fs, fl: fl,
-		dir: path.Join(fs.vaultDir, fl.Path, fl.ContainerNumber)}
+		dir: filepath.Join(fs.vaultDir, fl.Path, fl.ContainerNumber)}
 }
 
 // Returns the FileList because this field is unexported
@@ -78,7 +79,7 @@ func (fd *FileDirectory) CreateDirectory() error {
 	fd.writeInitialVersionFile()
 
 	log.Printf("Created file structure %s\n",
-		path.Join(fd.fl.ContainerNumber, fd.fl.Name))
+		filepath.Join(fd.fl.ContainerNumber, fd.fl.Name))
 
 	return nil
 }
@@ -89,7 +90,7 @@ func (fd FileDirectory) ImportNewFile(fname string) error {
 	// create a new version string
 	new_version := fd.LatestVersion().Number + 1
 	version := fmt.Sprint(new_version)
-	versionDir := path.Join(fd.dir, version)
+	versionDir := filepath.Join(fd.dir, version)
 
 	fd.increaseVersionNumber(version)
 
@@ -103,7 +104,7 @@ func (fd FileDirectory) ImportNewFile(fname string) error {
 
 	// create a new file reference text inside FileName.txt
 	_, copiedFile := path.Split(fname)
-	copiedFile = path.Join(versionDir, copiedFile)
+	copiedFile = filepath.Join(versionDir, copiedFile)
 
 	// copy the file inside the new version
 	if err := util.CopyFile(fname, copiedFile); err != nil {
@@ -123,12 +124,12 @@ func (fd FileDirectory) NewVersion() (*FileVersion, error) {
 	oldVersion := fd.LatestVersion()
 	newVersion := FileVersion{Number: oldVersion.Number + 1, Date: util.Now()}
 	newVersion.Pretty = util.I16toa(newVersion.Number)
-	versionDir := path.Join(fd.dir, newVersion.Pretty)
+	versionDir := filepath.Join(fd.dir, newVersion.Pretty)
 
 	fd.increaseVersionNumber(newVersion.Pretty)
 
 	// generate the new file name
-	fname := path.Join(fd.dir, oldVersion.Pretty, fd.fl.Name)
+	fname := filepath.Join(fd.dir, oldVersion.Pretty, fd.fl.Name)
 
 	// create a new version dir
 	if err := os.Mkdir(versionDir, 0755); err != nil {
@@ -140,7 +141,7 @@ func (fd FileDirectory) NewVersion() (*FileVersion, error) {
 
 	// create a new file reference text inside FileName.txt
 	_, copiedFile := path.Split(fname)
-	copiedFile = path.Join(versionDir, copiedFile)
+	copiedFile = filepath.Join(versionDir, copiedFile)
 
 	// copy the file inside the new version
 	if err := util.CopyFile(fname, copiedFile); err != nil {
@@ -157,7 +158,7 @@ func (fd FileDirectory) NewVersion() (*FileVersion, error) {
 func (fd FileDirectory) StoreData(version FileVersion, descr, longDescr string) {
 
 	// create a version directory
-	versionDir := path.Join(fd.dir, version.Pretty)
+	versionDir := filepath.Join(fd.dir, version.Pretty)
 
 	if !util.DirExists(versionDir) {
 		log.Fatalf("Directory %s doesn't exist.", versionDir)
@@ -165,7 +166,7 @@ func (fd FileDirectory) StoreData(version FileVersion, descr, longDescr string) 
 
 	// create a new description text
 	if len(descr) > 0 {
-		descriptionFile := path.Join(versionDir, Description)
+		descriptionFile := filepath.Join(versionDir, Description)
 		dsc := []byte(descr)
 
 		err := os.WriteFile(descriptionFile, dsc, 0444)
@@ -177,7 +178,7 @@ func (fd FileDirectory) StoreData(version FileVersion, descr, longDescr string) 
 
 	// create a new long description text
 	if len(longDescr) > 0 {
-		longDescriptionFile := path.Join(versionDir, LongDescription)
+		longDescriptionFile := filepath.Join(versionDir, LongDescription)
 		buf2 := []byte(longDescr)
 
 		err := os.WriteFile(longDescriptionFile, buf2, 0444)
@@ -196,7 +197,7 @@ func (fd FileDirectory) LatestProperties() []FileProperties {
 
 // Returns the file properties of the specific version
 func (fd FileDirectory) Properties(version FileVersion) []FileProperties {
-	buf, err := os.ReadFile(path.Join(version.Pretty, Properties))
+	buf, err := os.ReadFile(filepath.Join(version.Pretty, Properties))
 	util.CheckErr(err)
 	str := string(buf)
 	// check for latest '\n'
@@ -225,9 +226,9 @@ func (fd FileDirectory) SetProperties(version FileVersion, props []FilePropertie
 		str := []byte(fmt.Sprintf("%s = %s\n", v.Key, v.Value))
 		buf = append(buf, str...)
 	}
-	err := os.WriteFile(path.Join(version.Pretty, Properties), buf, 0644)
+	err := os.WriteFile(filepath.Join(version.Pretty, Properties), buf, 0644)
 	util.CheckErr(err)
-	err = os.Chown(path.Join(version.Pretty, Properties), fd.fs.userUid, fd.fs.vaultUid)
+	err = os.Chown(filepath.Join(version.Pretty, Properties), fd.fs.userUid, fd.fs.vaultUid)
 	util.CheckErr(err)
 }
 
@@ -249,7 +250,7 @@ func (fd *FileDirectory) LatestVersion() FileVersion {
 // Returns all file versions name from file or an error.
 func (fd *FileDirectory) AllFileVersions() ([]FileVersion, error) {
 
-	version := path.Join(fd.dir, Ver)
+	version := filepath.Join(fd.dir, Ver)
 
 	file, err := os.Open(version)
 	util.CheckErr(err)
@@ -263,7 +264,7 @@ func (fd *FileDirectory) AllFileVersions() ([]FileVersion, error) {
 
 	if len(records) == 0 {
 		return nil, fmt.Errorf("file %s is empty",
-			path.Join(fd.dir, Ver))
+			filepath.Join(fd.dir, Ver))
 	}
 
 	if len(records) == 1 {
@@ -300,7 +301,7 @@ func (fd *FileDirectory) DeleteAll() error {
 
 	// Put 0777 for all file version directories
 	for _, item := range versions {
-		s := path.Join(fd.dir, fmt.Sprint(item.Number))
+		s := filepath.Join(fd.dir, fmt.Sprint(item.Number))
 		if err := os.Chmod(s, 0777); err != nil {
 			return err
 		}
@@ -340,25 +341,25 @@ func (fd *FileDirectory) CloseLatestsVersion() {
 // This "Checks Out" the item.
 func (fd *FileDirectory) OpenItemVersion(version FileVersion) {
 
-	dirVersion := path.Join(fd.dir, version.Pretty)
+	dirVersion := filepath.Join(fd.dir, version.Pretty)
 
 	err := os.Chown(dirVersion, fd.fs.userUid, fd.fs.vaultUid)
 	util.CheckErr(err)
 
-	// Filemode 0700 means that only that guy can edit the file.
+	// Directory mode 0700 means that only that guy can edit the file.
 	err = os.Chmod(dirVersion, 0700)
 	util.CheckErr(err)
 
-	// And that guy has filemode 0644 for the file itself.
-	file := path.Join(dirVersion, fd.fl.Name)
-	err = os.Chmod(file, 0644)
-	util.CheckErr(err)
+	// // And that guy has filemode 0644 for the file itself.
+	// file := filepath.Join(dirVersion, fd.fl.Name)
+	// err = os.Chmod(file, 0644)
+	// util.CheckErr(err)
 }
 
 // Closes item number for editing.
 func (fd *FileDirectory) CloseItemVersion(version FileVersion) {
 
-	dirVersion := path.Join(fd.dir, version.Pretty)
+	dirVersion := filepath.Join(fd.dir, version.Pretty)
 
 	// Filemode 0555 means that the directory is read only for anyone.
 	err := os.Chown(dirVersion, fd.fs.userUid, fd.fs.vaultUid)
@@ -366,15 +367,15 @@ func (fd *FileDirectory) CloseItemVersion(version FileVersion) {
 	err = os.Chmod(dirVersion, 0555)
 	util.CheckErr(err)
 
-	// And the file can't be edited anymore with filemode 0444.
-	file := path.Join(dirVersion, fd.fl.Name)
-	err = os.Chmod(file, 0444)
-	util.CheckErr(err)
+	// // And the file can't be edited anymore with filemode 0444.
+	// file := filepath.Join(dirVersion, fd.fl.Name)
+	// err = os.Chmod(file, 0444)
+	// util.CheckErr(err)
 }
 
 func (fd *FileDirectory) writeInitialVersionFile() {
 
-	ver := path.Join(fd.dir, Ver)
+	ver := filepath.Join(fd.dir, Ver)
 
 	records := [][]string{{"Version", "Pretty", "Date"}}
 
@@ -398,7 +399,7 @@ func (fd *FileDirectory) increaseVersionNumber(version string) {
 
 	date := util.Now()
 
-	ver := path.Join(fd.dir, Ver)
+	ver := filepath.Join(fd.dir, Ver)
 
 	record := []string{version, version, date}
 
@@ -429,7 +430,9 @@ func (fd *FileDirectory) fileRename(src, dst string) error {
 
 	// Rename all versioned files
 	for _, version := range versions {
-		if err = os.Rename(path.Join(fd.dir, version.Pretty, src), path.Join(fd.dir, version.Pretty, dst)); err != nil {
+		if err = fd.WithTempPermissions(version.Pretty, func(subDir string) error {
+			return os.Rename(filepath.Join(subDir, src), filepath.Join(subDir, dst))
+		}); err != nil {
 			return err
 		}
 	}
@@ -438,7 +441,7 @@ func (fd *FileDirectory) fileRename(src, dst string) error {
 }
 
 // Function that changes permissions, performs an operation, and restores permissions
-func (fd FileDirectory) withTempPermissions(version string, operation func(subDir string) error) error {
+func (fd FileDirectory) WithTempPermissions(version string, operation func(subDir string) error) error {
 	// Mutex to ensure only one operation modifies permissions at a time
 	var permMutex sync.Mutex
 
@@ -447,7 +450,7 @@ func (fd FileDirectory) withTempPermissions(version string, operation func(subDi
 	defer permMutex.Unlock()
 
 	// joining fd.dir with the version number
-	versionDir := path.Join(fd.dir, version)
+	versionDir := filepath.Join(fd.dir, version)
 
 	// Step 1: Set permissions to 0777 (allow full access)
 	if err := os.Chmod(fd.dir, 0777); err != nil {
