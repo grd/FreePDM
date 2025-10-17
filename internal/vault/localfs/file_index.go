@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"path/filepath"
 	"slices"
 
 	"github.com/grd/FreePDM/internal/util"
@@ -45,8 +46,8 @@ func NewFileIndex(fs *FileSystem) (fi FileIndex, err error) {
 
 	fi.fs = fs
 
-	fi.fileListCsv = path.Join(fi.fs.dataDir, "FileList.csv")
-	fi.indexNumberTxt = path.Join(fi.fs.dataDir, "ContainerNumber.txt")
+	fi.fileListCsv = filepath.Join(fi.fs.dataDir, "FileList.csv")
+	fi.indexNumberTxt = filepath.Join(fi.fs.dataDir, "ContainerNumber.txt")
 
 	// check whether the critical files exists.
 
@@ -189,7 +190,7 @@ func (fi *FileIndex) ContainerNumberDir(containerNumber string) (string, error) 
 	if err != nil {
 		return "", err
 	}
-	return path.Join(fl.Path, fl.ContainerNumber), nil
+	return filepath.Join(fl.Path, fl.ContainerNumber), nil
 }
 
 // Returns the file name of a container number.
@@ -295,7 +296,7 @@ func (fi *FileIndex) MoveItem(src FileList, directory string) error {
 	}
 
 	if i == -1 {
-		return fmt.Errorf("filename %s is not inside the FileIndex", path.Join(src.Path, src.Name))
+		return fmt.Errorf("filename %s is not inside the FileIndex", filepath.Join(src.Path, src.Name))
 	}
 
 	// Moving the item

@@ -249,9 +249,9 @@ func NewVaultsTab(win fyne.Window, onOpen func(v Vault)) *VaultsTab {
 	cfg, err := loadConfig()
 	if err != nil {
 		dialog.ShowError(fmt.Errorf("failed to read config: %w", err), win)
-	} else if strings.TrimSpace(cfg.LocalVaultDir) != "" {
-		t.RootPath = cfg.LocalVaultDir
-		t.rootEntry.SetText(cfg.LocalVaultDir) // prefill path field from config
+	} else if strings.TrimSpace(cfg.LocalVaultsRoot) != "" {
+		t.RootPath = cfg.LocalVaultsRoot
+		t.rootEntry.SetText(cfg.LocalVaultsRoot) // prefill path field from config
 	}
 
 	// Try initial reload (will show a friendly message if root is empty/invalid)

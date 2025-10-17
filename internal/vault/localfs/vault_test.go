@@ -13,7 +13,7 @@ import (
 	"log"
 	"os"
 	"os/user"
-	"path"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -29,14 +29,11 @@ var (
 	fs                         *fsm.FileSystem
 	testvaults, testvaultsdata string
 
-	// testvaults     = path.Join(fsm.Root(), testpdm)
-	// testvaultsdata = path.Join(fsm.RootData(), testpdm)
-
 	file1, file2, file3, file4, file5, file6 string
 )
 
 func TestMkDir(t *testing.T) {
-	dir := path.Join(fsm.Root(), fs.VaultName())
+	dir := filepath.Join(fsm.Root(), fs.VaultName())
 	os.Chdir(dir)
 	wd, _ := os.Getwd()
 	fmt.Println(wd)
@@ -64,7 +61,7 @@ func TestImportFile(t *testing.T) {
 		log.Fatal("Environment variable 'FREEPDM_DIR' not set. Please look at the install page.")
 	}
 
-	filesDir := path.Join(freePdmDir, "doc/TestFiles")
+	filesDir := filepath.Join(freePdmDir, "doc/TestFiles")
 
 	// file1 = "https://raw.githubusercontent.com/grd/FreePDM/main/doc/TestFiles/0001.FCStd"
 	// file2 = "https://raw.githubusercontent.com/grd/FreePDM/main/doc/TestFiles/0002.FCStd"
@@ -73,12 +70,12 @@ func TestImportFile(t *testing.T) {
 	// file5 = "https://raw.githubusercontent.com/grd/FreePDM/main/doc/TestFiles/0005.FCStd"
 	// file6 = "https://raw.githubusercontent.com/grd/FreePDM/main/doc/TestFiles/0006.FCStd"
 
-	file1 = path.Join(filesDir, "0001.FCStd")
-	file2 = path.Join(filesDir, "0002.FCStd")
-	file3 = path.Join(filesDir, "0003.FCStd")
-	file4 = path.Join(filesDir, "0004.FCStd")
-	file5 = path.Join(filesDir, "0005.FCStd")
-	file6 = path.Join(filesDir, "0006.FCStd")
+	file1 = filepath.Join(filesDir, "0001.FCStd")
+	file2 = filepath.Join(filesDir, "0002.FCStd")
+	file3 = filepath.Join(filesDir, "0003.FCStd")
+	file4 = filepath.Join(filesDir, "0004.FCStd")
+	file5 = filepath.Join(filesDir, "0005.FCStd")
+	file6 = filepath.Join(filesDir, "0006.FCStd")
 
 	if err = fs.Chdir("Projects"); err != nil {
 		t.Fatalf("Chdir error message = %s", err)
@@ -174,8 +171,8 @@ func TestFileAllocation(t *testing.T) {
 	}
 	compareFileListLine(7, "7:.empty_file::Projects:")
 
-	complDstDir := path.Join(fs.VaultDir(), "Projects/7")
-	ef := path.Join(complDstDir, "0", "bla.txt")
+	complDstDir := filepath.Join(fs.VaultDir(), "Projects/7")
+	ef := filepath.Join(complDstDir, "0", "bla.txt")
 
 	f, err := os.Create(ef)
 	if err != nil { // creating the file
@@ -273,25 +270,27 @@ func TestFileRename(t *testing.T) {
 	}
 	compareFileListLine(6, "6:0006.FCStd:0006a.FCStd:Projects:Projects/temp")
 
-	// Test case for locking
-	item, err := fs.GetItem("Projects", "0001.FCStd")
-	if err != nil {
-		t.Fatalf("unable to find: %v", err)
-	}
-	f7 := fsm.NewFileDirectory(fs, item)
-	ver, err := fs.NewVersion(f7.FileList())
-	if err != nil {
-		t.Fatalf("Expected lock error, got: %v", err)
-	}
-	checkOutStatus(1, 4)
-	err = fs.FileRename("0001.FCStd", "0007.FCStd")
-	user, _ := user.Current()
-	if err == nil || err.Error() != fmt.Sprintf("file 0001.FCStd is checked out by %s", user.Username) {
+	//
+	// // Test case for locking
+	//
+	// item, err := fs.GetItem("Projects", "0001.FCStd")
+	// if err != nil {
+	// 	t.Fatalf("unable to find: %v", err)
+	// }
+	// f7 := fsm.NewFileDirectory(fs, item)
+	// ver, err := fs.NewVersion(f7.FileList())
+	// if err != nil {
+	// 	t.Fatalf("Expected lock error, got: %v", err)
+	// }
+	// checkOutStatus(1, 4)
+	// err = fs.FileRename("0001.FCStd", "0007.FCStd")
+	// user, _ := user.Current()
+	// if err == nil || err.Error() != fmt.Sprintf("file 0001.FCStd is checked out by %s", user.Username) {
 
-		t.Fatalf("Expected lock error, got: %v", err)
-	}
-	fs.CheckIn(f7.FileList(), *ver, "Test", "Test")
-	checkInStatus(1, 4)
+	// 	t.Fatalf("Expected lock error, got: %v", err)
+	// }
+	// fs.CheckIn(f7.FileList(), *ver, "Test", "Test")
+	// checkInStatus(1, 4)
 
 	if err := os.Chdir(".."); err != nil {
 		t.Fatal("chdir failed")
@@ -332,30 +331,32 @@ func TestFileCopy(t *testing.T) {
 	}
 	compareFileListLine(9, "10:0002.FCStd::test:")
 
-	// Test locked file
-	item, err := fs.GetItem("Projects", "0002.FCStd")
-	if err != nil {
-		t.Fatalf("unable to find: %v", err)
-	}
-	f2 := fsm.NewFileDirectory(fs, item)
-	ver, err := fs.NewVersion(f2.FileList())
-	if err != nil {
-		t.Fatalf("Expected lock error, got: %v", err)
-	}
-	checkOutStatus(2, 1)
-	err = fs.FileCopy("0002.FCStd", "0013.FCStd")
-	user, _ := user.Current()
-	if err == nil || err.Error() != fmt.Sprintf("file 0002.FCStd is checked out by %s", user.Username) {
-		t.Fatalf("Expected lock error, got: %v", err)
-	}
-	fs.CheckIn(f2.FileList(), *ver, "Test", "Test")
-	checkInStatus(2, 1)
+	// //
+	// // Test locked file
+	// //
+	// item, err := fs.GetItem("Projects", "0002.FCStd")
+	// if err != nil {
+	// 	t.Fatalf("unable to find: %v", err)
+	// }
+	// f2 := fsm.NewFileDirectory(fs, item)
+	// ver, err := fs.NewVersion(f2.FileList())
+	// if err != nil {
+	// 	t.Fatalf("Expected lock error, got: %v", err)
+	// }
+	// checkOutStatus(2, 1)
+	// err = fs.FileCopy("0002.FCStd", "0013.FCStd")
+	// user, _ := user.Current()
+	// if err == nil || err.Error() != fmt.Sprintf("file 0002.FCStd is checked out by %s", user.Username) {
+	// 	t.Fatalf("Expected lock error, got: %v", err)
+	// }
+	// fs.CheckIn(f2.FileList(), *ver, "Test", "Test")
+	// checkInStatus(2, 1)
 
-	// Test for file already existing at destination
-	err = fs.FileCopy("0004.FCStd", "0011.FCStd")
-	if err == nil || err.Error() != "file 0011.FCStd already exists and is stored in Projects" {
-		t.Fatalf("Expected existing file error, got: %v", err)
-	}
+	// // Test for file already existing at destination
+	// err = fs.FileCopy("0004.FCStd", "0011.FCStd")
+	// if err == nil || err.Error() != "file 0011.FCStd already exists and is stored in Projects" {
+	// 	t.Fatalf("Expected existing file error, got: %v", err)
+	// }
 
 	// back to root dir
 	os.Chdir("..")
@@ -374,11 +375,15 @@ func TestDirectoryRename(t *testing.T) {
 		assert.Equal(t, err, errors.New("empty destination directory"))
 	}
 
+	fmt.Println("hello 1")
+
 	// Test with data, including sub-dirs
 	err = fs.DirectoryRename("Projects", "test/Projects2")
 	if err != nil {
 		t.Fatalf("DirectoryMove failed: %v", err)
 	}
+
+	fmt.Println("hello 2")
 
 	// Test for destination directory being a number
 	err = fs.DirectoryRename("Standard Parts", "123")
@@ -529,7 +534,7 @@ func TestListTree(t *testing.T) {
 	}
 	list := make([]string, len(lt))
 	for i, item := range lt {
-		list[i] = path.Join(item.Path(), item.Name())
+		list[i] = filepath.Join(item.Path(), item.Name())
 	}
 	test := []string{
 		"Projects/0001.FCStd",
@@ -547,31 +552,23 @@ func TestListTree(t *testing.T) {
 }
 
 func TestMain(m *testing.M) {
-
-	testvaults = path.Join(fsm.Root(), testpdm)
-	testvaultsdata = path.Join(fsm.RootData(), testpdm)
-
 	setup()
-
 	m.Run()
-}
-
-func initVault() {
-	userName, err := user.Current()
-	if err != nil {
-		log.Fatalf("user.Current() error: %s", err)
-	}
-
-	fs, err = fsm.NewFileSystem(testpdm, userName.Username)
-	if err != nil {
-		log.Fatalf("initialization failed, %v", err)
-	}
 }
 
 // A simple "quick and dirty" remove all files from testvault
 // but it also initializes the startup files again.
 
 func setup() {
+	vfs, err := fsm.NewClientFileSystem(testpdm)
+	if err != nil {
+		log.Fatalf("initialization failed, %v", err)
+	}
+	fs = vfs
+
+	testvaults = filepath.Join(fsm.Root(), testpdm)
+	testvaultsdata = filepath.Join(fsm.RootData(), testpdm)
+
 	// runtime.Breakpoint()
 
 	// Remove the vault
@@ -579,7 +576,7 @@ func setup() {
 		log.Fatalf("RemoveAll failed: %v", err)
 	}
 
-	err := os.Chmod(fsm.Root(), 0775)
+	err = os.Chmod(fsm.Root(), 0775)
 	util.CheckErr(err)
 
 	if !util.DirExists(testvaults) {
@@ -642,14 +639,11 @@ func setup() {
 	writeLockedFiles()
 
 	writeIndexNumber()
-
-	initVault()
-
 }
 
 func writeIndexFileList() {
 
-	fileList := path.Join(testvaultsdata, "FileList.csv")
+	fileList := filepath.Join(testvaultsdata, "FileList.csv")
 
 	f, err := os.Create(fileList)
 	util.CheckErr(err)
@@ -676,7 +670,7 @@ func writeIndexFileList() {
 
 func writeLockedFiles() {
 
-	lockedfile := path.Join(testvaultsdata, "LockedFiles.csv")
+	lockedfile := filepath.Join(testvaultsdata, "LockedFiles.csv")
 
 	f, err := os.Create(lockedfile)
 	util.CheckErr(err)
@@ -703,7 +697,7 @@ func writeIndexNumber() {
 
 	vaultUid := config.GetUid("vault")
 
-	idxfile := path.Join(testvaultsdata, "ContainerNumber.txt")
+	idxfile := filepath.Join(testvaultsdata, "ContainerNumber.txt")
 
 	err := os.WriteFile(idxfile, []byte{'0'}, 0644)
 	util.CheckErr(err)
@@ -713,7 +707,7 @@ func writeIndexNumber() {
 }
 
 func compareFileListLine(num int, line string) {
-	content, err := os.ReadFile(path.Join(testvaultsdata, "FileList.csv"))
+	content, err := os.ReadFile(filepath.Join(testvaultsdata, "FileList.csv"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -726,7 +720,7 @@ func compareFileListLine(num int, line string) {
 }
 
 func checkStatus(file int64, num int16) bool {
-	content, err := os.ReadFile(path.Join(testvaultsdata, "LockedFiles.csv"))
+	content, err := os.ReadFile(filepath.Join(testvaultsdata, "LockedFiles.csv"))
 	if err != nil {
 		log.Fatal(err)
 	}

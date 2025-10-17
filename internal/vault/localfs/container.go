@@ -430,18 +430,25 @@ func (fd *FileDirectory) fileRename(src, dst string) error {
 
 	// Rename all versioned files
 	for _, version := range versions {
-		if err = fd.WithTempPermissions(version.Pretty, func(subDir string) error {
+		if err = fd.withTempPermissions(version.Pretty, func(subDir string) error {
 			return os.Rename(filepath.Join(subDir, src), filepath.Join(subDir, dst))
 		}); err != nil {
 			return err
 		}
 	}
 
+	// // Rename all versioned files
+	// for _, version := range versions {
+	// 	if err = os.Rename(path.Join(fd.dir, version.Pretty, src), path.Join(fd.dir, version.Pretty, dst)); err != nil {
+	// 		return err
+	// 	}
+	// }
+
 	return nil
 }
 
 // Function that changes permissions, performs an operation, and restores permissions
-func (fd FileDirectory) WithTempPermissions(version string, operation func(subDir string) error) error {
+func (fd FileDirectory) withTempPermissions(version string, operation func(subDir string) error) error {
 	// Mutex to ensure only one operation modifies permissions at a time
 	var permMutex sync.Mutex
 
@@ -469,32 +476,9 @@ func (fd FileDirectory) WithTempPermissions(version string, operation func(subDi
 	if err := os.Chmod(versionDir, 0555); err != nil {
 		return fmt.Errorf("error setting mode 0555 on %s: %v", versionDir, err)
 	}
-	if err := os.Chmod(fd.dir, 0555); err != nil {
-		return fmt.Errorf("error setting mode 0555 on %s: %v", fd.dir, err)
-	}
+	// if err := os.Chmod(fd.dir, 0555); err != nil {
+	// 	return fmt.Errorf("error setting mode 0555 on %s: %v", fd.dir, err)
+	// }
 
 	return nil
 }
-
-// func main() {
-// 	rootDir := "/path/to/directory"
-// 	subDir := rootDir + "/subdir"
-
-// 	// Call the function with an operation (e.g., creating a file)
-// 	err := withTempPermissions(rootDir, subDir, func(subDir string) error {
-// 		filePath := subDir + "/new_file.txt"
-// 		file, err := os.Create(filePath)
-// 		if err != nil {
-// 			return err
-// 		}
-// 		defer file.Close()
-// 		fmt.Println("File created:", filePath)
-// 		return nil
-// 	})
-
-// 	if err != nil {
-// 		fmt.Println("Error:", err)
-// 	} else {
-// 		fmt.Println("Operation completed successfully!")
-// 	}
-// }

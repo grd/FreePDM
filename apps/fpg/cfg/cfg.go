@@ -14,9 +14,9 @@ import (
 
 type Cfg struct {
 	// GUI-specific settings (user-side)
-	RsyncTarget   string `toml:"rsync_target"`    // e.g. user@host:/freepdm/vaults
-	LocalVaultDir string `toml:"local_vault_dir"` // e.g. /home/user/My CAD Vaults
-	VaultGroupUID int    `toml:"vault_group_uid"` // e.g. 125
+	RsyncTarget     string `toml:"rsync_target"`    // e.g. user@host:/freepdm/vaults
+	LocalVaultsRoot string `toml:"local_vault_dir"` // e.g. /home/user/My CAD Vaults
+	VaultGroupUID   int    `toml:"vault_group_uid"` // e.g. 125
 
 	// Optional: SSH/rsync tuning
 	SSHKeyPath string `toml:"ssh_key_path,omitempty"`
@@ -54,6 +54,7 @@ func Load() (*Cfg, error) {
 	if err := toml.Unmarshal(b, &c); err != nil {
 		return nil, err
 	}
+
 	return &c, nil
 }
 

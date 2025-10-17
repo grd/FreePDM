@@ -4,9 +4,7 @@
 
 package localfs
 
-import (
-	"path"
-)
+import "path/filepath"
 
 // This shows only the latest version of a file and is handy when being used with
 // the web server. If the file is a directory then only the filename is visible.
@@ -32,7 +30,7 @@ type FileProperties struct {
 }
 
 func (fi FileInfo) String() string {
-	return path.Join(fi.Path(), fi.Name())
+	return filepath.Join(fi.Path(), fi.Name())
 }
 func (fi FileInfo) IsDir() bool {
 	return fi.isDir

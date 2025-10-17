@@ -28,7 +28,7 @@ func BuildPathSettingsView(parent fyne.Window, st *state.AppState) fyne.CanvasOb
 	localEntry := widget.NewEntry()
 	if st.Cfg != nil {
 		rsyncEntry.SetText(st.Cfg.RsyncTarget)
-		localEntry.SetText(st.Cfg.LocalVaultDir)
+		localEntry.SetText(st.Cfg.LocalVaultsRoot)
 	}
 	rsyncEntry.SetPlaceHolder("user@host:/srv/freepdm/vaults/Main   (or a local path)")
 	localEntry.SetPlaceHolder("/home/you/FreePDM/vaults/Main")
@@ -66,8 +66,8 @@ func BuildPathSettingsView(parent fyne.Window, st *state.AppState) fyne.CanvasOb
 	// Save handler (validates and persists to ~/.config/fpg/config.toml)
 	save := func() {
 		config := &cfg.Cfg{
-			RsyncTarget:   strings.TrimSpace(rsyncEntry.Text),
-			LocalVaultDir: strings.TrimSpace(localEntry.Text),
+			RsyncTarget:     strings.TrimSpace(rsyncEntry.Text),
+			LocalVaultsRoot: strings.TrimSpace(localEntry.Text),
 		}
 		if config.RsyncTarget == "" {
 			dialog.ShowError(errors.New("rsync target cannot be empty"), parent)
@@ -75,7 +75,7 @@ func BuildPathSettingsView(parent fyne.Window, st *state.AppState) fyne.CanvasOb
 		}
 		// Minimal validation: accept local paths or rsync-style remote (user@host:/path)
 		// If you want to require user@host:/path only, add: !strings.Contains(cfg.RsyncTarget, ":")
-		if config.LocalVaultDir == "" {
+		if config.LocalVaultsRoot == "" {
 			dialog.ShowError(errors.New("local vault folder cannot be empty"), parent)
 			return
 		}

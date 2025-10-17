@@ -10,13 +10,15 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/fs"
+	iofs "io/fs"
 	"log"
 	"net/http"
 	"os"
 	"os/user"
 	"path"
 	"path/filepath"
+	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -48,7 +50,7 @@ type FileSystem struct {
 }
 
 // Open implements fs.FS.
-func (fs FileSystem) Open(name string) (fs.File, error) {
+func (fs FileSystem) Open(name string) (iofs.File, error) {
 	panic("unimplemented")
 }
 
@@ -61,25 +63,25 @@ var (
 	vaultsRoot, vaultsDataRoot string // vaultsRoot is the root directory, vaultsdataRoot is the administration part
 )
 
-func init() {
-	// check for config file
-	vaultsRoot = config.VaultsDir()
+// func init() {
+// 	// check for config file
+// 	vaultsRoot = config.VaultsDir()
 
-	// or check of enivronment variable
-	if vaultsRoot == "" {
-		var ok bool
-		vaultsRoot, ok = os.LookupEnv("FREEPDM_VAULTS_DIR")
-		if !ok {
-			fmt.Println("Error: No FREEPDM_VAULTS_DIR environment set. See installation manual.")
-			vaultsRoot = "/samba/vaults"
-		}
-	}
-	vaultsDataRoot = path.Join(vaultsRoot, "/.data")
+// 	// or check of enivronment variable
+// 	if vaultsRoot == "" {
+// 		var ok bool
+// 		vaultsRoot, ok = os.LookupEnv("FREEPDM_VAULTS_DIR")
+// 		if !ok {
+// 			fmt.Println("Error: No FREEPDM_VAULTS_DIR environment set. See installation manual.")
+// 			vaultsRoot = "/samba/vaults"
+// 		}
+// 	}
+// 	vaultsDataRoot = filepath.Join(vaultsRoot, "/.data")
 
-	// check for critical directories
-	util.CriticalDirExist(vaultsRoot)
-	util.CriticalDirExist(vaultsDataRoot)
-}
+// 	// check for critical directories
+// 	util.CriticalDirExist(vaultsRoot)
+// 	util.CriticalDirExist(vaultsDataRoot)
+// }
 
 // Constructor
 func NewFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
@@ -92,8 +94,8 @@ func NewFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
 	}
 
 	// Some settings
-	fs.vaultDir = path.Join(vaultsRoot, vaultDir)
-	fs.dataDir = path.Join(vaultsDataRoot, vaultDir)
+	fs.vaultDir = filepath.Join(vaultsRoot, vaultDir)
+	fs.dataDir = filepath.Join(vaultsDataRoot, vaultDir)
 	fs.user = userName
 
 	// check whether the critical directories exist.
@@ -117,7 +119,7 @@ func NewFileSystem(vaultDir, userName string) (fs *FileSystem, err error) {
 	}
 	fs.index = index
 
-	fs.lockedFilesCvs = path.Join(fs.dataDir, LockedFileCsv)
+	fs.lockedFilesCvs = filepath.Join(fs.dataDir, LockedFileCsv)
 
 	// retrieve the values
 	if err = fs.ReadLockedIndex(); err != nil {
@@ -141,8 +143,8 @@ func NewClientFileSystem(vaultDir string) (fs *FileSystem, err error) {
 		return nil, fmt.Errorf("error loading config file, %s", err)
 	}
 
-	vaultsRoot = config.LocalVaultDir
-	vaultsDataRoot = path.Join(vaultsRoot, "/.data")
+	vaultsRoot = config.LocalVaultsRoot
+	vaultsDataRoot = filepath.Join(vaultsRoot, "/.data")
 
 	// Check whether vaults directory contains slaches
 	parts := strings.Split(vaultDir, "/")
@@ -154,8 +156,8 @@ func NewClientFileSystem(vaultDir string) (fs *FileSystem, err error) {
 	}
 
 	// Some settings
-	fs.vaultDir = path.Join(vaultsRoot, vaultDir)
-	fs.dataDir = path.Join(vaultsDataRoot, vaultDir)
+	fs.vaultDir = filepath.Join(vaultsRoot, vaultDir)
+	fs.dataDir = filepath.Join(vaultsDataRoot, vaultDir)
 
 	// check whether the critical directories exist.
 	util.CriticalDirExist(fs.vaultDir)
@@ -181,7 +183,7 @@ func NewClientFileSystem(vaultDir string) (fs *FileSystem, err error) {
 	}
 	fs.index = index
 
-	fs.lockedFilesCvs = path.Join(fs.dataDir, LockedFileCsv)
+	fs.lockedFilesCvs = filepath.Join(fs.dataDir, LockedFileCsv)
 
 	// retrieve the values
 	if err = fs.ReadLockedIndex(); err != nil {
@@ -317,7 +319,7 @@ func (fs *FileSystem) ImportFile(dstDir, fileName string) (*FileList, error) {
 		return nil, fmt.Errorf("file %s could not be found", fileName)
 	}
 
-	complDstDir := path.Join(fs.vaultDir, dstDir)
+	complDstDir := filepath.Join(fs.vaultDir, dstDir)
 
 	// check whether the directory exist
 	if !util.DirExists(complDstDir) {
@@ -380,7 +382,7 @@ func (fs *FileSystem) ImportUrl(dstDir, url string) (*FileList, error) {
 	}
 
 	// Calculate the destination directory
-	complDstDir := path.Join(fs.vaultDir, dstDir)
+	complDstDir := filepath.Join(fs.vaultDir, dstDir)
 
 	// Check if the destination directory exists
 	if !util.DirExists(complDstDir) {
@@ -398,7 +400,7 @@ func (fs *FileSystem) ImportUrl(dstDir, url string) (*FileList, error) {
 	_, file := path.Split(url)
 
 	// Save the URL contents to a local file
-	localFilePath := path.Join(complDstDir, file)
+	localFilePath := filepath.Join(complDstDir, file)
 	out, err := os.Create(localFilePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create local file: %v", err)
@@ -478,9 +480,9 @@ func (fs *FileSystem) Assign(containerNumber, fileName string) error {
 		return err
 	}
 
-	complDstDir := path.Join(fs.vaultDir, fl.Path, fl.ContainerNumber)
-	complDstFile := path.Join(complDstDir, "0", fileName)
-	ef := path.Join(complDstDir, "0", EmptyFile)
+	complDstDir := filepath.Join(fs.vaultDir, fl.Path, fl.ContainerNumber)
+	complDstFile := filepath.Join(complDstDir, "0", fileName)
+	ef := filepath.Join(complDstDir, "0", EmptyFile)
 
 	// check whether the directory exist
 	if !util.DirExists(complDstDir) {
@@ -587,14 +589,10 @@ func (fs FileSystem) ListWD() ([]FileInfo, error) {
 	return fs.ListDir(fs.Getwd())
 }
 
-// func (fs.FileSystem) Open() {
-
-// }
-
 // ListDir lists the sorted directories and files within the specified directory name,
 // as long as the directory is inside the vault.
 func (fs FileSystem) ListDir(dirName string) ([]FileInfo, error) {
-	joinDir := path.Join(fs.vaultDir, dirName)
+	joinDir := filepath.Join(fs.vaultDir, dirName)
 
 	dirList, err := os.ReadDir(joinDir)
 	if err != nil {
@@ -603,67 +601,163 @@ func (fs FileSystem) ListDir(dirName string) ([]FileInfo, error) {
 
 	list := make([]FileInfo, 0, len(dirList))
 
-	for _, subDir := range dirList {
-		if _, err := util.Atoi64(subDir.Name()); err == nil {
-			// Handle file entries
-			fileName, err := fs.index.ContainerNumberToFileName(subDir.Name())
-			if err != nil {
-				return nil, fmt.Errorf("failed to convert index to file name: %w", err)
+	for _, entry := range dirList {
+		name := entry.Name()
+
+		// Treat numeric directories as containers (files in UI)
+		if entry.IsDir() {
+			if _, err := util.Atoi64(name); err == nil {
+				// Container branch
+				cnStr := name
+
+				fileName, err := fs.index.ContainerNumberToFileName(cnStr)
+				if err != nil {
+					return nil, fmt.Errorf("failed to convert index to file name: %w", err)
+				}
+
+				// Display fallback for freshly allocated (unassigned) containers
+				if fileName == "" || fileName == EmptyFile {
+					fileName = fmt.Sprintf("Unassigned Empty Container (%s)", cnStr)
+				}
+
+				lockedUser := fs.IsLockedItem(cnStr)
+
+				list = append(list, FileInfo{
+					isDir:           false,
+					name:            fileName,
+					dir:             dirName,
+					fileLocked:      lockedUser != "",
+					fileLockedOutBy: lockedUser,
+				})
+				continue
 			}
-			idx, err := fs.index.FileNameToContainerNumber(dirName, fileName)
-			if err != nil {
-				return nil, fmt.Errorf("failed to convert file name to index: %w", err)
-			}
-			lockedUser := fs.IsLockedItem(idx)
+
+			// Regular non-numeric directory
 			list = append(list, FileInfo{
-				isDir:           false,
-				name:            fileName,
-				dir:             dirName,
-				fileLocked:      lockedUser != "",
-				fileLockedOutBy: lockedUser,
+				isDir: true,
+				name:  name,
+				dir:   dirName,
 			})
-		} else {
-			// Handle directory entries
-			list = append(list, FileInfo{isDir: true, name: subDir.Name(), dir: dirName})
+			continue
 		}
+
+		// Non-directory entries (plain files) are ignored in this model.
 	}
+
+	// Optional: ensure alphabetical order by display name (case-insensitive)
+	sort.SliceStable(list, func(i, j int) bool {
+		return strings.ToLower(list[i].name) < strings.ToLower(list[j].name)
+	})
 
 	return list, nil
 }
 
-// ListTree lists the sorted directories and files within the specified directory name,
-// including subdirectories, as long as the directory is inside the vault.
-func (fs FileSystem) ListTree(dirName string) ([]FileInfo, error) {
-	return fs.listTree(dirName)
-}
+// ListTree returns a flat, sorted listing of the subtree under dirName.
+// Directories (non-numeric) are included as isDir=true.
+// Containers (numeric dir names) are treated as files (isDir=false) and are NOT descended into.
+func (fs *FileSystem) ListTree(dirName string) ([]FileInfo, error) {
+	base := filepath.Clean(fs.vaultDir)
+	rel := filepath.Clean(dirName)
+	if filepath.IsAbs(rel) || strings.HasPrefix(rel, "..") {
+		return nil, fmt.Errorf("invalid dir: %q", dirName)
+	}
+	root := filepath.Join(base, rel)
 
-// listTree is a helper function to recursively list all directories and files.
-func (fs FileSystem) listTree(dirName string) ([]FileInfo, error) {
-	dirList, err := fs.ListDir(dirName)
+	absBase, err := filepath.Abs(base)
+	if err != nil {
+		return nil, fmt.Errorf("resolve base: %w", err)
+	}
+	absRoot, err := filepath.Abs(root)
+	if err != nil {
+		return nil, fmt.Errorf("resolve root: %w", err)
+	}
+	// Stay within vault
+	if !strings.HasPrefix(absRoot+string(filepath.Separator), absBase+string(filepath.Separator)) && absRoot != absBase {
+		return nil, fmt.Errorf("path escapes vault: %q", dirName)
+	}
+
+	var list []FileInfo
+
+	err = filepath.WalkDir(root, func(p string, d iofs.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		// Skip symlinks (veiliger)
+		if d.Type()&os.ModeSymlink != 0 {
+			if d.IsDir() {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+
+		// to vaultDir
+		relPath, _ := filepath.Rel(absBase, p)
+		parent := filepath.Dir(relPath)
+		if parent == "." {
+			parent = ""
+		}
+
+		name := d.Name()
+		if d.IsDir() {
+			if isAllDigits(name) {
+				// Container = FILE; stop here
+				fileName, ferr := fs.index.ContainerNumberToFileName(name)
+				if ferr != nil {
+					return fmt.Errorf("index lookup for container %q: %w", name, ferr)
+				}
+				lockedBy := fs.IsLockedItem(name)
+
+				list = append(list, FileInfo{
+					isDir:           false,
+					name:            fileName,
+					dir:             parent,
+					fileLocked:      lockedBy != "",
+					fileLockedOutBy: lockedBy,
+				})
+				return filepath.SkipDir
+			}
+
+			// Ordinary subdirectory
+			if relPath != "" {
+				list = append(list, FileInfo{
+					isDir: true,
+					name:  name,
+					dir:   parent,
+				})
+			}
+			return nil
+		}
+
+		return nil
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	if len(dirList) == 0 { // empty directory. Nothing to add but no error message
-		return nil, nil
-	}
-
-	list := make([]FileInfo, 0, len(dirList))
-
-	for _, elem := range dirList {
-		list = append(list, elem)
-
-		if elem.IsDir() {
-			// Recursively append subdirectory contents
-			subDirContents, err := fs.listTree(path.Join(dirName, elem.Name()))
-			if err != nil {
-				return nil, err
-			}
-			list = append(list, subDirContents...)
+	// Sorting order: first dir, then files, then name
+	sort.SliceStable(list, func(i, j int) bool {
+		if list[i].dir != list[j].dir {
+			return strings.ToLower(list[i].dir) < strings.ToLower(list[j].dir)
 		}
-	}
+		if list[i].isDir != list[j].isDir {
+			return list[i].isDir // dirs first
+		}
+		return strings.ToLower(list[i].name) < strings.ToLower(list[j].name)
+	})
 
 	return list, nil
+}
+
+func isAllDigits(s string) bool {
+	if s == "" {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		if s[i] < '0' || s[i] > '9' {
+			return false
+		}
+	}
+	return true
 }
 
 // Check whether the conatiner number is locked.
@@ -803,7 +897,7 @@ func (fs *FileSystem) FileRename(src, dst string) error {
 	info, err := os.Stat(dstAbs)
 	if err == nil { // Note, it is not "!="" but "==" !!!
 		if info.IsDir() {
-			dstAbs = path.Join(dstAbs, srcFile)
+			dstAbs = filepath.Join(dstAbs, srcFile)
 		}
 	}
 
@@ -861,15 +955,15 @@ func (fs *FileSystem) FileRename(src, dst string) error {
 	}
 
 	// Logging
-	log.Printf("File %s renamed to %s\n", path.Join(srcFl.Path, srcFl.Name), path.Join(dstDir, dstFile))
+	log.Printf("File %s renamed to %s\n", filepath.Join(srcFl.Path, srcFl.Name), filepath.Join(dstDir, dstFile))
 
 	return nil
 }
 
 // Moves a file to a different directory.
 func (fs *FileSystem) fileMove(src, dst FileList) error {
-	source := path.Join(src.Path, src.ContainerNumber)
-	dest := path.Join(dst.Path, src.ContainerNumber)
+	source := filepath.Join(src.Path, src.ContainerNumber)
+	dest := filepath.Join(dst.Path, src.ContainerNumber)
 
 	pwd := fs.Getwd()
 	if err := os.Chdir(fs.vaultDir); err != nil {
@@ -927,7 +1021,7 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 	info, err := os.Stat(dstAbs)
 	if err == nil { // Note, it is not "!="" but "==" !!!
 		if info.IsDir() {
-			dstAbs = path.Join(dstAbs, srcFile)
+			dstAbs = filepath.Join(dstAbs, srcFile)
 		}
 	}
 
@@ -968,8 +1062,8 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 	var dstPath string
 	if strings.Contains(dst, "/") {
 		num := strings.LastIndexByte(dst, '/')
-		dstDir = path.Join(fs.Getwd(), dst[:num])
-		dstPath = path.Join(fs.vaultDir, dstDir)
+		dstDir = filepath.Join(fs.Getwd(), dst[:num])
+		dstPath = filepath.Join(fs.vaultDir, dstDir)
 		if !util.DirExists(dstPath) {
 			return fmt.Errorf("directory %s doesn't exist", dstPath)
 		}
@@ -1003,7 +1097,7 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 
 	// Copy the file from src to dest
 	version := srcFd.LatestVersion()
-	newFile := path.Join(srcFd.dir, version.Pretty, src)
+	newFile := filepath.Join(srcFd.dir, version.Pretty, src)
 
 	if err = dstFd.ImportNewFile(newFile); err != nil {
 		return err
@@ -1012,8 +1106,8 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 	// Rename file, but only when dst doesn't end with '/' (which means a directory)
 	if dst[len(dst)-1] != '/' {
 		dstVer := dstFd.LatestVersion()
-		dstStr := path.Join(dstFd.dir, dstVer.Pretty)
-		if err = os.Rename(path.Join(dstStr, src), path.Join(dstStr, dstFile)); err != nil {
+		dstStr := filepath.Join(dstFd.dir, dstVer.Pretty)
+		if err = os.Rename(path.Join(dstStr, src), filepath.Join(dstStr, dstFile)); err != nil {
 			return fmt.Errorf("failed to rename file from %s to %s: %w", src, dstFile, err)
 		}
 	}
@@ -1028,7 +1122,7 @@ func (fs *FileSystem) FileCopy(src, dst string) error {
 	}
 
 	// Logging
-	log.Printf("File %s copied to %s\n", path.Join(srcFl.Path, srcFl.Name), path.Join(dstDir, dstFile))
+	log.Printf("File %s copied to %s\n", filepath.Join(srcFl.Path, srcFl.Name), filepath.Join(dstDir, dstFile))
 	// log.Printf("File %s copied to %s\n", src, dst)
 
 	return nil
@@ -1094,7 +1188,7 @@ func (fs *FileSystem) DirectoryCopy(src, dst string) error {
 	cwd := fs.Getwd()
 
 	for k, elem := range dstFiles {
-		dstJoinPath := path.Join(dstFiles[k].Path(), dstFiles[k].Name())
+		dstJoinPath := filepath.Join(dstFiles[k].Path(), dstFiles[k].Name())
 		if elem.IsDir() {
 			if err := fs.Mkdir(path.Join(fs.vaultDir, elem.dir, elem.name)); err != nil {
 				return err
@@ -1109,7 +1203,7 @@ func (fs *FileSystem) DirectoryCopy(src, dst string) error {
 		}
 
 		// Verification
-		dstPathContainer := path.Join(fs.vaultDir, dstFiles[k].dir, dstFiles[k].containerNumber)
+		dstPathContainer := filepath.Join(fs.vaultDir, dstFiles[k].dir, dstFiles[k].containerNumber)
 		_, err := os.Stat(dstPathContainer)
 		if err != nil {
 			return fmt.Errorf("unable to locate file %s, error %s", dstJoinPath, err)
@@ -1174,7 +1268,7 @@ func (fs FileSystem) DirectoryRename(src, dst string) error {
 		l := strings.Index(v.Path(), src)
 		if len(v.Path())-(l+len(src)) != 0 {
 			rest := v.Path()[l+len(src)+1:]
-			dstFiles[k].dir = path.Join(dst, rest)
+			dstFiles[k].dir = filepath.Join(dst, rest)
 		} else {
 			dstFiles[k].dir = dst
 		}
@@ -1190,8 +1284,8 @@ func (fs FileSystem) DirectoryRename(src, dst string) error {
 
 	// Moving the files from src to dst
 	for k, v := range srcFiles {
-		srcJoinPath := path.Join(srcFiles[k].Path(), srcFiles[k].Name())
-		dstJoinPath := path.Join(dstFiles[k].Path(), dstFiles[k].Name())
+		srcJoinPath := filepath.Join(srcFiles[k].Path(), srcFiles[k].Name())
+		dstJoinPath := filepath.Join(dstFiles[k].Path(), dstFiles[k].Name())
 		if v.IsDir() {
 			if err := os.Mkdir(dstJoinPath, 0775); err != nil {
 				return err
@@ -1203,7 +1297,7 @@ func (fs FileSystem) DirectoryRename(src, dst string) error {
 		}
 
 		// Verification
-		dstPathContainer := path.Join(fs.vaultDir, dstFiles[k].dir, dstFiles[k].containerNumber)
+		dstPathContainer := filepath.Join(fs.vaultDir, dstFiles[k].dir, dstFiles[k].containerNumber)
 		_, err := os.Stat(dstPathContainer)
 		if err != nil {
 			return fmt.Errorf("unable to locate file %s, error %s", dstJoinPath, err)
@@ -1286,7 +1380,7 @@ func ListVaults() ([]string, error) {
 
 // Returns true or false
 func (fs FileSystem) DirExists(dir string) bool {
-	str := path.Join(fs.vaultDir, dir)
+	str := filepath.Join(fs.vaultDir, dir)
 	return util.DirExists(str)
 }
 
@@ -1325,8 +1419,8 @@ func (fs FileSystem) AbsNormal(absolutePath string) (string, error) {
 // Verifies wether the operation succeeded well. It checks
 // the location and also the entry inside the FileList.
 func (fs FileSystem) Verify(fl FileList) error {
-	pathContainer := path.Join(fs.vaultDir, fl.Path, fl.ContainerNumber)
-	joinPath := path.Join(fl.Path, fl.Name)
+	pathContainer := filepath.Join(fs.vaultDir, fl.Path, fl.ContainerNumber)
+	joinPath := filepath.Join(fl.Path, fl.Name)
 
 	_, err := os.Stat(pathContainer)
 	if err != nil {
@@ -1375,7 +1469,7 @@ func (fs *FileSystem) FileRemove(containerNumber string) error {
 		return err
 	}
 
-	cmpl := path.Join(fs.vaultDir, fl.Path, fl.ContainerNumber)
+	cmpl := filepath.Join(fs.vaultDir, fl.Path, fl.ContainerNumber)
 
 	// Check if source directory exists
 	if !util.DirExists(cmpl) {
@@ -1426,8 +1520,11 @@ func RemoveAll(vault string) error {
 	if strings.ContainsRune(vault, '/') {
 		return errors.New("invalid vault")
 	}
-	vd := path.Join(Root(), vault)      // vault directory
-	vdd := path.Join(RootData(), vault) // vault data directory
+	vd := filepath.Join(Root(), vault)      // vault directory
+	vdd := filepath.Join(RootData(), vault) // vault data directory
+
+	log.Println(Root())
+	log.Println(vd)
 
 	// Check wether there is a vault
 	if !util.DirExists(vd) {
@@ -1491,4 +1588,38 @@ func RemoveAll(vault string) error {
 	}
 
 	return nil
+}
+
+// IsEmptyDirectory reports whether dir exists and has no entries.
+func IsEmptyDirectory(dir string) (bool, error) {
+	f, err := os.Open(dir)
+	if err != nil {
+		return false, err
+	}
+	defer f.Close()
+
+	entries, err := f.Readdirnames(1)
+	if err != nil {
+		if err.Error() == "EOF" {
+			return true, nil
+		}
+		return false, err
+	}
+	return len(entries) == 0, nil
+}
+
+var reNumeric = regexp.MustCompile(`^\d+$`)
+
+// IsContainer reports whether dir exists and has no entries.
+func IsContainer(dir string) (bool, error) {
+	// f, err := os.Open(dir)
+	// if err != nil {
+	// 	return false, err
+	// }
+	// defer f.Close()
+	if reNumeric.MatchString(dir) {
+		return true, nil
+	} else {
+		return false, nil
+	}
 }

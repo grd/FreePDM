@@ -42,10 +42,12 @@ type VaultTab struct {
 	refreshBtn *widget.Button
 
 	// UI actions
-	renameBtn *widget.Button
-	moveBtn   *widget.Button
-	copyBtn   *widget.Button
-	delBtn    *widget.Button
+	renameBtn   *widget.Button
+	moveBtn     *widget.Button
+	copyBtn     *widget.Button
+	delBtn      *widget.Button
+	allocateBtn *widget.Button
+	assignBtn   *widget.Button
 
 	// state
 	lastClickPath string
@@ -56,6 +58,14 @@ type VaultTab struct {
 	infoCache map[string]vfs.FileInfo // abs-node-id -> FileInfo
 }
 
+// NewVaultTab builds the Vault UI tab.
+//   - Shows a tree on the left and a details/toolbar pane on the right.
+//   - "Allocate" is visible only when a regular (non-numeric) directory is selected.
+//   - "Assign" is visible only when a numeric container is selected that still
+//     contains the placeholder file at version 0 (i.e.,  "<container>/0/<EmptyFile>").
+//
+// Note: Only containers are read-only in your policy; normal directories are writable.
+// Allocate relies on fs.Allocate(dstDir). Assign relies on fs.Assign(containerNumber, fileName).
 func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab {
 	vt := &VaultTab{
 		Root:      root,
@@ -69,6 +79,7 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 	}
 	vt.FS = fs
 
+	// --- Tree setup -----------------------------------------------------------
 	vt.tree = widget.NewTree(
 		// children
 		func(uid widget.TreeNodeID) []widget.TreeNodeID {
@@ -76,18 +87,16 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 				// Expose exactly one root node
 				return []widget.TreeNodeID{widget.TreeNodeID(vt.Root)}
 			}
-			return toIDs(vt.listChildren(string(uid))) // <-- use vt.listChildren (method)
+			return toIDs(vt.listChildren(string(uid)))
 		},
 		// isBranch? (directory?)
 		func(uid widget.TreeNodeID) bool {
 			if uid == "" { // virtual root
 				return true
 			}
-			// Root should behave as a branch so it can open
 			if string(uid) == vt.Root {
 				return true
 			}
-			// Ask the parent listing and find this entry
 			if fi, ok := vt.lookupInfo(string(uid)); ok {
 				return fi.IsDir()
 			}
@@ -100,7 +109,7 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 				widget.NewLabel("..."),
 			)
 		},
-		// update node UI
+		// update node UI (label + icon based on item type)
 		func(uid widget.TreeNodeID, branch bool, obj fyne.CanvasObject) {
 			row := obj.(*fyne.Container)
 			icon := row.Objects[0].(*widget.Icon)
@@ -116,7 +125,6 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 			lbl.SetText(base)
 
 			if string(uid) == vt.Root {
-				// Show opened-folder icon for the root
 				icon.SetResource(theme.FolderOpenIcon())
 				return
 			}
@@ -136,59 +144,7 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 	vt.tree.Select(widget.TreeNodeID(vt.Root))
 	vt.tree.Refresh()
 
-	// Select behavior: single-click just updates details
-	vt.tree.OnSelected = func(uid widget.TreeNodeID) {
-		vt.selectedUID = string(uid)
-		vt.showDetails(string(uid))
-		vt.renameBtn.Enable()
-		vt.moveBtn.Enable()
-		vt.copyBtn.Enable()
-		vt.delBtn.Enable()
-
-		now := time.Now()
-		if vt.lastClickPath == string(uid) && now.Sub(vt.lastClickAt) <= 300*time.Millisecond {
-			vt.openPath(win, string(uid))
-			vt.tree.Unselect(uid)
-			vt.selectedUID = ""
-			vt.lastClickPath, vt.lastClickAt = "", time.Time{}
-			return
-		}
-		vt.lastClickPath, vt.lastClickAt = string(uid), now
-	}
-
-	vt.tree.OnUnselected = func(uid widget.TreeNodeID) {
-		if vt.selectedUID == string(uid) {
-			vt.selectedUID = ""
-			vt.renameBtn.Disable()
-			vt.moveBtn.Disable()
-			vt.copyBtn.Disable()
-			vt.delBtn.Disable()
-		}
-	}
-
-	// Key: Enter opens selected
-	if c, ok := win.Canvas().(interface {
-		AddShortcut(shortcut fyne.Shortcut, handler func(fyne.Shortcut))
-	}); ok {
-		c.AddShortcut(&desktop.CustomShortcut{KeyName: fyne.KeyReturn}, func(fyne.Shortcut) {
-			uid := vt.currentSelection()
-			if uid == "" {
-				return
-			}
-			vt.openPath(win, uid)
-			vt.tree.Unselect(uid)
-			vt.selectedUID = ""
-		})
-		c.AddShortcut(&desktop.CustomShortcut{KeyName: fyne.KeyEnter}, func(fyne.Shortcut) {
-			uid := vt.currentSelection()
-			if uid == "" {
-				return
-			}
-			vt.openPath(win, uid)
-			vt.tree.Unselect(uid)
-		})
-	}
-
+	// --- Buttons: Rename/Move/Copy/Delete ------------------------------------
 	vt.renameBtn = widget.NewButtonWithIcon("Rename", theme.DocumentCreateIcon(), func() {
 		uid := vt.selectedUID
 		if uid == "" {
@@ -282,37 +238,84 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 		}, win)
 	})
 
-	c := win.Canvas()
-	c.AddShortcut(&desktop.CustomShortcut{KeyName: fyne.KeyF2}, func(fyne.Shortcut) {
-		if vt.selectedUID != "" {
-			vt.renameBtn.Tapped(nil)
-		}
-	})
-	c.AddShortcut(&desktop.CustomShortcut{KeyName: fyne.KeyDelete}, func(fyne.Shortcut) {
-		if vt.selectedUID != "" {
-			vt.delBtn.Tapped(nil)
-		}
-	})
-	c.AddShortcut(&desktop.CustomShortcut{KeyName: fyne.KeyF5}, func(fyne.Shortcut) {
+	// --- Buttons: Refresh / Allocate / Assign ---------------------------------
+	vt.refreshBtn = widget.NewButtonWithIcon("Refresh", theme.ViewRefreshIcon(), func() {
 		vt.refreshTree()
 	})
 
-	// standard off until selection
+	// Allocate: creates an empty container in the selected directory (non-numeric dir)
+	vt.allocateBtn = widget.NewButtonWithIcon("Allocate", theme.ContentAddIcon(), func() {
+		abs := vt.selectedUID
+		if abs == "" {
+			dialog.ShowInformation("Allocate", "Select a directory first.", win)
+			return
+		}
+		if fi, ok := vt.lookupInfo(abs); ok && !fi.IsDir() {
+			abs = filepath.Dir(abs)
+		}
+
+		rel := vt.rel(abs)
+
+		fl, err := vt.FS.Allocate(rel)
+		if err != nil {
+			dialog.ShowError(err, win)
+			return
+		}
+
+		vt.refreshTree()
+		absContainer := filepath.Join(vt.Root, fl.Path, fl.ContainerNumber)
+		vt.tree.Select(widget.TreeNodeID(absContainer))
+	})
+
+	// Assign: only relevant for an allocated container that still has the EmptyFile in version 0.
+	vt.assignBtn = widget.NewButtonWithIcon("Assign", theme.DocumentCreateIcon(), func() {
+		abs := vt.selectedUID
+		if abs == "" {
+			return
+		}
+		cn := filepath.Base(abs) // container number (numeric string)
+		// Prompt for a human-friendly filename
+		entry := widget.NewEntry()
+		entry.SetPlaceHolder("Enter filename.ext")
+		dialog.ShowForm("Assign name", "Assign", "Cancel",
+			[]*widget.FormItem{widget.NewFormItem("File name", entry)},
+			func(ok bool) {
+				if !ok {
+					return
+				}
+				name := strings.TrimSpace(entry.Text)
+				if name == "" {
+					return
+				}
+				if err := vt.FS.Assign(cn, name); err != nil {
+					dialog.ShowError(err, win)
+					return
+				}
+				vt.refreshTree()
+			},
+			win,
+		)
+	})
+
+	// Initially disable/hide action buttons until a selection is made.
 	vt.renameBtn.Disable()
 	vt.moveBtn.Disable()
 	vt.copyBtn.Disable()
 	vt.delBtn.Disable()
 
-	// Right: details + toolbar
+	vt.allocateBtn.Disable()
+	vt.allocateBtn.Hide()
+
+	vt.assignBtn.Disable()
+	vt.assignBtn.Hide()
+
+	// --- Details pane (right side) --------------------------------------------
 	vt.nameLabel = widget.NewLabel("")
 	vt.nameLabel.Wrapping = fyne.TextWrapWord
 	vt.pathEntry = widget.NewEntry()
 	vt.pathEntry.Disable()
 	vt.sizeLabel = widget.NewLabel("")
 	vt.timeLabel = widget.NewLabel("")
-	vt.refreshBtn = widget.NewButtonWithIcon("Refresh", theme.ViewRefreshIcon(), func() {
-		vt.refreshTree()
-	})
 
 	details := container.NewVBox(
 		widget.NewSeparator(),
@@ -322,12 +325,124 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 		widget.NewLabel("Size:"), vt.sizeLabel,
 		widget.NewLabel("Modified:"), vt.timeLabel,
 		widget.NewSeparator(),
-		container.NewHBox(vt.refreshBtn, vt.renameBtn, vt.moveBtn, vt.copyBtn, vt.delBtn),
+		// Toolbar: Refresh + Allocate + Assign + (Rename/Move/Copy/Delete)
+		container.NewHBox(vt.refreshBtn, vt.allocateBtn, vt.assignBtn, vt.renameBtn, vt.moveBtn, vt.copyBtn, vt.delBtn),
 	)
 
+	// --- Selection handling ----------------------------------------------------
+	vt.tree.OnSelected = func(uid widget.TreeNodeID) {
+		vt.selectedUID = string(uid)
+		vt.showDetails(string(uid))
+
+		// These actions are generally valid when something is selected.
+		vt.renameBtn.Enable()
+		vt.moveBtn.Enable()
+		vt.copyBtn.Enable()
+		vt.delBtn.Enable()
+
+		// Toggle Allocate visibility: show ONLY on regular (non-numeric) directories.
+		path := string(uid)
+		base := filepath.Base(path)
+		if fi, ok := vt.lookupInfo(path); ok && fi.IsDir() && !reNumeric.MatchString(base) {
+			vt.allocateBtn.Show()
+			vt.allocateBtn.Enable()
+		} else {
+			vt.allocateBtn.Hide()
+			vt.allocateBtn.Disable()
+		}
+
+		// SHOW Allocate only on regular (non-numeric) dirs
+		if fi, ok := vt.lookupInfo(path); ok && fi.IsDir() && !reNumeric.MatchString(base) {
+			vt.allocateBtn.Show()
+			vt.allocateBtn.Enable()
+		} else {
+			vt.allocateBtn.Hide()
+			vt.allocateBtn.Disable()
+		}
+
+		// SHOW Assign only on an allocated (empty) container: <container>/0/.empty_file
+		showAssign := false
+		if reNumeric.MatchString(base) {
+			emptyPath := filepath.Join(path, "0", vfs.EmptyFile)
+			if st, err := os.Stat(emptyPath); err == nil && !st.IsDir() {
+				showAssign = true
+			}
+		}
+		if showAssign {
+			vt.assignBtn.Show()
+			vt.assignBtn.Enable()
+		} else {
+			vt.assignBtn.Hide()
+			vt.assignBtn.Disable()
+		}
+
+		// Double-click (or fast repeat Enter) opens the item
+		now := time.Now()
+		if vt.lastClickPath == string(uid) && now.Sub(vt.lastClickAt) <= 300*time.Millisecond {
+			vt.openPath(win, string(uid))
+			vt.tree.Unselect(uid)
+			vt.selectedUID = ""
+			vt.lastClickPath, vt.lastClickAt = "", time.Time{}
+			return
+		}
+		vt.lastClickPath, vt.lastClickAt = string(uid), now
+	}
+
+	vt.tree.OnUnselected = func(uid widget.TreeNodeID) {
+		if vt.selectedUID == string(uid) {
+			vt.selectedUID = ""
+			vt.renameBtn.Disable()
+			vt.moveBtn.Disable()
+			vt.copyBtn.Disable()
+			vt.delBtn.Disable()
+
+			vt.allocateBtn.Hide()
+			vt.allocateBtn.Disable()
+
+			vt.assignBtn.Hide()
+			vt.assignBtn.Disable()
+		}
+	}
+
+	// --- Keyboard shortcuts ----------------------------------------------------
+	if c, ok := win.Canvas().(interface {
+		AddShortcut(shortcut fyne.Shortcut, handler func(fyne.Shortcut))
+	}); ok {
+		c.AddShortcut(&desktop.CustomShortcut{KeyName: fyne.KeyReturn}, func(fyne.Shortcut) {
+			uid := vt.currentSelection()
+			if uid == "" {
+				return
+			}
+			vt.openPath(win, uid)
+			vt.tree.Unselect(uid)
+			vt.selectedUID = ""
+		})
+		c.AddShortcut(&desktop.CustomShortcut{KeyName: fyne.KeyEnter}, func(fyne.Shortcut) {
+			uid := vt.currentSelection()
+			if uid == "" {
+				return
+			}
+			vt.openPath(win, uid)
+			vt.tree.Unselect(uid)
+		})
+		c.AddShortcut(&desktop.CustomShortcut{KeyName: fyne.KeyF2}, func(fyne.Shortcut) {
+			if vt.selectedUID != "" {
+				vt.renameBtn.Tapped(nil)
+			}
+		})
+		c.AddShortcut(&desktop.CustomShortcut{KeyName: fyne.KeyDelete}, func(fyne.Shortcut) {
+			if vt.selectedUID != "" {
+				vt.delBtn.Tapped(nil)
+			}
+		})
+		c.AddShortcut(&desktop.CustomShortcut{KeyName: fyne.KeyF5}, func(fyne.Shortcut) {
+			vt.refreshTree()
+		})
+	}
+
+	// --- Layout ---------------------------------------------------------------
 	split := container.NewHSplit(vt.tree, details)
 	split.Offset = 0.45
-
 	vt.Tab = container.NewTabItemWithIcon(filepath.Base(root), theme.FolderOpenIcon(), split)
 	return vt
 }
@@ -456,8 +571,26 @@ func renamePath(vt *VaultTab, src, dst string) error {
 	if sameFile(src, dst) {
 		return nil
 	}
-	// return os.Rename(src, dst)
-	return vt.FS.FileRename(src, dst)
+	ok, err := vfs.IsEmptyDirectory(src)
+	if err != nil {
+		log.Print("hello3")
+		return err
+	}
+	if ok {
+		return os.Rename(src, dst)
+	}
+	ok, err = vfs.IsContainer(src)
+	if err != nil {
+		log.Print("hello2")
+		return err
+	}
+	if ok {
+		log.Print("hello")
+		return vt.FS.FileRename(src, dst)
+	}
+
+	// No empty, no Container, it must be a directory rename
+	return vt.FS.DirectoryRename(src, dst)
 }
 
 func movePath(src, dst string) error {

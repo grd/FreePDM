@@ -29,7 +29,8 @@ test:
 	go test -failfast -v ./...
 
 vaultstest:
-	go test -failfast internal/vaults/vaults_test.go
+	go test -failfast internal/vault/localfs/vault_test.go
+# 	go test internal/vault/localfs/vault_test.go
 
 pdmserver: 
 	go build -o $(BIN_DIR)/pdmserver ./cmd/pdmserver
