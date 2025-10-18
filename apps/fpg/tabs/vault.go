@@ -22,7 +22,7 @@ import (
 	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	vfs "github.com/grd/FreePDM/internal/vault/localfs"
+	"github.com/grd/FreePDM/internal/vault/localfs"
 )
 
 var reNumeric = regexp.MustCompile(`^\d+$`)
@@ -30,7 +30,7 @@ var reNumeric = regexp.MustCompile(`^\d+$`)
 type VaultTab struct {
 	Tab       *container.TabItem
 	Root      string
-	FS        *vfs.FileSystem
+	FS        *localfs.FileSystem
 	OnOpenCAD func(path string) // called when a “file” (incl. numeric-dir) is opened
 
 	// UI
@@ -55,7 +55,7 @@ type VaultTab struct {
 	selectedUID   string
 
 	// inside type VaultTab
-	infoCache map[string]vfs.FileInfo // abs-node-id -> FileInfo
+	infoCache map[string]localfs.FileInfo // abs-node-id -> FileInfo
 }
 
 // NewVaultTab builds the Vault UI tab.
@@ -70,10 +70,10 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 	vt := &VaultTab{
 		Root:      root,
 		OnOpenCAD: onOpenCAD,
-		infoCache: make(map[string]vfs.FileInfo),
+		infoCache: make(map[string]localfs.FileInfo),
 	}
 
-	fs, err := vfs.NewClientFileSystem(root)
+	fs, err := localfs.NewClientFileSystem(root)
 	if err != nil {
 		log.Fatalf("initialization failed, %v", err)
 	}
@@ -329,20 +329,20 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 		container.NewHBox(vt.refreshBtn, vt.allocateBtn, vt.assignBtn, vt.renameBtn, vt.moveBtn, vt.copyBtn, vt.delBtn),
 	)
 
-	// --- Selection handling ----------------------------------------------------
 	vt.tree.OnSelected = func(uid widget.TreeNodeID) {
 		vt.selectedUID = string(uid)
 		vt.showDetails(string(uid))
 
-		// These actions are generally valid when something is selected.
+		// General actions are enabled when something is selected.
 		vt.renameBtn.Enable()
 		vt.moveBtn.Enable()
 		vt.copyBtn.Enable()
 		vt.delBtn.Enable()
 
-		// Toggle Allocate visibility: show ONLY on regular (non-numeric) directories.
 		path := string(uid)
 		base := filepath.Base(path)
+
+		// Allocate: show ONLY on regular (non-numeric) directories.
 		if fi, ok := vt.lookupInfo(path); ok && fi.IsDir() && !reNumeric.MatchString(base) {
 			vt.allocateBtn.Show()
 			vt.allocateBtn.Enable()
@@ -351,23 +351,38 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 			vt.allocateBtn.Disable()
 		}
 
-		// SHOW Allocate only on regular (non-numeric) dirs
-		if fi, ok := vt.lookupInfo(path); ok && fi.IsDir() && !reNumeric.MatchString(base) {
-			vt.allocateBtn.Show()
-			vt.allocateBtn.Enable()
-		} else {
-			vt.allocateBtn.Hide()
-			vt.allocateBtn.Disable()
-		}
-
-		// SHOW Assign only on an allocated (empty) container: <container>/0/.empty_file
+		// Assign: show ONLY on an allocated (empty) container.
+		// First resolve the REAL numeric container directory from the selected UI node.
 		showAssign := false
-		if reNumeric.MatchString(base) {
-			emptyPath := filepath.Join(path, "0", vfs.EmptyFile)
-			if st, err := os.Stat(emptyPath); err == nil && !st.IsDir() {
+		if containerAbs, ok := resolveContainerAbs(vt, path); ok {
+			// Probe known placeholder locations:
+
+			// 1) <container>/0/.empty_file
+			p0 := filepath.Join(containerAbs, "0", localfs.EmptyFile)
+			if st, err := os.Stat(p0); err == nil && !st.IsDir() {
 				showAssign = true
+			} else {
+				// 2) <container>/.empty_file
+				pDirect := filepath.Join(containerAbs, localfs.EmptyFile)
+				if st, err := os.Stat(pDirect); err == nil && !st.IsDir() {
+					showAssign = true
+				} else {
+					// 3) <container>/<n>/.empty_file  (n numeric, e.g., "0001")
+					if entries, err := os.ReadDir(containerAbs); err == nil {
+						for _, e := range entries {
+							if e.IsDir() && reNumeric.MatchString(e.Name()) {
+								cand := filepath.Join(containerAbs, e.Name(), localfs.EmptyFile)
+								if st, err := os.Stat(cand); err == nil && !st.IsDir() {
+									showAssign = true
+									break
+								}
+							}
+						}
+					}
+				}
 			}
 		}
+
 		if showAssign {
 			vt.assignBtn.Show()
 			vt.assignBtn.Enable()
@@ -376,7 +391,7 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 			vt.assignBtn.Disable()
 		}
 
-		// Double-click (or fast repeat Enter) opens the item
+		// Double-click (or fast repeat Enter) opens the item.
 		now := time.Now()
 		if vt.lastClickPath == string(uid) && now.Sub(vt.lastClickAt) <= 300*time.Millisecond {
 			vt.openPath(win, string(uid))
@@ -449,8 +464,49 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 
 // ---------- Tree helpers ----------
 
+// resolveContainerAbs tries to resolve the REAL container directory (absolute path)
+// from a selected UI node (which may display a human label like
+// "Unassigned Empty Container (11)").
+// Strategy:
+// 1) If the selected node itself is a numeric dir, return it.
+// 2) Otherwise, try FS mapping: FileName -> ContainerNumber (if vt.FS exposes it).
+// 3) Fallback: extract "(123)" from the display name and join with the parent.
+func resolveContainerAbs(vt *VaultTab, absSel string) (string, bool) {
+	base := filepath.Base(absSel)
+	// 1) Selected node IS the numeric dir
+	if reNumeric.MatchString(base) {
+		return absSel, true
+	}
+
+	// 2) Try FS mapping if available (FileName -> ContainerNumber)
+	parentAbs := filepath.Dir(absSel)
+	parentRel := vt.rel(parentAbs)
+
+	if fi, ok := vt.lookupInfo(absSel); ok && !fi.IsDir() {
+		type fileNameToCN interface {
+			FileNameToContainerNumber(dir, name string) (string, error)
+		}
+		if m, ok := any(vt.FS).(fileNameToCN); ok {
+			if cn, err := m.FileNameToContainerNumber(parentRel, fi.Name()); err == nil && cn != "" {
+				return filepath.Join(parentAbs, cn), true
+			}
+		}
+	}
+
+	// 3) Fallback: parse a trailing "(123)" from the UI label
+	// Works for "Unassigned Empty Container (11)" etc.
+	if fi, ok := vt.lookupInfo(absSel); ok {
+		label := fi.Name()
+		if m := regexp.MustCompile(`\((\d+)\)$`).FindStringSubmatch(label); len(m) == 2 {
+			return filepath.Join(parentAbs, m[1]), true
+		}
+	}
+
+	return "", false
+}
+
 // listChildren returns immediate children as absolute node IDs.
-// It converts the absolute 'abs' into a vault-relative path for vfs.ListDir.
+// It converts the absolute 'abs' into a vault-relative path for localfs.ListDir.
 func (vt *VaultTab) listChildren(abs string) []string {
 	rel := vt.rel(abs)                 // "" for root
 	entries, err := vt.FS.ListDir(rel) // your FS expects relative paths
@@ -571,7 +627,7 @@ func renamePath(vt *VaultTab, src, dst string) error {
 	if sameFile(src, dst) {
 		return nil
 	}
-	ok, err := vfs.IsEmptyDirectory(src)
+	ok, err := localfs.IsEmptyDirectory(src)
 	if err != nil {
 		log.Print("hello3")
 		return err
@@ -579,7 +635,7 @@ func renamePath(vt *VaultTab, src, dst string) error {
 	if ok {
 		return os.Rename(src, dst)
 	}
-	ok, err = vfs.IsContainer(src)
+	ok, err = localfs.IsContainer(src)
 	if err != nil {
 		log.Print("hello2")
 		return err
@@ -673,9 +729,9 @@ func isCrossDevice(err error) bool {
 
 // lookupInfo returns FileInfo for a given absolute node id.
 // It first checks the cache, then falls back to listing the parent once.
-func (vt *VaultTab) lookupInfo(abs string) (vfs.FileInfo, bool) {
+func (vt *VaultTab) lookupInfo(abs string) (localfs.FileInfo, bool) {
 	if abs == "" || abs == "." || abs == vt.Root {
-		return vfs.FileInfo{}, false
+		return localfs.FileInfo{}, false
 	}
 
 	if fi, ok := vt.infoCache[abs]; ok {
@@ -686,7 +742,7 @@ func (vt *VaultTab) lookupInfo(abs string) (vfs.FileInfo, bool) {
 	relParent := vt.rel(parentAbs)
 	entries, err := vt.FS.ListDir(relParent)
 	if err != nil {
-		return vfs.FileInfo{}, false
+		return localfs.FileInfo{}, false
 	}
 	for _, fi := range entries {
 		childAbs := filepath.Join(parentAbs, fi.Name())
@@ -695,5 +751,5 @@ func (vt *VaultTab) lookupInfo(abs string) (vfs.FileInfo, bool) {
 			return fi, true
 		}
 	}
-	return vfs.FileInfo{}, false
+	return localfs.FileInfo{}, false
 }
