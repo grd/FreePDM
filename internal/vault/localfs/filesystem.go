@@ -589,63 +589,133 @@ func (fs FileSystem) ListWD() ([]FileInfo, error) {
 	return fs.ListDir(fs.Getwd())
 }
 
-// ListDir lists the sorted directories and files within the specified directory name,
-// as long as the directory is inside the vault.
+// ListDir returns a UI-ready listing for the given vault-relative directory.
+//
+// Rules:
+// - Regular (non-numeric) subdirectories are returned as folders.
+// - Numeric subdirectories are PDM containers (rendered as “files” in the UI).
+// - Placeholder is ONLY recognized at <container>/0/.empty_file.
+// - Candidate is ONLY recognized at <container>/0/<file>, excluding .empty_file and dotfiles.
+// - Display name:
+//   - If placeholder exists: ALWAYS "Unassigned Empty Container (N)".
+//   - Else: index name (if meaningful), else "Container N".
+//
+// - Allocation status:
+//   - AllocAllocatedWithCandidate if placeholder && candidate present (cand = real filename).
+//   - AllocAllocatedEmpty if placeholder && no candidate.
+//   - AllocNone otherwise.
 func (fs FileSystem) ListDir(dirName string) ([]FileInfo, error) {
-	joinDir := filepath.Join(fs.vaultDir, dirName)
+	absDir := filepath.Join(fs.vaultDir, dirName)
 
-	dirList, err := os.ReadDir(joinDir)
+	entries, err := os.ReadDir(absDir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read directory %s: %w", dirName, err)
 	}
 
-	list := make([]FileInfo, 0, len(dirList))
+	list := make([]FileInfo, 0, len(entries))
 
-	for _, entry := range dirList {
-		name := entry.Name()
+	for _, e := range entries {
+		name := e.Name()
 
-		// Treat numeric directories as containers (files in UI)
-		if entry.IsDir() {
-			if _, err := util.Atoi64(name); err == nil {
-				// Container branch
-				cnStr := name
-
-				fileName, err := fs.index.ContainerNumberToFileName(cnStr)
-				if err != nil {
-					return nil, fmt.Errorf("failed to convert index to file name: %w", err)
-				}
-
-				// Display fallback for freshly allocated (unassigned) containers
-				if fileName == "" || fileName == EmptyFile {
-					fileName = fmt.Sprintf("Unassigned Empty Container (%s)", cnStr)
-				}
-
-				lockedUser := fs.IsLockedItem(cnStr)
-
+		// Regular (non-numeric) subdirectory → show as folder
+		if e.IsDir() {
+			if _, err := util.Atoi64(name); err != nil {
 				list = append(list, FileInfo{
-					isDir:           false,
-					name:            fileName,
-					dir:             dirName,
-					fileLocked:      lockedUser != "",
-					fileLockedOutBy: lockedUser,
+					isDir: true,
+					name:  name,
+					dir:   dirName,
 				})
 				continue
 			}
+		}
 
-			// Regular non-numeric directory
+		// Numeric subdirectory → container
+		if e.IsDir() {
+			cnStr := name
+			containerAbs := filepath.Join(absDir, cnStr)
+
+			// 1) Index-provided name (may be empty initially)
+			idxName, err := fs.index.ContainerNumberToFileName(cnStr)
+			if err != nil {
+				return nil, fmt.Errorf("failed to convert index to file name: %w", err)
+			}
+
+			// 2) Lock info
+			lockedUser := fs.IsLockedItem(cnStr)
+
+			// 3) Placeholder: ONLY <container>/0/.empty_file
+			hasPlaceholder := false
+			if st, err := os.Stat(filepath.Join(containerAbs, "0", EmptyFile)); err == nil && !st.IsDir() {
+				hasPlaceholder = true
+			}
+
+			// 4) Candidate: ONLY <container>/0/<file> (not dir, not EmptyFile, not dotfile)
+			candName, haveCand := "", false
+			if ents, err := os.ReadDir(filepath.Join(containerAbs, "0")); err == nil {
+				for _, f := range ents {
+					if f.IsDir() {
+						continue
+					}
+					fn := f.Name()
+					if fn == EmptyFile || strings.HasPrefix(fn, ".") {
+						continue
+					}
+					candName, haveCand = fn, true
+					break // first match is fine
+				}
+			}
+
+			// 5) Allocation status & candidate value
+			allocStatus, allocCandidate := AllocNone, ""
+			if hasPlaceholder {
+				if haveCand {
+					allocStatus = AllocAllocatedWithCandidate
+					allocCandidate = candName
+				} else {
+					allocStatus = AllocAllocatedEmpty
+				}
+			}
+
+			// 6) Display name policy (never empty)
+			displayName := ""
+			if hasPlaceholder {
+				displayName = fmt.Sprintf("Unassigned Empty Container (%s)", cnStr)
+			} else if idxName != "" && idxName != EmptyFile {
+				displayName = idxName
+			} else {
+				displayName = fmt.Sprintf("Container %s", cnStr)
+			}
+
+			// Optional: second line helps disambiguate in the UI
+			second := fmt.Sprintf("Container %s", cnStr)
+			if lockedUser != "" {
+				second += " · Locked by " + lockedUser
+			}
+
 			list = append(list, FileInfo{
-				isDir: true,
-				name:  name,
-				dir:   dirName,
+				isDir:           false,       // container rendered as a “file”
+				name:            displayName, // never empty
+				dir:             dirName,
+				fileLocked:      lockedUser != "",
+				fileLockedOutBy: lockedUser,
+				fileSecondDescr: second, // optional subtitle for UI
+				containerNumber: cnStr,  // same package → ok to set
+
+				allocStatus:    allocStatus,
+				allocCandidate: allocCandidate, // real filename if AllocAllocatedWithCandidate
 			})
+
 			continue
 		}
 
-		// Non-directory entries (plain files) are ignored in this model.
+		// Plain files at this level are not part of the model → ignore.
 	}
 
-	// Optional: ensure alphabetical order by display name (case-insensitive)
+	// Sort: folders first, then containers/files, both groups A–Z (case-insensitive).
 	sort.SliceStable(list, func(i, j int) bool {
+		if list[i].isDir != list[j].isDir {
+			return list[i].isDir && !list[j].isDir
+		}
 		return strings.ToLower(list[i].name) < strings.ToLower(list[j].name)
 	})
 

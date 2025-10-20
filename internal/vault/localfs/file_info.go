@@ -9,6 +9,19 @@ import "path/filepath"
 // This shows only the latest version of a file and is handy when being used with
 // the web server. If the file is a directory then only the filename is visible.
 
+// AllocStatus indicates whether a container is allocated and, if so,
+// whether a real file candidate is already present alongside the placeholder.
+type AllocStatus int
+
+const (
+	// AllocNone means: normal container (no placeholder present).
+	AllocNone AllocStatus = iota
+	// AllocAllocatedEmpty means: placeholder present, no real file candidate detected.
+	AllocAllocatedEmpty
+	// AllocAllocatedWithCandidate means: placeholder present AND a real file candidate is present.
+	AllocAllocatedWithCandidate
+)
+
 // The FileInfo struct
 type FileInfo struct {
 	containerNumber string
@@ -22,6 +35,10 @@ type FileInfo struct {
 	fileLockedOutBy string // Who checked out the file?
 	// fileIcon        []byte
 	fileProperties []FileProperties
+
+	// New: allocation status for containers (used by GUI for badges/tooltips)
+	allocStatus    AllocStatus
+	allocCandidate string // non-empty only when allocStatus == AllocAllocatedWithCandidate
 }
 
 // The File Properties
@@ -76,4 +93,25 @@ func (fi FileInfo) LockedOutBy() string {
 
 func (fi FileInfo) Properties() []FileProperties {
 	return fi.fileProperties
+}
+
+// Alloc returns the allocation status for this entry.
+// GUI can use this to decide which badge/icon to render.
+func (fi FileInfo) Alloc() AllocStatus {
+	return fi.allocStatus
+}
+
+// AllocCandidate returns the suggested filename candidate (if any) that was
+// found inside an allocated container alongside the placeholder. The boolean
+// indicates whether a candidate is available.
+func (fi FileInfo) AllocCandidate() (string, bool) {
+	if fi.allocStatus == AllocAllocatedWithCandidate && fi.allocCandidate != "" {
+		return fi.allocCandidate, true
+	}
+	return "", false
+}
+
+// IsAllocated is a convenience helper to check if any allocation state applies.
+func (fi FileInfo) IsAllocated() bool {
+	return fi.allocStatus == AllocAllocatedEmpty || fi.allocStatus == AllocAllocatedWithCandidate
 }
