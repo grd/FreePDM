@@ -395,35 +395,46 @@ func NewVaultTab(win fyne.Window, root string, onOpenCAD func(string)) *VaultTab
 			vt.allocateBtn.Disable()
 		}
 
-		// Assign: visible on containers with alloc-status
-		if fi, ok := vt.lookupInfo(path); ok && !fi.IsDir() &&
+		// Assign: visible on containers with alloc-status (AllocatedEmpty / AllocatedWithCandidate)
+		if fi, ok := vt.lookupInfo(path); ok &&
+			!fi.IsDir() &&
 			(fi.Alloc() == localfs.AllocAllocatedEmpty || fi.Alloc() == localfs.AllocAllocatedWithCandidate) {
 
 			vt.assignBtn.Show()
 			vt.assignBtn.Enable()
 
 			vt.assignBtn.OnTapped = func() {
+				// Resolve numeric container number from FileInfo (never from the UI label)
+				cn := fi.ContainerNumber()
+				if cn == "" {
+					dialog.ShowError(fmt.Errorf("unable to resolve container number for %q", fi.Name()), win)
+					return
+				}
+
+				// Prefill with candidate if available (only from <container>/0/)
 				entry := widget.NewEntry()
 				if cand, ok := fi.AllocCandidate(); ok && cand != "" {
 					entry.SetText(cand)
 				} else {
-					entry.SetPlaceHolder("Enter filename.ext")
+					entry.SetPlaceHolder("filename.ext")
 				}
+
 				dialog.ShowForm(
 					"Assign name",
 					"Assign",
 					"Cancel",
-					[]*widget.FormItem{widget.NewFormItem("File name", entry)},
+					[]*widget.FormItem{
+						widget.NewFormItem("File name", entry),
+					},
 					func(ok bool) {
 						if !ok {
 							return
 						}
 						name := strings.TrimSpace(entry.Text)
 						if name == "" {
+							dialog.ShowError(fmt.Errorf("file name is required"), win)
 							return
 						}
-						// path is the container-node (UID); containernumber = basename
-						cn := filepath.Base(path)
 						if err := vt.FS.Assign(cn, name); err != nil {
 							dialog.ShowError(err, win)
 							return

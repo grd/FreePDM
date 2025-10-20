@@ -61,6 +61,9 @@ func (fi FileInfo) DirSort() int {
 	}
 }
 
+// Returns the Container Number
+func (fi FileInfo) ContainerNumber() string { return fi.containerNumber }
+
 // Returns the directory or file name
 func (fi FileInfo) Name() string {
 	return fi.name
